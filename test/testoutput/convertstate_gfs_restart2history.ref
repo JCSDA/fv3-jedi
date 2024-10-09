@@ -1,4 +1,4 @@
-Input state: 
+Input state:
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 21 | cube sphere face size: C12
 eastward_wind                                | Min:-1.0808005226726641e+02 Max:+1.5254285196689409e+02 RMS:+2.2156165197969532e+01
@@ -19,14 +19,14 @@ vfrac                                        | Min:+0.0000000000000000e+00 Max:+
 stc                                          | Min:+2.2223013432965388e+02 Max:+3.0959538937410571e+02 RMS:+2.8897268178046460e+02
 soilMoistureVolumetric                       | Min:+2.0000000000000000e-02 Max:+1.0000000000000002e+00 RMS:+8.6190186078147835e-01
 totalSnowDepth                               | Min:+0.0000000000000000e+00 Max:+1.3285476634008219e+03 RMS:+1.7913120186264425e+02
-surface_eastward_wind                        | Min:-1.8101275076649053e+01 Max:+2.1220834227111389e+01 RMS:+5.8495982180186621e+00
-surface_northward_wind                       | Min:-1.4623627030973990e+01 Max:+1.8213843978241414e+01 RMS:+4.8372223427453616e+00
+eastward_wind_at_surface                     | Min:-1.8101275076649053e+01 Max:+2.1220834227111389e+01 RMS:+5.8495982180186621e+00
+northward_wind_at_surface                    | Min:-1.4623627030973990e+01 Max:+1.8213843978241414e+01 RMS:+4.8372223427453616e+00
 f10m                                         | Min:+9.4200706791884525e-01 Max:+1.0783731020020086e+00 RMS:+9.9586000625264048e-01
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaModel2GeoVaLs variable change
-Variable change from: 21 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, specific_humidity, cloud_liquid_ice, cloud_liquid_water, ozone_mass_mixing_ratio, geopotential_height_times_gravity_at_surface, slmsk, sheleg, sea_surface_temperature, vtype, stype, vfrac, stc, soilMoistureVolumetric, totalSnowDepth, surface_eastward_wind, surface_northward_wind, f10m
+Variable change from: 21 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, specific_humidity, cloud_liquid_ice, cloud_liquid_water, ozone_mass_mixing_ratio, geopotential_height_times_gravity_at_surface, slmsk, sheleg, sea_surface_temperature, vtype, stype, vfrac, stc, soilMoistureVolumetric, totalSnowDepth, eastward_wind_at_surface, northward_wind_at_surface, f10m
 Variable change to: 21 variables: ua, va, t, delp, sphum, ice_wat, liq_wat, o3mr, geopotential_height_at_surface, slmsk, sheleg, tsea, vtype, stype, vfrac, stc, smc, snwdphMeters, u_srf, v_srf, f10m
-State after variable transform: 
+State after variable transform:
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 21 | cube sphere face size: C12
 eastward_wind                                | Min:-1.0808005226726641e+02 Max:+1.5254285196689409e+02 RMS:+2.2156165197969532e+01
@@ -47,11 +47,11 @@ vfrac                                        | Min:+0.0000000000000000e+00 Max:+
 stc                                          | Min:+2.2223013432965388e+02 Max:+3.0959538937410571e+02 RMS:+2.8897268178046460e+02
 soilMoistureVolumetric                       | Min:+2.0000000000000000e-02 Max:+1.0000000000000002e+00 RMS:+8.6190186078147835e-01
 totalSnowDepthMeters                         | Min:+0.0000000000000000e+00 Max:+1.3285476634008220e+00 RMS:+1.7913120186264425e-01
-surface_eastward_wind                        | Min:-1.8101275076649053e+01 Max:+2.1220834227111389e+01 RMS:+5.8495982180186621e+00
-surface_northward_wind                       | Min:-1.4623627030973990e+01 Max:+1.8213843978241414e+01 RMS:+4.8372223427453616e+00
+eastward_wind_at_surface                     | Min:-1.8101275076649053e+01 Max:+2.1220834227111389e+01 RMS:+5.8495982180186621e+00
+northward_wind_at_surface                    | Min:-1.4623627030973990e+01 Max:+1.8213843978241414e+01 RMS:+4.8372223427453616e+00
 f10m                                         | Min:+9.4200706791884525e-01 Max:+1.0783731020020086e+00 RMS:+9.9586000625264048e-01
 ----------------------------------------------------------------------------------------------------
-Output state: 
+Output state:
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 21 | cube sphere face size: C12
 eastward_wind                                | Min:-1.0808005226726641e+02 Max:+1.5254285196689409e+02 RMS:+2.2156165197969532e+01
@@ -72,7 +72,7 @@ vfrac                                        | Min:+0.0000000000000000e+00 Max:+
 stc                                          | Min:+2.2223013432965388e+02 Max:+3.0959538937410571e+02 RMS:+2.8897268178046460e+02
 soilMoistureVolumetric                       | Min:+2.0000000000000000e-02 Max:+1.0000000000000002e+00 RMS:+8.6190186078147835e-01
 totalSnowDepthMeters                         | Min:+0.0000000000000000e+00 Max:+1.3285476634008220e+00 RMS:+1.7913120186264425e-01
-surface_eastward_wind                        | Min:-1.8101275076649053e+01 Max:+2.1220834227111389e+01 RMS:+5.8495982180186621e+00
-surface_northward_wind                       | Min:-1.4623627030973990e+01 Max:+1.8213843978241414e+01 RMS:+4.8372223427453616e+00
+eastward_wind_at_surface                     | Min:-1.8101275076649053e+01 Max:+2.1220834227111389e+01 RMS:+5.8495982180186621e+00
+northward_wind_at_surface                    | Min:-1.4623627030973990e+01 Max:+1.8213843978241414e+01 RMS:+4.8372223427453616e+00
 f10m                                         | Min:+9.4200706791884525e-01 Max:+1.0783731020020086e+00 RMS:+9.9586000625264048e-01
 ----------------------------------------------------------------------------------------------------

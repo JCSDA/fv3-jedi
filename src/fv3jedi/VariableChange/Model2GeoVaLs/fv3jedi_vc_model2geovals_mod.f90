@@ -258,8 +258,8 @@ real(kind=kind_real), allocatable :: volume_fraction_of_condensed_water_in_soil(
 real(kind=kind_real), allocatable :: vegetation_area_fraction                  (:,:,:)
 real(kind=kind_real), allocatable :: soil_temperature                          (:,:,:)
 real(kind=kind_real), allocatable :: surface_snow_thickness                    (:,:,:)
-real(kind=kind_real), allocatable :: surface_wind_speed                        (:,:,:)
-real(kind=kind_real), allocatable :: surface_wind_from_direction               (:,:,:)
+real(kind=kind_real), allocatable :: wind_speed_at_surface                     (:,:,:)
+real(kind=kind_real), allocatable :: wind_from_direction_at_surface            (:,:,:)
 real(kind=kind_real), allocatable :: sea_surface_salinity                      (:,:,:)
 real(kind=kind_real), allocatable :: skin_temperature                          (:,:,:)
 
@@ -379,8 +379,8 @@ endif
 ! Geopotential height
 ! -------------------
 have_geoph = .false.
-if (have_t .and. have_pressures .and. have_q .and. ( xm%has_field('phis') .or.&
-    xm%has_field('geopotential_height_at_surface') )) then
+if (have_t .and. have_pressures .and. have_q .and. ( xm%has_field('phis') .or. &
+  xm%has_field('geopotential_height_at_surface') )) then
   if (.not.allocated(phis)) allocate(phis(self%isc:self%iec,self%jsc:self%jec,1))
   if (.not.allocated(suralt)) allocate(suralt(self%isc:self%iec,self%jsc:self%jec,1))
   if ( xm%has_field( 'phis') ) then
@@ -811,8 +811,8 @@ if ( have_slmsk .and. have_f10m .and. xm%has_field( 'sheleg') .and. &
   allocate(vegetation_area_fraction                  (self%isc:self%iec,self%jsc:self%jec,1))
   allocate(soil_temperature                          (self%isc:self%iec,self%jsc:self%jec,1))
   allocate(surface_snow_thickness                    (self%isc:self%iec,self%jsc:self%jec,1))
-  allocate(surface_wind_speed                        (self%isc:self%iec,self%jsc:self%jec,1))
-  allocate(surface_wind_from_direction               (self%isc:self%iec,self%jsc:self%jec,1))
+  allocate(wind_speed_at_surface                     (self%isc:self%iec,self%jsc:self%jec,1))
+  allocate(wind_from_direction_at_surface            (self%isc:self%iec,self%jsc:self%jec,1))
   allocate(sea_surface_salinity                      (self%isc:self%iec,self%jsc:self%jec,1))
 
   allocate(sss(self%isc:self%iec,self%jsc:self%jec,1))
@@ -848,7 +848,7 @@ if ( have_slmsk .and. have_f10m .and. xm%has_field( 'sheleg') .and. &
                      surface_temperature_where_land, surface_temperature_where_ice, &
                      surface_temperature_where_snow, volume_fraction_of_condensed_water_in_soil, &
                      vegetation_area_fraction, soil_temperature, surface_snow_thickness, &
-                     surface_wind_speed, surface_wind_from_direction, sea_surface_salinity)
+                     wind_speed_at_surface, wind_from_direction_at_surface, sea_surface_salinity)
 
   have_crtm_surface = .true.
 
@@ -1104,15 +1104,15 @@ do f = 1, size(fields_to_do)
     if (.not. have_crtm_surface) call field_fail(fields_to_do(f))
     field_ptr = vegetation_area_fraction
 
-  case ("surface_wind_speed")
+  case ("wind_speed_at_surface")
 
     if (.not. have_crtm_surface) call field_fail(fields_to_do(f))
-    field_ptr = surface_wind_speed
+    field_ptr = wind_speed_at_surface
 
-  case ("surface_wind_from_direction")
+  case ("wind_from_direction_at_surface")
 
     if (.not. have_crtm_surface) call field_fail(fields_to_do(f))
-    field_ptr = surface_wind_from_direction
+    field_ptr = wind_from_direction_at_surface
 
   case ("wind_reduction_factor_at_10m")
 
@@ -1293,8 +1293,8 @@ if (allocated(volume_fraction_of_condensed_water_in_soil)) &
 if (allocated(vegetation_area_fraction)) deallocate(vegetation_area_fraction)
 if (allocated(soil_temperature)) deallocate(soil_temperature)
 if (allocated(surface_snow_thickness)) deallocate(surface_snow_thickness)
-if (allocated(surface_wind_speed)) deallocate(surface_wind_speed)
-if (allocated(surface_wind_from_direction)) deallocate(surface_wind_from_direction)
+if (allocated(wind_speed_at_surface)) deallocate(wind_speed_at_surface)
+if (allocated(wind_from_direction_at_surface)) deallocate(wind_from_direction_at_surface)
 if (allocated(sea_surface_salinity)) deallocate(sea_surface_salinity)
 if (allocated(skin_temperature)) deallocate(skin_temperature)
 if (allocated(snwdph)) deallocate(snwdph)

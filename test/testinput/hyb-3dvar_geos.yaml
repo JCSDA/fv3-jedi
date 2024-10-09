@@ -668,7 +668,7 @@ cost function:
         channels: 1-14
       obs operator:
         name: ObsAtmSfcInterp
-        geovals: [surface_temperature_where_sea,water_area_fraction,surface_wind_speed]
+        geovals: [surface_temperature_where_sea,water_area_fraction,wind_speed_at_surface]
       obs operator:
         name: CRTM
         Absorbers: [H2O,O3]
@@ -699,7 +699,7 @@ cost function:
             name: GeoVaLs/surface_temperature_where_sea
           minvalue: 275
         - variable:
-            name: GeoVaLs/surface_wind_speed
+            name: GeoVaLs/wind_speed_at_surface
           maxvalue: 12
         - variable:
             name: MetaData/latitude

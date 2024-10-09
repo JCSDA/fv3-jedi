@@ -2,7 +2,7 @@ CostJb   : Nonlinear Jb = 0.0000000000000000e+00
 CostJo   : Nonlinear Jo(Radiosonde) = 2.5407802341930642e+03, nobs = 1347, Jo/n = 1.8862511018508272e+00, err = 2.0631474620187360e+00
 CostFunction: Nonlinear J = 2.5407802341930642e+03
 DRPCGMinimizer: reduction in residual norm = 1.7358544537761976e-10
-CostFunction::addIncrement: Analysis: 
+CostFunction::addIncrement: Analysis:
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 21 | cube sphere face size: C24
 eastward_wind                                | Min:-1.0258895515947677e+02 Max:+1.4012960919332377e+02 RMS:+2.1352185266989089e+01
@@ -23,8 +23,8 @@ vfrac                                        | Min:+0.0000000000000000e+00 Max:+
 stc                                          | Min:+2.2344193560957359e+02 Max:+3.0816743824519182e+02 RMS:+2.8896462580706935e+02
 soilMoistureVolumetric                       | Min:+2.2235492720152690e-02 Max:+1.0000000000000004e+00 RMS:+8.5100979930101550e-01
 totalSnowDepth                               | Min:+0.0000000000000000e+00 Max:+1.2495610737326883e+03 RMS:+1.6109876215130143e+02
-surface_eastward_wind                        | Min:-1.5439447482564152e+01 Max:+1.7720841484763216e+01 RMS:+5.0996670981342174e+00
-surface_northward_wind                       | Min:-1.3789731713770939e+01 Max:+1.4086980696486156e+01 RMS:+4.0591533502251620e+00
+eastward_wind_at_surface                     | Min:-1.5439447482564152e+01 Max:+1.7720841484763216e+01 RMS:+5.0996670981342174e+00
+northward_wind_at_surface                    | Min:-1.3789731713770939e+01 Max:+1.4086980696486156e+01 RMS:+4.0591533502251620e+00
 f10m                                         | Min:+9.4244403554383871e-01 Max:+1.0651198572365614e+00 RMS:+9.9587624693062882e-01
 ----------------------------------------------------------------------------------------------------
 

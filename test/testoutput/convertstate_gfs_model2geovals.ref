@@ -1,4 +1,4 @@
-Input state: 
+Input state:
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 21 | cube sphere face size: C12
 eastward_wind | Min:-1.0808005226726641e+02 Max:+1.5254285196689409e+02 RMS:+2.2156165197969546e+01
@@ -19,14 +19,14 @@ vfrac | Min:+0.0000000000000000e+00 Max:+9.3228731613197013e-01 RMS:+1.905196799
 stc | Min:+2.2223013432965388e+02 Max:+3.0959538937410571e+02 RMS:+2.8897268178046460e+02
 soilMoistureVolumetric | Min:+2.0000000000000000e-02 Max:+1.0000000000000002e+00 RMS:+8.6190186078147835e-01
 totalSnowDepth | Min:+0.0000000000000000e+00 Max:+1.3285476634008219e+03 RMS:+1.7913120186264419e+02
-surface_eastward_wind | Min:-1.8101275076649053e+01 Max:+2.1220834227111389e+01 RMS:+5.8495982180186621e+00
-surface_northward_wind | Min:-1.4623627030973990e+01 Max:+1.8213843978241414e+01 RMS:+4.8372223427453616e+00
+eastward_wind_at_surface | Min:-1.8101275076649053e+01 Max:+2.1220834227111389e+01 RMS:+5.8495982180186621e+00
+northward_wind_at_surface | Min:-1.4623627030973990e+01 Max:+1.8213843978241414e+01 RMS:+4.8372223427453616e+00
 f10m | Min:+9.4200706791884525e-01 Max:+1.0783731020020086e+00 RMS:+9.9586000625264048e-01
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaModel2GeoVaLs variable change
-Variable change from: 21 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, specific_humidity, cloud_liquid_ice, cloud_liquid_water, ozone_mass_mixing_ratio, geopotential_height_times_gravity_at_surface, slmsk, sheleg, sea_surface_temperature, vtype, stype, vfrac, stc, soilMoistureVolumetric, totalSnowDepth, surface_eastward_wind, surface_northward_wind, f10m
-Variable change to: 32 variables: rh, ps, tv, mole_fraction_of_ozone_in_air, geopotential_height, height_above_mean_sea_level_at_surface, mole_fraction_of_carbon_dioxide_in_air, humidity_mixing_ratio, mass_content_of_cloud_liquid_water_in_atmosphere_layer, mass_content_of_cloud_ice_in_atmosphere_layer, effective_radius_of_cloud_liquid_water_particle, effective_radius_of_cloud_ice_particle, water_area_fraction, land_area_fraction, ice_area_fraction, surface_snow_area_fraction, surface_temperature_where_sea, surface_temperature_where_land, surface_temperature_where_ice, surface_temperature_where_snow, surface_snow_thickness, vegetation_area_fraction, surface_wind_speed, surface_wind_from_direction, leaf_area_index, volume_fraction_of_condensed_water_in_soil, soil_temperature, land_type_index_NPOESS, vegetation_type_index, soil_type, vort, tropopause_pressure
-State after variable transform: 
+Variable change from: 21 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, specific_humidity, cloud_liquid_ice, cloud_liquid_water, ozone_mass_mixing_ratio, sfc_geopotential_height_times_grav, slmsk, sheleg, sea_surface_temperature, vtype, stype, vfrac, stc, soilMoistureVolumetric, totalSnowDepth, eastward_wind_at_surface, northward_wind_at_surface, f10m
+Variable change to: 32 variables: rh, ps, tv, mole_fraction_of_ozone_in_air, geopotential_height, height_above_mean_sea_level_at_surface, mole_fraction_of_carbon_dioxide_in_air, humidity_mixing_ratio, mass_content_of_cloud_liquid_water_in_atmosphere_layer, mass_content_of_cloud_ice_in_atmosphere_layer, effective_radius_of_cloud_liquid_water_particle, effective_radius_of_cloud_ice_particle, water_area_fraction, land_area_fraction, ice_area_fraction, surface_snow_area_fraction, surface_temperature_where_sea, surface_temperature_where_land, surface_temperature_where_ice, surface_temperature_where_snow, surface_snow_thickness, vegetation_area_fraction, wind_speed_at_surface, wind_from_direction_at_surface, leaf_area_index, volume_fraction_of_condensed_water_in_soil, soil_temperature, land_type_index_NPOESS, vegetation_type_index, soil_type, vort, tropopause_pressure
+State after variable transform:
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 32 | cube sphere face size: C12
 relative_humidity | Min:+9.7386099756970810e-10 Max:+1.0241599791402913e+00 RMS:+4.7443026652312664e-01
@@ -51,8 +51,8 @@ surface_temperature_where_ice | Min:+2.2906805071655253e+02 Max:+2.8000000000000
 surface_temperature_where_snow | Min:+2.2906805071655253e+02 Max:+2.8000000000000000e+02 RMS:+2.7615097095726986e+02
 surface_snow_thickness | Min:+0.0000000000000000e+00 Max:+2.2560732452076238e+02 RMS:+2.2262253924964504e+01
 vegetation_area_fraction | Min:+0.0000000000000000e+00 Max:+9.3228731613197013e-01 RMS:+1.8920913360061203e-01
-surface_wind_speed | Min:+6.9870439183580199e-02 Max:+2.1215103721830587e+01 RMS:+7.5680080630515612e+00
-surface_wind_from_direction | Min:+2.5639356551436188e-01 Max:+3.5990367774320623e+02 RMS:+2.1384056966342857e+02
+wind_speed_at_surface | Min:+6.9870439183580199e-02 Max:+2.1215103721830587e+01 RMS:+7.5680080630515612e+00
+wind_from_direction_at_surface | Min:+2.5639356551436188e-01 Max:+3.5990367774320623e+02 RMS:+2.1384056966342857e+02
 leaf_area_index | Min:+0.0000000000000000e+00 Max:+5.8979347826086963e+00 RMS:+1.3973263598176446e+00
 volume_fraction_of_condensed_water_in_soil | Min:+2.0000000000000000e-02 Max:+1.0000000000000000e+00 RMS:+9.0568498171125944e-01
 soil_temperature | Min:+0.0000000000000000e+00 Max:+3.0700739894258089e+02 RMS:+1.2760703940045644e+02
@@ -62,7 +62,7 @@ soil_type | Min:+1.0000000000000000e+00 Max:+8.0000000000000000e+00 RMS:+2.75147
 vorticity | Min:-1.2496545759979336e-04 Max:+1.1578828828809789e-04 RMS:+1.7935331794187984e-05
 tropopause_pressure | Min:+1.5000000000000000e+04 Max:+3.5000000000000000e+04 RMS:+1.6189789206418183e+04
 ----------------------------------------------------------------------------------------------------
-Output state: 
+Output state:
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 32 | cube sphere face size: C12
 relative_humidity | Min:+9.7386099756970810e-10 Max:+1.0241599791402913e+00 RMS:+4.7443026652312664e-01
@@ -87,8 +87,8 @@ surface_temperature_where_ice | Min:+2.2906805071655253e+02 Max:+2.8000000000000
 surface_temperature_where_snow | Min:+2.2906805071655253e+02 Max:+2.8000000000000000e+02 RMS:+2.7615097095726986e+02
 surface_snow_thickness | Min:+0.0000000000000000e+00 Max:+2.2560732452076238e+02 RMS:+2.2262253924964504e+01
 vegetation_area_fraction | Min:+0.0000000000000000e+00 Max:+9.3228731613197013e-01 RMS:+1.8920913360061203e-01
-surface_wind_speed | Min:+6.9870439183580199e-02 Max:+2.1215103721830587e+01 RMS:+7.5680080630515612e+00
-surface_wind_from_direction | Min:+2.5639356551436188e-01 Max:+3.5990367774320623e+02 RMS:+2.1384056966342857e+02
+wind_speed_at_surface | Min:+6.9870439183580199e-02 Max:+2.1215103721830587e+01 RMS:+7.5680080630515612e+00
+wind_from_direction_at_surface | Min:+2.5639356551436188e-01 Max:+3.5990367774320623e+02 RMS:+2.1384056966342857e+02
 leaf_area_index | Min:+0.0000000000000000e+00 Max:+5.8979347826086963e+00 RMS:+1.3973263598176446e+00
 volume_fraction_of_condensed_water_in_soil | Min:+2.0000000000000000e-02 Max:+1.0000000000000000e+00 RMS:+9.0568498171125944e-01
 soil_temperature | Min:+0.0000000000000000e+00 Max:+3.0700739894258089e+02 RMS:+1.2760703940045644e+02

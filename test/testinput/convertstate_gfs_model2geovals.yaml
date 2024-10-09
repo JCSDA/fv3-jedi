@@ -29,8 +29,8 @@ variable change:
                      land_area_fraction,ice_area_fraction,surface_snow_area_fraction,
                      surface_temperature_where_sea, surface_temperature_where_land,
                      surface_temperature_where_ice,surface_temperature_where_snow,
-                     surface_snow_thickness,vegetation_area_fraction,surface_wind_speed,
-                     surface_wind_from_direction,leaf_area_index,
+                     surface_snow_thickness,vegetation_area_fraction,wind_speed_at_surface,
+                     wind_from_direction_at_surface,leaf_area_index,
                      volume_fraction_of_condensed_water_in_soil,soil_temperature,
                      land_type_index_NPOESS,vegetation_type_index,soil_type,
                      vort,tropopause_pressure]

@@ -36,10 +36,10 @@ field metadata:
 - long name: sea_surface_temperature
   io name: ts_found
 
-- long name: surface_eastward_wind
+- long name: eastward_wind_at_surface
   io name: u10m
 
-- long name: surface_northward_wind
+- long name: northward_wind_at_surface
   io name: v10m
 
 # Compo compo

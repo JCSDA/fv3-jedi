@@ -684,7 +684,7 @@ namespace fv3jedi {
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
 
-    md.longName = "surface_eastward_wind";
+    md.longName = "eastward_wind_at_surface";
     md.shortName = "u_srf";
     md.units = "ms-1";
     md.kind = "double";
@@ -694,7 +694,7 @@ namespace fv3jedi {
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
 
-    md.longName = "surface_northward_wind";
+    md.longName = "northward_wind_at_surface";
     md.shortName = "v_srf";
     md.units = "ms-1";
     md.kind = "double";
@@ -1254,8 +1254,8 @@ namespace fv3jedi {
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
 
-    md.longName = "surface_wind_speed";
-    md.shortName = "surface_wind_speed";
+    md.longName = "wind_speed_at_surface";
+    md.shortName = "wind_speed_at_surface";
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
@@ -1264,8 +1264,8 @@ namespace fv3jedi {
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
 
-    md.longName = "surface_wind_from_direction";
-    md.shortName = "surface_wind_from_direction";
+    md.longName = "wind_from_direction_at_surface";
+    md.shortName = "wind_from_direction_at_surface";
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";

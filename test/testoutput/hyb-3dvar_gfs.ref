@@ -7,7 +7,7 @@ CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 6.9080343238156615e+02, nobs = 855, Jo/n
 CostJo   : Nonlinear Jo(SfcObs) = 0.0000000000000000e+00 --- No Observations
 CostFunction: Nonlinear J = 8.6898288752914941e+03
 DRPCGMinimizer: reduction in residual norm = 3.0819439431017400e-04
-CostFunction::addIncrement: Analysis: 
+CostFunction::addIncrement: Analysis:
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 22 | cube sphere face size: C24
 eastward_wind                                | Min:-1.0474627193113268e+02 Max:+1.4033070420579193e+02 RMS:+2.1348291392249624e+01
@@ -29,8 +29,8 @@ vfrac                                        | Min:+0.0000000000000000e+00 Max:+
 stc                                          | Min:+2.2344193560957359e+02 Max:+3.0816743824519182e+02 RMS:+2.8896462580706935e+02
 soilMoistureVolumetric                       | Min:+2.2235492720152690e-02 Max:+1.0000000000000004e+00 RMS:+8.5100979930101572e-01
 totalSnowDepth                               | Min:+0.0000000000000000e+00 Max:+1.2495610737326883e+03 RMS:+1.6109876215130143e+02
-surface_eastward_wind                        | Min:-1.5439447482564152e+01 Max:+1.7720841484763216e+01 RMS:+5.0996670981342174e+00
-surface_northward_wind                       | Min:-1.3789731713770939e+01 Max:+1.4086980696486156e+01 RMS:+4.0591533502251629e+00
+eastward_wind_at_surface                     | Min:-1.5439447482564152e+01 Max:+1.7720841484763216e+01 RMS:+5.0996670981342174e+00
+northward_wind_at_surface                    | Min:-1.3789731713770939e+01 Max:+1.4086980696486156e+01 RMS:+4.0591533502251629e+00
 f10m                                         | Min:+9.4244403554383871e-01 Max:+1.0651198572365614e+00 RMS:+9.9587624693062893e-01
 ----------------------------------------------------------------------------------------------------
 
@@ -49,7 +49,7 @@ CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 562.906307362677, nobs = 855, Jo/n = 0.6
 CostJo   : Nonlinear Jo(SfcObs) = 0 --- No Observations
 CostFunction: Nonlinear J = 6910.375612621292
 DRPCGMinimizer: reduction in residual norm = 0.01521485723668672
-CostFunction::addIncrement: Analysis: 
+CostFunction::addIncrement: Analysis:
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 22 | cube sphere face size: C24
 eastward_wind                                | Min:-1.0474657248421634e+02 Max:+1.4033065056182025e+02 RMS:+2.1348538274299599e+01
@@ -71,8 +71,8 @@ vfrac                                        | Min:+0.0000000000000000e+00 Max:+
 stc                                          | Min:+2.2344193560957359e+02 Max:+3.0816743824519182e+02 RMS:+2.8896462580706935e+02
 soilMoistureVolumetric                       | Min:+2.2235492720152690e-02 Max:+1.0000000000000004e+00 RMS:+8.5100979930101572e-01
 totalSnowDepth                               | Min:+0.0000000000000000e+00 Max:+1.2495610737326883e+03 RMS:+1.6109876215130143e+02
-surface_eastward_wind                        | Min:-1.5439447482564152e+01 Max:+1.7720841484763216e+01 RMS:+5.0996670981342174e+00
-surface_northward_wind                       | Min:-1.3789731713770939e+01 Max:+1.4086980696486156e+01 RMS:+4.0591533502251629e+00
+eastward_wind_at_surface                     | Min:-1.5439447482564152e+01 Max:+1.7720841484763216e+01 RMS:+5.0996670981342174e+00
+northward_wind_at_surface                    | Min:-1.3789731713770939e+01 Max:+1.4086980696486156e+01 RMS:+4.0591533502251629e+00
 f10m                                         | Min:+9.4244403554383871e-01 Max:+1.0651198572365614e+00 RMS:+9.9587624693062893e-01
 ----------------------------------------------------------------------------------------------------
 
