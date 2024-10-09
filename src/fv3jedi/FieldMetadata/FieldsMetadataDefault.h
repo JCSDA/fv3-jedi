@@ -184,7 +184,7 @@ namespace fv3jedi {
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
 
-    md.longName = "potential_temperature";
+    md.longName = "air_potential_temperature";
     md.shortName = "pt";
     md.units = "K";
     md.kind = "double";

@@ -19,7 +19,7 @@ variable change:
   input variables: &inputvars [ps, t, q]
   output variables: [delp, pe, lnpe, pkz, p, pt, tv]
   #vader custom cookbook:
-  #  potential_temperature: [AirPotentialTemperature_A]
+  #  air_potential_temperature: [AirPotentialTemperature_A]
   #  virtual_temperature: [AirVirtualTemperature_A]
 states:
 - input:

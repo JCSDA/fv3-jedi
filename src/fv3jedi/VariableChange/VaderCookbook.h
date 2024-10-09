@@ -20,7 +20,7 @@ namespace fv3jedi {
   static std::map<std::string, std::vector<std::string>> vaderFV3CustomCookbook() {
     return {
       // pt: from t and pkz, from t and ps
-      {"potential_temperature",        {"AirPotentialTemperature_B", "AirPotentialTemperature_A"}},
+      {"air_potential_temperature",    {"AirPotentialTemperature_B", "AirPotentialTemperature_A"}},
       // P: from delp, from ps (and ak/bk)
       {"air_pressure_levels",          {"AirPressureAtInterface_B", "AirPressureAtInterface_A"}},
       // p: from pe
