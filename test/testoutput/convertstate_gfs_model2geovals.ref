@@ -24,9 +24,9 @@ northward_wind_at_surface | Min:-1.4623627030973990e+01 Max:+1.8213843978241414e
 f10m | Min:+9.4200706791884525e-01 Max:+1.0783731020020086e+00 RMS:+9.9586000625264048e-01
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaModel2GeoVaLs variable change
-Variable change from: 21 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, specific_humidity, cloud_liquid_ice, cloud_liquid_water, ozone_mass_mixing_ratio, sfc_geopotential_height_times_grav, slmsk, sheleg, sea_surface_temperature, vtype, stype, vfrac, stc, soilMoistureVolumetric, totalSnowDepth, eastward_wind_at_surface, northward_wind_at_surface, f10m
-Variable change to: 32 variables: rh, ps, tv, mole_fraction_of_ozone_in_air, geopotential_height, height_above_mean_sea_level_at_surface, mole_fraction_of_carbon_dioxide_in_air, humidity_mixing_ratio, mass_content_of_cloud_liquid_water_in_atmosphere_layer, mass_content_of_cloud_ice_in_atmosphere_layer, effective_radius_of_cloud_liquid_water_particle, effective_radius_of_cloud_ice_particle, water_area_fraction, land_area_fraction, ice_area_fraction, surface_snow_area_fraction, surface_temperature_where_sea, surface_temperature_where_land, surface_temperature_where_ice, surface_temperature_where_snow, surface_snow_thickness, vegetation_area_fraction, wind_speed_at_surface, wind_from_direction_at_surface, leaf_area_index, volume_fraction_of_condensed_water_in_soil, soil_temperature, land_type_index_NPOESS, vegetation_type_index, soil_type, vort, tropopause_pressure
-State after variable transform:
+Variable change from: 21 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, specific_humidity, cloud_liquid_ice, cloud_liquid_water, ozone_mass_mixing_ratio, geopotential_height_times_gravity_at_surface, slmsk, sheleg, sea_surface_temperature, vtype, stype, vfrac, stc, soilMoistureVolumetric, totalSnowDepth, surface_eastward_wind, surface_northward_wind, f10m
+Variable change to: 32 variables: rh, ps, tv, mole_fraction_of_ozone_in_air, geopotential_height, height_above_mean_sea_level_at_surface, mole_fraction_of_carbon_dioxide_in_air, humidity_mixing_ratio, mass_content_of_cloud_liquid_water_in_atmosphere_layer, mass_content_of_cloud_ice_in_atmosphere_layer, effective_radius_of_cloud_liquid_water_particle, effective_radius_of_cloud_ice_particle, water_area_fraction, land_area_fraction, ice_area_fraction, surface_snow_area_fraction, skin_temperature_at_surface_where_sea, skin_temperature_at_surface_where_land, skin_temperature_at_surface_where_ice, skin_temperature_at_surface_where_snow, surface_snow_thickness, vegetation_area_fraction, wind_speed_at_surface, wind_from_direction_at_surface, leaf_area_index, volume_fraction_of_condensed_water_in_soil, soil_temperature, land_type_index_NPOESS, vegetation_type_index, soil_type, vort, tropopause_pressure
+State after variable transform: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 32 | cube sphere face size: C12
 relative_humidity | Min:+9.7386099756970810e-10 Max:+1.0241599791402913e+00 RMS:+4.7443026652312664e-01
@@ -45,10 +45,10 @@ water_area_fraction | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+00 RM
 land_area_fraction | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+00 RMS:+4.3700368673756312e-01
 ice_area_fraction | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+00 RMS:+8.3333333333333329e-02
 surface_snow_area_fraction | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+00 RMS:+3.7267799624996495e-01
-surface_temperature_where_sea | Min:+2.7000000000000000e+02 Max:+3.2545676286191065e+02 RMS:+2.8856616717757311e+02
-surface_temperature_where_land | Min:+2.2906805071655253e+02 Max:+3.2545676286191065e+02 RMS:+2.8676581491798419e+02
-surface_temperature_where_ice | Min:+2.2906805071655253e+02 Max:+2.8000000000000000e+02 RMS:+2.7615097095726986e+02
-surface_temperature_where_snow | Min:+2.2906805071655253e+02 Max:+2.8000000000000000e+02 RMS:+2.7615097095726986e+02
+skin_temperature_at_surface_where_sea | Min:+2.7000000000000000e+02 Max:+3.2545676286191065e+02 RMS:+2.8856616717757311e+02
+skin_temperature_at_surface_where_land | Min:+2.2906805071655253e+02 Max:+3.2545676286191065e+02 RMS:+2.8676581491798419e+02
+skin_temperature_at_surface_where_ice | Min:+2.2906805071655253e+02 Max:+2.8000000000000000e+02 RMS:+2.7615097095726986e+02
+skin_temperature_at_surface_where_snow | Min:+2.2906805071655253e+02 Max:+2.8000000000000000e+02 RMS:+2.7615097095726986e+02
 surface_snow_thickness | Min:+0.0000000000000000e+00 Max:+2.2560732452076238e+02 RMS:+2.2262253924964504e+01
 vegetation_area_fraction | Min:+0.0000000000000000e+00 Max:+9.3228731613197013e-01 RMS:+1.8920913360061203e-01
 wind_speed_at_surface | Min:+6.9870439183580199e-02 Max:+2.1215103721830587e+01 RMS:+7.5680080630515612e+00
@@ -81,10 +81,10 @@ water_area_fraction | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+00 RM
 land_area_fraction | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+00 RMS:+4.3700368673756312e-01
 ice_area_fraction | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+00 RMS:+8.3333333333333329e-02
 surface_snow_area_fraction | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+00 RMS:+3.7267799624996495e-01
-surface_temperature_where_sea | Min:+2.7000000000000000e+02 Max:+3.2545676286191065e+02 RMS:+2.8856616717757311e+02
-surface_temperature_where_land | Min:+2.2906805071655253e+02 Max:+3.2545676286191065e+02 RMS:+2.8676581491798419e+02
-surface_temperature_where_ice | Min:+2.2906805071655253e+02 Max:+2.8000000000000000e+02 RMS:+2.7615097095726986e+02
-surface_temperature_where_snow | Min:+2.2906805071655253e+02 Max:+2.8000000000000000e+02 RMS:+2.7615097095726986e+02
+skin_temperature_at_surface_where_sea | Min:+2.7000000000000000e+02 Max:+3.2545676286191065e+02 RMS:+2.8856616717757311e+02
+skin_temperature_at_surface_where_land | Min:+2.2906805071655253e+02 Max:+3.2545676286191065e+02 RMS:+2.8676581491798419e+02
+skin_temperature_at_surface_where_ice | Min:+2.2906805071655253e+02 Max:+2.8000000000000000e+02 RMS:+2.7615097095726986e+02
+skin_temperature_at_surface_where_snow | Min:+2.2906805071655253e+02 Max:+2.8000000000000000e+02 RMS:+2.7615097095726986e+02
 surface_snow_thickness | Min:+0.0000000000000000e+00 Max:+2.2560732452076238e+02 RMS:+2.2262253924964504e+01
 vegetation_area_fraction | Min:+0.0000000000000000e+00 Max:+9.3228731613197013e-01 RMS:+1.8920913360061203e-01
 wind_speed_at_surface | Min:+6.9870439183580199e-02 Max:+2.1215103721830587e+01 RMS:+7.5680080630515612e+00

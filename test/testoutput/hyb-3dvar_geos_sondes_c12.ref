@@ -16,7 +16,7 @@ specific_humidity                            | Min:+2.3713878226759109e-09 Max:+
 mole_fraction_of_ozone_in_air                | Min:+1.2327861266595241e-02 Max:+3.8071802241383445e+01 RMS:+3.7079709693076777e+00
 geopotential_height_times_gravity_at_surface | Min:-2.6583901977539068e+02 Max:+4.9849398987285414e+04 RMS:+5.9622785167944930e+03
 sheleg                                       | Min:+0.0000000000000000e+00 Max:+9.9999998699110425e+14 RMS:+8.2710302491634025e+14
-skin_temperature                             | Min:+2.2621925359626383e+02 Max:+3.1452491028059137e+02 RMS:+2.8663167888287455e+02
+skin_temperature_at_surface                  | Min:+2.2621925359626383e+02 Max:+3.1452491028059137e+02 RMS:+2.8663167888287455e+02
 sea_surface_temperature                      | Min:+6.3651229720562696e-04 Max:+9.9997788667678833e-01 RMS:+5.8579902640032300e-01
 fraction_of_ocean                            | Min:-1.1095669395628487e-31 Max:+1.0000000000000002e+00 RMS:+8.3445820459710485e-01
 fraction_of_lake                             | Min:-4.3246313123004463e-32 Max:+8.2433401421318375e-01 RMS:+3.9135745916011447e-02

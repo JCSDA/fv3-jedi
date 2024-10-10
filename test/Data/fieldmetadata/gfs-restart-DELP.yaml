@@ -15,7 +15,7 @@ field metadata:
 - long name: stc
   io file: surface
 
-- long name: skin_temperature
+- long name: skin_temperature_at_surface
   io name: tsea
   io file: surface
 

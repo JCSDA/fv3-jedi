@@ -250,10 +250,10 @@ real(kind=kind_real), allocatable :: land_area_fraction                        (
 real(kind=kind_real), allocatable :: ice_area_fraction                         (:,:,:)
 real(kind=kind_real), allocatable :: surface_snow_area_fraction                (:,:,:)
 real(kind=kind_real), allocatable :: leaf_area_index                           (:,:,:)
-real(kind=kind_real), allocatable :: surface_temperature_where_sea             (:,:,:)
-real(kind=kind_real), allocatable :: surface_temperature_where_land            (:,:,:)
-real(kind=kind_real), allocatable :: surface_temperature_where_ice             (:,:,:)
-real(kind=kind_real), allocatable :: surface_temperature_where_snow            (:,:,:)
+real(kind=kind_real), allocatable :: skin_temperature_at_surface_where_sea     (:,:,:)
+real(kind=kind_real), allocatable :: skin_temperature_at_surface_where_land    (:,:,:)
+real(kind=kind_real), allocatable :: skin_temperature_at_surface_where_ice     (:,:,:)
+real(kind=kind_real), allocatable :: skin_temperature_at_surface_where_snow    (:,:,:)
 real(kind=kind_real), allocatable :: volume_fraction_of_condensed_water_in_soil(:,:,:)
 real(kind=kind_real), allocatable :: vegetation_area_fraction                  (:,:,:)
 real(kind=kind_real), allocatable :: soil_temperature                          (:,:,:)
@@ -261,7 +261,7 @@ real(kind=kind_real), allocatable :: surface_snow_thickness                    (
 real(kind=kind_real), allocatable :: wind_speed_at_surface                     (:,:,:)
 real(kind=kind_real), allocatable :: wind_from_direction_at_surface            (:,:,:)
 real(kind=kind_real), allocatable :: sea_surface_salinity                      (:,:,:)
-real(kind=kind_real), allocatable :: skin_temperature                          (:,:,:)
+real(kind=kind_real), allocatable :: skin_temperature_at_surface               (:,:,:)
 
 ! Snow depth
 logical :: have_snwdph
@@ -773,8 +773,8 @@ endif
 ! ----------------
 have_tskin = .false.
 if ( xm%has_field( 'ts') ) then
-   allocate(skin_temperature(self%isc:self%iec,self%jsc:self%jec,1))
-   call xm%get_field('ts', skin_temperature)
+   allocate(skin_temperature_at_surface(self%isc:self%iec,self%jsc:self%jec,1))
+   call xm%get_field('ts', skin_temperature_at_surface)
    have_tskin = .true.
 endif
 
@@ -803,10 +803,10 @@ if ( have_slmsk .and. have_f10m .and. xm%has_field( 'sheleg') .and. &
   allocate(ice_area_fraction                         (self%isc:self%iec,self%jsc:self%jec,1))
   allocate(surface_snow_area_fraction                (self%isc:self%iec,self%jsc:self%jec,1))
   allocate(leaf_area_index                           (self%isc:self%iec,self%jsc:self%jec,1))
-  allocate(surface_temperature_where_sea             (self%isc:self%iec,self%jsc:self%jec,1))
-  allocate(surface_temperature_where_land            (self%isc:self%iec,self%jsc:self%jec,1))
-  allocate(surface_temperature_where_ice             (self%isc:self%iec,self%jsc:self%jec,1))
-  allocate(surface_temperature_where_snow            (self%isc:self%iec,self%jsc:self%jec,1))
+  allocate(skin_temperature_at_surface_where_sea     (self%isc:self%iec,self%jsc:self%jec,1))
+  allocate(skin_temperature_at_surface_where_land    (self%isc:self%iec,self%jsc:self%jec,1))
+  allocate(skin_temperature_at_surface_where_ice     (self%isc:self%iec,self%jsc:self%jec,1))
+  allocate(skin_temperature_at_surface_where_snow    (self%isc:self%iec,self%jsc:self%jec,1))
   allocate(volume_fraction_of_condensed_water_in_soil(self%isc:self%iec,self%jsc:self%jec,1))
   allocate(vegetation_area_fraction                  (self%isc:self%iec,self%jsc:self%jec,1))
   allocate(soil_temperature                          (self%isc:self%iec,self%jsc:self%jec,1))
@@ -840,14 +840,16 @@ if ( have_slmsk .and. have_f10m .and. xm%has_field( 'sheleg') .and. &
   ! mapping from the fv3-jedi land type to the USGS land type must be added to `crtm_surface`. This
   ! would exactly follow the code currently in place for the NPOESS and IGBP classifications.
   call crtm_surface( geom, fractional_day_of_year, &
-                     slmsk, sheleg, skin_temperature, vtype, stype, vfrac, soilt, soilm, u_srf, v_srf, &
-                     f10m, sss, land_type_index_npoess, land_type_index_igbp, &
-                     vegetation_type_index, soil_type, &
-                     water_area_fraction, land_area_fraction, ice_area_fraction, &
-                     surface_snow_area_fraction, leaf_area_index, surface_temperature_where_sea, &
-                     surface_temperature_where_land, surface_temperature_where_ice, &
-                     surface_temperature_where_snow, volume_fraction_of_condensed_water_in_soil, &
-                     vegetation_area_fraction, soil_temperature, surface_snow_thickness, &
+                     slmsk, sheleg, skin_temperature_at_surface, vtype, stype, vfrac, soilt, &
+                     soilm, u_srf, v_srf, f10m, sss, land_type_index_npoess, land_type_index_igbp, &
+                     vegetation_type_index, soil_type, water_area_fraction, land_area_fraction, &
+                     ice_area_fraction, surface_snow_area_fraction, leaf_area_index, &
+                     skin_temperature_at_surface_where_sea, &
+                     skin_temperature_at_surface_where_land, &
+                     skin_temperature_at_surface_where_ice, &
+                     skin_temperature_at_surface_where_snow, &
+                     volume_fraction_of_condensed_water_in_soil, vegetation_area_fraction, &
+                     soil_temperature, surface_snow_thickness, &
                      wind_speed_at_surface, wind_from_direction_at_surface, sea_surface_salinity)
 
   have_crtm_surface = .true.
@@ -1064,35 +1066,35 @@ do f = 1, size(fields_to_do)
     if (.not. have_crtm_surface) call field_fail(fields_to_do(f))
     field_ptr = surface_snow_area_fraction
 
-  case ("surface_temperature_where_sea")
-
-    if (.not. have_crtm_surface) call field_fail(fields_to_do(f))
-    field_ptr = surface_temperature_where_sea
-
   case ("sea_surface_salinity")
 
     if (.not. have_sss) call field_fail(fields_to_do(f))
     field_ptr = sea_surface_salinity
 
-  case ("skin_temperature")
+  case ("skin_temperature_at_surface")
 
     if (.not. have_tskin) call field_fail(fields_to_do(f))
-    field_ptr = skin_temperature
+    field_ptr = skin_temperature_at_surface
 
-  case ("surface_temperature_where_land")
-
-    if (.not. have_crtm_surface) call field_fail(fields_to_do(f))
-    field_ptr = surface_temperature_where_land
-
-  case ("surface_temperature_where_ice")
+  case ("skin_temperature_at_surface_where_sea")
 
     if (.not. have_crtm_surface) call field_fail(fields_to_do(f))
-    field_ptr = surface_temperature_where_ice
+    field_ptr = skin_temperature_at_surface_where_sea
 
-  case ("surface_temperature_where_snow")
+  case ("skin_temperature_at_surface_where_land")
 
     if (.not. have_crtm_surface) call field_fail(fields_to_do(f))
-    field_ptr = surface_temperature_where_snow
+    field_ptr = skin_temperature_at_surface_where_land
+
+  case ("skin_temperature_at_surface_where_ice")
+
+    if (.not. have_crtm_surface) call field_fail(fields_to_do(f))
+    field_ptr = skin_temperature_at_surface_where_ice
+
+  case ("skin_temperature_at_surface_where_snow")
+
+    if (.not. have_crtm_surface) call field_fail(fields_to_do(f))
+    field_ptr = skin_temperature_at_surface_where_snow
 
   case ("surface_snow_thickness")
 
@@ -1193,7 +1195,7 @@ do f = 1, size(fields_to_do)
   case ("average_surface_temperature_within_field_of_view")
 
     if (.not. have_crtm_surface) call field_fail(fields_to_do(f))
-    field_ptr = surface_temperature_where_sea
+    field_ptr = skin_temperature_at_surface_where_sea
 
   case default
 
@@ -1284,10 +1286,10 @@ if (allocated(land_area_fraction)) deallocate(land_area_fraction)
 if (allocated(ice_area_fraction)) deallocate(ice_area_fraction)
 if (allocated(surface_snow_area_fraction)) deallocate(surface_snow_area_fraction)
 if (allocated(leaf_area_index)) deallocate(leaf_area_index)
-if (allocated(surface_temperature_where_sea)) deallocate(surface_temperature_where_sea)
-if (allocated(surface_temperature_where_land)) deallocate(surface_temperature_where_land)
-if (allocated(surface_temperature_where_ice)) deallocate(surface_temperature_where_ice)
-if (allocated(surface_temperature_where_snow)) deallocate(surface_temperature_where_snow)
+if (allocated(skin_temperature_at_surface_where_sea)) deallocate(skin_temperature_at_surface_where_sea)
+if (allocated(skin_temperature_at_surface_where_land)) deallocate(skin_temperature_at_surface_where_land)
+if (allocated(skin_temperature_at_surface_where_ice)) deallocate(skin_temperature_at_surface_where_ice)
+if (allocated(skin_temperature_at_surface_where_snow)) deallocate(skin_temperature_at_surface_where_snow)
 if (allocated(volume_fraction_of_condensed_water_in_soil)) &
                                               deallocate(volume_fraction_of_condensed_water_in_soil)
 if (allocated(vegetation_area_fraction)) deallocate(vegetation_area_fraction)
@@ -1296,7 +1298,7 @@ if (allocated(surface_snow_thickness)) deallocate(surface_snow_thickness)
 if (allocated(wind_speed_at_surface)) deallocate(wind_speed_at_surface)
 if (allocated(wind_from_direction_at_surface)) deallocate(wind_from_direction_at_surface)
 if (allocated(sea_surface_salinity)) deallocate(sea_surface_salinity)
-if (allocated(skin_temperature)) deallocate(skin_temperature)
+if (allocated(skin_temperature_at_surface)) deallocate(skin_temperature_at_surface)
 if (allocated(snwdph)) deallocate(snwdph)
 if (allocated(snwdph_meters)) deallocate(snwdph_meters)
 if (allocated(vort)) deallocate(vort)

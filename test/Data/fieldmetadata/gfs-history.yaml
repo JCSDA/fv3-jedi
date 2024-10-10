@@ -68,5 +68,5 @@ field metadata:
 - long name: soilt
   io name: dummy_io_name
 
-- long name: skin_temperature
+- long name: skin_temperature_at_surface
   io name: tsea

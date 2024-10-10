@@ -668,7 +668,7 @@ cost function:
         channels: 1-14
       obs operator:
         name: ObsAtmSfcInterp
-        geovals: [surface_temperature_where_sea,water_area_fraction,wind_speed_at_surface]
+        geovals: [skin_temperature_at_surface_where_sea,water_area_fraction,wind_speed_at_surface]
       obs operator:
         name: CRTM
         Absorbers: [H2O,O3]
@@ -696,7 +696,7 @@ cost function:
             name: GeoVaLs/water_area_fraction
           minvalue: 1
         - variable:
-            name: GeoVaLs/surface_temperature_where_sea
+            name: GeoVaLs/skin_temperature_at_surface_where_sea
           minvalue: 275
         - variable:
             name: GeoVaLs/wind_speed_at_surface
@@ -853,7 +853,7 @@ cost function:
         channels: 5,6,7,10,12,13
       obs operator:
         name: ObsAtmSfcInterp
-        geovals: [surface_temperature_where_sea,water_area_fraction]
+        geovals: [skin_temperature_at_surface_where_sea,water_area_fraction]
       obs operator:
         name: CRTM
         Absorbers: [H2O,O3]
@@ -899,7 +899,7 @@ cost function:
             name: GeoVaLs/water_area_fraction
           minvalue: 1
 #2        - variable:
-#2            name: GeoVaLs/surface_temperature_where_sea
+#2            name: GeoVaLs/skin_temperature_at_surface_where_sea
 #2          minvalue: 275
       - filter: BlackList
         filter variables:

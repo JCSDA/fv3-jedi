@@ -554,7 +554,7 @@ namespace fv3jedi {
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
 
-    md.longName = "skin_temperature";
+    md.longName = "skin_temperature_at_surface";
     md.shortName = "ts";
     md.units = "K";
     md.kind = "double";
@@ -934,7 +934,7 @@ namespace fv3jedi {
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
 
-    md.longName = "surface_temperature";
+    md.longName = "air_temperature_at_2m";
     md.shortName = "t2m";
     md.units = "K";
     md.kind = "double";
@@ -1194,8 +1194,8 @@ namespace fv3jedi {
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
 
-    md.longName = "surface_temperature_where_sea";
-    md.shortName = "surface_temperature_where_sea";
+    md.longName = "skin_temperature_at_surface_where_sea";
+    md.shortName = "skin_temperature_at_surface_where_sea";
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
@@ -1204,8 +1204,8 @@ namespace fv3jedi {
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
 
-    md.longName = "surface_temperature_where_land";
-    md.shortName = "surface_temperature_where_land";
+    md.longName = "skin_temperature_at_surface_where_land";
+    md.shortName = "skin_temperature_at_surface_where_land";
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
@@ -1214,8 +1214,8 @@ namespace fv3jedi {
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
 
-    md.longName = "surface_temperature_where_ice";
-    md.shortName = "surface_temperature_where_ice";
+    md.longName = "skin_temperature_at_surface_where_ice";
+    md.shortName = "skin_temperature_at_surface_where_ice";
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
@@ -1224,8 +1224,8 @@ namespace fv3jedi {
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
 
-    md.longName = "surface_temperature_where_snow";
-    md.shortName = "surface_temperature_where_snow";
+    md.longName = "skin_temperature_at_surface_where_snow";
+    md.shortName = "skin_temperature_at_surface_where_snow";
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";

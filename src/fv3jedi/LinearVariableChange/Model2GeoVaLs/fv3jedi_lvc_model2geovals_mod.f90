@@ -158,7 +158,7 @@ if (have_slmsk) then
   ! Potential for missing values in snow water equivalent (if missing set to 0.0)
   local_swe = self%sheleg  ! SWE is named "sheleg" in backgrounds
   where (abs(local_swe) > 10.0e10_kind_real) local_swe = 0.0_kind_real
-                         
+
   ! Note: The GFS slmsk has values {0,1,2} denoting {sea,land,ice}.
   !       Locally within this function, we also use an additional value (3) to denote snow.
   self%slmsk = nint(self%slmsk)
@@ -427,8 +427,8 @@ endif
 ! Skin temperature
 ! ----------------
 have_tskin = .false.
-if (dxm%has_field( 'skin_temperature')) then
-  call dxm%get_field('skin_temperature', tskin)
+if (dxm%has_field( 'skin_temperature_at_surface')) then
+  call dxm%get_field('skin_temperature_at_surface', tskin)
   have_tskin = .true.
 endif
 
@@ -458,7 +458,7 @@ do f = 1, size(fields_to_do)
     if (.not. have_ps) call field_fail(fields_to_do(f))
     field_ptr = ps
 
-  case ("skin_temperature")
+  case ("skin_temperature_at_surface")
 
     if (.not. have_tskin) call field_fail(fields_to_do(f))
     field_ptr = tskin
@@ -491,10 +491,10 @@ do f = 1, size(fields_to_do)
     if (have_qg) field_ptr = cgwpath
 
   ! Simulated but not assimilated
-  case ("surface_temperature_where_sea")
-  case ("surface_temperature_where_land")
-  case ("surface_temperature_where_ice")
-  case ("surface_temperature_where_snow")
+  case ("skin_temperature_at_surface_where_sea")
+  case ("skin_temperature_at_surface_where_land")
+  case ("skin_temperature_at_surface_where_ice")
+  case ("skin_temperature_at_surface_where_snow")
   case ("pe")
   case ("p")
 
@@ -561,7 +561,7 @@ real(kind=kind_real), pointer     :: qptr (:,:,:)         !Specific humidity
 !Cloud liquid water mixing ratio
 logical :: have_ql,have_qi,have_qr,have_qs,have_qg
 real(kind=kind_real), pointer     :: wpath (:,:,:)        !Water path
-  
+
 real(kind=kind_real), allocatable :: dql (:,:,:)          !Cloud liq water mixing ratio ad
 real(kind=kind_real), allocatable :: dqi (:,:,:)          !Cloud ice water mixing ratio ad
 real(kind=kind_real), allocatable :: dqr (:,:,:)          !Rain water mixing ratio ad
@@ -755,28 +755,28 @@ have_tsea  = .false.
 have_tice  = .false.
 have_tsnow = .false.
 have_tskin = .false.
-if (dxm%has_field('skin_temperature',tskin_index)) then
+if (dxm%has_field('skin_temperature_at_surface',tskin_index)) then
   have_tskin = .true.
 else if (dxm%has_field('tsea',tskin_index)) then
   have_tskin = .true.
 else if (dxm%has_field('ts',tskin_index)) then
   have_tskin = .true.
 endif
-if (dxm%has_field('skin_temperature',tskin_index)) then
-   if ( allocated(self%frland).and.dxg%has_field('surface_temperature_where_land') ) then
-     call dxg%get_field('surface_temperature_where_land',dtland)
+if (dxm%has_field('skin_temperature_at_surface',tskin_index)) then
+   if ( allocated(self%frland).and.dxg%has_field('skin_temperature_at_surface_where_land') ) then
+     call dxg%get_field('skin_temperature_at_surface_where_land',dtland)
      have_tland = .true.
    endif
-   if ( allocated(self%frocean).and.dxg%has_field('surface_temperature_where_sea') ) then
-     call dxg%get_field('surface_temperature_where_sea',dtsea)
+   if ( allocated(self%frocean).and.dxg%has_field('skin_temperature_at_surface_where_sea') ) then
+     call dxg%get_field('skin_temperature_at_surface_where_sea',dtsea)
      have_tsea = .true.
    endif
-   if ( allocated(self%frseaice).and.dxg%has_field('surface_temperature_where_ice') ) then
-     call dxg%get_field('surface_temperature_where_ice',dtice)
+   if ( allocated(self%frseaice).and.dxg%has_field('skin_temperature_at_surface_where_ice') ) then
+     call dxg%get_field('skin_temperature_at_surface_where_ice',dtice)
      have_tice = .true.
    endif
-   if ( allocated(self%frsnow).and.dxg%has_field('surface_temperature_where_snow') ) then
-     call dxg%get_field('surface_temperature_where_snow',dtsnow)
+   if ( allocated(self%frsnow).and.dxg%has_field('skin_temperature_at_surface_where_snow') ) then
+     call dxg%get_field('skin_temperature_at_surface_where_snow',dtsnow)
      have_tsnow = .true.
    endif
 endif
@@ -824,13 +824,13 @@ if (dxg%has_field( "mass_content_of_snow_in_atmosphere_layer", noassim_index)) &
   field_passed(noassim_index) = .true.
 if (dxg%has_field( "mass_content_of_graupel_in_atmosphere_layer", noassim_index)) &
   field_passed(noassim_index) = .true.
-if (dxg%has_field( "surface_temperature_where_sea", noassim_index)) &
+if (dxg%has_field( "skin_temperature_at_surface_where_sea", noassim_index)) &
   field_passed(noassim_index) = .true.
-if (dxg%has_field( "surface_temperature_where_land", noassim_index)) &
+if (dxg%has_field( "skin_temperature_at_surface_where_land", noassim_index)) &
   field_passed(noassim_index) = .true.
-if (dxg%has_field( "surface_temperature_where_ice", noassim_index)) &
+if (dxg%has_field( "skin_temperature_at_surface_where_ice", noassim_index)) &
   field_passed(noassim_index) = .true.
-if (dxg%has_field( "surface_temperature_where_snow", noassim_index)) &
+if (dxg%has_field( "skin_temperature_at_surface_where_snow", noassim_index)) &
   field_passed(noassim_index) = .true.
 if (dxg%has_field( "p", noassim_index)) &
   field_passed(noassim_index) = .true.
@@ -939,7 +939,7 @@ do fm = 1, size(fields_to_do)
       field_ptr = field_ptr + dqg
     endif
 
-  case ("ts","skin_temperature", "tsea")
+  case ("ts","skin_temperature_at_surface", "tsea")
 
     if (have_tsea) then
       field_passed(tskin_index) = .true.

@@ -30,7 +30,7 @@ field metadata:
 # Surface fields
 # --------------
 
-- long name: skin_temperature
+- long name: skin_temperature_at_surface
   io name: ts
 
 - long name: sea_surface_temperature
