@@ -463,7 +463,7 @@ do f = 1, size(fields_to_do)
     if (.not. have_tskin) call field_fail(fields_to_do(f))
     field_ptr = tskin
 
-  case ("humidity_mixing_ratio")
+  case ("water_vapor_mixing_ratio_wrt_dry_air")
 
     if (.not. have_qmr) call field_fail(fields_to_do(f))
     field_ptr = qmr
@@ -666,8 +666,8 @@ endif
 ! Humidity mixing ratio
 ! ---------------------
 have_qmr = .false.
-if (allocated(self%q) .and. dxg%has_field('humidity_mixing_ratio', qmr_index)) then
-  call dxg%get_field('humidity_mixing_ratio', qmr)
+if (allocated(self%q) .and. dxg%has_field('water_vapor_mixing_ratio_wrt_dry_air', qmr_index)) then
+  call dxg%get_field('water_vapor_mixing_ratio_wrt_dry_air', qmr)
   allocate(q_qmr(self%isc:self%iec,self%jsc:self%jec,self%npz))
   q_qmr = 0.0_kind_real
   call crtm_mixratio_ad(geom, self%q, q_qmr, qmr)
@@ -989,7 +989,7 @@ do fg = 1, size(dxg%fields)
 
     select case(trim(dxg%fields(fg)%short_name))
 
-    case ("humidity_mixing_ratio")
+    case ("water_vapor_mixing_ratio_wrt_dry_air")
 
       if (.not. have_qmr) call field_fail(trim(dxg%fields(fg)%short_name))
       field_passed(qmr_index) = .true.

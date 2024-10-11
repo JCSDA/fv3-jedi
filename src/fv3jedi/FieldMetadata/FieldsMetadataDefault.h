@@ -1004,8 +1004,8 @@ namespace fv3jedi {
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
 
-    md.longName = "humidity_mixing_ratio";
-    md.shortName = "humidity_mixing_ratio";
+    md.longName = "water_vapor_mixing_ratio_wrt_dry_air";
+    md.shortName = "water_vapor_mixing_ratio_wrt_dry_air";
     md.units = "1";
     md.kind = "double";
     md.tracer = "false";

@@ -75,7 +75,7 @@ enddo
 ! Convert specific humidity
 ! -------------------------
 c3 = 1.0_kind_real / (1.0_kind_real - q_pos)
-qmr = 1000.0_kind_real * q_pos * c3
+qmr = q_pos * c3
 
 end subroutine crtm_mixratio
 
@@ -129,7 +129,7 @@ enddo
 ! -------------------------
 c3 = 1.0_kind_real / (1.0_kind_real - q_pos)
 c3_tl = -((-q_tl_pos)/(1.0_kind_real-q_pos)**2)
-qmr_tl = 1000.0_kind_real*(q_tl_pos*c3+q_pos*c3_tl)
+qmr_tl = (q_tl_pos*c3+q_pos*c3_tl)
 
 end subroutine crtm_mixratio_tl
 
@@ -180,8 +180,8 @@ enddo
 ! Convert specific humidity
 ! -------------------------
 c3 = 1.0_kind_real/(1.0_kind_real-q_pos)
-c3_ad = 1000.0_kind_real*q_pos*qmr_ad
-q_ad_pos = c3_ad/(1.0_kind_real-q_pos)**2 + 1000.0_kind_real*c3*qmr_ad
+c3_ad = q_pos*qmr_ad
+q_ad_pos = c3_ad/(1.0_kind_real-q_pos)**2 + c3*qmr_ad
 qmr_ad = 0.0_kind_real
 
 

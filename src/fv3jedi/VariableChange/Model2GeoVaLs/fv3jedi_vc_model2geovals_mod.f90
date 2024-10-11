@@ -991,7 +991,7 @@ do f = 1, size(fields_to_do)
 
     field_ptr = 30.0_kind_real
 
-  case ("humidity_mixing_ratio")
+  case ("water_vapor_mixing_ratio_wrt_dry_air")
 
     if (.not. have_qmr) call field_fail(fields_to_do(f))
     field_ptr = qmr

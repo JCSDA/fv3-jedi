@@ -42,7 +42,7 @@ const oops::Variables ModelData::defaultVariables() {
          "skin_temperature_at_surface_where_ice", "skin_temperature_at_surface_where_snow",
          "skin_temperature_at_surface_where_sea", "vegetation_area_fraction", "leaf_area_index",
          "volume_fraction_of_condensed_water_in_soil", "soil_temperature", "surface_snow_thickness",
-         "vegetation_type_index", "soil_type", "humidity_mixing_ratio",
+         "vegetation_type_index", "soil_type", "water_vapor_mixing_ratio_wrt_dry_air",
          "mole_fraction_of_ozone_in_air", "mole_fraction_of_carbon_dioxide_in_air",
          "mass_content_of_cloud_liquid_water_in_atmosphere_layer",
          "effective_radius_of_cloud_liquid_water_particle",
