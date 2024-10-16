@@ -39,7 +39,7 @@ background error:
     state variables to inverse: &bvars [eastward_wind,northward_wind,air_temperature,air_pressure_at_surface,
                                         mole_fraction_of_ozone_in_air,
                                         geopotential_height_times_gravity_at_surface,
-                                        specific_humidity]
+                                        water_vapor_mixing_ratio_wrt_moist_air]
   linear variable change:
     linear variable change name: Control2Analysis
     input variables: *bvars

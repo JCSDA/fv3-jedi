@@ -1,4 +1,4 @@
-analysis variables: [eastward_wind,northward_wind,air_temperature,air_pressure_thickness,specific_humidity,cloud_liquid_ice,cloud_liquid_water,mole_fraction_of_ozone_in_air]
+analysis variables: [eastward_wind,northward_wind,air_temperature,air_pressure_thickness,water_vapor_mixing_ratio_wrt_moist_air,cloud_liquid_ice,cloud_liquid_water,mole_fraction_of_ozone_in_air]
 background error:
   covariance model: SABER
   saber central block:

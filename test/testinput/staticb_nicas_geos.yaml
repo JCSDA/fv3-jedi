@@ -12,7 +12,7 @@ background:
   datetime: 2020-12-15T00:00:00Z
   filetype: cube sphere history
   provider: geos
-  state variables: [stream_function,velocity_potential,air_temperature,air_pressure_at_surface,specific_humidity]
+  state variables: [stream_function,velocity_potential,air_temperature,air_pressure_at_surface,water_vapor_mixing_ratio_wrt_moist_air]
   datapath: Data/staticb/unbalanced/mem001
   filename: geos.20201215.000000z.nc4
 background error:
@@ -48,7 +48,7 @@ background error:
           - stream_function
           - velocity_potential
           - air_temperature
-          - specific_humidity
+          - water_vapor_mixing_ratio_wrt_moist_air
 #         - cloud_liquid_water
 #         - ozone_mass_mixing_ratio
         io:

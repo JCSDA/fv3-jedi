@@ -30,5 +30,5 @@ field metadata:
   io name: CO
   units: mol mol-1 dry
 
-- long name: specific_humidity
+- long name: water_vapor_mixing_ratio_wrt_moist_air
   io name: SPHU

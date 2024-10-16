@@ -927,7 +927,7 @@ do f = 1, size(fields_to_do)
     if (.not. have_winds) call field_fail(fields_to_do(f))
     field_ptr = va
 
-  case ("q")
+  case ("q", "water_vapor_mixing_ratio_wrt_moist_air")
 
     if (.not. have_q) call field_fail(fields_to_do(f))
     field_ptr = q

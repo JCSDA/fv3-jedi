@@ -12,7 +12,7 @@ northward_wind                               | Min:-1.0635373174334251e+02 Max:+
 air_temperature                              | Min:+1.6603581544638834e+02 Max:+3.0529019860986017e+02 RMS:+2.4633390192144441e+02
 air_pressure_thickness                       | Min:+1.0000002384185789e+00 Max:+5.1824442316066625e+03 RMS:+1.9541375553934658e+03
 air_pressure_at_surface                      | Min:+5.3774002764640252e+04 Max:+1.0482524556142620e+05 RMS:+9.8975200593975271e+04
-specific_humidity                            | Min:+2.3713878226759109e-09 Max:+1.9582455642704624e-02 RMS:+3.9589180394194344e-03
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+2.3713878226759109e-09 Max:+1.9582455642704624e-02 RMS:+3.9589180394194344e-03
 mole_fraction_of_ozone_in_air                | Min:+1.2327861266595241e-02 Max:+3.8071802241383445e+01 RMS:+3.7079709693076777e+00
 geopotential_height_times_gravity_at_surface | Min:-2.6583901977539068e+02 Max:+4.9849398987285414e+04 RMS:+5.9622785167944930e+03
 sheleg                                       | Min:+0.0000000000000000e+00 Max:+9.9999998699110425e+14 RMS:+8.2710302491634025e+14

@@ -26,7 +26,7 @@ State print | number of fields = 15 | cube sphere face size: C12
 air_pressure_at_surface                      | Min:+5.4110054586243634e+04 Max:+1.0323574482732743e+05 RMS:+9.8906531811113891e+04
 air_temperature                              | Min:+1.5717807064557815e+02 Max:+3.1615410514037188e+02 RMS:+2.4978709449213949e+02
 air_pressure_thickness                       | Min:+6.0599999999999998e-01 Max:+1.7595519498606154e+03 RMS:+9.5687363043046355e+02
-specific_humidity                            | Min:+9.9949434189236376e-10 Max:+1.9098648714730326e-02 RMS:+4.8180016284812251e-03
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+9.9949434189236376e-10 Max:+1.9098648714730326e-02 RMS:+4.8180016284812251e-03
 cloud_liquid_water                           | Min:+0.0000000000000000e+00 Max:+9.7314243315979468e-04 RMS:+3.1455008297435313e-05
 ozone_mass_mixing_ratio                      | Min:+2.2358646874288747e-09 Max:+1.7862976040118451e-05 RMS:+4.3866206381846432e-06
 cloud_liquid_ice                             | Min:+0.0000000000000000e+00 Max:+1.2278687758889202e-04 RMS:+1.5633899948982948e-06
@@ -45,7 +45,7 @@ State print | number of fields = 15 | cube sphere face size: C12
 air_pressure_at_surface                      | Min:+5.4110054586243634e+04 Max:+1.0323574482732743e+05 RMS:+9.8906531811113891e+04
 air_temperature                              | Min:+1.5717807064557815e+02 Max:+3.1615410514037188e+02 RMS:+2.4978709449213949e+02
 air_pressure_thickness                       | Min:+6.0599999999999998e-01 Max:+1.7595519498606154e+03 RMS:+9.5687363043046355e+02
-specific_humidity                            | Min:+9.9949434189236376e-10 Max:+1.9098648714730326e-02 RMS:+4.8180016284812251e-03
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+9.9949434189236376e-10 Max:+1.9098648714730326e-02 RMS:+4.8180016284812251e-03
 cloud_liquid_water                           | Min:+0.0000000000000000e+00 Max:+9.7314243315979468e-04 RMS:+3.1455008297435313e-05
 ozone_mass_mixing_ratio                      | Min:+2.2358646874288747e-09 Max:+1.7862976040118451e-05 RMS:+4.3866206381846432e-06
 cloud_liquid_ice                             | Min:+0.0000000000000000e+00 Max:+1.2278687758889202e-04 RMS:+1.5633899948982948e-06

@@ -11,7 +11,7 @@ geometry:
 background:
   datetime: 2020-12-15T00:00:00Z
   filetype: fms restart
-  state variables: [stream_function,velocity_potential,air_temperature,air_pressure_at_surface,specific_humidity,cloud_liquid_water,ozone_mass_mixing_ratio]
+  state variables: [stream_function,velocity_potential,air_temperature,air_pressure_at_surface,water_vapor_mixing_ratio_wrt_moist_air,cloud_liquid_water,ozone_mass_mixing_ratio]
   psinfile: true
   datapath: Data/staticb/balanced/mem001/
   filename_core: 20201215.000000.fv_core.res.nc
@@ -55,7 +55,7 @@ background error:
           - stream_function
           - velocity_potential
           - air_temperature
-          - specific_humidity
+          - water_vapor_mixing_ratio_wrt_moist_air
           - cloud_liquid_water
           - ozone_mass_mixing_ratio
         io:
@@ -161,7 +161,7 @@ background error:
         - variables:
           - air_temperature
           - air_pressure_at_surface
-          - specific_humidity
+          - water_vapor_mixing_ratio_wrt_moist_air
           - cloud_liquid_water
           - ozone_mass_mixing_ratio
           value: 300.0e3
@@ -171,7 +171,7 @@ background error:
           - stream_function
           - velocity_potential
           - air_temperature
-          - specific_humidity
+          - water_vapor_mixing_ratio_wrt_moist_air
           - cloud_liquid_water
           - ozone_mass_mixing_ratio
         io:

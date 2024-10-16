@@ -5,10 +5,10 @@ eastward_wind                                | Min:-9.8597324022851808e+01 Max:+
 northward_wind                               | Min:-1.0517062884293416e+02 Max:+1.0389812030693963e+02 RMS:+1.1229176500519168e+01
 air_temperature                              | Min:+1.6665008266483198e+02 Max:+3.0508967377540989e+02 RMS:+2.4632589293231132e+02
 air_pressure_thickness                       | Min:+1.0000002384185789e+00 Max:+5.1818633379403364e+03 RMS:+1.9533446827357877e+03
-specific_humidity                            | Min:+6.9532122494530259e-07 Max:+1.9434925841431652e-02 RMS:+4.0145809095462363e-03
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+6.9532122494530259e-07 Max:+1.9434925841431652e-02 RMS:+4.0145809095462363e-03
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaC2A variable change
-Variable change from: 5 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, specific_humidity
+Variable change from: 5 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, water_vapor_mixing_ratio_wrt_moist_air
 Variable change to: 5 variables: psi, chi, t, ps, sphum
 State after variable transform: 
 ----------------------------------------------------------------------------------------------------
@@ -17,7 +17,7 @@ stream_function                              | Min:-2.8824392877278483e+08 Max:+
 velocity_potential                           | Min:-8.7635705335771158e+07 Max:+9.2892022873890311e+07 RMS:+1.2768899719282798e+07
 air_temperature                              | Min:+1.6665008266483198e+02 Max:+3.0508967377540989e+02 RMS:+2.4632589293231132e+02
 air_pressure_at_surface                      | Min:+5.3096641316187357e+04 Max:+1.0481458552576853e+05 RMS:+9.8939000035538236e+04
-specific_humidity                            | Min:+6.9532122494530259e-07 Max:+1.9434925841431652e-02 RMS:+4.0145809095462363e-03
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+6.9532122494530259e-07 Max:+1.9434925841431652e-02 RMS:+4.0145809095462363e-03
 ----------------------------------------------------------------------------------------------------
 Output state: 
 ----------------------------------------------------------------------------------------------------
@@ -26,7 +26,7 @@ stream_function                              | Min:-2.8824392877278483e+08 Max:+
 velocity_potential                           | Min:-8.7635705335771158e+07 Max:+9.2892022873890311e+07 RMS:+1.2768899719282798e+07
 air_temperature                              | Min:+1.6665008266483198e+02 Max:+3.0508967377540989e+02 RMS:+2.4632589293231132e+02
 air_pressure_at_surface                      | Min:+5.3096641316187357e+04 Max:+1.0481458552576853e+05 RMS:+9.8939000035538236e+04
-specific_humidity                            | Min:+6.9532122494530259e-07 Max:+1.9434925841431652e-02 RMS:+4.0145809095462363e-03
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+6.9532122494530259e-07 Max:+1.9434925841431652e-02 RMS:+4.0145809095462363e-03
 ----------------------------------------------------------------------------------------------------
 Input state: 
 ----------------------------------------------------------------------------------------------------
@@ -35,10 +35,10 @@ eastward_wind                                | Min:-1.0148260390031614e+02 Max:+
 northward_wind                               | Min:-1.0143803390455176e+02 Max:+1.0480497383427954e+02 RMS:+1.1199049490226940e+01
 air_temperature                              | Min:+1.6474941854329072e+02 Max:+3.0460294730657597e+02 RMS:+2.4633469859789670e+02
 air_pressure_thickness                       | Min:+1.0000002384185789e+00 Max:+5.1808579232957654e+03 RMS:+1.9533597114277211e+03
-specific_humidity                            | Min:+6.9302004428845140e-07 Max:+2.0471101852678576e-02 RMS:+4.0041513852650855e-03
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+6.9302004428845140e-07 Max:+2.0471101852678576e-02 RMS:+4.0041513852650855e-03
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaC2A variable change
-Variable change from: 5 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, specific_humidity
+Variable change from: 5 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, water_vapor_mixing_ratio_wrt_moist_air
 Variable change to: 5 variables: psi, chi, t, ps, sphum
 State after variable transform: 
 ----------------------------------------------------------------------------------------------------
@@ -47,7 +47,7 @@ stream_function                              | Min:-2.8873943513399106e+08 Max:+
 velocity_potential                           | Min:-8.8277256322195008e+07 Max:+9.4996461523802504e+07 RMS:+1.2834298989142705e+07
 air_temperature                              | Min:+1.6474941854329072e+02 Max:+3.0460294730657597e+02 RMS:+2.4633469859789670e+02
 air_pressure_at_surface                      | Min:+5.3126066916304706e+04 Max:+1.0479441377233852e+05 RMS:+9.8939658589166691e+04
-specific_humidity                            | Min:+6.9302004428845140e-07 Max:+2.0471101852678576e-02 RMS:+4.0041513852650855e-03
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+6.9302004428845140e-07 Max:+2.0471101852678576e-02 RMS:+4.0041513852650855e-03
 ----------------------------------------------------------------------------------------------------
 Output state: 
 ----------------------------------------------------------------------------------------------------
@@ -56,7 +56,7 @@ stream_function                              | Min:-2.8873943513399106e+08 Max:+
 velocity_potential                           | Min:-8.8277256322195008e+07 Max:+9.4996461523802504e+07 RMS:+1.2834298989142705e+07
 air_temperature                              | Min:+1.6474941854329072e+02 Max:+3.0460294730657597e+02 RMS:+2.4633469859789670e+02
 air_pressure_at_surface                      | Min:+5.3126066916304706e+04 Max:+1.0479441377233852e+05 RMS:+9.8939658589166691e+04
-specific_humidity                            | Min:+6.9302004428845140e-07 Max:+2.0471101852678576e-02 RMS:+4.0041513852650855e-03
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+6.9302004428845140e-07 Max:+2.0471101852678576e-02 RMS:+4.0041513852650855e-03
 ----------------------------------------------------------------------------------------------------
 Input state: 
 ----------------------------------------------------------------------------------------------------
@@ -65,10 +65,10 @@ eastward_wind                                | Min:-1.0068520038806697e+02 Max:+
 northward_wind                               | Min:-1.0461789828716024e+02 Max:+1.0502515530979252e+02 RMS:+1.1210780962653011e+01
 air_temperature                              | Min:+1.6723089048264222e+02 Max:+3.0489860196641393e+02 RMS:+2.4631996564604393e+02
 air_pressure_thickness                       | Min:+1.0000002384185789e+00 Max:+5.1849999541989391e+03 RMS:+1.9533322468596855e+03
-specific_humidity                            | Min:+6.9336864122453887e-07 Max:+1.9544047496713922e-02 RMS:+4.0011612984284690e-03
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+6.9336864122453887e-07 Max:+1.9544047496713922e-02 RMS:+4.0011612984284690e-03
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaC2A variable change
-Variable change from: 5 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, specific_humidity
+Variable change from: 5 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, water_vapor_mixing_ratio_wrt_moist_air
 Variable change to: 5 variables: psi, chi, t, ps, sphum
 State after variable transform: 
 ----------------------------------------------------------------------------------------------------
@@ -77,7 +77,7 @@ stream_function                              | Min:-2.8870670848236638e+08 Max:+
 velocity_potential                           | Min:-8.6374442525464475e+07 Max:+9.3914515697441876e+07 RMS:+1.2792410150166158e+07
 air_temperature                              | Min:+1.6723089048264222e+02 Max:+3.0489860196641393e+02 RMS:+2.4631996564604393e+02
 air_pressure_at_surface                      | Min:+5.3055428169355750e+04 Max:+1.0487749392603703e+05 RMS:+9.8938345457998337e+04
-specific_humidity                            | Min:+6.9336864122453887e-07 Max:+1.9544047496713922e-02 RMS:+4.0011612984284690e-03
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+6.9336864122453887e-07 Max:+1.9544047496713922e-02 RMS:+4.0011612984284690e-03
 ----------------------------------------------------------------------------------------------------
 Output state: 
 ----------------------------------------------------------------------------------------------------
@@ -86,7 +86,7 @@ stream_function                              | Min:-2.8870670848236638e+08 Max:+
 velocity_potential                           | Min:-8.6374442525464475e+07 Max:+9.3914515697441876e+07 RMS:+1.2792410150166158e+07
 air_temperature                              | Min:+1.6723089048264222e+02 Max:+3.0489860196641393e+02 RMS:+2.4631996564604393e+02
 air_pressure_at_surface                      | Min:+5.3055428169355750e+04 Max:+1.0487749392603703e+05 RMS:+9.8938345457998337e+04
-specific_humidity                            | Min:+6.9336864122453887e-07 Max:+1.9544047496713922e-02 RMS:+4.0011612984284690e-03
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+6.9336864122453887e-07 Max:+1.9544047496713922e-02 RMS:+4.0011612984284690e-03
 ----------------------------------------------------------------------------------------------------
 Input state: 
 ----------------------------------------------------------------------------------------------------
@@ -95,10 +95,10 @@ eastward_wind                                | Min:-1.0064047846106436e+02 Max:+
 northward_wind                               | Min:-1.0388418610974811e+02 Max:+1.0427383034343647e+02 RMS:+1.1222653058973258e+01
 air_temperature                              | Min:+1.6709509436452842e+02 Max:+3.0505398077754103e+02 RMS:+2.4631776672633620e+02
 air_pressure_thickness                       | Min:+1.0000002384185789e+00 Max:+5.1844552343569922e+03 RMS:+1.9533287953953793e+03
-specific_humidity                            | Min:+6.9105743856472578e-07 Max:+1.9193390805241319e-02 RMS:+4.0034562456559460e-03
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+6.9105743856472578e-07 Max:+1.9193390805241319e-02 RMS:+4.0034562456559460e-03
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaC2A variable change
-Variable change from: 5 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, specific_humidity
+Variable change from: 5 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, water_vapor_mixing_ratio_wrt_moist_air
 Variable change to: 5 variables: psi, chi, t, ps, sphum
 State after variable transform: 
 ----------------------------------------------------------------------------------------------------
@@ -107,7 +107,7 @@ stream_function                              | Min:-2.8929978594657230e+08 Max:+
 velocity_potential                           | Min:-8.7551849366255775e+07 Max:+9.5963410582519576e+07 RMS:+1.2795055166730115e+07
 air_temperature                              | Min:+1.6709509436452842e+02 Max:+3.0505398077754103e+02 RMS:+2.4631776672633620e+02
 air_pressure_at_surface                      | Min:+5.3155264149761468e+04 Max:+1.0486654458175343e+05 RMS:+9.8938220065810921e+04
-specific_humidity                            | Min:+6.9105743856472578e-07 Max:+1.9193390805241319e-02 RMS:+4.0034562456559460e-03
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+6.9105743856472578e-07 Max:+1.9193390805241319e-02 RMS:+4.0034562456559460e-03
 ----------------------------------------------------------------------------------------------------
 Output state: 
 ----------------------------------------------------------------------------------------------------
@@ -116,7 +116,7 @@ stream_function                              | Min:-2.8929978594657230e+08 Max:+
 velocity_potential                           | Min:-8.7551849366255775e+07 Max:+9.5963410582519576e+07 RMS:+1.2795055166730115e+07
 air_temperature                              | Min:+1.6709509436452842e+02 Max:+3.0505398077754103e+02 RMS:+2.4631776672633620e+02
 air_pressure_at_surface                      | Min:+5.3155264149761468e+04 Max:+1.0486654458175343e+05 RMS:+9.8938220065810921e+04
-specific_humidity                            | Min:+6.9105743856472578e-07 Max:+1.9193390805241319e-02 RMS:+4.0034562456559460e-03
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+6.9105743856472578e-07 Max:+1.9193390805241319e-02 RMS:+4.0034562456559460e-03
 ----------------------------------------------------------------------------------------------------
 Input state: 
 ----------------------------------------------------------------------------------------------------
@@ -125,10 +125,10 @@ eastward_wind                                | Min:-1.0417128651801350e+02 Max:+
 northward_wind                               | Min:-1.0244819207070907e+02 Max:+1.0531593624052886e+02 RMS:+1.1200758740253123e+01
 air_temperature                              | Min:+1.6848276719998643e+02 Max:+3.0498817685283797e+02 RMS:+2.4632206710423139e+02
 air_pressure_thickness                       | Min:+1.0000002384185789e+00 Max:+5.1901146761756199e+03 RMS:+1.9533881084581039e+03
-specific_humidity                            | Min:+6.9590033234937707e-07 Max:+1.9465509755885551e-02 RMS:+4.0035939134527359e-03
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+6.9590033234937707e-07 Max:+1.9465509755885551e-02 RMS:+4.0035939134527359e-03
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaC2A variable change
-Variable change from: 5 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, specific_humidity
+Variable change from: 5 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, water_vapor_mixing_ratio_wrt_moist_air
 Variable change to: 5 variables: psi, chi, t, ps, sphum
 State after variable transform: 
 ----------------------------------------------------------------------------------------------------
@@ -137,7 +137,7 @@ stream_function                              | Min:-2.8938697027264243e+08 Max:+
 velocity_potential                           | Min:-8.8003544892442629e+07 Max:+9.3531355544083267e+07 RMS:+1.2806807299987499e+07
 air_temperature                              | Min:+1.6848276719998643e+02 Max:+3.0498817685283797e+02 RMS:+2.4632206710423139e+02
 air_pressure_at_surface                      | Min:+5.3102308456074235e+04 Max:+1.0498001763925294e+05 RMS:+9.8940994896582954e+04
-specific_humidity                            | Min:+6.9590033234937707e-07 Max:+1.9465509755885551e-02 RMS:+4.0035939134527359e-03
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+6.9590033234937707e-07 Max:+1.9465509755885551e-02 RMS:+4.0035939134527359e-03
 ----------------------------------------------------------------------------------------------------
 Output state: 
 ----------------------------------------------------------------------------------------------------
@@ -146,7 +146,7 @@ stream_function                              | Min:-2.8938697027264243e+08 Max:+
 velocity_potential                           | Min:-8.8003544892442629e+07 Max:+9.3531355544083267e+07 RMS:+1.2806807299987499e+07
 air_temperature                              | Min:+1.6848276719998643e+02 Max:+3.0498817685283797e+02 RMS:+2.4632206710423139e+02
 air_pressure_at_surface                      | Min:+5.3102308456074235e+04 Max:+1.0498001763925294e+05 RMS:+9.8940994896582954e+04
-specific_humidity                            | Min:+6.9590033234937707e-07 Max:+1.9465509755885551e-02 RMS:+4.0035939134527359e-03
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+6.9590033234937707e-07 Max:+1.9465509755885551e-02 RMS:+4.0035939134527359e-03
 ----------------------------------------------------------------------------------------------------
 Input state: 
 ----------------------------------------------------------------------------------------------------
@@ -155,10 +155,10 @@ eastward_wind                                | Min:-1.0114646977963544e+02 Max:+
 northward_wind                               | Min:-1.0444971374579146e+02 Max:+1.0437239068613502e+02 RMS:+1.1237705515143583e+01
 air_temperature                              | Min:+1.6614495851678097e+02 Max:+3.0527656774005493e+02 RMS:+2.4632792676233692e+02
 air_pressure_thickness                       | Min:+1.0000002384185789e+00 Max:+5.1778533109132786e+03 RMS:+1.9533554521714734e+03
-specific_humidity                            | Min:+7.0064713997468877e-07 Max:+1.9444134475664888e-02 RMS:+3.9970898434751852e-03
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+7.0064713997468877e-07 Max:+1.9444134475664888e-02 RMS:+3.9970898434751852e-03
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaC2A variable change
-Variable change from: 5 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, specific_humidity
+Variable change from: 5 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, water_vapor_mixing_ratio_wrt_moist_air
 Variable change to: 5 variables: psi, chi, t, ps, sphum
 State after variable transform: 
 ----------------------------------------------------------------------------------------------------
@@ -167,7 +167,7 @@ stream_function                              | Min:-2.8766511070834941e+08 Max:+
 velocity_potential                           | Min:-8.7336760312052369e+07 Max:+9.2928957513880119e+07 RMS:+1.2759776619996963e+07
 air_temperature                              | Min:+1.6614495851678097e+02 Max:+3.0527656774005493e+02 RMS:+2.4632792676233692e+02
 air_pressure_at_surface                      | Min:+5.3015466909691255e+04 Max:+1.0473417674536060e+05 RMS:+9.8939497082299349e+04
-specific_humidity                            | Min:+7.0064713997468877e-07 Max:+1.9444134475664888e-02 RMS:+3.9970898434751852e-03
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+7.0064713997468877e-07 Max:+1.9444134475664888e-02 RMS:+3.9970898434751852e-03
 ----------------------------------------------------------------------------------------------------
 Output state: 
 ----------------------------------------------------------------------------------------------------
@@ -176,7 +176,7 @@ stream_function                              | Min:-2.8766511070834941e+08 Max:+
 velocity_potential                           | Min:-8.7336760312052369e+07 Max:+9.2928957513880119e+07 RMS:+1.2759776619996963e+07
 air_temperature                              | Min:+1.6614495851678097e+02 Max:+3.0527656774005493e+02 RMS:+2.4632792676233692e+02
 air_pressure_at_surface                      | Min:+5.3015466909691255e+04 Max:+1.0473417674536060e+05 RMS:+9.8939497082299349e+04
-specific_humidity                            | Min:+7.0064713997468877e-07 Max:+1.9444134475664888e-02 RMS:+3.9970898434751852e-03
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+7.0064713997468877e-07 Max:+1.9444134475664888e-02 RMS:+3.9970898434751852e-03
 ----------------------------------------------------------------------------------------------------
 Input state: 
 ----------------------------------------------------------------------------------------------------
@@ -185,10 +185,10 @@ eastward_wind                                | Min:-1.0054863948073967e+02 Max:+
 northward_wind                               | Min:-1.0592856939065686e+02 Max:+1.0549531950107354e+02 RMS:+1.1226031482801551e+01
 air_temperature                              | Min:+1.6678467658672406e+02 Max:+3.0511988458310401e+02 RMS:+2.4633891376540217e+02
 air_pressure_thickness                       | Min:+1.0000002384185789e+00 Max:+5.1879987206047263e+03 RMS:+1.9533844758621972e+03
-specific_humidity                            | Min:+6.9999813435053471e-07 Max:+2.0323041277241841e-02 RMS:+4.0146410572313258e-03
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+6.9999813435053471e-07 Max:+2.0323041277241841e-02 RMS:+4.0146410572313258e-03
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaC2A variable change
-Variable change from: 5 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, specific_humidity
+Variable change from: 5 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, water_vapor_mixing_ratio_wrt_moist_air
 Variable change to: 5 variables: psi, chi, t, ps, sphum
 State after variable transform: 
 ----------------------------------------------------------------------------------------------------
@@ -197,7 +197,7 @@ stream_function                              | Min:-2.8839640031654513e+08 Max:+
 velocity_potential                           | Min:-8.9052622330931485e+07 Max:+9.4348337295765996e+07 RMS:+1.2772013687787099e+07
 air_temperature                              | Min:+1.6678467658672406e+02 Max:+3.0511988458310401e+02 RMS:+2.4633891376540217e+02
 air_pressure_at_surface                      | Min:+5.3145855395877159e+04 Max:+1.0493756006279204e+05 RMS:+9.8940756341266635e+04
-specific_humidity                            | Min:+6.9999813435053471e-07 Max:+2.0323041277241841e-02 RMS:+4.0146410572313258e-03
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+6.9999813435053471e-07 Max:+2.0323041277241841e-02 RMS:+4.0146410572313258e-03
 ----------------------------------------------------------------------------------------------------
 Output state: 
 ----------------------------------------------------------------------------------------------------
@@ -206,7 +206,7 @@ stream_function                              | Min:-2.8839640031654513e+08 Max:+
 velocity_potential                           | Min:-8.9052622330931485e+07 Max:+9.4348337295765996e+07 RMS:+1.2772013687787099e+07
 air_temperature                              | Min:+1.6678467658672406e+02 Max:+3.0511988458310401e+02 RMS:+2.4633891376540217e+02
 air_pressure_at_surface                      | Min:+5.3145855395877159e+04 Max:+1.0493756006279204e+05 RMS:+9.8940756341266635e+04
-specific_humidity                            | Min:+6.9999813435053471e-07 Max:+2.0323041277241841e-02 RMS:+4.0146410572313258e-03
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+6.9999813435053471e-07 Max:+2.0323041277241841e-02 RMS:+4.0146410572313258e-03
 ----------------------------------------------------------------------------------------------------
 Input state: 
 ----------------------------------------------------------------------------------------------------
@@ -215,10 +215,10 @@ eastward_wind                                | Min:-9.7897518922268404e+01 Max:+
 northward_wind                               | Min:-1.0468564193806968e+02 Max:+1.0551050597263961e+02 RMS:+1.1248355675843619e+01
 air_temperature                              | Min:+1.6630101329353235e+02 Max:+3.0488845992855067e+02 RMS:+2.4632854380948282e+02
 air_pressure_thickness                       | Min:+1.0000002384185789e+00 Max:+5.1815450694625397e+03 RMS:+1.9533395146668477e+03
-specific_humidity                            | Min:+7.0133377713574982e-07 Max:+1.9944727383007461e-02 RMS:+4.0143915672077313e-03
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+7.0133377713574982e-07 Max:+1.9944727383007461e-02 RMS:+4.0143915672077313e-03
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaC2A variable change
-Variable change from: 5 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, specific_humidity
+Variable change from: 5 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, water_vapor_mixing_ratio_wrt_moist_air
 Variable change to: 5 variables: psi, chi, t, ps, sphum
 State after variable transform: 
 ----------------------------------------------------------------------------------------------------
@@ -227,7 +227,7 @@ stream_function                              | Min:-2.8858481239739543e+08 Max:+
 velocity_potential                           | Min:-8.7167886325058237e+07 Max:+9.5083808001935825e+07 RMS:+1.2803917417507937e+07
 air_temperature                              | Min:+1.6630101329353235e+02 Max:+3.0488845992855067e+02 RMS:+2.4632854380948282e+02
 air_pressure_at_surface                      | Min:+5.3120203978456841e+04 Max:+1.0480817997279936e+05 RMS:+9.8938756551964863e+04
-specific_humidity                            | Min:+7.0133377713574982e-07 Max:+1.9944727383007461e-02 RMS:+4.0143915672077313e-03
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+7.0133377713574982e-07 Max:+1.9944727383007461e-02 RMS:+4.0143915672077313e-03
 ----------------------------------------------------------------------------------------------------
 Output state: 
 ----------------------------------------------------------------------------------------------------
@@ -236,7 +236,7 @@ stream_function                              | Min:-2.8858481239739543e+08 Max:+
 velocity_potential                           | Min:-8.7167886325058237e+07 Max:+9.5083808001935825e+07 RMS:+1.2803917417507937e+07
 air_temperature                              | Min:+1.6630101329353235e+02 Max:+3.0488845992855067e+02 RMS:+2.4632854380948282e+02
 air_pressure_at_surface                      | Min:+5.3120203978456841e+04 Max:+1.0480817997279936e+05 RMS:+9.8938756551964863e+04
-specific_humidity                            | Min:+7.0133377713574982e-07 Max:+1.9944727383007461e-02 RMS:+4.0143915672077313e-03
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+7.0133377713574982e-07 Max:+1.9944727383007461e-02 RMS:+4.0143915672077313e-03
 ----------------------------------------------------------------------------------------------------
 Input state: 
 ----------------------------------------------------------------------------------------------------
@@ -245,10 +245,10 @@ eastward_wind                                | Min:-1.0054064591306278e+02 Max:+
 northward_wind                               | Min:-1.0382211064240870e+02 Max:+1.0449410789188084e+02 RMS:+1.1207371793664942e+01
 air_temperature                              | Min:+1.6802397889351221e+02 Max:+3.0531698887379457e+02 RMS:+2.4632176659772932e+02
 air_pressure_thickness                       | Min:+1.0000002384185789e+00 Max:+5.1718227533070894e+03 RMS:+1.9533504750211901e+03
-specific_humidity                            | Min:+6.9595187496764652e-07 Max:+1.9712670896960712e-02 RMS:+4.0044180155117621e-03
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+6.9595187496764652e-07 Max:+1.9712670896960712e-02 RMS:+4.0044180155117621e-03
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaC2A variable change
-Variable change from: 5 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, specific_humidity
+Variable change from: 5 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, water_vapor_mixing_ratio_wrt_moist_air
 Variable change to: 5 variables: psi, chi, t, ps, sphum
 State after variable transform: 
 ----------------------------------------------------------------------------------------------------
@@ -257,7 +257,7 @@ stream_function                              | Min:-2.8870976362848818e+08 Max:+
 velocity_potential                           | Min:-8.7241846305832282e+07 Max:+9.3593441396413982e+07 RMS:+1.2852895998985710e+07
 air_temperature                              | Min:+1.6802397889351221e+02 Max:+3.0531698887379457e+02 RMS:+2.4632176659772932e+02
 air_pressure_at_surface                      | Min:+5.3113862187806670e+04 Max:+1.0461331336666305e+05 RMS:+9.8939186446382198e+04
-specific_humidity                            | Min:+6.9595187496764652e-07 Max:+1.9712670896960712e-02 RMS:+4.0044180155117621e-03
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+6.9595187496764652e-07 Max:+1.9712670896960712e-02 RMS:+4.0044180155117621e-03
 ----------------------------------------------------------------------------------------------------
 Output state: 
 ----------------------------------------------------------------------------------------------------
@@ -266,7 +266,7 @@ stream_function                              | Min:-2.8870976362848818e+08 Max:+
 velocity_potential                           | Min:-8.7241846305832282e+07 Max:+9.3593441396413982e+07 RMS:+1.2852895998985710e+07
 air_temperature                              | Min:+1.6802397889351221e+02 Max:+3.0531698887379457e+02 RMS:+2.4632176659772932e+02
 air_pressure_at_surface                      | Min:+5.3113862187806670e+04 Max:+1.0461331336666305e+05 RMS:+9.8939186446382198e+04
-specific_humidity                            | Min:+6.9595187496764652e-07 Max:+1.9712670896960712e-02 RMS:+4.0044180155117621e-03
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+6.9595187496764652e-07 Max:+1.9712670896960712e-02 RMS:+4.0044180155117621e-03
 ----------------------------------------------------------------------------------------------------
 Input state: 
 ----------------------------------------------------------------------------------------------------
@@ -275,10 +275,10 @@ eastward_wind                                | Min:-1.0375437112961021e+02 Max:+
 northward_wind                               | Min:-1.0420852790736011e+02 Max:+1.0461541687781897e+02 RMS:+1.1222338508889244e+01
 air_temperature                              | Min:+1.6759461819953478e+02 Max:+3.0500279585571877e+02 RMS:+2.4630729612573487e+02
 air_pressure_thickness                       | Min:+1.0000002384185789e+00 Max:+5.1815188574453059e+03 RMS:+1.9533317262119517e+03
-specific_humidity                            | Min:+6.9632717242088803e-07 Max:+1.9054692908187960e-02 RMS:+3.9990134279865698e-03
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+6.9632717242088803e-07 Max:+1.9054692908187960e-02 RMS:+3.9990134279865698e-03
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaC2A variable change
-Variable change from: 5 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, specific_humidity
+Variable change from: 5 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, water_vapor_mixing_ratio_wrt_moist_air
 Variable change to: 5 variables: psi, chi, t, ps, sphum
 State after variable transform: 
 ----------------------------------------------------------------------------------------------------
@@ -287,7 +287,7 @@ stream_function                              | Min:-2.8743597690627968e+08 Max:+
 velocity_potential                           | Min:-8.6897845205245197e+07 Max:+9.4585808728364244e+07 RMS:+1.2837194010078333e+07
 air_temperature                              | Min:+1.6759461819953478e+02 Max:+3.0500279585571877e+02 RMS:+2.4630729612573487e+02
 air_pressure_at_surface                      | Min:+5.3031313569073296e+04 Max:+1.0480768162036035e+05 RMS:+9.8938344071457497e+04
-specific_humidity                            | Min:+6.9632717242088803e-07 Max:+1.9054692908187960e-02 RMS:+3.9990134279865698e-03
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+6.9632717242088803e-07 Max:+1.9054692908187960e-02 RMS:+3.9990134279865698e-03
 ----------------------------------------------------------------------------------------------------
 Output state: 
 ----------------------------------------------------------------------------------------------------
@@ -296,5 +296,5 @@ stream_function                              | Min:-2.8743597690627968e+08 Max:+
 velocity_potential                           | Min:-8.6897845205245197e+07 Max:+9.4585808728364244e+07 RMS:+1.2837194010078333e+07
 air_temperature                              | Min:+1.6759461819953478e+02 Max:+3.0500279585571877e+02 RMS:+2.4630729612573487e+02
 air_pressure_at_surface                      | Min:+5.3031313569073296e+04 Max:+1.0480768162036035e+05 RMS:+9.8938344071457497e+04
-specific_humidity                            | Min:+6.9632717242088803e-07 Max:+1.9054692908187960e-02 RMS:+3.9990134279865698e-03
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+6.9632717242088803e-07 Max:+1.9054692908187960e-02 RMS:+3.9990134279865698e-03
 ----------------------------------------------------------------------------------------------------

@@ -5,7 +5,7 @@ Test     : eastward_wind                                | Min:-1.056136770138239
 Test     : northward_wind                               | Min:-1.0285174056152619e+02 Max:+1.0357467723835748e+02 RMS:+1.0265619471954361e+01
 Test     : air_temperature                              | Min:+1.5902907530992826e+02 Max:+3.0538440587715786e+02 RMS:+2.4962771340711296e+02
 Test     : air_pressure_thickness                       | Min:+6.0599997818554308e-01 Max:+1.7933320246948774e+03 RMS:+9.5773359233800124e+02
-Test     : specific_humidity                            | Min:+9.3955009830399023e-09 Max:+1.8091713502778946e-02 RMS:+4.6854374475331188e-03
+Test     : water_vapor_mixing_ratio_wrt_moist_air       | Min:+9.3955009830399023e-09 Max:+1.8091713502778946e-02 RMS:+4.6854374475331188e-03
 Test     : cloud_liquid_ice                             | Min:-9.5634945493906699e-24 Max:+2.6286063172077380e-04 RMS:+1.1961139917074774e-05
 Test     : cloud_liquid_water                           | Min:-1.6000339482009617e-21 Max:+6.4864746089925271e-04 RMS:+2.7698901648310296e-05
 Test     : ozone_mass_mixing_ratio                      | Min:+1.9272822126798264e-08 Max:+1.8121024348373017e-05 RMS:+4.3556546684338714e-06
@@ -17,7 +17,7 @@ Test     : eastward_wind                                | Min:+2.240842152121215
 Test     : northward_wind                               | Min:+4.0682018099229252e-03 Max:+1.9246749609285965e+02 RMS:+6.4264263707921652e+00
 Test     : air_temperature                              | Min:+1.3688752489176945e-03 Max:+1.3201389890709073e+01 RMS:+6.9343372600097319e-01
 Test     : air_pressure_thickness                       | Min:+0.0000000000000000e+00 Max:+1.1058911368029879e+02 RMS:+2.0931361910270212e+00
-Test     : specific_humidity                            | Min:+1.3960125955253037e-16 Max:+1.6202212084427594e-05 RMS:+4.6668394120747960e-07
+Test     : water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.3960125955253037e-16 Max:+1.6202212084427594e-05 RMS:+4.6668394120747960e-07
 Test     : cloud_liquid_ice                             | Min:+0.0000000000000000e+00 Max:+5.8497402806728764e-08 RMS:+9.8123066654799272e-10
 Test     : cloud_liquid_water                           | Min:+0.0000000000000000e+00 Max:+1.4852661707702960e-07 RMS:+4.0079256230963018e-09
 Test     : ozone_mass_mixing_ratio                      | Min:+2.9173836385648982e-22 Max:+8.2132067338335139e-12 RMS:+4.3805602604467630e-14

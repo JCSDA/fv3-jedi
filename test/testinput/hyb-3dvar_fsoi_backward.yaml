@@ -3,7 +3,7 @@ cost function:
   time window:
     begin: 2020-12-14T21:00:00Z
     length: PT6H
-  analysis variables: &3dvars [eastward_wind,northward_wind,air_temperature,air_pressure_thickness,specific_humidity,cloud_liquid_ice,cloud_liquid_water,ozone_mass_mixing_ratio]
+  analysis variables: &3dvars [eastward_wind,northward_wind,air_temperature,air_pressure_thickness,water_vapor_mixing_ratio_wrt_moist_air,cloud_liquid_ice,cloud_liquid_water,ozone_mass_mixing_ratio]
   geometry:
     fms initialization:
       namelist filename: Data/fv3files/fmsmpp.nml
@@ -45,7 +45,7 @@ cost function:
                 in file: fixed_2500km_0.3
               - in code: air_pressure_thickness
                 in file: fixed_2500km_0.3
-              - in code: specific_humidity
+              - in code: water_vapor_mixing_ratio_wrt_moist_air
                 in file: fixed_2500km_0.3
               - in code: cloud_liquid_ice
                 in file: fixed_2500km_0.3

@@ -6,7 +6,7 @@ field metadata:
 - long name: northward_wind
   io name: vgrd
 
-- long name: specific_humidity
+- long name: water_vapor_mixing_ratio_wrt_moist_air
   io name: spfh
 
 - long name: air_temperature

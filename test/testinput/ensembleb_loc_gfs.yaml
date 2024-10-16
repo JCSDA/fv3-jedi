@@ -11,7 +11,7 @@ geometry:
 background:
   datetime: 2020-12-15T00:00:00Z
   filetype: fms restart
-  state variables: [eastward_wind,northward_wind,air_temperature,air_pressure_at_surface,specific_humidity,cloud_liquid_water,cloud_liquid_ice,ozone_mass_mixing_ratio]
+  state variables: [eastward_wind,northward_wind,air_temperature,air_pressure_at_surface,water_vapor_mixing_ratio_wrt_moist_air,cloud_liquid_water,cloud_liquid_ice,ozone_mass_mixing_ratio]
   datapath: Data/inputs/gfs_c12/mem001/
   filename_core: 20201215.000000.fv_core.res.nc
   filename_trcr: 20201215.000000.fv_tracer.res.nc

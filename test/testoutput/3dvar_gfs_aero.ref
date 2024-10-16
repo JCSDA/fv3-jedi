@@ -8,7 +8,7 @@ CostFunction::addIncrement: Analysis:
 State print | number of fields = 17 | cube sphere face size: C12
 air_temperature                              | Min:+1.8453675842285156e+02 Max:+3.0804455566406250e+02 RMS:+2.4812424956598667e+02
 air_pressure_thickness                       | Min:+4.4247001647949219e+01 Max:+3.7248110351562500e+03 RMS:+1.9378278073297968e+03
-specific_humidity                            | Min:+1.1740806371562940e-07 Max:+1.8318558111786842e-02 RMS:+4.6247080292861854e-03
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.1740806371562940e-07 Max:+1.8318558111786842e-02 RMS:+4.6247080292861854e-03
 mass_fraction_of_sulfate_in_air              | Min:+2.8160722649772651e-05 Max:+8.0373144149780273e+00 RMS:+3.3334689081192542e-01
 mass_fraction_of_hydrophobic_black_carbon_in | Min:+7.2959114305604089e-09 Max:+3.9626901149749756e+00 RMS:+6.1038084144856029e-02
 mass_fraction_of_hydrophilic_black_carbon_in | Min:+8.2721252070427909e-09 Max:+6.2735801935195923e-01 RMS:+2.7593844743010736e-02
@@ -40,7 +40,7 @@ CostFunction::addIncrement: Analysis:
 State print | number of fields = 17 | cube sphere face size: C12
 air_temperature                              | Min:+1.8453675842285156e+02 Max:+3.0804455566406250e+02 RMS:+2.4812424956598667e+02
 air_pressure_thickness                       | Min:+4.4247001647949219e+01 Max:+3.7248110351562500e+03 RMS:+1.9378278073297968e+03
-specific_humidity                            | Min:+1.1740806371562940e-07 Max:+1.8318558111786842e-02 RMS:+4.6247080292861854e-03
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.1740806371562940e-07 Max:+1.8318558111786842e-02 RMS:+4.6247080292861854e-03
 mass_fraction_of_sulfate_in_air              | Min:+2.8160722649772651e-05 Max:+8.0373144149780273e+00 RMS:+3.3334714031491669e-01
 mass_fraction_of_hydrophobic_black_carbon_in | Min:+7.2959114305604089e-09 Max:+3.9626901149749756e+00 RMS:+6.1038084232005504e-02
 mass_fraction_of_hydrophilic_black_carbon_in | Min:+8.2721252070427909e-09 Max:+6.2735801935195923e-01 RMS:+2.7594139908766736e-02

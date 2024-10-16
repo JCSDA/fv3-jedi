@@ -58,7 +58,7 @@ cost function:
                                               mole_fraction_of_ozone_in_air,
                                               skin_temperature_at_surface,
                                               geopotential_height_times_gravity_at_surface,
-                                              specific_humidity]
+                                              water_vapor_mixing_ratio_wrt_moist_air]
         linear variable change:
           linear variable change name: Control2Analysis
           input variables: *bvars

@@ -12,7 +12,7 @@ northward_wind                               | Min:-1.0131617417454790e+02 Max:+
 air_temperature                              | Min:+1.6475955771486906e+02 Max:+3.0610207870572003e+02 RMS:+2.4634278701743725e+02
 air_pressure_thickness                       | Min:+1.0000002384185789e+00 Max:+5.1869469826362774e+03 RMS:+1.9541187970414098e+03
 air_pressure_at_surface                      | Min:+5.3775617041757469e+04 Max:+1.0491548394027221e+05 RMS:+9.8974994550881151e+04
-specific_humidity                            | Min:+7.6032568348887588e-08 Max:+1.9126818581745503e-02 RMS:+3.9559919506835630e-03
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+7.6032568348887588e-08 Max:+1.9126818581745503e-02 RMS:+3.9559919506835630e-03
 mole_fraction_of_ozone_in_air                | Min:+1.2994716161816921e-02 Max:+3.6242731318442480e+01 RMS:+3.7263251380585021e+00
 geopotential_height_times_gravity_at_surface | Min:-2.6583901977539068e+02 Max:+4.9849398987285414e+04 RMS:+5.9622785167944930e+03
 sheleg                                       | Min:+0.0000000000000000e+00 Max:+9.9999998699110425e+14 RMS:+8.2710302491634025e+14
@@ -30,7 +30,7 @@ northward_wind                               | Min:-1.0835327712633833e+02 Max:+
 air_temperature                              | Min:+1.6498922199684839e+02 Max:+3.0925885119256355e+02 RMS:+2.4634254540956587e+02
 air_pressure_thickness                       | Min:+1.0000002384185789e+00 Max:+5.1790224046984131e+03 RMS:+1.9540450684869877e+03
 air_pressure_at_surface                      | Min:+5.3840085219334382e+04 Max:+1.0475665747848642e+05 RMS:+9.8971671888827754e+04
-specific_humidity                            | Min:+1.2106697586635207e-07 Max:+1.9739863563736672e-02 RMS:+3.9621566695772735e-03
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.2106697586635207e-07 Max:+1.9739863563736672e-02 RMS:+3.9621566695772735e-03
 mole_fraction_of_ozone_in_air                | Min:+1.1789795489480769e-02 Max:+3.8785588293414150e+01 RMS:+3.7113911584956152e+00
 geopotential_height_times_gravity_at_surface | Min:-2.6583901977539068e+02 Max:+4.9849398987285414e+04 RMS:+5.9622785167944930e+03
 sheleg                                       | Min:+0.0000000000000000e+00 Max:+9.9999998699110425e+14 RMS:+8.2710302491634025e+14

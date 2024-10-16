@@ -1,7 +1,6 @@
 cost function:
   cost type: 3D-Var
-# analysis variables: &avars [eastward_wind,northward_wind,air_temperature,surface_pressure,specific_humidity,cloud_liquid_water,ozone_mass_mixing_ratio,skin_temperature_at_surface]
-  analysis variables: &avars [eastward_wind,northward_wind,air_temperature,air_pressure_thickness,specific_humidity,cloud_liquid_water,ozone_mass_mixing_ratio,skin_temperature_at_surface]
+  analysis variables: &avars [eastward_wind,northward_wind,air_temperature,air_pressure_thickness,water_vapor_mixing_ratio_wrt_moist_air,cloud_liquid_water,ozone_mass_mixing_ratio,skin_temperature_at_surface]
   time window:
     begin: 2020-12-14T21:00:00Z
     length: PT6H

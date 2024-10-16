@@ -1,5 +1,5 @@
 cost function:
-  analysis variables: &anavars [eastward_wind,northward_wind,air_temperature,air_pressure_at_surface,specific_humidity,cloud_liquid_ice,cloud_liquid_water,mole_fraction_of_ozone_in_air]
+  analysis variables: &anavars [eastward_wind,northward_wind,air_temperature,air_pressure_at_surface,water_vapor_mixing_ratio_wrt_moist_air,cloud_liquid_ice,cloud_liquid_water,mole_fraction_of_ozone_in_air]
   background:
     datetime: 2020-12-14T21:00:00Z
     filetype: cube sphere history
@@ -27,7 +27,7 @@ cost function:
                 in file: fixed_2500km_0.3
               - in code: air_temperature
                 in file: fixed_2500km_0.3
-              - in code: specific_humidity
+              - in code: water_vapor_mixing_ratio_wrt_moist_air
                 in file: fixed_2500km_0.3
               - in code: cloud_liquid_ice
                 in file: fixed_2500km_0.3
@@ -46,7 +46,7 @@ cost function:
                 - eastward_wind
                 - northward_wind
                 - air_temperature
-                - specific_humidity
+                - water_vapor_mixing_ratio_wrt_moist_air
                 - cloud_liquid_ice
                 - cloud_liquid_water
                 - mole_fraction_of_ozone_in_air
@@ -72,7 +72,7 @@ cost function:
           localization method: SABER
           saber central block:
             saber block name: BUMP_NICAS
-            active variables: [eastward_wind,northward_wind,air_temperature,air_pressure_at_surface,specific_humidity,cloud_liquid_ice,cloud_liquid_water,mole_fraction_of_ozone_in_air]
+            active variables: [eastward_wind,northward_wind,air_temperature,air_pressure_at_surface,water_vapor_mixing_ratio_wrt_moist_air,cloud_liquid_ice,cloud_liquid_water,mole_fraction_of_ozone_in_air]
             read:
               io:
                 files prefix: Data/bump/fv3jedi_bumpparameters_nicas_geos

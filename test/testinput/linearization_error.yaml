@@ -128,7 +128,7 @@ output on structured grid:
   resolution in degrees: 6.0
   all model levels: true
   bottom model level: false
-  variables to output: [eastward_wind,northward_wind,air_temperature,air_pressure_thickness,specific_humidity] 
+  variables to output: [eastward_wind,northward_wind,air_temperature,air_pressure_thickness,water_vapor_mixing_ratio_wrt_moist_air] 
   datapath: Data
   exp: linearization-error-HTLM
 

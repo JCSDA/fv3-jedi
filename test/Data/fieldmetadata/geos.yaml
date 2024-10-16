@@ -12,7 +12,7 @@ field metadata:
 # Clouds
 # ------
 
-- long name: specific_humidity
+- long name: water_vapor_mixing_ratio_wrt_moist_air
   io name: q
 
 - long name: cloud_liquid_ice

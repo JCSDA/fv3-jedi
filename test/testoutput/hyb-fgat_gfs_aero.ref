@@ -7,7 +7,7 @@ CostFunction::addIncrement: Analysis:
 State print | number of fields = 17 | cube sphere face size: C12
 air_temperature                              | Min:+1.8589183454569675e+02 Max:+3.0601267340335858e+02 RMS:+2.5098911810744383e+02
 air_pressure_thickness                       | Min:+6.0599999747384670e-01 Max:+1.7891272479965564e+03 RMS:+9.5566854497818179e+02
-specific_humidity                            | Min:+4.1298966009749130e-07 Max:+1.8719123712137489e-02 RMS:+4.7594629520518114e-03
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+4.1298966009749130e-07 Max:+1.8719123712137489e-02 RMS:+4.7594629520518114e-03
 mass_fraction_of_sulfate_in_air              | Min:+0.0000000000000000e+00 Max:+2.1794914942506050e+01 RMS:+7.8701265727221503e-01
 mass_fraction_of_hydrophobic_black_carbon_in | Min:+0.0000000000000000e+00 Max:+4.1821904415617972e+00 RMS:+6.7835883442341996e-02
 mass_fraction_of_hydrophilic_black_carbon_in | Min:+0.0000000000000000e+00 Max:+2.0376511509233883e+00 RMS:+9.5817151378209911e-02

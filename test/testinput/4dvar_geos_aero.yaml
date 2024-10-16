@@ -17,7 +17,7 @@ cost function:
                       SS,SS002,SS003,SS004,SS005]
 
   analysis variables: [eastward_wind,northward_wind,
-                       air_temperature,air_pressure_thickness,specific_humidity,cloud_liquid_ice,cloud_liquid_water,
+                       air_temperature,air_pressure_thickness,water_vapor_mixing_ratio_wrt_moist_air,cloud_liquid_ice,cloud_liquid_water,
                        mass_fraction_of_sulfate_in_air,
                        mass_fraction_of_hydrophobic_black_carbon_in_air,
                        mass_fraction_of_hydrophilic_black_carbon_in_air,
