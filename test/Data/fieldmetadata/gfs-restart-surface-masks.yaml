@@ -18,40 +18,40 @@ field metadata:
 
 # interpolation masks of surface fields for CRTM FOV averaging
 - long name: skin_temperature_at_surface_where_sea
-  interpolation source point mask: water_mask
+  mask: water_mask
 
 - long name: skin_temperature_at_surface_where_land
-  interpolation source point mask: land_uncovered_by_snow_mask
+  mask: land_uncovered_by_snow_mask
 
 - long name: skin_temperature_at_surface_where_ice
-  interpolation source point mask: ice_uncovered_by_snow_mask
+  mask: ice_uncovered_by_snow_mask
 
 - long name: skin_temperature_at_surface_where_snow
-  interpolation source point mask: snow_mask
+  mask: snow_mask
 
 - long name: vegetation_type_index
-  interpolation source point mask: land_uncovered_by_snow_mask
+  mask: land_uncovered_by_snow_mask
 
 - long name: soil_type
-  interpolation source point mask: land_uncovered_by_snow_mask
+  mask: land_uncovered_by_snow_mask
 
 - long name: land_type_index_NPOESS
-  interpolation source point mask: land_uncovered_by_snow_mask
+  mask: land_uncovered_by_snow_mask
 
 - long name: leaf_area_index
-  interpolation source point mask: land_uncovered_by_snow_mask
+  mask: land_uncovered_by_snow_mask
 
 - long name: soil_temperature
-  interpolation source point mask: land_uncovered_by_snow_mask
+  mask: land_uncovered_by_snow_mask
 
 - long name: vegetation_area_fraction
-  interpolation source point mask: land_uncovered_by_snow_mask
+  mask: land_uncovered_by_snow_mask
 
 - long name: volume_fraction_of_condensed_water_in_soil
-  interpolation source point mask: land_uncovered_by_snow_mask
+  mask: land_uncovered_by_snow_mask
 
 - long name: surface_snow_thickness
-  interpolation source point mask: snow_mask
+  mask: snow_mask
 
 - long name: skin_temperature_at_surface
   io name: tsea

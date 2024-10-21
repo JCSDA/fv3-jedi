@@ -519,7 +519,7 @@ do jvar = 1, vars%nvars()
 
   ! Set atlas::Field metadata for interp mask IFF the user specifically requested a non-default mask
   if (trim(field%interpolation_source_point_mask) .ne. 'default') then
-    call meta%set('interp_source_point_mask', trim(field%interpolation_source_point_mask))
+    call meta%set('mask', trim(field%interpolation_source_point_mask))
   end if
 
   ! Release pointer
