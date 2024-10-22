@@ -19,10 +19,33 @@ state:
   filename_sfcd: 20210801.180000.sfc_data.nc
   filename_sfcw: 20210801.180000.fv_srf_wnd.res.nc
   filename_cplr: 20210801.180000.coupler.res
-  state variables: [u,v,ua,va,T,delp,sphum,ice_wat,liq_wat,o3mr,phis,
-                    rainwat, snowwat, graupel,
-                    slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
-                    u_srf,v_srf,f10m]
+  state variables:
+  - u
+  - v
+  - ua
+  - va
+  - T
+  - delp
+  - sphum
+  - ice_wat
+  - liq_wat
+  - o3mr
+  - phis
+  - rainwat
+  - snowwat
+  - graupel
+  - slmsk
+  - sheleg
+  - tsea
+  - vtype
+  - stype
+  - vfrac
+  - stc
+  - smc
+  - snwdph
+  - u_srf
+  - v_srf
+  - f10m
 observations:
   get values:
     variable change:
@@ -39,12 +62,21 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/abi_g16_hofx_gfs_2021080118_radii.nc4
-      simulated variables: [brightnessTemperature]
+      simulated variables:
+      - brightnessTemperature
       channels: 8, 9, 10, 11, 13
     obs operator:
       name: CRTM
-      Absorbers: [H2O,O3,CO2]
-      Clouds: [Water, Ice, Rain, Snow, Graupel]
+      Absorbers:
+      - H2O
+      - O3
+      - CO2
+      Clouds:
+      - Water
+      - Ice
+      - Rain
+      - Snow
+      - Graupel
       Cloud_Fraction: 1.0
       obs options:
         Sensor_ID: abi_g16
@@ -59,7 +91,6 @@ observations:
       maxvalue: 340
       action:
         name: reject
-
 test:
   reference filename: testoutput/hofx_nomodel_abi_radii.ref
   test output filename: testoutput/hofx_nomodel_abi_radii.test.out

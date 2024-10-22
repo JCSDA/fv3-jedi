@@ -20,9 +20,28 @@ comparestates test:
   state1:
     datetime: 2020-12-15T00:00:00Z
     filetype: fms restart
-    state variables: [ua,va,t,delp,sphum,ice_wat,liq_wat,o3mr,phis,
-                      slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
-                      u_srf,v_srf,f10m]
+    state variables:
+    - ua
+    - va
+    - t
+    - delp
+    - sphum
+    - ice_wat
+    - liq_wat
+    - o3mr
+    - phis
+    - slmsk
+    - sheleg
+    - tsea
+    - vtype
+    - stype
+    - vfrac
+    - stc
+    - smc
+    - snwdph
+    - u_srf
+    - v_srf
+    - f10m
     datapath: Data/inputs/gfs_c12/bkg/
     filename_core: 20201215.000000.fv_core.res.nc
     filename_trcr: 20201215.000000.fv_tracer.res.nc
@@ -32,9 +51,28 @@ comparestates test:
   state2:
     datetime: 2020-12-15T00:00:00Z
     filetype: fms restart
-    state variables: [ua,va,t,delp,sphum,ice_wat,liq_wat,o3mr,phis,
-                      slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
-                      u_srf,v_srf,f10m]
+    state variables:
+    - ua
+    - va
+    - t
+    - delp
+    - sphum
+    - ice_wat
+    - liq_wat
+    - o3mr
+    - phis
+    - slmsk
+    - sheleg
+    - tsea
+    - vtype
+    - stype
+    - vfrac
+    - stc
+    - smc
+    - snwdph
+    - u_srf
+    - v_srf
+    - f10m
     datapath: Data/
     filename_core: 20201215.000000.history2restart.fv_core.res.nc
     filename_trcr: 20201215.000000.history2restart.fv_tracer.res.nc

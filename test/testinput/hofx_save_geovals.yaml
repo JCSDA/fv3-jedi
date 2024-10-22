@@ -19,10 +19,30 @@ state:
   filename_sfcd: 20201215.000000.sfc_data.nc
   filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
   filename_cplr: 20201215.000000.coupler.res
-  state variables: [u,v,ua,va,T,delp,sphum,ice_wat,liq_wat,o3mr,phis,
-                    slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
-                    u_srf,v_srf,f10m]
-                    # u_srf,v_srf,f10m,sss]
+  state variables:
+  - u
+  - v
+  - ua
+  - va
+  - T
+  - delp
+  - sphum
+  - ice_wat
+  - liq_wat
+  - o3mr
+  - phis
+  - slmsk
+  - sheleg
+  - tsea
+  - vtype
+  - stype
+  - vfrac
+  - stc
+  - smc
+  - snwdph
+  - u_srf
+  - v_srf
+  - f10m
 observations:
   observers:
   - obs space:
@@ -31,20 +51,19 @@ observations:
         engine:
           type: H5File
           obsfile: Data/obs/testinput_tier_1/aircraft_obs_2020121500_m.nc4
-      simulated variables: [windEastward,windNorthward,airTemperature]
+      simulated variables:
+      - windEastward
+      - windNorthward
+      - airTemperature
     obs operator:
       name: VertInterp
       vertical coordinate: air_pressure
       observation vertical coordinate: pressure
       observation vertical coordinate group: MetaData
       interpolation method: log-linear
-
-#   GOMsaver is the filter to extract GeoVaLs needed by the specified obs operator
-#   filename is the output path to the GeoVaLs file
     obs filters:
     - filter: GOMsaver
       filename: Data/hofx/aircraft_geovals_gfs_2020121500_m.nc4
-
 test:
   reference filename: testoutput/hofx_save_geovals.ref
   test output filename: testoutput/hofx_save_geovals.test.out

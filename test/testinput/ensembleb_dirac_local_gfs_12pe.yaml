@@ -3,7 +3,9 @@ geometry:
     namelist filename: Data/fv3files/fmsmpp.nml
     field table filename: Data/fv3files/field_table_gfdl
   akbk: Data/fv3files/akbk127.nc4
-  layout: [1,2]
+  layout:
+  - 1
+  - 2
   npx: 13
   npy: 13
   npz: 127
@@ -11,7 +13,16 @@ geometry:
 background:
   datetime: 2020-12-15T00:00:00Z
   filetype: fms restart
-  state variables: &state_vars [ua,va,t,delp,ps,sphum,ice_wat,liq_wat,o3mr]
+  state variables: &state_vars
+  - ua
+  - va
+  - t
+  - delp
+  - ps
+  - sphum
+  - ice_wat
+  - liq_wat
+  - o3mr
   datapath: Data/inputs/gfs_c12/bkg
   filename_core: 20201215.000000.fv_core.res.nc
   filename_trcr: 20201215.000000.fv_tracer.res.nc
@@ -24,7 +35,16 @@ background error:
     template:
       datetime: 2020-12-15T00:00:00Z
       filetype: fms restart
-      state variables: [eastward_wind,northward_wind,air_temperature,air_pressure_thickness,air_pressure_at_surface,water_vapor_mixing_ratio_wrt_moist_air,cloud_liquid_ice,cloud_liquid_water,ozone_mass_mixing_ratio]
+      state variables:
+      - eastward_wind
+      - northward_wind
+      - air_temperature
+      - air_pressure_thickness
+      - air_pressure_at_surface
+      - water_vapor_mixing_ratio_wrt_moist_air
+      - cloud_liquid_ice
+      - cloud_liquid_water
+      - ozone_mass_mixing_ratio
       datapath: Data/inputs/gfs_c12/mem%mem%/
       filename_core: 20201215.000000.fv_core.res.nc
       filename_trcr: 20201215.000000.fv_tracer.res.nc
@@ -54,12 +74,16 @@ output dirac:
   filename_cplr: dirac_local_%id%_gfs_12pe.coupler.res
 dirac:
   ndir: 1
-  ixdir: [1]
-  iydir: [1]
-  ildir: [50]
-  itdir: [1]
-  ifdir: [air_temperature]
-
+  ixdir:
+  - 1
+  iydir:
+  - 1
+  ildir:
+  - 50
+  itdir:
+  - 1
+  ifdir:
+  - air_temperature
 test:
   reference filename: testoutput/ensembleb_dirac_local_gfs_12pe.ref
   test output filename: testoutput/ensembleb_dirac_local_gfs_12pe.test.out

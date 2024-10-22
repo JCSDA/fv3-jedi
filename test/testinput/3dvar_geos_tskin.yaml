@@ -1,6 +1,12 @@
 cost function:
   cost type: 3D-Var
-  analysis variables: &avars [ps,ts,frocean,frlake,frseaice,frland]
+  analysis variables: &avars
+  - ps
+  - ts
+  - frocean
+  - frlake
+  - frseaice
+  - frland
   time window:
     begin: 2020-12-14T21:00:00Z
     length: PT6H
@@ -18,10 +24,17 @@ cost function:
     filetype: cube sphere history
     provider: geos
     datapath: Data/inputs/geos_c12
-#   filenames: [geos.bkg.20201215_000000z.nc4, geos.bkg.crtmsrf.20201215_000000z.nc4]
     filename: geos.bkg.20201215_000000z.nc4
-    state variables: [ps,delp,phis,sheleg,ts,frocean,frland,frseaice,frlake]
-#---------------------------------
+    state variables:
+    - ps
+    - delp
+    - phis
+    - sheleg
+    - ts
+    - frocean
+    - frland
+    - frseaice
+    - frlake
   background error:
     covariance model: SABER
     saber central block:
@@ -32,7 +45,6 @@ cost function:
         gsi berror namelist file: Data/gsibec//geos_gsi_global_tskin_72x46x72.nml
         processor layout x direction: 3
         processor layout y direction: 2
-#       debugging bypass gsi: true
         debugging mode: false
     saber outer blocks:
     - saber block name: gsi interpolation to model grid
@@ -42,13 +54,17 @@ cost function:
       processor layout x direction: 3
       processor layout y direction: 2
       debugging mode: false
-      state variables to inverse: &bvars [air_pressure_at_surface,skin_temperature_at_surface,fraction_of_land,
-                                          fraction_of_ocean,fraction_of_lake,fraction_of_ice]
+      state variables to inverse: &bvars
+      - air_pressure_at_surface
+      - skin_temperature_at_surface
+      - fraction_of_land
+      - fraction_of_ocean
+      - fraction_of_lake
+      - fraction_of_ice
     linear variable change:
       linear variable change name: Control2Analysis
       input variables: *bvars
       output variables: *avars
-
   observations:
     observers:
     - obs space:
@@ -61,13 +77,13 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/sst_gmi_hofx_gfs_2020121500_m.nc4
-        simulated variables: [seaSurfaceTemperature]
+        simulated variables:
+        - seaSurfaceTemperature
       obs operator:
         name: Identity
         observation alias file: testinput/obsop_name_map.yaml
       obs error:
         covariance model: diagonal
-
 final:
   diagnostics:
     departures: oman
@@ -92,7 +108,6 @@ variational:
       field metadata override: Data/fieldmetadata/geos.yaml
     diagnostics:
       departures: ombg
-
 test:
   reference filename: testoutput/3dvar_geos_tskin.ref
   float relative tolerance: 1.0e-2

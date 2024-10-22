@@ -15,14 +15,35 @@ output geometry:
   field metadata override: Data/fieldmetadata/gfs-restart.yaml
 variable change:
   variable change name: Model2GeoVaLs
-  input variables: &vars [u,v,ua,va,T,delp,sphum,ice_wat,liq_wat,o3mr,phis,
-                          slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
-                          u_srf,v_srf,f10m]			  
+  input variables: &vars
+  - u
+  - v
+  - ua
+  - va
+  - T
+  - delp
+  - sphum
+  - ice_wat
+  - liq_wat
+  - o3mr
+  - phis
+  - slmsk
+  - sheleg
+  - tsea
+  - vtype
+  - stype
+  - vfrac
+  - stc
+  - smc
+  - snwdph
+  - u_srf
+  - v_srf
+  - f10m
   output variables: *vars
 states:
 - input:
     datetime: 2020-12-15T00:00:00Z
-    state variables: *vars		
+    state variables: *vars
     filetype: fms restart
     datapath: Data/inputs/gfs_c12/bkg/
     filename_core: 20201215.000000.fv_core.res.nc
@@ -31,12 +52,11 @@ states:
     filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
     filename_cplr: 20201215.000000.coupler.res
   output:
-    state variables: *vars	
+    state variables: *vars
     filetype: fms restart
     is restart: false
     datapath: Data/
     filename_nonrestart: fms_nonrestart.%yyyy%mm%dd.%hh%MM%ssz.nc
-
 test:
   reference filename: testoutput/convertstate_gfs_restart2fms_nonrestart.ref
   test output filename: testoutput/convertstate_gfs_restart2fms_nonrestart.test.out

@@ -1,7 +1,6 @@
 time window:
   begin: 2020-12-14T23:00:00Z
   length: PT2H
-
 geometry:
   fms initialization:
     namelist filename: Data/fv3files/fmsmpp.nml
@@ -18,11 +17,12 @@ state:
   filename_sfcw: 20201215.000000.rrfs_C403.fv_srf_wnd.res.tile1.nc
   filename_sfcd: 20201215.000000.rrfs_C403.sfc_data.nc
   filename_cplr: 20201215.000000.rrfs_C403.coupler.res
-  state variables: [u,v,T,delp,sphum]
-# state variables: [u,v,T,delp,sphum,o3mr,ice_wat,liq_wat,
-#                   rainwat,snowwat,graupel,water_nc,ice_nc,rain_nc,liq_aero,ice_aero,
-#                   phis,slmsk,sheleg,tsea,vtype,stype,vfrac,tslb,smois,snwdph,
-#                   u_srf,v_srf,f10m,zorl,t2m]
+  state variables:
+  - u
+  - v
+  - T
+  - delp
+  - sphum
 observations:
   observers:
   - obs space:
@@ -31,18 +31,17 @@ observations:
         engine:
           type: H5File
           obsfile: Data/obs/testinput_tier_1/aircraft_obs_2020121500_m.nc4
-#     obsdataout:
-#       engine:
-#         type: H5File
-#         obsfile: Data/hofx/aircraft_hofx_rrfs_2020121500.nc
-      simulated variables: [windEastward, windNorthward, airTemperature, specificHumidity]
+      simulated variables:
+      - windEastward
+      - windNorthward
+      - airTemperature
+      - specificHumidity
     obs operator:
       name: VertInterp
       vertical coordinate: air_pressure
       observation vertical coordinate: pressure
       observation vertical coordinate group: MetaData
       interpolation method: log-linear
-
 test:
   reference filename: testoutput/hofx_nomodel_lam_rrfs.ref
   float absolute tolerance: 1.0e-8

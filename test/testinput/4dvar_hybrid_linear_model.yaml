@@ -8,7 +8,18 @@ cost function:
     filename_sfcd: 20201214.210000.sfc_data.nc
     filename_sfcw: 20201214.210000.fv_srf_wnd.res.nc
     filename_cplr: 20201214.210000.coupler.res
-    state variables: &modelvars [u,v,ua,va,T,delp,sphum,ice_wat,liq_wat,o3mr,phis]
+    state variables: &modelvars
+    - u
+    - v
+    - ua
+    - va
+    - T
+    - delp
+    - sphum
+    - ice_wat
+    - liq_wat
+    - o3mr
+    - phis
   background error:
     covariance model: SABER
     saber central block:
@@ -25,9 +36,15 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/aircraft_hyb-3dvar-gfs_2020121500_m.nc4
-        simulated variables: [windEastward, windNorthward, airTemperature]
-        observed variables: [windEastward, windNorthward]
-        derived variables: [airTemperature]
+        simulated variables:
+        - windEastward
+        - windNorthward
+        - airTemperature
+        observed variables:
+        - windEastward
+        - windNorthward
+        derived variables:
+        - airTemperature
       obs operator:
         name: VertInterp
         vertical coordinate: air_pressure
@@ -44,7 +61,8 @@ cost function:
           source variable:
             name: ObsValue/renamed_airTemperature
       - filter: Perform Action
-        filter variables: [airTemperature]
+        filter variables:
+        - airTemperature
         action:
           name: assign error
           error function:
@@ -65,7 +83,15 @@ cost function:
         - name: airTemperature
         threshold: 6.0
   cost type: 4D-Var
-  analysis variables: &anavars [eastward_wind,northward_wind,air_temperature,air_pressure_thickness,water_vapor_mixing_ratio_wrt_moist_air,cloud_liquid_ice,cloud_liquid_water,ozone_mass_mixing_ratio]
+  analysis variables: &anavars
+  - eastward_wind
+  - northward_wind
+  - air_temperature
+  - air_pressure_thickness
+  - water_vapor_mixing_ratio_wrt_moist_air
+  - cloud_liquid_ice
+  - cloud_liquid_water
+  - ozone_mass_mixing_ratio
   time window:
     begin: 2020-12-14T21:00:00Z
     length: PT6H
@@ -116,7 +142,15 @@ variational:
           lm_do_dyn: 1
           lm_do_trb: 0
           lm_do_mst: 0
-          tlm variables: [u,v,T,delp,sphum,ice_wat,liq_wat,o3mr]
+          tlm variables:
+          - u
+          - v
+          - T
+          - delp
+          - sphum
+          - ice_wat
+          - liq_wat
+          - o3mr
           trajectory:
             model variables: *modelvars
       update tstep: PT3H
@@ -125,7 +159,9 @@ variational:
         input:
           base filepath: Data/hybrid_linear_model_coeffs
           one file per task: true
-        update variables: [eastward_wind,northward_wind]
+        update variables:
+        - eastward_wind
+        - northward_wind
         influence region size: 3
         time window:
           begin: 2020-12-14T21:00:00Z

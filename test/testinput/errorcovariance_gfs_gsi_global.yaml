@@ -10,7 +10,12 @@ geometry:
   npy: 13
   npz: 127
   field metadata override: Data/fieldmetadata/gfs-restart.yaml
-analysis variables: &anavars [psi,chi,t,ps,sphum]
+analysis variables: &anavars
+- psi
+- chi
+- t
+- ps
+- sphum
 background:
   filetype: fms restart
   datetime: 2020-12-15T00:00:00Z
@@ -43,10 +48,15 @@ background error:
     processor layout y direction: 2
     debugging deep bypass gsi B error: true
     debugging mode: false
-  # Does nothing except rename the variables seen by saber (psi -> stream_function etc).
   linear variable change:
     linear variable change name: Control2Analysis
-    input variables: &bvars [stream_function,velocity_potential,air_temperature,air_pressure_at_surface,
-                             water_vapor_mixing_ratio_wrt_moist_air,cloud_liquid_ice,cloud_liquid_water,
-                             ozone_mass_mixing_ratio]
+    input variables: &bvars
+    - stream_function
+    - velocity_potential
+    - air_temperature
+    - air_pressure_at_surface
+    - water_vapor_mixing_ratio_wrt_moist_air
+    - cloud_liquid_ice
+    - cloud_liquid_water
+    - ozone_mass_mixing_ratio
     output variables: *anavars

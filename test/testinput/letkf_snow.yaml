@@ -12,37 +12,43 @@ geometry:
       datetime: 2023-05-01T12:00:00Z
       filetype: fms restart
       skip coupler file: true
-      state variables: [orog_filt]
+      state variables:
+      - orog_filt
       datapath: Data/inputs/gfs_land_c48/grid/
       filename_orog: C48_oro_data.nc
-    derived fields: [nominal_surface_pressure]
-
+    derived fields:
+    - nominal_surface_pressure
 time window:
   begin: 2023-05-01T00:00:00Z
   length: PT24H
-
 background:
  members:
    - datetime: 2023-05-01T12:00:00Z
      filetype: fms restart
-     state variables: [snodl,vtype,slmsk]
+     state variables:
+     - snodl
+     - vtype
+     - slmsk
      datapath: Data/inputs/gfs_land_c48/mem001/
      filename_sfcd: 20230501.120000.sfc_data.nc
      filename_cplr: 20230501.120000.coupler.res
    - datetime: 2023-05-01T12:00:00Z
      filetype: fms restart
-     state variables: [snodl,vtype,slmsk]
+     state variables:
+     - snodl
+     - vtype
+     - slmsk
      datapath: Data/inputs/gfs_land_c48/mem002/
      filename_sfcd: 20230501.120000.sfc_data.nc
      filename_cplr: 20230501.120000.coupler.res
-
 observations:
   observers:
   - obs space:
       name: Simulate
       distribution:
         name: InefficientDistribution
-      simulated variables: [totalSnowDepth]
+      simulated variables:
+      - totalSnowDepth
       obsdatain:
         engine:
           type: H5File
@@ -59,61 +65,54 @@ observations:
     - localization method: Vertical Brasnett
       vertical lengthscale: 700
     obs filters:
-    - filter: Bounds Check # negative / missing snow
+    - filter: Bounds Check
       filter variables:
       - name: totalSnowDepth
       minvalue: 0.0
       maxvalue: 10000.0
-    - filter: Domain Check # missing station elevation (-999.9)
+    - filter: Domain Check
       where:
       - variable:
           name: MetaData/stationElevation
         minvalue: -999.0
         maxvalue: 10000.0
-    - filter: Domain Check # land only
+    - filter: Domain Check
       where:
       - variable:
           name: GeoVaLs/slmsk
         minvalue: 0.5
         maxvalue: 1.5
-    - filter: RejectList  # no land-ice
+    - filter: RejectList
       where:
       - variable:
           name: GeoVaLs/vtype
         minvalue: 14.5
         maxvalue: 15.5
-    - filter: Background Check # gross error check
+    - filter: Background Check
       filter variables:
       - name: totalSnowDepth
       threshold: 6.25
       action:
         name: reject
-
 driver:
   save posterior mean: true
   save posterior mean increment: true
   save posterior ensemble: false
- # update obs config is set to true by default (which also implies halo distribution is used)
- # need set to false here because halo distribution is NOT used for this run
   update obs config with geometry info: false
-
 local ensemble DA:
   solver: LETKF
   inflation:
     rtps: 0.0
     rtpp: 0.0
     mult: 1.0
-
 output:
   filetype: auxgrid
   gridtype: latlon
   filename: Data/analysis/letkf/gfs_land/mem%{member}%/letkf.
-
 output increment:
   filetype: auxgrid
   gridtype: latlon
   filename: Data/analysis/letkf/gfs_land/mem%{member}%/xainc.
-
 test:
   reference filename: testoutput/letkf_snow.ref
   test output filename: testoutput/letkf_snow.test.out

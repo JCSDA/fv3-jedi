@@ -8,12 +8,20 @@ geometry:
   npz: 127
   field metadata override: Data/fieldmetadata/gfs-restart.yaml
 variable change tests:
-
-  # Analysis2Model
   - variable change:
       variable change name: Analysis2Model
-      input variables: [ua,va,t,ps]
-      output variables: [u,v,ua,va,delp,t]
+      input variables:
+      - ua
+      - va
+      - t
+      - ps
+      output variables:
+      - u
+      - v
+      - ua
+      - va
+      - delp
+      - t
     state:
       datetime: 2020-12-15T00:00:00Z
       filetype: fms restart
@@ -23,18 +31,39 @@ variable change tests:
       filename_sfcd: 20201215.000000.sfc_data.nc
       filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
       filename_cplr: 20201215.000000.coupler.res
-      state variables: [ua,va,t,ps]
+      state variables:
+      - ua
+      - va
+      - t
+      - ps
     tolerance inverse: 1.0e1
-
-  # Control2Analysis
   - variable change:
       variable change name: Control2Analysis
       femps_iterations: 50
       femps_ngrids: 2
       femps_levelprocs: -1
       femps_path2fv3gridfiles: Data/femps
-      input variables: [psi,chi,t,tv,delp,ps,q,rh,qi,ql,o3]
-      output variables: [ua,va,T,delp,sphum,ice_wat,liq_wat,o3mr]
+      input variables:
+      - psi
+      - chi
+      - t
+      - tv
+      - delp
+      - ps
+      - q
+      - rh
+      - qi
+      - ql
+      - o3
+      output variables:
+      - ua
+      - va
+      - T
+      - delp
+      - sphum
+      - ice_wat
+      - liq_wat
+      - o3mr
     state:
       datetime: 2020-12-15T00:00:00Z
       filetype: fms restart
@@ -44,6 +73,14 @@ variable change tests:
       filename_sfcd: 20201215.000000.sfc_data.nc
       filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
       filename_cplr: 20201215.000000.coupler.res
-      state variables: [ua,va,T,delp,sphum,ice_wat,liq_wat,o3mr]
+      state variables:
+      - ua
+      - va
+      - T
+      - delp
+      - sphum
+      - ice_wat
+      - liq_wat
+      - o3mr
     tolerance inverse: 1.0e-4
-    inverse first: true #Switched input and output variables
+    inverse first: true

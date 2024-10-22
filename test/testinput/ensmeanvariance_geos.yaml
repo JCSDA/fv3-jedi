@@ -23,13 +23,19 @@ ensemble:
       datetime: 2020-12-15T00:00:00Z
       filetype: cube sphere history
       provider: geos
-      state variables: [ua,va,t,delp,q,qi,ql]
+      state variables:
+      - ua
+      - va
+      - t
+      - delp
+      - q
+      - qi
+      - ql
       datapath: Data/inputs/geos_c12
       filename: geos.mem%mem%.20201215_000000z.nc4
     pattern: '%mem%'
     nmembers: 10
     zero padding: 3
-
 test:
   reference filename: testoutput/ensmeanvariance_geos.ref
   test output filename: testoutput/ensmeanvariance_geos.test.out

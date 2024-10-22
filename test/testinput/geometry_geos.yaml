@@ -8,8 +8,12 @@ geometry:
   npz: 72
   ntiles: 6
   nwat: 1
-  layout: [1,1]
-  io_layout: [1,1]
+  layout:
+  - 1
+  - 1
+  io_layout:
+  - 1
+  - 1
   nested: false
   regional: false
   do_schmidt: false

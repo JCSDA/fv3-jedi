@@ -1,7 +1,4 @@
-# Configuration for the linear model
-# ----------------------------------
 linear forecast:
-  # Geometry for the trajectory, increment and linear model
   geometry:
     fms initialization:
       namelist filename: Data/fv3files/input_gfs_c12.nml
@@ -11,8 +8,6 @@ linear forecast:
     npy: 13
     npz: 127
     field metadata override: Data/fieldmetadata/gfs-restart.yaml
-
-  # Linear model config
   linear model:
     name: FV3JEDITLM
     namelist filename: Data/fv3files/input_gfs_c12.nml
@@ -21,18 +16,29 @@ linear forecast:
     lm_do_dyn: 1
     lm_do_trb: 0
     lm_do_mst: 0
-    tlm variables: [u,v,T,delp,sphum,ice_wat,liq_wat,o3mr,phis]
+    tlm variables:
+    - u
+    - v
+    - T
+    - delp
+    - sphum
+    - ice_wat
+    - liq_wat
+    - o3mr
+    - phis
     trajectory:
-      model variables: [u,v,T,delp,sphum,ice_wat,liq_wat,o3mr,phis]
-
-# Configuration for the model
-# ---------------------------
+      model variables:
+      - u
+      - v
+      - T
+      - delp
+      - sphum
+      - ice_wat
+      - liq_wat
+      - o3mr
+      - phis
 forecast:
-
-  # Forecast length
   forecast length: PT1H
-
-  # Geometry for the forecast model
   geometry:
     fms initialization:
       namelist filename: Data/fv3files/input_gfs_c12.nml
@@ -42,8 +48,6 @@ forecast:
     npy: 13
     npz: 127
     field metadata override: Data/fieldmetadata/gfs-restart.yaml
-
-  # Model config
   model:
     name: FV3LM
     use internal namelist: true
@@ -51,9 +55,18 @@ forecast:
     lm_do_dyn: 1
     lm_do_trb: 0
     lm_do_mst: 0
-    model variables: [u,v,ua,va,T,delp,sphum,ice_wat,liq_wat,o3mr,phis]
-
-  # Model initial condition
+    model variables:
+    - u
+    - v
+    - ua
+    - va
+    - T
+    - delp
+    - sphum
+    - ice_wat
+    - liq_wat
+    - o3mr
+    - phis
   initial condition:
     filetype: fms restart
     datetime: 2020-12-14T21:00:00Z
@@ -63,9 +76,18 @@ forecast:
     filename_sfcd: 20201214.210000.sfc_data.nc
     filename_sfcw: 20201214.210000.fv_srf_wnd.res.nc
     filename_cplr: 20201214.210000.coupler.res
-    state variables: [u,v,ua,va,T,delp,sphum,ice_wat,liq_wat,o3mr,phis]
-
-# Optionally write the adjoint initial condition
+    state variables:
+    - u
+    - v
+    - ua
+    - va
+    - T
+    - delp
+    - sphum
+    - ice_wat
+    - liq_wat
+    - o3mr
+    - phis
   output:
     filetype: fms restart
     datapath: Data/adjointforecast
@@ -74,12 +96,7 @@ forecast:
     filename_sfcd: nlmforecast.sfc_data.nc
     filename_sfcw: nlmforecast.fv_srf_wnd.res.nc
     filename_cplr: nlmforecast.coupler.res
-
-# Configuration for the forecast aspect
-# -------------------------------------
 forecast aspect:
-
-  # Verification state
   verification resolution:
     fms initialization:
       namelist filename: Data/fv3files/input_gfs_c12.nml
@@ -89,7 +106,6 @@ forecast aspect:
     npy: 13
     npz: 127
     field metadata override: Data/fieldmetadata/gfs-restart.yaml
-
   verification state:
     filetype: fms restart
     datetime: 2020-12-14T22:00:00Z
@@ -99,17 +115,21 @@ forecast aspect:
     filename_sfcd: 20201214.220000.sfc_data.nc
     filename_sfcw: 20201214.220000.fv_srf_wnd.res.nc
     filename_cplr: 20201214.220000.coupler.res
-    state variables: [u,v,ua,va,T,delp,sphum,ice_wat,liq_wat,o3mr,phis]
-
-  # Norm definition
+    state variables:
+    - u
+    - v
+    - ua
+    - va
+    - T
+    - delp
+    - sphum
+    - ice_wat
+    - liq_wat
+    - o3mr
+    - phis
   norm:
     kind: l2
-
-# Configuration for the adjoint forecast
-# --------------------------------------
 adjoint forecast:
-
-# Optionally write the adjoint initial condition
   adjoint initial condition output:
     filetype: fms restart
     datapath: Data/adjointforecast
@@ -118,8 +138,6 @@ adjoint forecast:
     filename_sfcd: adjointforecast_initial.sfc_data.nc
     filename_sfcw: adjointforecast_initial.fv_srf_wnd.res.nc
     filename_cplr: adjointforecast_initial.coupler.res
-
-# Output adjoint forecast states
   adjoint forecast output:
     filetype: fms restart
     datapath: Data/adjointforecast
@@ -128,7 +146,6 @@ adjoint forecast:
     filename_sfcd: adjointforecast_final.sfc_data.nc
     filename_sfcw: adjointforecast_final.fv_srf_wnd.res.nc
     filename_cplr: adjointforecast_final.coupler.res
-
 test:
   reference filename: testoutput/adjointforecast.ref
   test output filename: testoutput/adjointforecast.test.out

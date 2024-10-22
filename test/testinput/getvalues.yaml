@@ -10,14 +10,18 @@ state:
   analytic init:
     method: dcmip-test-4-0
   datetime: 2020-12-15T00:00:00Z
-variables: [air_temperature, air_pressure]
+variables:
+- air_temperature
+- air_pressure
 locations:
   time window:
     begin: 2020-12-14T21:00:00Z
     end: 2020-12-15T03:00:00Z
   obs space:
     name: Random Locations
-    simulated variables: [airTemperature, pressure]
+    simulated variables:
+    - airTemperature
+    - pressure
     obsdatain:
       engine:
         type: GenRandom
@@ -27,5 +31,7 @@ locations:
         lon1: 0
         lon2: 360
         random seed: 560921
-        obs errors: [1.2, 2.5]
+        obs errors:
+        - 1.2
+        - 2.5
 tolerance interpolation: 1.e-2

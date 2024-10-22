@@ -2,11 +2,16 @@ increment test:
   date: 2020-12-14T21:00:00Z
   dirac:
     ndir: 1
-    ixdir: [1]
-    iydir: [1]
-    ildir: [50]
-    itdir: [1]
-    ifdir: [air_temperature]
+    ixdir:
+    - 1
+    iydir:
+    - 1
+    ildir:
+    - 50
+    itdir:
+    - 1
+    ifdir:
+    - air_temperature
   tolerance AD resolution change: 1.0e-13
 geometry:
   fms initialization:
@@ -23,4 +28,8 @@ other geometry:
   npy: 25
   npz: 72
   field metadata override: Data/fieldmetadata/geos.yaml
-inc variables: [ua,va,t,delp]
+inc variables:
+- ua
+- va
+- t
+- delp

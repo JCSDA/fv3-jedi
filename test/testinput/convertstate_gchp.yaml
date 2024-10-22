@@ -12,7 +12,6 @@ output geometry:
   npx: 13
   npy: 13
   npz: 72
-
   field metadata override: Data/fieldmetadata/gchp.yaml
 states:
 - input:

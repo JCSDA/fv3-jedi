@@ -10,7 +10,14 @@ geometry:
 background:
   datetime: 2020-12-15T00:00:00Z
   filetype: fms restart
-  state variables: [stream_function,velocity_potential,air_temperature,air_pressure_at_surface,water_vapor_mixing_ratio_wrt_moist_air,cloud_liquid_water,ozone_mass_mixing_ratio]
+  state variables:
+  - stream_function
+  - velocity_potential
+  - air_temperature
+  - air_pressure_at_surface
+  - water_vapor_mixing_ratio_wrt_moist_air
+  - cloud_liquid_water
+  - ozone_mass_mixing_ratio
   psinfile: true
   datapath: Data/staticb/unbalanced/mem001
   filename_core: 20201215.000000.fv_core.res.nc
@@ -126,7 +133,6 @@ background error:
           filename_sfcd: 20201215.000000.nicas_norm_2.sfc_data.nc
           filename_sfcw: 20201215.000000.nicas_norm_2.fv_srf_wnd.res.nc
           filename_cplr: 20201215.000000.nicas_norm_2.coupler.res
-
 test:
   reference filename: testoutput/staticb_split_nicas_gfs.ref
   test output filename: testoutput/staticb_split_nicas_gfs.test.out

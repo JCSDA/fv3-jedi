@@ -13,11 +13,14 @@ output geometry:
   npy: 13
   npz: 72
   field metadata override: Data/fieldmetadata/geos.yaml
-
 variable change:
   variable change name: Model2GeoVaLs
-  input variables: &inputvars [t, q, ps]
-  output variables: [rh]
+  input variables: &inputvars
+  - t
+  - q
+  - ps
+  output variables:
+  - rh
   run vader: false
 states:
 - input:
@@ -26,14 +29,13 @@ states:
     filetype: cube sphere history
     provider: geos
     datapath: Data/inputs/geos_c12
-    filenames: [geos.bkg.20201214_210000z.nc4]
+    filenames:
+    - geos.bkg.20201214_210000z.nc4
   output:
    filetype: cube sphere history
    provider: geos
    datapath: Data/
    filename: geovals_fv3jedi.geos.%yyyy%mm%dd_%hh%MM%ssz.nc4
-
 test:
   reference filename: testoutput/convertstate_geos_fv3jedi_for_model2geovals.ref
   test output filename: testoutput/convertstate_geos_fv3jedi_for_model2geovals.test.out
-

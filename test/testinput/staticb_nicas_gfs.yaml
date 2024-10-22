@@ -3,7 +3,9 @@ geometry:
     namelist filename: Data/fv3files/fmsmpp.nml
     field table filename: Data/fv3files/field_table_gfdl
   akbk: Data/fv3files/akbk127.nc4
-  layout: [1,2]
+  layout:
+  - 1
+  - 2
   npx: 13
   npy: 13
   npz: 127
@@ -11,7 +13,14 @@ geometry:
 background:
   datetime: 2020-12-15T00:00:00Z
   filetype: fms restart
-  state variables: [stream_function,velocity_potential,air_temperature,air_pressure_at_surface,water_vapor_mixing_ratio_wrt_moist_air,cloud_liquid_water,ozone_mass_mixing_ratio]
+  state variables:
+  - stream_function
+  - velocity_potential
+  - air_temperature
+  - air_pressure_at_surface
+  - water_vapor_mixing_ratio_wrt_moist_air
+  - cloud_liquid_water
+  - ozone_mass_mixing_ratio
   psinfile: true
   datapath: Data/staticb/unbalanced/mem001
   filename_core: 20201215.000000.fv_core.res.nc
@@ -35,8 +44,7 @@ background error:
         write global nicas: true
       nicas:
         resolution: 6
-        min effective resolution: 0.2   # Note: this is not recommended (resolution too low), only
-                                        # used because covariance quality is not important for CI tests
+        min effective resolution: 0.2
         similar levels threshold: 0.1
       grids:
       - model:
@@ -154,7 +162,6 @@ background error:
           filename_sfcd: nicas_norm_2.sfc_data.nc
           filename_sfcw: nicas_norm_2.fv_srf_wnd.res.nc
           filename_cplr: nicas_norm_2.coupler.res
-
 test:
   reference filename: testoutput/staticb_nicas_gfs.ref
   test output filename: testoutput/staticb_nicas_gfs.test.out

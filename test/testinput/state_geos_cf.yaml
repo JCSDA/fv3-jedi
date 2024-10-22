@@ -14,9 +14,17 @@ state test:
     provider: geos
     datapath: Data/inputs/geos_c12
     filename: geos_cf.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4
-    tile is a dimension: [true]
-    clobber existing files: [false]
-    state variables: [delp,NO2,NO,O3,PS,SPHU]
+    tile is a dimension:
+    - true
+    clobber existing files:
+    - false
+    state variables:
+    - delp
+    - NO2
+    - NO
+    - O3
+    - PS
+    - SPHU
   state generate:
     analytic init:
       method: dcmip-test-4-0
@@ -24,4 +32,5 @@ state test:
   date: 2020-09-03T18:00:00Z
   norm file: 5280.9533376899999
   tolerance: 1.0e-08
-  construct to variables: [air_pressure_at_surface]
+  construct to variables:
+  - air_pressure_at_surface

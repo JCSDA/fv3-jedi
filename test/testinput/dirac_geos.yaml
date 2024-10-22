@@ -13,7 +13,15 @@ background:
   provider: geos
   datapath: Data/inputs/geos_c12
   filename: geos.bkg.20201214_210000z.nc4
-  state variables: &vars [ua,va,t,ps,q,qi,ql,o3ppmv]
+  state variables: &vars
+  - ua
+  - va
+  - t
+  - ps
+  - q
+  - qi
+  - ql
+  - o3ppmv
 background error:
   covariance model: ensemble
   localization:
@@ -47,12 +55,16 @@ output dirac:
   filename: dirac.%id%.%yyyy%mm%dd_%hh%MM%ssz.nc4
 dirac:
   ndir: 1
-  ixdir: [1]
-  iydir: [1]
-  ildir: [50]
-  itdir: [1]
-  ifdir: [air_temperature]
-
+  ixdir:
+  - 1
+  iydir:
+  - 1
+  ildir:
+  - 50
+  itdir:
+  - 1
+  ifdir:
+  - air_temperature
 test:
   reference filename: testoutput/dirac_geos.ref
   test output filename: testoutput/dirac_geos.test.out

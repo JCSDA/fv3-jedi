@@ -17,9 +17,30 @@ states:
 - input:
     datetime: 2020-12-15T00:00:00Z
     filetype: fms restart
-    state variables: [u,v,ua,va,T,delp,sphum,ice_wat,liq_wat,o3mr,phis,
-                      slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
-                      u_srf,v_srf,f10m]
+    state variables:
+    - u
+    - v
+    - ua
+    - va
+    - T
+    - delp
+    - sphum
+    - ice_wat
+    - liq_wat
+    - o3mr
+    - phis
+    - slmsk
+    - sheleg
+    - tsea
+    - vtype
+    - stype
+    - vfrac
+    - stc
+    - smc
+    - snwdph
+    - u_srf
+    - v_srf
+    - f10m
     datapath: Data/inputs/gfs_c12/bkg/
     filename_core: 20201215.000000.fv_core.res.nc
     filename_trcr: 20201215.000000.fv_tracer.res.nc
@@ -30,7 +51,6 @@ states:
     filetype: auxgrid
     gridtype: gaussian
     filename: Data/gfs.bkg.gaussian.
-
 test:
   reference filename: testoutput/convertstate_gfs_c2gaussian.ref
   test output filename: testoutput/convertstate_gfs_c2gaussian.test.out

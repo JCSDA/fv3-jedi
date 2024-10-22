@@ -1,4 +1,12 @@
-analysis variables: [eastward_wind,northward_wind,air_temperature,air_pressure_thickness,water_vapor_mixing_ratio_wrt_moist_air,cloud_liquid_ice,cloud_liquid_water,mole_fraction_of_ozone_in_air]
+analysis variables:
+- eastward_wind
+- northward_wind
+- air_temperature
+- air_pressure_thickness
+- water_vapor_mixing_ratio_wrt_moist_air
+- cloud_liquid_ice
+- cloud_liquid_water
+- mole_fraction_of_ozone_in_air
 background error:
   covariance model: SABER
   saber central block:
@@ -20,25 +28,72 @@ linear model:
   lm_do_dyn: 1
   lm_do_trb: 1
   lm_do_mst: 1
-  tlm variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv]
+  tlm variables:
+  - u
+  - v
+  - ua
+  - va
+  - t
+  - delp
+  - q
+  - qi
+  - ql
+  - o3ppmv
   trajectory:
-    model variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv,phis,
-                      qls,qcn,cfcn,frocean,frland,varflt,ustar,bstar,
-                      zpbl,cm,ct,cq,kcbl,tsm,khl,khu,frlake,frseaice,vtype,
-                      stype,vfrac,sheleg,ts,soilt,soilm,u10m,v10m]
+    model variables:
+    - u
+    - v
+    - ua
+    - va
+    - t
+    - delp
+    - q
+    - qi
+    - ql
+    - o3ppmv
+    - phis
+    - qls
+    - qcn
+    - cfcn
+    - frocean
+    - frland
+    - varflt
+    - ustar
+    - bstar
+    - zpbl
+    - cm
+    - ct
+    - cq
+    - kcbl
+    - tsm
+    - khl
+    - khu
+    - frlake
+    - frseaice
+    - vtype
+    - stype
+    - vfrac
+    - sheleg
+    - ts
+    - soilt
+    - soilm
+    - u10m
+    - v10m
 linear model test:
   forecast length: PT1H
   first multiplier TL: 0.01
   iterations TL: 1
   tolerance AD: 1.0e-10
-  tolerance TL: 1.0e3 # With physics on the tl test will not pass (perturbation model)
-  tolerance zero length forecast: 0.08 # loose tolerance needed here because of low grid resolution
+  tolerance TL: 1.0e3
+  tolerance zero length forecast: 0.08
 model:
   name: PSEUDO
   filetype: cube sphere history
   provider: geos
   datapath: Data/inputs/geos_c12
-  filenames: [geos.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4, geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4]
+  filenames:
+  - geos.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4
+  - geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
   run stage check: true
   tstep: PT1H
 model aux control: null
@@ -47,8 +102,45 @@ initial condition:
   filetype: cube sphere history
   provider: geos
   datapath: Data/inputs/geos_c12
-  filenames: [geos.bkg.20201215_000000z.nc4, geos.bkg.crtmsrf.20201215_000000z.nc4]
-  state variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv,phis,
-                    qls,qcn,cfcn,frocean,frland,varflt,ustar,bstar,
-                    zpbl,cm,ct,cq,kcbl,tsm,khl,khu,frlake,frseaice,vtype,
-                    stype,vfrac,sheleg,ts,soilt,soilm,u10m,v10m]
+  filenames:
+  - geos.bkg.20201215_000000z.nc4
+  - geos.bkg.crtmsrf.20201215_000000z.nc4
+  state variables:
+  - u
+  - v
+  - ua
+  - va
+  - t
+  - delp
+  - q
+  - qi
+  - ql
+  - o3ppmv
+  - phis
+  - qls
+  - qcn
+  - cfcn
+  - frocean
+  - frland
+  - varflt
+  - ustar
+  - bstar
+  - zpbl
+  - cm
+  - ct
+  - cq
+  - kcbl
+  - tsm
+  - khl
+  - khu
+  - frlake
+  - frseaice
+  - vtype
+  - stype
+  - vfrac
+  - sheleg
+  - ts
+  - soilt
+  - soilm
+  - u10m
+  - v10m

@@ -3,8 +3,12 @@ geometry:
     namelist filename: Data/fv3files/fmsmpp.nml
     field table filename: Data/fv3files/field_table_gfdl
   akbk: Data/fv3files/akbk127.nc4
-  layout: [1,1]
-  io_layout: [1,1]
+  layout:
+  - 1
+  - 1
+  io_layout:
+  - 1
+  - 1
   npx: 13
   npy: 13
   npz: 127
@@ -18,7 +22,15 @@ background:
   filename_sfcd: 20201215.000000.sfc_data.nc
   filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
   filename_cplr: 20201215.000000.coupler.res
-  state variables: &anavars [ua,va,T,ps,sphum,ice_wat,liq_wat,o3mr]
+  state variables: &anavars
+  - ua
+  - va
+  - T
+  - ps
+  - sphum
+  - ice_wat
+  - liq_wat
+  - o3mr
 background error:
   covariance model: SABER
   saber central block:
@@ -40,17 +52,28 @@ background error:
     debugging mode: false
   linear variable change:
     linear variable change name: Control2Analysis
-    input variables: [eastward_wind,northward_wind,air_temperature,air_pressure_at_surface,
-                      water_vapor_mixing_ratio_wrt_moist_air,cloud_liquid_ice,cloud_liquid_water,
-                      mole_fraction_of_ozone_in_air]
+    input variables:
+    - eastward_wind
+    - northward_wind
+    - air_temperature
+    - air_pressure_at_surface
+    - water_vapor_mixing_ratio_wrt_moist_air
+    - cloud_liquid_ice
+    - cloud_liquid_water
+    - mole_fraction_of_ozone_in_air
     output variables: *anavars
 dirac:
   ndir: 1
-  ixdir: [6]  #Xdir
-  iydir: [6]  #Ydir
-  ildir: [50] #Level
-  itdir: [1]  #Tile
-  ifdir: [eastward_wind] #Field
+  ixdir:
+  - 6
+  iydir:
+  - 6
+  ildir:
+  - 50
+  itdir:
+  - 1
+  ifdir:
+  - eastward_wind
 output dirac:
   filetype: cube sphere history
   provider: geos

@@ -18,13 +18,46 @@ linear model:
       lm_do_dyn: 1
       lm_do_trb: 0
       lm_do_mst: 0
-      tlm variables: &linvars [u,v,ua,va,T,delp,sphum,liq_wat,ice_wat,o3mr,phis]
+      tlm variables: &linvars
+      - u
+      - v
+      - ua
+      - va
+      - T
+      - delp
+      - sphum
+      - liq_wat
+      - ice_wat
+      - o3mr
+      - phis
       trajectory:
-        model variables: &modelvars [u,v,ua,va,T,delp,sphum,liq_wat,ice_wat,o3mr,phis]
+        model variables: &modelvars
+        - u
+        - v
+        - ua
+        - va
+        - T
+        - delp
+        - sphum
+        - liq_wat
+        - ice_wat
+        - o3mr
+        - phis
   update tstep: PT3H
-  variables: &vars [ua,va,T,delp,sphum,liq_wat,ice_wat,o3mr,phis]
+  variables: &vars
+  - ua
+  - va
+  - T
+  - delp
+  - sphum
+  - liq_wat
+  - ice_wat
+  - o3mr
+  - phis
   coefficients:
-    update variables: [eastward_wind,northward_wind]
+    update variables:
+    - eastward_wind
+    - northward_wind
     influence region size: 3
     time window:
       begin: 2020-12-14T21:00:00Z
@@ -57,7 +90,18 @@ linear model:
         filename_sfcd: 20201214.210000.sfc_data.nc
         filename_sfcw: 20201214.210000.fv_srf_wnd.res.nc
         filename_cplr: 20201214.210000.coupler.res
-        state variables: &bgvars [u,v,ua,va,T,delp,sphum,liq_wat,ice_wat,o3mr,phis]
+        state variables: &bgvars
+        - u
+        - v
+        - ua
+        - va
+        - T
+        - delp
+        - sphum
+        - liq_wat
+        - ice_wat
+        - o3mr
+        - phis
       nonlinear ensemble:
         read:
           members from template:
@@ -74,9 +118,7 @@ linear model:
             pattern: '%mem%'
             nmembers: 5
             zero padding: 3
-
 model aux increment: {}
-
 model geometry:
   fms initialization:
     namelist filename: Data/fv3files/input_gfs_c12.nml
@@ -95,10 +137,8 @@ model:
   lm_do_mst: 0
   model variables: *bgvars
 model aux control: {}
-
 forecast length: PT3H
 time resolution: PT3H
-
 x1:
   datetime: 2020-12-14T21:00:00Z
   filetype: fms restart
@@ -119,25 +159,21 @@ x2:
   filename_sfcw: 20201214.210000.fv_srf_wnd.res.nc
   filename_cplr: 20201214.210000.coupler.res
   state variables: *bgvars
-
-#output on structured grid (latlon)    
 output on structured grid:
   local interpolator type: oops unstructured grid interpolator
   grid type: latlon
-  type: inc  
+  type: inc
   resolution in degrees: 6.0
   all model levels: true
   bottom model level: false
-  variables to output: [eastward_wind,northward_wind,air_temperature,air_pressure_thickness,water_vapor_mixing_ratio_wrt_moist_air] 
+  variables to output:
+  - eastward_wind
+  - northward_wind
+  - air_temperature
+  - air_pressure_thickness
+  - water_vapor_mixing_ratio_wrt_moist_air
   datapath: Data
   exp: linearization-error-HTLM
-
-#output on native grid
-#output:
-#  filetype: fms restart
-#  datapath: Data
-#  prefix: linearization-error-native
-
 test:
   reference filename: testoutput/linearization_error.ref
   test output filename: testoutput/linearization_error.test.out

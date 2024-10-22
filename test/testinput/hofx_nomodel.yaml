@@ -19,10 +19,30 @@ state:
   filename_sfcd: 20201215.000000.sfc_data.nc
   filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
   filename_cplr: 20201215.000000.coupler.res
-  state variables: [u,v,ua,va,T,delp,sphum,ice_wat,liq_wat,o3mr,phis,
-                    slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
-                    u_srf,v_srf,f10m]
-                    # u_srf,v_srf,f10m,sss]
+  state variables:
+  - u
+  - v
+  - ua
+  - va
+  - T
+  - delp
+  - sphum
+  - ice_wat
+  - liq_wat
+  - o3mr
+  - phis
+  - slmsk
+  - sheleg
+  - tsea
+  - vtype
+  - stype
+  - vfrac
+  - stc
+  - smc
+  - snwdph
+  - u_srf
+  - v_srf
+  - f10m
 observations:
   get values:
     variable change:
@@ -40,7 +60,10 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/aircraft_hofx_gfs_2020121500_m.nc4
-      simulated variables: [windEastward,windNorthward,airTemperature]
+      simulated variables:
+      - windEastward
+      - windNorthward
+      - airTemperature
     obs operator:
       name: VertInterp
       vertical coordinate: air_pressure
@@ -57,18 +80,23 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/amsua_n19_hofx_gfs_2020121500_m.nc4
-      simulated variables: [brightnessTemperature]
+      simulated variables:
+      - brightnessTemperature
       channels: 1-15
     obs operator:
       name: CRTM
-      Absorbers: [H2O,O3,CO2]
-      Clouds: [Water, Ice]
+      Absorbers:
+      - H2O
+      - O3
+      - CO2
+      Clouds:
+      - Water
+      - Ice
       Cloud_Fraction: 1.0
       obs options:
         Sensor_ID: amsua_n19
         EndianType: little_endian
         CoefficientPath: Data/crtm/
-
 test:
   reference filename: testoutput/hofx_nomodel.ref
   test output filename: testoutput/hofx_nomodel.test.out

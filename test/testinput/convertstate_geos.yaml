@@ -19,14 +19,25 @@ states:
     filetype: cube sphere history
     provider: geos
     datapath: Data/inputs/geos_c12
-    filenames: [geos.bkg.20201214_210000z.nc4, geos.bkg.crtmsrf.20201214_210000z.nc4]
-    state variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv]
+    filenames:
+    - geos.bkg.20201214_210000z.nc4
+    - geos.bkg.crtmsrf.20201214_210000z.nc4
+    state variables:
+    - u
+    - v
+    - ua
+    - va
+    - t
+    - delp
+    - q
+    - qi
+    - ql
+    - o3ppmv
   output:
    filetype: cube sphere history
    provider: geos
    datapath: Data/
    filename: geos.bkg.converted.%yyyy%mm%dd_%hh%MM%ssz.nc4
-# Initial conditions
 - input:
     analytic init:
       method: dcmip-test-1-1
@@ -54,7 +65,6 @@ states:
     provider: geos
     datapath: Data/
     filename: dcmip-test-3-1.%yyyy%mm%dd_%hh%MM%ssz.nc4
-
 test:
   reference filename: testoutput/convertstate_geos.ref
   test output filename: testoutput/convertstate_geos.test.out

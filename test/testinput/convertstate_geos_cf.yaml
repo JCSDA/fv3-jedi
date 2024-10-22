@@ -20,7 +20,13 @@ states:
     provider: geos
     datapath: Data/inputs/geos_c12
     filename: geos_cf.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4
-    state variables: [delp,NO2,NO,O3,PS,SPHU]
+    state variables:
+    - delp
+    - NO2
+    - NO
+    - O3
+    - PS
+    - SPHU
   output:
    filetype: cube sphere history
    provider: geos

@@ -3,7 +3,9 @@ geometry:
     namelist filename: Data/fv3files/fmsmpp.nml
     field table filename: Data/fv3files/field_table_gfdl
   akbk: Data/fv3files/akbk127.nc4
-  layout: [1,2]
+  layout:
+  - 1
+  - 2
   npx: 13
   npy: 13
   npz: 127
@@ -11,7 +13,14 @@ geometry:
 background:
   datetime: 2020-12-15T00:00:00Z
   filetype: fms restart
-  state variables: [stream_function,velocity_potential,air_temperature,air_pressure_at_surface,water_vapor_mixing_ratio_wrt_moist_air,cloud_liquid_water,ozone_mass_mixing_ratio]
+  state variables:
+  - stream_function
+  - velocity_potential
+  - air_temperature
+  - air_pressure_at_surface
+  - water_vapor_mixing_ratio_wrt_moist_air
+  - cloud_liquid_water
+  - ozone_mass_mixing_ratio
   psinfile: true
   datapath: Data/staticb/balanced/mem001/
   filename_core: 20201215.000000.fv_core.res.nc
@@ -271,7 +280,11 @@ background error:
           filename_sfcw: stddev.fv_srf_wnd.res.nc
           filename_cplr: stddev.coupler.res
   - saber block name: BUMP_VerticalBalance
-    active variables: [stream_function,velocity_potential,air_temperature,air_pressure_at_surface]
+    active variables:
+    - stream_function
+    - velocity_potential
+    - air_temperature
+    - air_pressure_at_surface
     calibration:
       general:
         universe length-scale: 2500.0e3
@@ -303,7 +316,6 @@ background error:
           unbalanced variable: stream_function
         pseudo inverse: true
         variance threshold: 0.1
-
 test:
   reference filename: testoutput/staticb_estimate_gfs.ref
   test output filename: testoutput/staticb_estimate_gfs.test.out

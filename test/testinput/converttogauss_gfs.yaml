@@ -8,35 +8,63 @@ states to structured grid:
     npy: 13
     npz: 127
     field metadata override: Data/fieldmetadata/gfs-restart.yaml
-
   state:
     datetime: 2020-12-15T00:00:00Z
     filetype: fms restart
-    state variables: [u,v,ua,va,T,delp,sphum,ice_wat,liq_wat,o3mr,phis,
-                      slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
-                      u_srf,v_srf,f10m,ps]
+    state variables:
+    - u
+    - v
+    - ua
+    - va
+    - T
+    - delp
+    - sphum
+    - ice_wat
+    - liq_wat
+    - o3mr
+    - phis
+    - slmsk
+    - sheleg
+    - tsea
+    - vtype
+    - stype
+    - vfrac
+    - stc
+    - smc
+    - snwdph
+    - u_srf
+    - v_srf
+    - f10m
+    - ps
     datapath: Data/inputs/gfs_c12/bkg
     filename_core: 20201215.000000.fv_core.res.nc
     filename_trcr: 20201215.000000.fv_tracer.res.nc
     filename_sfcd: 20201215.000000.sfc_data.nc
     filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
     filename_cplr: 20201215.000000.coupler.res
-
   structured grid interpolation:
-    grid type: regular gaussian 
+    grid type: regular gaussian
     local interpolator type: atlas interpolator
     interpolation method:
       type: finite-element
     number of latitude gridpoints: 12
-    variables to output: [air_temperature, eastward_wind, northward_wind, geopotential_height, air_pressure_at_surface]
-    pressure levels in hPa: [925, 850, 700, 500, 250]
+    variables to output:
+    - air_temperature
+    - eastward_wind
+    - northward_wind
+    - geopotential_height
+    - air_pressure_at_surface
+    pressure levels in hPa:
+    - 925
+    - 850
+    - 700
+    - 500
+    - 250
     all model levels: true
     bottom model level: false
     datapath: Data
-    prefix: converttogauss 
-
+    prefix: converttogauss
 test:
   reference filename: testoutput/converttogauss_gfs.ref
   test output filename: testoutput/converttogauss_gfs.test.out
   float relative tolerance: 1.0e-3
-

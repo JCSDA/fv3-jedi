@@ -3,7 +3,9 @@ geometry:
     namelist filename: Data/fv3files/input_geos_c12.nml
     field table filename: Data/fv3files/field_table_gmao
   akbk: Data/fv3files/akbk72.nc4
-  layout: [1,2]
+  layout:
+  - 1
+  - 2
   npx: 13
   npy: 13
   npz: 72
@@ -12,7 +14,12 @@ background:
   datetime: 2020-12-15T00:00:00Z
   filetype: cube sphere history
   provider: geos
-  state variables: [stream_function,velocity_potential,air_temperature,air_pressure_at_surface,water_vapor_mixing_ratio_wrt_moist_air]
+  state variables:
+  - stream_function
+  - velocity_potential
+  - air_temperature
+  - air_pressure_at_surface
+  - water_vapor_mixing_ratio_wrt_moist_air
   datapath: Data/staticb/unbalanced/mem001
   filename: geos.20201215.000000z.nc4
 background error:
@@ -31,17 +38,8 @@ background error:
         write global nicas: true
       nicas:
         resolution: 6
-        min effective resolution: 0.2  # Note: this is very much not recommended (resolution too low), only
-                                       # used because covariance quality is not important for CI tests
+        min effective resolution: 0.2
         similar levels threshold: 0.1
-#       minimum level:
-#       - groups:
-#         - cloud_liquid_water
-#         value: 74
-#       maximum level:
-#       - groups:
-#         - cloud_liquid_water
-#         value: 125
       grids:
       - model:
           variables:
@@ -49,8 +47,6 @@ background error:
           - velocity_potential
           - air_temperature
           - water_vapor_mixing_ratio_wrt_moist_air
-#         - cloud_liquid_water
-#         - ozone_mass_mixing_ratio
         io:
           overriding universe radius file: cor_3D_geos_universe_radius
       - model:
@@ -128,7 +124,6 @@ background error:
           provider: geos
           datapath: Data/staticb/
           filename: geos.nicas_norm_2.nc4
-
 test:
   reference filename: testoutput/staticb_nicas_geos.ref
   test output filename: testoutput/staticb_nicas_geos.test.out

@@ -1,7 +1,6 @@
 time window:
   begin: 2020-12-14T23:00:00Z
   length: PT2H
-
 geometry:
   fms initialization:
     namelist filename: Data/fv3files/fmsmpp.nml
@@ -18,64 +17,91 @@ state:
   filename_sfcw: 20201215.000000.rrfs_C403.fv_srf_wnd.res.tile1.nc
   filename_sfcd: 20201215.000000.rrfs_C403.sfc_data.nc
   filename_cplr: 20201215.000000.rrfs_C403.coupler.res
-  state variables: [u,v,T,delp,sphum]
-# state variables: [u,v,T,delp,sphum,o3mr,ice_wat,liq_wat,
-#                   rainwat,snowwat,graupel,water_nc,ice_nc,rain_nc,liq_aero,ice_aero,
-#                   phis,slmsk,sheleg,tsea,vtype,stype,vfrac,tslb,smois,snwdph,
-#                   u_srf,v_srf,f10m,zorl,t2m]
-
+  state variables:
+  - u
+  - v
+  - T
+  - delp
+  - sphum
 observations:
   observers:
-
   - obs space:
-      name: Aircraft 
-      simulated variables: [air_temperature]
-      observed variables: [air_temperature]
+      name: Aircraft
+      simulated variables:
+      - air_temperature
+      observed variables:
+      - air_temperature
       obsdatain:
         engine:
           type: GenList
-          lats: [ 34.993101,34.993101,34.993101 ]
-          lons: [ 290.25,290.25,290.25 ]
+          lats:
+          - 34.993101
+          - 34.993101
+          - 34.993101
+          lons:
+          - 290.25
+          - 290.25
+          - 290.25
           vert coord type: pressure
-          vert coords: [ 98780, 70000,1000 ]
-          dateTimes: [ 0, 0, 0 ]
+          vert coords:
+          - 98780
+          - 70000
+          - 1000
+          dateTimes:
+          - 0
+          - 0
+          - 0
           epoch: "seconds since 2020-12-15T00:00:00Z"
-          obs errors: [1.0]
-          obs values: [290]
+          obs errors:
+          - 1.0
+          obs values:
+          - 290
     obs operator:
       name: VertInterp
-
   - obs space:
-      name: Synthetic 
-      simulated variables: [air_temperature]
-      observed variables: [air_temperature]
+      name: Synthetic
+      simulated variables:
+      - air_temperature
+      observed variables:
+      - air_temperature
       obsdatain:
         engine:
           type: GenList
-# 3 OBS locations: outside, in border region, and center of the domain
-          lats: [ 39.0,39.0,39.0 ]
-          lons: [ 216.0,232.12,262.5 ]
+          lats:
+          - 39.0
+          - 39.0
+          - 39.0
+          lons:
+          - 216.0
+          - 232.12
+          - 262.5
           vert coord type: pressure
-          vert coords: [ 70000, 70000,70000 ]
-          dateTimes: [ 0, 0, 0 ]
+          vert coords:
+          - 70000
+          - 70000
+          - 70000
+          dateTimes:
+          - 0
+          - 0
+          - 0
           epoch: "seconds since 2020-12-15T00:00:00Z"
-          obs errors: [1.0]
-          obs values: [290.0]
+          obs errors:
+          - 1.0
+          obs values:
+          - 290.0
       obsdataout:
         engine:
           type: H5File
           obsfile: Data/hofx/hofx_nomodel_lam_rrfs_domain_check.nc
     obs operator:
       name: VertInterp
-
     obs filters:
     - filter: Domain Check
       where:
       - variable:
           name: GeoVaLs/observable_domain_mask
         minvalue: 0.0
-        maxvalue: 0.1   # keep OBS in domain interior
-
+        maxvalue: 0.1
 test:
   reference filename: testoutput/hofx_nomodel_lam_rrfs_obs_on_lbc.ref
   float absolute tolerance: 1.0e-8

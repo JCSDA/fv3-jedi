@@ -27,10 +27,7 @@ variable maps:
     alias: equivalent_reflectivity_factor
   - name: salinity
     alias: sea_water_salinity
-# the following needs to change after GFS passes true SST 
-# to JEDI as opposed to tsea which is in fact t-skin
   - name: seaSurfaceTemperature
     alias: skin_temperature_at_surface
-#   alias: sea_surface_temperature
   - name: ozoneProfile
     alias: mole_fraction_of_ozone_in_air

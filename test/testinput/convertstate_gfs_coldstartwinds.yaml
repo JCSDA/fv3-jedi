@@ -16,13 +16,41 @@ output geometry:
   nwat: 6
   field metadata override: Data/fieldmetadata/gfs-restart.yaml
 variable change:
-  # Convert to cubed-sphere D-Grid winds
   variable change name: ColdStartWinds
-  input variables: &input [ps_cold,w_cold,zh_cold,t_cold,delp_cold,sphum_cold,liq_wat_cold,
-                   o3mr_cold,ice_wat_cold,rainwat_cold,snowwat_cold,graupel_cold,u_w_cold,v_w_cold,
-                   u_s_cold,v_s_cold,orog_filt]
-  output variables: [ps_cold,w_cold,zh_cold,t_cold,delp_cold,sphum_cold,liq_wat_cold,o3mr_cold,
-                    ice_wat_cold,rainwat_cold,snowwat_cold,graupel_cold,ud_cold,vd_cold,orog_filt]
+  input variables: &input
+  - ps_cold
+  - w_cold
+  - zh_cold
+  - t_cold
+  - delp_cold
+  - sphum_cold
+  - liq_wat_cold
+  - o3mr_cold
+  - ice_wat_cold
+  - rainwat_cold
+  - snowwat_cold
+  - graupel_cold
+  - u_w_cold
+  - v_w_cold
+  - u_s_cold
+  - v_s_cold
+  - orog_filt
+  output variables:
+  - ps_cold
+  - w_cold
+  - zh_cold
+  - t_cold
+  - delp_cold
+  - sphum_cold
+  - liq_wat_cold
+  - o3mr_cold
+  - ice_wat_cold
+  - rainwat_cold
+  - snowwat_cold
+  - graupel_cold
+  - ud_cold
+  - vd_cold
+  - orog_filt
 states:
 - input:
     datetime: 2020-01-01T00:00:00Z
@@ -37,7 +65,6 @@ states:
     filetype: fms restart
     datapath: Data/convertstate/
     prefix: 20200101.000000.coldstartwinds
-
 test:
   reference filename: testoutput/convertstate_gfs_coldstartwinds.ref
   test output filename: testoutput/convertstate_gfs_coldstartwinds.test.out

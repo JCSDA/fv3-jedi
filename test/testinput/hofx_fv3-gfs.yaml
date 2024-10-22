@@ -14,9 +14,31 @@ geometry:
 initial condition:
   datetime: 2020-12-14T21:00:00Z
   filetype: fms restart
-  state variables: [u,v,ua,va,T,delp,sphum,ice_wat,liq_wat,o3mr,phis,
-                    slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
-                    u_srf,v_srf,f10m,sss]
+  state variables:
+  - u
+  - v
+  - ua
+  - va
+  - T
+  - delp
+  - sphum
+  - ice_wat
+  - liq_wat
+  - o3mr
+  - phis
+  - slmsk
+  - sheleg
+  - tsea
+  - vtype
+  - stype
+  - vfrac
+  - stc
+  - smc
+  - snwdph
+  - u_srf
+  - v_srf
+  - f10m
+  - sss
   datapath: Data/inputs/gfs_c12/bkg/
   filename_core: 20201214.210000.fv_core.res.nc
   filename_trcr: 20201214.210000.fv_tracer.res.nc
@@ -30,9 +52,31 @@ model:
   lm_do_dyn: 1
   lm_do_trb: 0
   lm_do_mst: 0
-  model variables: [u,v,ua,va,T,delp,sphum,ice_wat,liq_wat,o3mr,phis,
-                    slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
-                    u_srf,v_srf,f10m,sss]
+  model variables:
+  - u
+  - v
+  - ua
+  - va
+  - T
+  - delp
+  - sphum
+  - ice_wat
+  - liq_wat
+  - o3mr
+  - phis
+  - slmsk
+  - sheleg
+  - tsea
+  - vtype
+  - stype
+  - vfrac
+  - stc
+  - smc
+  - snwdph
+  - u_srf
+  - v_srf
+  - f10m
+  - sss
 observations:
   observers:
   - obs space:
@@ -45,7 +89,8 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/sst_gmi_hofx_gfs_2020121500_m.nc4
-      simulated variables: [seaSurfaceTemperature]
+      simulated variables:
+      - seaSurfaceTemperature
     obs operator:
       name: Identity
       observation alias file: testinput/obsop_name_map.yaml
@@ -61,7 +106,8 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/sss_hofx_gfs_2020121500_m.nc4
-      simulated variables: [seaSurfaceSalinity]
+      simulated variables:
+      - seaSurfaceSalinity
     obs operator:
       name: Identity
     obs error:
@@ -76,7 +122,10 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/aircraft_hofx_gfs_2020121500_m.nc4
-      simulated variables: [windEastward,windNorthward,airTemperature]
+      simulated variables:
+      - windEastward
+      - windNorthward
+      - airTemperature
     obs operator:
       name: VertInterp
       vertical coordinate: air_pressure
@@ -93,33 +142,16 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/sondes_hofx_gfs_2020121500_m.nc4
-      simulated variables: [windEastward, windNorthward, airTemperature]
+      simulated variables:
+      - windEastward
+      - windNorthward
+      - airTemperature
     obs operator:
       name: VertInterp
       vertical coordinate: air_pressure
       observation vertical coordinate: pressure
       observation vertical coordinate group: MetaData
       interpolation method: log-linear
-#   - obs space:
-#       name: SBUV2-NOAA19-OZ
-#       obsdatain:
-#         engine:
-#           type: H5File
-#           obsfile: Data/obs/testinput_tier_1/sbuv2_n19_obs_2020121500_m.nc4
-#         obsgrouping:
-#           group variables: [ longitude ]
-#           sort variable: pressure
-#           sort order: ascending
-#       obsdataout:
-#         engine:
-#           type: H5File
-#           obsfile: Data/hofx/sbuv2_n19_obs_2020121500_m_out.nc4
-#       simulated variables: [ozoneTotal]
-#     obs operator:
-#       name: AtmVertInterpLay
-#       geovals: [mole_fraction_of_ozone_in_air]
-#       coefficients: [0.007886131] # convert from ppmv to DU
-#       nlevels: [22]
   - obs space:
       name: AMSUA-NOAA19
       obsdatain:
@@ -130,12 +162,18 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/amsua_n19_hofx_gfs_2020121500_m.nc4
-      simulated variables: [brightnessTemperature]
+      simulated variables:
+      - brightnessTemperature
       channels: 1-15
     obs operator:
       name: CRTM
-      Absorbers: [H2O,O3,CO2]
-      Clouds: [Water, Ice]
+      Absorbers:
+      - H2O
+      - O3
+      - CO2
+      Clouds:
+      - Water
+      - Ice
       Cloud_Fraction: 1.0
       obs options:
         Sensor_ID: amsua_n19
@@ -151,11 +189,15 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/airs_aqua_hofx_gfs_2020121500_m.nc4
-      simulated variables: [brightnessTemperature]
+      simulated variables:
+      - brightnessTemperature
       channels: 1,6-7
     obs operator:
       name: CRTM
-      Absorbers: [H2O,O3,CO2]
+      Absorbers:
+      - H2O
+      - O3
+      - CO2
       obs options:
         Sensor_ID: airs_aqua
         EndianType: little_endian
@@ -170,7 +212,8 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/gnssro_hofx_gfs_2020121500_m.nc4
-      simulated variables: [bendingAngle]
+      simulated variables:
+      - bendingAngle
     obs operator:
       name: GnssroBndNBAM
       obs options:
@@ -188,11 +231,15 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/hirs4_metop-a_hofx_gfs_2020121500_m.nc4
-      simulated variables: [brightnessTemperature]
+      simulated variables:
+      - brightnessTemperature
       channels: 1-15
     obs operator:
       name: CRTM
-      Absorbers: [H2O,O3,CO2]
+      Absorbers:
+      - H2O
+      - O3
+      - CO2
       obs options:
         Sensor_ID: hirs4_metop-a
         EndianType: little_endian
@@ -207,7 +254,8 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/cris-fsr_npp_hofx_gfs_2020121500_m.nc4
-      simulated variables: [brightnessTemperature]
+      simulated variables:
+      - brightnessTemperature
       channels: 24,26,28,32,37,39,42,44,47,49,51,53,55,57,59,61,63,
                 65,67,69,71,73,75,77,79,81,83,85,87,89,91,93,95,97,
                 99,103,105,107,109,111,113,115,117,119,121,123,125,
@@ -217,7 +265,10 @@ observations:
                 464,501,529,710,713,742,882,890,937,995,1008,1022,1058
     obs operator:
       name: CRTM
-      Absorbers: [H2O,O3,CO2]
+      Absorbers:
+      - H2O
+      - O3
+      - CO2
       obs options:
         Sensor_ID: cris-fsr_npp
         EndianType: little_endian
@@ -232,7 +283,9 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/satwind_hofx_gfs_2020121500_m.nc4
-      simulated variables: [windEastward, windNorthward]
+      simulated variables:
+      - windEastward
+      - windNorthward
     obs operator:
       name: VertInterp
       vertical coordinate: air_pressure
@@ -249,11 +302,15 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/mhs_n19_hofx_gfs_2020121500_m.nc4
-      simulated variables: [brightnessTemperature]
+      simulated variables:
+      - brightnessTemperature
       channels: 1-5
     obs operator:
       name: CRTM
-      Absorbers: [H2O,O3,CO2]
+      Absorbers:
+      - H2O
+      - O3
+      - CO2
       obs options:
         Sensor_ID: mhs_n19
         EndianType: little_endian
@@ -268,11 +325,15 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/iasi_metop-a_hofx_gfs_2020121500_m.nc4
-      simulated variables: [brightnessTemperature]
+      simulated variables:
+      - brightnessTemperature
       channels: 16,29,32,35,38,41,44
     obs operator:
       name: CRTM
-      Absorbers: [H2O,O3,CO2]
+      Absorbers:
+      - H2O
+      - O3
+      - CO2
       obs options:
         Sensor_ID: iasi_metop-a
         EndianType: little_endian
@@ -287,18 +348,21 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/seviri_m08_hofx_gfs_2020121500_m.nc4
-      simulated variables: [brightnessTemperature]
+      simulated variables:
+      - brightnessTemperature
       channels: 5
     obs operator:
       name: CRTM
-      Absorbers: [H2O,O3,CO2]
+      Absorbers:
+      - H2O
+      - O3
+      - CO2
       obs options:
         Sensor_ID: seviri_m08
         EndianType: little_endian
         CoefficientPath: Data/crtm/
 prints:
   frequency: PT3H
-
 test:
   reference filename: testoutput/hofx_fv3-gfs.ref
   test output filename: testoutput/hofx_fv3-gfs.test.out

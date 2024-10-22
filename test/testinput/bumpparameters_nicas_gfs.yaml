@@ -16,7 +16,9 @@ background:
   filename_sfcd: 20201214.210000.sfc_data.nc
   filename_sfcw: 20201214.210000.fv_srf_wnd.res.nc
   filename_cplr: 20201214.210000.coupler.res
-  state variables: [air_temperature,air_pressure_at_surface]
+  state variables:
+  - air_temperature
+  - air_pressure_at_surface
 background error:
   covariance model: SABER
   saber central block:
@@ -78,7 +80,6 @@ background error:
           filename_sfcd: bumpparameters_nicas_gfs.cor_rv.sfc_data.nc
           filename_sfcw: bumpparameters_nicas_gfs.cor_rv.fv_srf_wnd.res.nc
           filename_cplr: bumpparameters_nicas_gfs.cor_rv.coupler.res
-
 test:
   reference filename: testoutput/bumpparameters_nicas_gfs.ref
   test output filename: testoutput/bumpparameters_nicas_gfs.test.out

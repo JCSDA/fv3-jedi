@@ -3,14 +3,18 @@ state geometry:
     namelist filename: Data/fv3files/fmsmpp.nml
     field table filename: Data/fv3files/field_table_gmao
   akbk: Data/fv3files/akbk72.nc4
-  layout: [1,2]
+  layout:
+  - 1
+  - 2
   npx: 13
   npy: 13
   npz: 72
   field metadata override: Data/fieldmetadata/geos.yaml
 increment geometry:
   akbk: Data/fv3files/akbk72.nc4
-  layout: [1,2]
+  layout:
+  - 1
+  - 2
   npx: 13
   npy: 13
   npz: 72
@@ -21,19 +25,36 @@ state:
   provider: geos
   datapath: Data/inputs/geos_c12
   filename: geos.bkg.20201214_210000z.nc4
-  state variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv]
+  state variables:
+  - u
+  - v
+  - ua
+  - va
+  - t
+  - delp
+  - q
+  - qi
+  - ql
+  - o3ppmv
 increment:
   filetype: cube sphere history
   provider: geos
   datapath: Data/increment
   filename: hyb-4dvar-geos.inc.20201214_210000z.nc4
-  added variables: [ua,va,t,delp,q,qi,ql,o3ppmv]
+  added variables:
+  - ua
+  - va
+  - t
+  - delp
+  - q
+  - qi
+  - ql
+  - o3ppmv
 output:
   filetype: cube sphere history
   provider: geos
   datapath: Data/analysis
   filename: hyb-3dvar-geos.bkg+inc.%yyyy%mm%dd_%hh%MM%ssz.nc4
-
 test:
   reference filename: testoutput/addincrement_geos.ref
   test output filename: testoutput/addincrement_geos.test.out

@@ -15,10 +15,34 @@ initial condition:
   datetime: 2020-12-14T21:00:00Z
   filetype: cube sphere history
   provider: geos
-  state variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv,phis,frocean,frlake,
-                    frseaice,vtype,stype,vfrac,sheleg,ts,soilt,soilm,u10m,v10m]
+  state variables:
+  - u
+  - v
+  - ua
+  - va
+  - t
+  - delp
+  - q
+  - qi
+  - ql
+  - o3ppmv
+  - phis
+  - frocean
+  - frlake
+  - frseaice
+  - vtype
+  - stype
+  - vfrac
+  - sheleg
+  - ts
+  - soilt
+  - soilm
+  - u10m
+  - v10m
   datapath: Data/inputs/geos_c12
-  filenames: [geos.bkg.20201214_210000z.nc4, geos.bkg.crtmsrf.20201214_210000z.nc4]
+  filenames:
+  - geos.bkg.20201214_210000z.nc4
+  - geos.bkg.crtmsrf.20201214_210000z.nc4
 model:
   name: FV3LM
   namelist filename: Data/fv3files/input_geos_c12.nml
@@ -26,8 +50,30 @@ model:
   lm_do_dyn: 1
   lm_do_trb: 0
   lm_do_mst: 0
-  model variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv,phis,frocean,frlake,
-                    frseaice,vtype,stype,vfrac,sheleg,ts,soilt,soilm,u10m,v10m]
+  model variables:
+  - u
+  - v
+  - ua
+  - va
+  - t
+  - delp
+  - q
+  - qi
+  - ql
+  - o3ppmv
+  - phis
+  - frocean
+  - frlake
+  - frseaice
+  - vtype
+  - stype
+  - vfrac
+  - sheleg
+  - ts
+  - soilt
+  - soilm
+  - u10m
+  - v10m
 observations:
   get values:
     variable change:
@@ -45,7 +91,10 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/aircraft_hofx_geos_2020121500_m.nc4
-      simulated variables: [windEastward, windNorthward, airTemperature]
+      simulated variables:
+      - windEastward
+      - windNorthward
+      - airTemperature
     obs operator:
       name: VertInterp
       vertical coordinate: air_pressure
@@ -62,7 +111,10 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/sondes_hofx_geos_2020121500_m.nc4
-      simulated variables: [windEastward, windNorthward, airTemperature]
+      simulated variables:
+      - windEastward
+      - windNorthward
+      - airTemperature
     obs operator:
       name: VertInterp
       vertical coordinate: air_pressure
@@ -79,7 +131,8 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/gnssro_hofx_geos_2020121500_m.nc4
-      simulated variables: [bendingAngle]
+      simulated variables:
+      - bendingAngle
     obs operator:
       name: GnssroBndNBAM
       obs options:
@@ -87,26 +140,6 @@ observations:
         vertlayer: full
         use_compress: 1
         super_ref_qc: NBAM
-#   - obs space:
-#       name: SBUV2-NOAA19-OZ
-#       obsdatain:
-#         engine:
-#           type: H5File
-#           obsfile: Data/obs/testinput_tier_1/sbuv2_n19_obs_2020121500_m.nc4
-#         obsgrouping:
-#           group variables: [ longitude ]
-#           sort variable: pressure
-#           sort order: ascending
-#       obsdataout:
-#         engine:
-#           type: H5File
-#           obsfile: Data/hofx/sbuv2_n19_hofx_geos_2020121500_m_out.nc4
-#       simulated variables: [ozoneTotal]
-#     obs operator:
-#       name: AtmVertInterpLay
-#       geovals: [mole_fraction_of_ozone_in_air]
-#       coefficients: [0.007886131] # convert from ppmv to DU
-#       nlevels: [22]
   - obs space:
       name: AMSUA-METOP-A
       obsdatain:
@@ -117,11 +150,15 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/amsua_metop-a_hofx_geos_2020121500_m.nc4
-      simulated variables: [brightnessTemperature]
+      simulated variables:
+      - brightnessTemperature
       channels: 4-6,9-14
     obs operator:
       name: CRTM
-      Absorbers: [H2O,O3,CO2]
+      Absorbers:
+      - H2O
+      - O3
+      - CO2
       Cloud_Fraction: 1.0
       obs options:
         Sensor_ID: amsua_metop-a
@@ -137,11 +174,15 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/amsua_metop-b_hofx_geos_2020121500_m.nc4
-      simulated variables: [brightnessTemperature]
+      simulated variables:
+      - brightnessTemperature
       channels: 7-14
     obs operator:
       name: CRTM
-      Absorbers: [H2O,O3,CO2]
+      Absorbers:
+      - H2O
+      - O3
+      - CO2
       Cloud_Fraction: 1.0
       obs options:
         Sensor_ID: amsua_metop-b
@@ -157,11 +198,15 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/amsua_n15_hofx_geos_2020121500_m.nc4
-      simulated variables: [brightnessTemperature]
+      simulated variables:
+      - brightnessTemperature
       channels: 4,5,7-10,12,13
     obs operator:
       name: CRTM
-      Absorbers: [H2O,O3,CO2]
+      Absorbers:
+      - H2O
+      - O3
+      - CO2
       Cloud_Fraction: 1.0
       obs options:
         Sensor_ID: amsua_n15
@@ -177,11 +222,15 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/amsua_n18_hofx_geos_2020121500_m.nc4
-      simulated variables: [brightnessTemperature]
+      simulated variables:
+      - brightnessTemperature
       channels: 4,6,7,10-14
     obs operator:
       name: CRTM
-      Absorbers: [H2O,O3,CO2]
+      Absorbers:
+      - H2O
+      - O3
+      - CO2
       Cloud_Fraction: 1.0
       obs options:
         Sensor_ID: amsua_n18
@@ -197,12 +246,18 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/amsua_n19_hofx_geos_2020121500_m.nc4
-      simulated variables: [brightnessTemperature]
+      simulated variables:
+      - brightnessTemperature
       channels: 1-15
     obs operator:
       name: CRTM
-      Absorbers: [H2O,O3,CO2]
-      Clouds: [Water, Ice]
+      Absorbers:
+      - H2O
+      - O3
+      - CO2
+      Clouds:
+      - Water
+      - Ice
       Cloud_Fraction: 1.0
       obs options:
         Sensor_ID: amsua_n19
@@ -218,11 +273,14 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/atms_npp_hofx_geos_2020121500_m.nc4
-      simulated variables: [brightnessTemperature]
+      simulated variables:
+      - brightnessTemperature
       channels: 5-15,17-22
     obs operator:
       name: CRTM
-      Absorbers: [H2O,O3]
+      Absorbers:
+      - H2O
+      - O3
       obs options:
         Sensor_ID: atms_npp
         EndianType: little_endian
@@ -237,12 +295,18 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/gmi_gpm_hofx_geos_2020121500_m.nc4
-      simulated variables: [brightnessTemperature]
+      simulated variables:
+      - brightnessTemperature
       channels: 5,6,7,10,12,13
     obs operator:
       name: CRTM
-      Absorbers: [H2O,O3,CO2]
-      Clouds: [Water, Ice]
+      Absorbers:
+      - H2O
+      - O3
+      - CO2
+      Clouds:
+      - Water
+      - Ice
       Cloud_Fraction: 1.0
       obs options:
         Sensor_ID: gmi_gpm
@@ -258,12 +322,18 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/mhs_n19_hofx_geos_2020121500_m.nc4
-      simulated variables: [brightnessTemperature]
+      simulated variables:
+      - brightnessTemperature
       channels: 1-5
     obs operator:
       name: CRTM
-      Absorbers: [H2O,O3,CO2]
-      Clouds: [Water, Ice]
+      Absorbers:
+      - H2O
+      - O3
+      - CO2
+      Clouds:
+      - Water
+      - Ice
       Cloud_Fraction: 1.0
       obs options:
         Sensor_ID: mhs_n19
@@ -279,12 +349,18 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/mhs_metop-a_hofx_geos_2020121500_m.nc4
-      simulated variables: [brightnessTemperature]
+      simulated variables:
+      - brightnessTemperature
       channels: 1-5
     obs operator:
       name: CRTM
-      Absorbers: [H2O,O3,CO2]
-      Clouds: [Water, Ice]
+      Absorbers:
+      - H2O
+      - O3
+      - CO2
+      Clouds:
+      - Water
+      - Ice
       Cloud_Fraction: 1.0
       obs options:
         Sensor_ID: mhs_metop-a
@@ -300,12 +376,18 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/mhs_metop-b_hofx_geos_2020121500_m.nc4
-      simulated variables: [brightnessTemperature]
+      simulated variables:
+      - brightnessTemperature
       channels: 1-5
     obs operator:
       name: CRTM
-      Absorbers: [H2O,O3,CO2]
-      Clouds: [Water, Ice]
+      Absorbers:
+      - H2O
+      - O3
+      - CO2
+      Clouds:
+      - Water
+      - Ice
       Cloud_Fraction: 1.0
       obs options:
         Sensor_ID: mhs_metop-b
@@ -321,7 +403,8 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/airs_aqua_hofx_geos_2020121500_m.nc4
-      simulated variables: [brightnessTemperature]
+      simulated variables:
+      - brightnessTemperature
       channels: 7,15,20,21,22,27,28,40,52,69
                 72,92,93,98,99,104,105,110,111,116,
                 117,123,128,129,138,139,144,145,150,151,
@@ -336,7 +419,10 @@ observations:
                 1873,1876,1881,1882,1911,1917,1918,1924,1928
     obs operator:
       name: CRTM
-      Absorbers: [H2O,O3,CO2]
+      Absorbers:
+      - H2O
+      - O3
+      - CO2
       obs options:
         Sensor_ID: airs_aqua
         EndianType: little_endian
@@ -351,7 +437,8 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/iasi_metop-a_hofx_geos_2020121500_m.nc4
-      simulated variables: [brightnessTemperature]
+      simulated variables:
+      - brightnessTemperature
       channels: 16,38,49,51,55,57,59,61,63,66,
                   70,72,74,79,81,83,85,87,104,106,
                   109,111,113,116,119,122,125,128,131,133,
@@ -369,7 +456,10 @@ observations:
                   1671
     obs operator:
       name: CRTM
-      Absorbers: [H2O,O3,CO2]
+      Absorbers:
+      - H2O
+      - O3
+      - CO2
       obs options:
         Sensor_ID: iasi_metop-a
         EndianType: little_endian
@@ -384,7 +474,8 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/iasi_metop-b_hofx_geos_2020121500_m.nc4
-      simulated variables: [brightnessTemperature]
+      simulated variables:
+      - brightnessTemperature
       channels: 16,38,49,51,55,57,59,61,63,66,
                 70,72,74,79,81,83,85,87,104,106,
                 109,111,113,116,119,122,125,128,131,133,
@@ -402,7 +493,10 @@ observations:
                 1671
     obs operator:
       name: CRTM
-      Absorbers: [H2O,O3,CO2]
+      Absorbers:
+      - H2O
+      - O3
+      - CO2
       obs options:
         Sensor_ID: iasi_metop-b
         EndianType: little_endian
@@ -417,7 +511,8 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/cris-fsr_npp_hofx_geos_2020121500_m.nc4
-      simulated variables: [brightnessTemperature]
+      simulated variables:
+      - brightnessTemperature
       channels: 27,83,89,95,99,104,107,116,120,123,
                   126,130,133,136,138,142,145,150,153,157,
                   160,163,166,170,173,198,208,211,216,224,
@@ -425,14 +520,16 @@ observations:
                   464,473,529,596,626,646,659
     obs operator:
       name: CRTM
-      Absorbers: [H2O,O3,CO2]
+      Absorbers:
+      - H2O
+      - O3
+      - CO2
       obs options:
         Sensor_ID: cris-fsr_npp
         EndianType: little_endian
         CoefficientPath: Data/crtm/
 prints:
   frequency: PT3H
-
 test:
   reference filename: testoutput/hofx_fv3-geos.ref
   test output filename: testoutput/hofx_fv3-geos.test.out

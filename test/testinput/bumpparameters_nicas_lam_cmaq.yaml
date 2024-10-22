@@ -14,7 +14,8 @@ background:
   filename_sfcd: 20200903.180000.sfc_data.res.tile1.nc
   filename_sfcw: 20200903.180000.fv_srf_wnd.res.tile1.nc
   filename_cplr: 20200903.180000.coupler.res
-  state variables: [volume_mixing_ratio_of_no2]
+  state variables:
+  - volume_mixing_ratio_of_no2
 background error:
   covariance model: SABER
   saber central block:
@@ -61,7 +62,6 @@ background error:
           filename_sfcd: bumpparameters_nicas_lam_cmaq.cor_rv.sfc_data.nc
           filename_sfcw: bumpparameters_nicas_lam_cmaq.cor_rv.fv_srf_wnd.res.nc
           filename_cplr: bumpparameters_nicas_lam_cmaq.cor_rv.coupler.res
-
 test:
   reference filename: testoutput/bumpparameters_nicas_lam_cmaq.ref
   test output filename: testoutput/bumpparameters_nicas_lam_cmaq.test.out

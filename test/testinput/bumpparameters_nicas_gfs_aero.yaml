@@ -14,7 +14,8 @@ background:
   filename_core: 20201214.210000.fv_core.res.nc
   filename_trcr: 20201214.210000.fv_tracer.res.nc
   filename_cplr: 20201214.210000.coupler.res
-  state variables: [mass_fraction_of_sulfate_in_air]
+  state variables:
+  - mass_fraction_of_sulfate_in_air
 background error:
   covariance model: SABER
   saber central block:
@@ -55,7 +56,6 @@ background error:
           datapath: Data/bump/
           filename_core: bumpparameters_nicas_gfs_aero.cor_rv.fv_core.res.nc
           filename_trcr: bumpparameters_nicas_gfs_aero.cor_rv.fv_tracer.res.nc
-
 test:
   reference filename: testoutput/bumpparameters_nicas_gfs_aero.ref
   test output filename: testoutput/bumpparameters_nicas_gfs_aero.test.out

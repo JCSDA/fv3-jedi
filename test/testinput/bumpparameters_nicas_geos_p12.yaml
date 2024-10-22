@@ -3,7 +3,9 @@ geometry:
     namelist filename: Data/fv3files/fmsmpp.nml
     field table filename: Data/fv3files/field_table_gmao
   akbk: Data/fv3files/akbk72.nc4
-  layout: [1,2]
+  layout:
+  - 1
+  - 2
   npx: 13
   npy: 13
   npz: 72
@@ -13,8 +15,12 @@ background:
   filetype: cube sphere history
   provider: geos
   datapath: Data/inputs/geos_c12
-  filenames: [geos.bkg.20201214_210000z.nc4, geos.bkg.crtmsrf.20201214_210000z.nc4]
-  state variables: [air_temperature,air_pressure_at_surface]
+  filenames:
+  - geos.bkg.20201214_210000z.nc4
+  - geos.bkg.crtmsrf.20201214_210000z.nc4
+  state variables:
+  - air_temperature
+  - air_pressure_at_surface
 background error:
   covariance model: SABER
   saber central block:
@@ -35,8 +41,7 @@ background error:
         write local nicas: true
       nicas:
         resolution: 6
-        min effective resolution: 0.2  # Note: this is very much not recommended (resolution too low), only
-                                       # used because covariance quality is not important for CI tests
+        min effective resolution: 0.2
         explicit length-scales: true
         horizontal length-scale:
         - groups:
@@ -144,7 +149,6 @@ background error:
           provider: geos
           datapath: Data/bump/
           filename: bumpparameters_nicas_geos.cor_rv.%yyyy%mm%dd_%hh%MM%ssz.nc4
-
 test:
   reference filename: testoutput/bumpparameters_nicas_geos.ref
   test output filename: testoutput/bumpparameters_nicas_geos_p12.test.out

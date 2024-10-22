@@ -11,8 +11,9 @@ background:
   filetype: cube sphere history
   provider: geos
   datapath: Data/inputs/geos_c12
-  filename: geos_cf.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4  ##here it's no2
-  state variables: [volume_mixing_ratio_of_no2]
+  filename: geos_cf.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4
+  state variables:
+  - volume_mixing_ratio_of_no2
 background error:
   covariance model: SABER
   saber central block:
@@ -58,7 +59,6 @@ background error:
           provider: geos
           datapath: Data/bump/
           filename: bumpparameters_nicas_geos_cf.cor_rv.%yyyy%mm%dd_%hh%MM%ssz.nc4
-
 test:
   reference filename: testoutput/bumpparameters_nicas_geos_cf.ref
   test output filename: testoutput/bumpparameters_nicas_geos_cf.test.out

@@ -6,14 +6,14 @@ geometry:
   npx: 13
   npy: 13
   npz: 127
-  write geom: true #Output the grid so it can be read by e.g. femps
+  write geom: true
   field metadata override: Data/fieldmetadata/gfs-restart.yaml
   time invariant fields:
     state fields:
       datetime: 2019-12-15T18:00:00Z
       filetype: fms restart
       skip coupler file: true
-      state variables: [orog_filt]
+      state variables:
+      - orog_filt
       datapath: Data/inputs/gfs_c12/oro/
       filename_orog: C12_oro_data.nc
-

@@ -1,6 +1,14 @@
 cost function:
   cost type: 4D-Ens-Var
-  analysis variables: &vars [eastward_wind,northward_wind,air_temperature,air_pressure_thickness,water_vapor_mixing_ratio_wrt_moist_air,cloud_liquid_ice,cloud_liquid_water,ozone_mass_mixing_ratio]
+  analysis variables: &vars
+  - eastward_wind
+  - northward_wind
+  - air_temperature
+  - air_pressure_thickness
+  - water_vapor_mixing_ratio_wrt_moist_air
+  - cloud_liquid_ice
+  - cloud_liquid_water
+  - ozone_mass_mixing_ratio
   time window:
     begin: 2020-12-14T21:00:00Z
     length: PT6H
@@ -16,9 +24,28 @@ cost function:
       filename_sfcd: 20201214.210000.sfc_data.nc
       filename_sfcw: 20201214.210000.fv_srf_wnd.res.nc
       filename_cplr: 20201214.210000.coupler.res
-      state variables: [ua,va,T,delp,sphum,ice_wat,liq_wat,o3mr,phis,
-                        slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
-                        u_srf,v_srf,f10m]
+      state variables:
+      - ua
+      - va
+      - T
+      - delp
+      - sphum
+      - ice_wat
+      - liq_wat
+      - o3mr
+      - phis
+      - slmsk
+      - sheleg
+      - tsea
+      - vtype
+      - stype
+      - vfrac
+      - stc
+      - smc
+      - snwdph
+      - u_srf
+      - v_srf
+      - f10m
     - filetype: fms restart
       datetime: 2020-12-15T03:00:00Z
       datapath: Data/inputs/gfs_c12/bkg/
@@ -27,9 +54,28 @@ cost function:
       filename_sfcd: 20201215.030000.sfc_data.nc
       filename_sfcw: 20201215.030000.fv_srf_wnd.res.nc
       filename_cplr: 20201215.030000.coupler.res
-      state variables: [ua,va,T,delp,sphum,ice_wat,liq_wat,o3mr,phis,
-                        slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
-                        u_srf,v_srf,f10m]
+      state variables:
+      - ua
+      - va
+      - T
+      - delp
+      - sphum
+      - ice_wat
+      - liq_wat
+      - o3mr
+      - phis
+      - slmsk
+      - sheleg
+      - tsea
+      - vtype
+      - stype
+      - vfrac
+      - stc
+      - smc
+      - snwdph
+      - u_srf
+      - v_srf
+      - f10m
   background error:
     covariance model: ensemble
     localization:
@@ -68,11 +114,10 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/obs/testinput_tier_1/aircraft_obs_2020121500_m.nc4
-        # obsdataout:
-        #   engine:
-        #     type: H5File
-        #     obsfile: obsfile: Data/hofx/aircraft_4denvar-gfs_2020121500_m.nc4
-        simulated variables: [windEastward, windNorthward, airTemperature]
+        simulated variables:
+        - windEastward
+        - windNorthward
+        - airTemperature
       obs operator:
         name: VertInterp
         vertical coordinate: air_pressure
@@ -95,11 +140,14 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/obs/testinput_tier_1/amsua_n19_obs_2020121500_m.nc4
-        simulated variables: [brightnessTemperature]
+        simulated variables:
+        - brightnessTemperature
         channels: 1-15
       obs operator:
         name: CRTM
-        Absorbers: [H2O,O3]
+        Absorbers:
+        - H2O
+        - O3
         obs options:
           Sensor_ID: amsua_n19
           EndianType: little_endian
@@ -125,7 +173,9 @@ cost function:
           - name: sensorScanAngle
         covariance:
           minimal required obs number: 20
-          variance range: [1.0e-6, 10.0]
+          variance range:
+          - 1.0e-6
+          - 10.0
           step size: 1.0e-4
           largest analysis variance: 10000.0
           prior:
@@ -143,7 +193,6 @@ cost function:
     npy: 13
     npz: 127
     field metadata override: Data/fieldmetadata/gfs-restart.yaml
-
 variational:
   minimizer:
     algorithm: DRPCG
@@ -165,7 +214,6 @@ output:
   date: 2020-12-14T21:00:00Z
   first: PT0S
   frequency: PT6H
-
 final:
   increment:
     geometry: *geom
@@ -181,22 +229,29 @@ final:
   increment to structured grid:
     grid type: latlon
     local interpolator type: oops unstructured grid interpolator
-    resolution in degrees: 15.0  # low resolution for testing
-    variables to output: [air_temperature]
-    pressure levels in hPa: [250]
+    resolution in degrees: 15.0
+    variables to output:
+    - air_temperature
+    pressure levels in hPa:
+    - 250
     datapath: Data/analysis
     type: inc
     exp: 4denvar-gfs-seq
   analysis to structured grid:
     grid type: latlon
     local interpolator type: oops unstructured grid interpolator
-    resolution in degrees: 15.0  # low resolution for testing
-    variables to output: [air_temperature, eastward_wind, northward_wind]
-    pressure levels in hPa: [850, 500, 250]
+    resolution in degrees: 15.0
+    variables to output:
+    - air_temperature
+    - eastward_wind
+    - northward_wind
+    pressure levels in hPa:
+    - 850
+    - 500
+    - 250
     datapath: Data/analysis
     type: an
     exp: 4denvar-gfs-seq
-
 test:
   reference filename: testoutput/4denvar.ref
   test output filename: testoutput/4denvar_seq.test.out

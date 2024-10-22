@@ -1,6 +1,14 @@
 cost function:
   cost type: 3D-Var
-  analysis variables: &avars [eastward_wind,northward_wind,air_temperature,air_pressure_thickness,water_vapor_mixing_ratio_wrt_moist_air,cloud_liquid_water,ozone_mass_mixing_ratio,skin_temperature_at_surface]
+  analysis variables: &avars
+  - eastward_wind
+  - northward_wind
+  - air_temperature
+  - air_pressure_thickness
+  - water_vapor_mixing_ratio_wrt_moist_air
+  - cloud_liquid_water
+  - ozone_mass_mixing_ratio
+  - skin_temperature_at_surface
   time window:
     begin: 2020-12-14T21:00:00Z
     length: PT6H
@@ -9,7 +17,9 @@ cost function:
       namelist filename: Data/fv3files/fmsmpp.nml
       field table filename: Data/fv3files/field_table_gfdl
     akbk: Data/fv3files/akbk127.nc4
-    layout: [1,1]
+    layout:
+    - 1
+    - 1
     npx: 13
     npy: 13
     npz: 127
@@ -23,21 +33,29 @@ cost function:
     filename_sfcd: 20201215.000000.sfc_data.nc
     filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
     filename_cplr: 20201215.000000.coupler.res
-    state variables: &statevars [ua,va,t,delp,ps,sphum,ice_wat,liq_wat,o3mr,phis,
-                      slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
-                      u_srf,v_srf,f10m]
-#---------------------------------
-# Note: two choices of background error below (B=I B=diag(Bens)) are 
-# meant to test the generation of a increment on T-Skin that is simply
-# due to the sensitivity of Tb to T-skin and not any additional 
-# contribution from cross-covariances in B.
-# The setting is for testing purposes, not for practical applications
-# ---------------------------  B = I  -------------------------------
-# background error:
-#   covariance model: SABER
-#   saber central block:
-#     saber block name: ID
-# -------------------------  B = diag(Bens)  ------------------------
+    state variables: &statevars
+    - ua
+    - va
+    - t
+    - delp
+    - ps
+    - sphum
+    - ice_wat
+    - liq_wat
+    - o3mr
+    - phis
+    - slmsk
+    - sheleg
+    - tsea
+    - vtype
+    - stype
+    - vfrac
+    - stc
+    - smc
+    - snwdph
+    - u_srf
+    - v_srf
+    - f10m
   background error:
     covariance model: SABER
     ensemble:
@@ -60,15 +78,6 @@ cost function:
       saber block name: ID
     saber outer blocks:
     - saber block name: StdDev
-##    calibration:
-##      write to atlas file:
-##        filepath: Data/analysis/3denvar-gfs-tskin.stddev
-#   linear variable change:
-#     linear variable change name: Control2Analysis
-#     input variables: *statevars
-#     output variables: *avars
-###   state variables to inverse: *statevars
-#---------------------------------
   observations:
     observers:
     - obs space:
@@ -81,7 +90,12 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/sondes_3denvar-gfs-tskin_2020121500_m.nc4
-        simulated variables: [windEastward, windNorthward, airTemperature, stationPressure, specificHumidity]
+        simulated variables:
+        - windEastward
+        - windNorthward
+        - airTemperature
+        - stationPressure
+        - specificHumidity
       obs operator:
         name: Composite
         components:
@@ -99,7 +113,6 @@ cost function:
           variables:
           - name: stationPressure
           da_psfc_scheme: GSI
-
       linear obs operator:
         name: Composite
         components:
@@ -116,14 +129,17 @@ cost function:
         - name: Identity
           variables:
           - name: stationPressure
-
       obs error:
         covariance model: diagonal
       obs filters:
       - filter: PreQC
         maxvalue: 4
       - filter: Perform Action
-        filter variables: [windEastward, windNorthward, airTemperature, specificHumidity]
+        filter variables:
+        - windEastward
+        - windNorthward
+        - airTemperature
+        - specificHumidity
         action:
           name: assign error
           error function:
@@ -132,12 +148,12 @@ cost function:
             name: GsiFinalObsError/airTemperature
             name: GsiFinalObsError/specificHumidity
       - filter: Perform Action
-        filter variables: [stationPressure]
+        filter variables:
+        - stationPressure
         action:
           name: assign error
           error function:
             name: GsiFinalObsError/stationPressure
-
     - obs space:
         name: ompsnm_npp
         obsdatain:
@@ -148,12 +164,16 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/ompsnm_npp_3denvar-gfs-tskin_2020121500_m.nc4
-        simulated variables: [ozoneTotal]
+        simulated variables:
+        - ozoneTotal
       obs operator:
         name: AtmVertInterpLay
-        geovals: [mole_fraction_of_ozone_in_air]
-        coefficients: [0.007886131] # convert from ppmv to DU
-        nlevels: [1]
+        geovals:
+        - mole_fraction_of_ozone_in_air
+        coefficients:
+        - 0.007886131
+        nlevels:
+        - 1
       obs filters:
       - filter: Perform Action
         filter variables:
@@ -161,7 +181,6 @@ cost function:
         action:
           name: assign error
           error parameter: 6.0
-       # range sanity check
       - filter: Bounds Check
         filter variables:
         - name: ozoneTotal
@@ -169,7 +188,6 @@ cost function:
         maxvalue: 1000
         action:
           name: reject
-
     - obs space:
         name: omi_aura
         obsdatain:
@@ -180,12 +198,16 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/omi_aura_3denvar-gfs-tskin_2020121500_m.nc4
-        simulated variables: [ozoneTotal]
+        simulated variables:
+        - ozoneTotal
       obs operator:
         name: AtmVertInterpLay
-        geovals: [mole_fraction_of_ozone_in_air]
-        coefficients: [0.007886131] # convert from ppmv to DU
-        nlevels: [1]
+        geovals:
+        - mole_fraction_of_ozone_in_air
+        coefficients:
+        - 0.007886131
+        nlevels:
+        - 1
       obs filters:
       - filter: Perform Action
         filter variables:
@@ -193,7 +215,6 @@ cost function:
         action:
           name: assign error
           error parameter: 6.0
-       # range sanity check
       - filter: Bounds Check
         filter variables:
         - name: ozoneTotal
@@ -201,7 +222,6 @@ cost function:
         maxvalue: 1000
         action:
           name: reject
-      # Reject SZA > 84
       - filter: Bounds Check
         filter variables:
         - name: ozoneTotal
@@ -210,7 +230,6 @@ cost function:
         maxvalue: 84.
         action:
           name: reject
-
     - obs space:
         name: AMSUA-NOAA19
         obsdatain:
@@ -221,11 +240,14 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/amsua_n19_3denvar-gfs-tskin_2020121500_m.nc4
-        simulated variables: [brightnessTemperature]
+        simulated variables:
+        - brightnessTemperature
         channels: 1-15
       obs operator:
         name: CRTM
-        Absorbers: [H2O,O3]
+        Absorbers:
+        - H2O
+        - O3
         obs options:
           Sensor_ID: amsua_n19
           EndianType: little_endian
@@ -253,8 +275,6 @@ cost function:
         - name: brightnessTemperature
           channels: 1-15
         threshold: 3.0
-
-
     - obs space:
         name: IASI-METOPA
         obsdatain:
@@ -265,7 +285,8 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/iasi_metop-a_hyb-3denvar-gfs_2020121500_m.nc4
-        simulated variables: [brightnessTemperature]
+        simulated variables:
+        - brightnessTemperature
         channels: 16,38,49,51,55,57,59,61,63,66,
                   70,72,74,79,81,83,85,87,104,106,
                   109,111,113,116,119,122,125,128,131,133,
@@ -283,7 +304,9 @@ cost function:
                   1671
       obs operator:
         name: CRTM
-        Absorbers: [H2O,O3]
+        Absorbers:
+        - H2O
+        - O3
         obs options:
           Sensor_ID: iasi_metop-a
           EndianType: little_endian
@@ -339,83 +362,6 @@ cost function:
                     1133,1191,1194,1271,1427,1536,1579,1585,1626,1643,
                     1671
         threshold: 3.0
- 
-#   - obs space:
-#       name: IASI-METOPB
-#       obsdatain:
-#         engine:
-#           type: H5File
-#           obsfile: Data/obs/testinput_tier_1/iasi_metop-b_obs_2020121500_m.nc4
-#       obsdataout:
-#         engine:
-#           type: H5File
-#           obsfile: Data/hofx/iasi_metop-b_hyb-3denvar-gfs_2020121500_m.nc4
-#       simulated variables: [brightnessTemperature]
-#       channels: 16,38,49,51,55,57,59,61,63,66,
-#                 70,72,74,79,81,83,85,87,104,106,
-#                 109,111,113,116,119,122,125,128,131,133,
-#                 135,138,141,144,146,148,151,154,157,159,
-#                 161,163,167,170,173,176,180,185,187,193,
-#                 199,205,207,210,212,214,217,219,222,224,
-#                 226,230,232,236,239,243,246,249,252,254,
-#                 260,262,275,282,294,296,299,303,306,323,
-#                 327,329,335,345,347,350,354,356,360,366,
-#                 371,373,375,377,379,381,383,386,389,398,
-#                 401,404,407,410,414,416,426,428,432,434,
-#                 439,445,457,515,546,552,559,566,571,573,
-#                 646,662,668,756,867,906,921,1027,1046,1121,
-#                 1133,1191,1194,1271,1427,1536,1579,1585,1626,1643,
-#                 1671
-#     obs operator:
-#       name: CRTM
-#       Absorbers: [H2O,O3]
-#       obs options:
-#         Sensor_ID: iasi_metop-b
-#         EndianType: little_endian
-#         CoefficientPath: Data/crtm/
-#     obs error:
-#       covariance model: diagonal
-#     obs filters:
-#     - filter: Bounds Check
-#       filter variables:
-#       - name: brightnessTemperature
-#         channels: 16,38,49,51,55,57,59,61,63,66,
-#                   70,72,74,79,81,83,85,87,104,106,
-#                   109,111,113,116,119,122,125,128,131,133,
-#                   135,138,141,144,146,148,151,154,157,159,
-#                   161,163,167,170,173,176,180,185,187,193,
-#                   199,205,207,210,212,214,217,219,222,224,
-#                   226,230,232,236,239,243,246,249,252,254,
-#                   260,262,275,282,294,296,299,303,306,323,
-#                   327,329,335,345,347,350,354,356,360,366,
-#                   371,373,375,377,379,381,383,386,389,398,
-#                   401,404,407,410,414,416,426,428,432,434,
-#                   439,445,457,515,546,552,559,566,571,573,
-#                   646,662,668,756,867,906,921,1027,1046,1121,
-#                   1133,1191,1194,1271,1427,1536,1579,1585,1626,1643,
-#                   1671
-#       minvalue: 100.0
-#       maxvalue: 500.0
-#     - filter: Background Check
-#       filter variables:
-#       - name: brightnessTemperature
-#         channels: 16,38,49,51,55,57,59,61,63,66,
-#                   70,72,74,79,81,83,85,87,104,106,
-#                   109,111,113,116,119,122,125,128,131,133,
-#                   135,138,141,144,146,148,151,154,157,159,
-#                   161,163,167,170,173,176,180,185,187,193,
-#                   199,205,207,210,212,214,217,219,222,224,
-#                   226,230,232,236,239,243,246,249,252,254,
-#                   260,262,275,282,294,296,299,303,306,323,
-#                   327,329,335,345,347,350,354,356,360,366,
-#                   371,373,375,377,379,381,383,386,389,398,
-#                   401,404,407,410,414,416,426,428,432,434,
-#                   439,445,457,515,546,552,559,566,571,573,
-#                   646,662,668,756,867,906,921,1027,1046,1121,
-#                   1133,1191,1194,1271,1427,1536,1579,1585,1626,1643,
-#                   1671
-#       threshold: 3.0
-
     - obs space:
         name: SfcObs
         obsdatain:
@@ -426,7 +372,8 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/sfc_3denvar-gfs-tskin_2020121500_m.nc4
-        simulated variables: [stationPressure]
+        simulated variables:
+        - stationPressure
       obs operator:
         name: SfcPCorrected
         da_psfc_scheme: UKMO
@@ -437,8 +384,6 @@ cost function:
       obs filters:
       - filter: Background Check
         threshold: 1000
-
-
 final:
   diagnostics:
     departures: oman
@@ -457,14 +402,15 @@ variational:
     test: on
     geometry:
       akbk: Data/fv3files/akbk127.nc4
-      layout: [1,1]
+      layout:
+      - 1
+      - 1
       npx: 13
       npy: 13
       npz: 127
       field metadata override: Data/fieldmetadata/gfs-restart.yaml
     diagnostics:
       departures: ombg
-
 test:
   reference filename: testoutput/3denvar_gfs_tskin.ref
   float relative tolerance: 1.0e-1

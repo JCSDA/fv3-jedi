@@ -13,7 +13,9 @@ model:
   filetype: cube sphere history
   provider: geos
   datapath: Data/inputs/geos_c12
-  filenames: [geos.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4, geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4]
+  filenames:
+  - geos.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4
+  - geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
 model aux control: null
 model aux error: null
 model test:
@@ -25,8 +27,45 @@ initial condition:
   filetype: cube sphere history
   provider: geos
   datapath: Data/inputs/geos_c12
-  filenames: [geos.bkg.20201214_210000z.nc4, geos.bkg.crtmsrf.20201214_210000z.nc4]
-  state variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv,phis,
-                    qls,qcn,cfcn,frocean,frland,varflt,ustar,bstar,
-                    zpbl,cm,ct,cq,kcbl,tsm,khl,khu,frlake,frseaice,vtype,
-                    stype,vfrac,sheleg,ts,soilt,soilm,u10m,v10m]
+  filenames:
+  - geos.bkg.20201214_210000z.nc4
+  - geos.bkg.crtmsrf.20201214_210000z.nc4
+  state variables:
+  - u
+  - v
+  - ua
+  - va
+  - t
+  - delp
+  - q
+  - qi
+  - ql
+  - o3ppmv
+  - phis
+  - qls
+  - qcn
+  - cfcn
+  - frocean
+  - frland
+  - varflt
+  - ustar
+  - bstar
+  - zpbl
+  - cm
+  - ct
+  - cq
+  - kcbl
+  - tsm
+  - khl
+  - khu
+  - frlake
+  - frseaice
+  - vtype
+  - stype
+  - vfrac
+  - sheleg
+  - ts
+  - soilt
+  - soilm
+  - u10m
+  - v10m

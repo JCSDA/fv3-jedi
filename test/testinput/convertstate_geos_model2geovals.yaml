@@ -13,34 +13,71 @@ output geometry:
   npy: 13
   npz: 72
   field metadata override: Data/fieldmetadata/geos.yaml
-
 variable change:
   variable change name: Model2GeoVaLs
   tropopause pressure method: thompson
   hydrometeor effective radii method: gsi
   mask over: land
-  input variables: &inputvars [u,v,t,delp,q,qi,ql,qr,qs,phis,frocean,frlake,frseaice,
-                               vtype,stype,vfrac,sheleg,ts,soilt,soilm,u10m,v10m]
-  output variables: [rh,ps,tv,geopotential_height,
-                      height_above_mean_sea_level_at_surface,mole_fraction_of_carbon_dioxide_in_air,
-                      water_vapor_mixing_ratio_wrt_dry_air,
-                      mass_content_of_cloud_liquid_water_in_atmosphere_layer,
-                      mass_content_of_cloud_ice_in_atmosphere_layer,
-                      mass_content_of_rain_in_atmosphere_layer,
-                      mass_content_of_snow_in_atmosphere_layer,
-                      effective_radius_of_cloud_liquid_water_particle,
-                      effective_radius_of_cloud_ice_particle,
-                      effective_radius_of_rain_particle,
-                      effective_radius_of_snow_particle,
-                      water_area_fraction,
-                      land_area_fraction,ice_area_fraction,surface_snow_area_fraction,
-                      skin_temperature_at_surface_where_sea, skin_temperature_at_surface_where_land,
-                      skin_temperature_at_surface_where_ice,skin_temperature_at_surface_where_snow,
-                      surface_snow_thickness,vegetation_area_fraction,wind_speed_at_surface,
-                      wind_from_direction_at_surface,leaf_area_index,
-                      volume_fraction_of_condensed_water_in_soil,soil_temperature,
-                      land_type_index_NPOESS,vegetation_type_index,soil_type,
-                      vort,tropopause_pressure,saturation_specific_humidity]
+  input variables: &inputvars
+  - u
+  - v
+  - t
+  - delp
+  - q
+  - qi
+  - ql
+  - qr
+  - qs
+  - phis
+  - frocean
+  - frlake
+  - frseaice
+  - vtype
+  - stype
+  - vfrac
+  - sheleg
+  - ts
+  - soilt
+  - soilm
+  - u10m
+  - v10m
+  output variables:
+  - rh
+  - ps
+  - tv
+  - geopotential_height
+  - height_above_mean_sea_level_at_surface
+  - mole_fraction_of_carbon_dioxide_in_air
+  - water_vapor_mixing_ratio_wrt_dry_air
+  - mass_content_of_cloud_liquid_water_in_atmosphere_layer
+  - mass_content_of_cloud_ice_in_atmosphere_layer
+  - mass_content_of_rain_in_atmosphere_layer
+  - mass_content_of_snow_in_atmosphere_layer
+  - effective_radius_of_cloud_liquid_water_particle
+  - effective_radius_of_cloud_ice_particle
+  - effective_radius_of_rain_particle
+  - effective_radius_of_snow_particle
+  - water_area_fraction
+  - land_area_fraction
+  - ice_area_fraction
+  - surface_snow_area_fraction
+  - skin_temperature_at_surface_where_sea
+  - skin_temperature_at_surface_where_land
+  - skin_temperature_at_surface_where_ice
+  - skin_temperature_at_surface_where_snow
+  - surface_snow_thickness
+  - vegetation_area_fraction
+  - wind_speed_at_surface
+  - wind_from_direction_at_surface
+  - leaf_area_index
+  - volume_fraction_of_condensed_water_in_soil
+  - soil_temperature
+  - land_type_index_NPOESS
+  - vegetation_type_index
+  - soil_type
+  - vort
+  - tropopause_pressure
+  - saturation_specific_humidity
 states:
 - input:
     datetime: 2020-12-14T21:00:00Z
@@ -48,13 +85,14 @@ states:
     filetype: cube sphere history
     provider: geos
     datapath: Data/inputs/geos_c12
-    filenames: [geos.bkg.20201214_210000z.nc4,geos.bkg.crtmsrf.20201214_210000z.nc4]
+    filenames:
+    - geos.bkg.20201214_210000z.nc4
+    - geos.bkg.crtmsrf.20201214_210000z.nc4
   output:
    filetype: cube sphere history
    provider: geos
    datapath: Data/
    filename: geovals.geos.%yyyy%mm%dd_%hh%MM%ssz.nc4
-
 test:
   reference filename: testoutput/convertstate_geos_model2geovals.ref
   test output filename: testoutput/convertstate_geos_model2geovals.test.out

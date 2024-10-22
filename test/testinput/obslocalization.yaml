@@ -13,21 +13,22 @@ geometry:
       datetime: 2023-05-01T12:00:00Z
       filetype: fms restart
       skip coupler file: true
-      state variables: [orog_filt]
+      state variables:
+      - orog_filt
       datapath: Data/inputs/gfs_c12/oro/
       filename_orog: C12_oro_data.nc
-    derived fields: [nominal_surface_pressure]
-
+    derived fields:
+    - nominal_surface_pressure
 time window:
   begin: &date '2023-05-01T00:00:00Z'
   length: PT24H
-
 observations:
 - obs space:
     name: 'BoxCar'
     distribution:
       name: InefficientDistribution
-    simulated variables: ['totalSnowDepth']
+    simulated variables:
+    - 'totalSnowDepth'
     obsdatain:
       engine:
         type: H5File
@@ -36,18 +37,33 @@ observations:
   - localization method: Horizontal Box car
     lengthscale: 250e3
     reference gridpoints:
-      lons: [297.044776, 200.610019, 301.789939]
-      lats: [48.6443356, 66.73611, -21.5839479]
-      depths: [-99999, -99999, -99999]
-    reference local nobs: [6, 2, 0]
-    reference rms: [1.0, 1.0, 0.0]
+      lons:
+      - 297.044776
+      - 200.610019
+      - 301.789939
+      lats:
+      - 48.6443356
+      - 66.73611
+      - -21.5839479
+      depths:
+      - -99999
+      - -99999
+      - -99999
+    reference local nobs:
+    - 6
+    - 2
+    - 0
+    reference rms:
+    - 1.0
+    - 1.0
+    - 0.0
     print iterator: false
-
 - obs space:
     name: 'SOAR'
     distribution:
       name: InefficientDistribution
-    simulated variables: ['totalSnowDepth']
+    simulated variables:
+    - 'totalSnowDepth'
     obsdatain:
       engine:
         type: H5File
@@ -57,9 +73,24 @@ observations:
     lengthscale: 250e3
     soar horizontal decay: 0.000018
     reference gridpoints:
-      lons: [297.044776, 200.610019, 301.789939]
-      lats: [48.6443356, 66.73611, -21.5839479]
-      depths: [-99999, -99999, -99999]
-    reference local nobs: [6, 2, 0]
-    reference rms: [0.224079, 0.122889, 0]
+      lons:
+      - 297.044776
+      - 200.610019
+      - 301.789939
+      lats:
+      - 48.6443356
+      - 66.73611
+      - -21.5839479
+      depths:
+      - -99999
+      - -99999
+      - -99999
+    reference local nobs:
+    - 6
+    - 2
+    - 0
+    reference rms:
+    - 0.224079
+    - 0.122889
+    - 0
     print iterator: false

@@ -17,7 +17,10 @@ states:
 - input:
     filetype: fms restart
     datetime: 2020-12-14T21:00:00Z
-    state variables: [vtype,stype,vfrac]
+    state variables:
+    - vtype
+    - stype
+    - vfrac
     datapath: Data/inputs/gfs_c12/bkg/
     filename_core: 20201214.210000.fv_core.res.nc
     filename_trcr: 20201214.210000.fv_tracer.res.nc
@@ -32,7 +35,10 @@ states:
 - input:
     filetype: fms restart
     datetime: 2020-12-14T22:00:00Z
-    state variables: [vtype,stype,vfrac]
+    state variables:
+    - vtype
+    - stype
+    - vfrac
     datapath: Data/inputs/gfs_c12/bkg/
     filename_core: 20201214.220000.fv_core.res.nc
     filename_trcr: 20201214.220000.fv_tracer.res.nc
@@ -47,7 +53,10 @@ states:
 - input:
     filetype: fms restart
     datetime: 2020-12-14T23:00:00Z
-    state variables: [vtype,stype,vfrac]
+    state variables:
+    - vtype
+    - stype
+    - vfrac
     datapath: Data/inputs/gfs_c12/bkg/
     filename_core: 20201214.230000.fv_core.res.nc
     filename_trcr: 20201214.230000.fv_tracer.res.nc
@@ -62,7 +71,10 @@ states:
 - input:
     filetype: fms restart
     datetime: 2020-12-15T00:00:00Z
-    state variables: [vtype,stype,vfrac]
+    state variables:
+    - vtype
+    - stype
+    - vfrac
     datapath: Data/inputs/gfs_c12/bkg/
     filename_core: 20201215.000000.fv_core.res.nc
     filename_trcr: 20201215.000000.fv_tracer.res.nc
@@ -77,7 +89,10 @@ states:
 - input:
     filetype: fms restart
     datetime: 2020-12-15T01:00:00Z
-    state variables: [vtype,stype,vfrac]
+    state variables:
+    - vtype
+    - stype
+    - vfrac
     datapath: Data/inputs/gfs_c12/bkg/
     filename_core: 20201215.010000.fv_core.res.nc
     filename_trcr: 20201215.010000.fv_tracer.res.nc
@@ -92,7 +107,10 @@ states:
 - input:
     filetype: fms restart
     datetime: 2020-12-15T02:00:00Z
-    state variables: [vtype,stype,vfrac]
+    state variables:
+    - vtype
+    - stype
+    - vfrac
     datapath: Data/inputs/gfs_c12/bkg/
     filename_core: 20201215.020000.fv_core.res.nc
     filename_trcr: 20201215.020000.fv_tracer.res.nc
@@ -107,7 +125,10 @@ states:
 - input:
     filetype: fms restart
     datetime: 2020-12-15T03:00:00Z
-    state variables: [vtype,stype,vfrac]
+    state variables:
+    - vtype
+    - stype
+    - vfrac
     datapath: Data/inputs/gfs_c12/bkg/
     filename_core: 20201215.030000.fv_core.res.nc
     filename_trcr: 20201215.030000.fv_tracer.res.nc

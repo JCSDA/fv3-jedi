@@ -7,27 +7,47 @@ geometry:
   npy: 13
   npz: 127
   field metadata override: Data/fieldmetadata/gfs-restart.yaml
-
-recenter variables: [ua,va,T,delp,sphum,ice_wat,liq_wat,o3mr]
-
+recenter variables:
+- ua
+- va
+- T
+- delp
+- sphum
+- ice_wat
+- liq_wat
+- o3mr
 center:
   datetime: 2020-12-15T00:00:00Z
   filetype: fms restart
-  state variables: [ua,va,T,delp,sphum,ice_wat,liq_wat,o3mr]
+  state variables:
+  - ua
+  - va
+  - T
+  - delp
+  - sphum
+  - ice_wat
+  - liq_wat
+  - o3mr
   datapath: Data/inputs/gfs_c12/bkg/
   filename_core: 20201215.000000.fv_core.res.nc
   filename_trcr: 20201215.000000.fv_tracer.res.nc
   filename_sfcd: 20201215.000000.sfc_data.nc
   filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
   filename_cplr: 20201215.000000.coupler.res
-
-
 ensemble:
   members from template:
     template:
       datetime: 2020-12-15T00:00:00Z
       filetype: fms restart
-      state variables: [ua,va,T,delp,sphum,ice_wat,liq_wat,o3mr]
+      state variables:
+      - ua
+      - va
+      - T
+      - delp
+      - sphum
+      - ice_wat
+      - liq_wat
+      - o3mr
       datapath: Data/inputs/gfs_c12/mem%mem%/
       filename_core: 20201215.000000.fv_core.res.nc
       filename_trcr: 20201215.000000.fv_tracer.res.nc
@@ -37,7 +57,6 @@ ensemble:
     pattern: '%mem%'
     nmembers: 10
     zero padding: 3
-
 recentered output:
   filetype: fms restart
   datapath: Data/analysis/letkf/gfs/mem%{member}%/
@@ -47,7 +66,6 @@ recentered output:
   filename_sfcd: recentered.sfc_data.nc
   filename_sfcw: recentered.fv_srf_wnd.res.nc
   filename_cplr: recentered.coupler.res
-
 test:
   reference filename: testoutput/ensrecenter_gfs.ref
   test output filename: testoutput/ensrecenter_gfs.test.out

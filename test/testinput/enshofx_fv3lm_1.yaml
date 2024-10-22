@@ -15,10 +15,35 @@ initial condition:
   datetime: 2020-12-14T21:00:00Z
   filetype: cube sphere history
   provider: geos
-  state variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv,phis,frocean,frlake,
-                    frseaice,vtype,stype,vfrac,sheleg,ts,soilt,soilm,u10m,v10m,co2]
+  state variables:
+  - u
+  - v
+  - ua
+  - va
+  - t
+  - delp
+  - q
+  - qi
+  - ql
+  - o3ppmv
+  - phis
+  - frocean
+  - frlake
+  - frseaice
+  - vtype
+  - stype
+  - vfrac
+  - sheleg
+  - ts
+  - soilt
+  - soilm
+  - u10m
+  - v10m
+  - co2
   datapath: Data/inputs/geos_c12
-  filenames: [geos.bkg.20201214_210000z.nc4, geos.bkg.crtmsrf.20201214_210000z.nc4]
+  filenames:
+  - geos.bkg.20201214_210000z.nc4
+  - geos.bkg.crtmsrf.20201214_210000z.nc4
 model:
   name: FV3LM
   use internal namelist: true
@@ -26,8 +51,30 @@ model:
   lm_do_dyn: 1
   lm_do_trb: 0
   lm_do_mst: 0
-  model variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv,phis,frocean,frlake,
-                    frseaice,vtype,stype,vfrac,sheleg,ts,soilt,soilm,u10m,v10m]
+  model variables:
+  - u
+  - v
+  - ua
+  - va
+  - t
+  - delp
+  - q
+  - qi
+  - ql
+  - o3ppmv
+  - phis
+  - frocean
+  - frlake
+  - frseaice
+  - vtype
+  - stype
+  - vfrac
+  - sheleg
+  - ts
+  - soilt
+  - soilm
+  - u10m
+  - v10m
 observations:
   get values:
     variable change:
@@ -42,7 +89,10 @@ observations:
         engine:
           type: H5File
           obsfile: Data/obs/testinput_tier_1/aircraft_obs_2020121500_m.nc4
-      simulated variables: [windEastward, windNorthward, airTemperature]
+      simulated variables:
+      - windEastward
+      - windNorthward
+      - airTemperature
     obs operator:
       name: VertInterp
       vertical coordinate: air_pressure
@@ -58,7 +108,8 @@ observations:
         engine:
           type: H5File
           obsfile: Data/obs/testinput_tier_1/gnssro_obs_2020121500_m.nc4
-      simulated variables: [bendingAngle]
+      simulated variables:
+      - bendingAngle
     obs operator:
       name: GnssroBndNBAM
       obs options:
@@ -76,12 +127,18 @@ observations:
         engine:
           type: H5File
           obsfile: Data/obs/testinput_tier_1/amsua_n19_obs_2020121500_m.nc4
-      simulated variables: [brightnessTemperature]
+      simulated variables:
+      - brightnessTemperature
       channels: 1-15
     obs operator:
       name: CRTM
-      Absorbers: [H2O,O3,CO2]
-      Clouds: [Water, Ice]
+      Absorbers:
+      - H2O
+      - O3
+      - CO2
+      Clouds:
+      - Water
+      - Ice
       Cloud_Fraction: 1.0
       SurfaceWindGeoVars: uv
       obs options:

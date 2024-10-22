@@ -3,7 +3,8 @@ cost function:
   time window:
     begin: 2023-05-01T00:00:00Z
     length: PT24H
-  analysis variables: [totalSnowDepth]
+  analysis variables:
+  - totalSnowDepth
   geometry: &geom
     fms initialization:
       namelist filename: Data/fv3files/fmsmpp.nml
@@ -12,20 +13,23 @@ cost function:
     npx: 49
     npy: 49
     npz: 127
-
   background:
     datetime: 2023-05-01T12:00:00Z
     filetype: fms restart
-    state variables: [totalSnowDepth,vtype,sheleg,slmsk]
-    datapath: Data/inputs/gfs_land_c48/mem001/   # TODO: change to bg instead of
-                                                 # artificial member (needs data update)
+    state variables:
+    - totalSnowDepth
+    - vtype
+    - sheleg
+    - slmsk
+    datapath: Data/inputs/gfs_land_c48/mem001/
     filename_sfcd: 20230501.120000.sfc_data.nc
     filename_cplr: 20230501.120000.coupler.res
   background error:
     covariance model: SABER
     saber central block:
       saber block name: BUMP_NICAS
-      saber active variables: [totalSnowDepth]
+      saber active variables:
+      - totalSnowDepth
       calibration:
         general:
           universe length-scale: 5000000.0
@@ -33,19 +37,22 @@ cost function:
           multivariate strategy: univariate
           compute nicas: true
         nicas:
-          resolution: 6               # discretization for the correlation function
+          resolution: 6
           explicit length-scales: true
           horizontal length-scale:
-          - groups: [totalSnowDepth]
+          - groups:
+            - totalSnowDepth
             value: 2500000.0
           vertical length-scale:
-          - groups: [totalSnowDepth]
+          - groups:
+            - totalSnowDepth
             value: 700.0
   observations:
     observers:
     - obs space:
         name: Snow depth
-        simulated variables: [totalSnowDepth]
+        simulated variables:
+        - totalSnowDepth
         obsdatain:
           engine:
             type: H5File
@@ -53,41 +60,39 @@ cost function:
       obs operator:
         name: Identity
       obs filters:
-      - filter: Bounds Check # negative / missing snow
+      - filter: Bounds Check
         filter variables:
         - name: totalSnowDepth
         minvalue: 0.0
         maxvalue: 10000.0
-      - filter: Domain Check # missing station elevation (-999.9)
+      - filter: Domain Check
         where:
         - variable:
             name: MetaData/stationElevation
           minvalue: -999.0
           maxvalue: 10000.0
-      - filter: Domain Check # land only
+      - filter: Domain Check
         where:
         - variable:
             name: GeoVaLs/slmsk
           minvalue: 0.5
           maxvalue: 1.5
-      - filter: RejectList  # no land-ice
+      - filter: RejectList
         where:
         - variable:
             name: GeoVaLs/vtype
           minvalue: 14.5
           maxvalue: 15.5
-      - filter: Background Check # gross error check
+      - filter: Background Check
         filter variables:
         - name: totalSnowDepth
         threshold: 6.25
         action:
           name: reject
-
 output:
   filetype: auxgrid
   gridtype: latlon
   filename: Data/analysis/gfs_land/3dvar.snow
-
 final:
   increment:
     geometry: *geom
@@ -96,14 +101,13 @@ final:
         filetype: fms restart
         datapath: Data/analysis/gfs_land
         prefix: 3dvar.snow.inc
-
 variational:
   minimizer:
     algorithm: DRPCG
   iterations:
   - ninner: 10
     gradient norm reduction: 1e-10
-    geometry:                           # minimization at lower resolution
+    geometry:
       akbk: Data/fv3files/akbk127.nc4
       npx: 49
       npy: 49
@@ -114,12 +118,12 @@ variational:
           datetime: 2023-05-01T12:00:00Z
           filetype: fms restart
           skip coupler file: true
-          state variables: [orog_filt]
+          state variables:
+          - orog_filt
           datapath: Data/inputs/gfs_land_c48/grid/
           filename_orog: C48_oro_data.nc
           filename_sfcd: C48_oro_data.nc
       vert coordinate: orography
-
 test:
   reference filename: testoutput/3dvar_snow.ref
   test output filename: testoutput/3dvar_snow.test.out

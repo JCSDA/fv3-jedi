@@ -13,23 +13,40 @@ geometry:
       datetime: 2020-12-15T00:00:00Z
       filetype: fms restart
       skip coupler file: true
-      state variables: [orog_filt]
+      state variables:
+      - orog_filt
       datapath: Data/inputs/gfs_c12/oro/
       filename_orog: C12_oro_data.nc
-    derived fields: [nominal_surface_pressure]
-
+    derived fields:
+    - nominal_surface_pressure
 time window:
   begin: &date 2020-12-14T21:00:00Z
   length: PT6H
-
 background:
    members from template:
      template:
        datetime: 2020-12-15T00:00:00Z
        filetype: fms restart
-       state variables: [ua,va,t,ps,delp,sphum,ice_wat,liq_wat,o3mr,phis,
-                         slmsk,sheleg,tsea,vtype,stype,vfrac,
-                         u_srf,v_srf,f10m]
+       state variables:
+       - ua
+       - va
+       - t
+       - ps
+       - delp
+       - sphum
+       - ice_wat
+       - liq_wat
+       - o3mr
+       - phis
+       - slmsk
+       - sheleg
+       - tsea
+       - vtype
+       - stype
+       - vfrac
+       - u_srf
+       - v_srf
+       - f10m
        datapath: Data/inputs/gfs_c12/mem%mem%/
        filename_core: 20201215.000000.fv_core.res.nc
        filename_trcr: 20201215.000000.fv_tracer.res.nc
@@ -39,7 +56,6 @@ background:
      pattern: '%mem%'
      nmembers: 3
      zero padding: 3
-
 observations:
   observers:
   - obs space:
@@ -55,7 +71,9 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/scatwind_letkf-gfs_2020121500_s.nc4
-      simulated variables: [windEastward, windNorthward]
+      simulated variables:
+      - windEastward
+      - windNorthward
     obs operator:
       name: VertInterp
       vertical coordinate: air_pressure
@@ -74,7 +92,6 @@ observations:
       ioda vertical coordinate: pressure
       ioda vertical coordinate group: MetaData
       localization function: Gaspari Cohn
-
   - obs space:
       name: SfcObs
       distribution:
@@ -88,7 +105,8 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/sfc_letkf-gfs_2020121500_s.nc4
-      simulated variables: [stationPressure]
+      simulated variables:
+      - stationPressure
     obs operator:
       name: SfcPCorrected
       da_psfc_scheme: UKMO
@@ -109,7 +127,6 @@ observations:
       ioda vertical coordinate: pressure
       ioda vertical coordinate group: MetaData
       localization function: Gaspari Cohn
-
 driver:
   do posterior observer: true
   do test prints: false
@@ -117,26 +134,20 @@ driver:
   save posterior ensemble: false
   save prior mean: false
   save posterior mean increment: true
-
 local ensemble DA:
   solver: LETKF
   inflation:
     rtps: 0.5
     rtpp: 0.6
     mult: 1.1
-
-# for realistic output, use gfs filetype for output
-# here we are using latlon for ease of visualisation
 output:
   filetype: auxgrid
   gridtype: latlon
   filename: Data/analysis/letkf/gfs/mem%{member}%/letkf.
-
 output increment:
   filetype: auxgrid
   gridtype: latlon
   filename: Data/analysis/letkf/gfs/mem%{member}%/xainc.
-
 test:
   reference filename: testoutput/letkf3d.ref
   test output filename: testoutput/letkf3d.test.out

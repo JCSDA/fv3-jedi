@@ -12,21 +12,22 @@ geometry:
       datetime: 2023-05-01T12:00:00Z
       filetype: fms restart
       skip coupler file: true
-      state variables: [orog_filt]
+      state variables:
+      - orog_filt
       datapath: Data/inputs/gfs_c12/oro/
       filename_orog: C12_oro_data.nc
-    derived fields: [nominal_surface_pressure]
-
+    derived fields:
+    - nominal_surface_pressure
 time window:
   begin: &date '2023-05-01T00:00:00Z'
   end: 2023-05-02T00:00:00Z
-
 observations:
 - obs space:
     name: 'Brasnett99'
     distribution:
       name: InefficientDistribution
-    simulated variables: ['totalSnowDepth']
+    simulated variables:
+    - 'totalSnowDepth'
     obsdatain:
       engine:
         type: H5File
@@ -37,11 +38,25 @@ observations:
     soar horizontal decay: 0.000018
   - localization method: Vertical Brasnett
     vertical lengthscale: 800
-
 observation localizations reference:
   gridpoints:
-    lons: [297.044776, 200.610019, 301.789939]
-    lats: [48.6443356, 66.73611, -21.5839479]
-    depths: [-99999, -99999, -99999]
-  local nobs: [6, 2, 0]
-  rms: [0.223955884, 0.122605251, 0]
+    lons:
+    - 297.044776
+    - 200.610019
+    - 301.789939
+    lats:
+    - 48.6443356
+    - 66.73611
+    - -21.5839479
+    depths:
+    - -99999
+    - -99999
+    - -99999
+  local nobs:
+  - 6
+  - 2
+  - 0
+  rms:
+  - 0.223955884
+  - 0.122605251
+  - 0

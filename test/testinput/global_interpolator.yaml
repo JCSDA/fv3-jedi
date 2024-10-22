@@ -6,11 +6,13 @@ geometry:
   npx: 13
   npy: 13
   npz: 127
-
 number of target points per mpi rank: 16
-latitude bounds of target points: [-90.0, 90.0]
-longitude bounds of target points: [0.0, 360.0]
+latitude bounds of target points:
+- -90.0
+- 90.0
+longitude bounds of target points:
+- 0.0
+- 360.0
 number of levels: 3
 variable name: airTemperature
-
 tolerance interpolation: 5.e-3

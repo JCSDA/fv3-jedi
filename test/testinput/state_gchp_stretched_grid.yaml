@@ -18,8 +18,10 @@ state test:
     provider: geos
     datapath: Data/inputs/GEOSChem_c12
     filename: GEOSChem.geoscf_jedi_sg.c13_2.2_262_40.%yyyy%mm%dd_%hh%MMz.nc4
-    tile is a dimension: [true]
-    clobber existing files: [false]
+    tile is a dimension:
+    - true
+    clobber existing files:
+    - false
     state variables:
     - air_temperature
     - pm25at
@@ -34,4 +36,5 @@ state test:
   date: 2021-08-15T03:00:00Z
   norm file: 101.58104065376983
   tolerance: 1.0e-08
-  construct to variables: [air_temperature]
+  construct to variables:
+  - air_temperature

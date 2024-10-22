@@ -1,6 +1,12 @@
 cost function:
   cost type: 3D-Var
-  analysis variables: &3dvars [ua,va,t,ps,sphum,o3mr]
+  analysis variables: &3dvars
+  - ua
+  - va
+  - t
+  - ps
+  - sphum
+  - o3mr
   time window:
     begin: 2020-12-14T21:00:00Z
     length: PT6H
@@ -9,7 +15,9 @@ cost function:
       namelist filename: Data/fv3files/fmsmpp.nml
       field table filename: Data/fv3files/field_table_gfdl
     akbk: Data/fv3files/akbk127.nc4
-    layout: [1,1]
+    layout:
+    - 1
+    - 1
     npx: 13
     npy: 13
     npz: 127
@@ -23,11 +31,15 @@ cost function:
     filename_sfcd: 20201215.000000.sfc_data.nc
     filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
     filename_cplr: 20201215.000000.coupler.res
-    state variables: [ua,va,t,delp,ps,sphum,phis,o3mr]
-#   state variables: [ua,va,t,delp,ps,sphum,ice_wat,liq_wat,o3mr,phis,
-#                     slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
-#                     u_srf,v_srf,f10m]
-#---------------------------------
+    state variables:
+    - ua
+    - va
+    - t
+    - delp
+    - ps
+    - sphum
+    - phis
+    - o3mr
   background error:
     covariance model: SABER
     saber central block:
@@ -38,7 +50,6 @@ cost function:
         gsi berror namelist file: Data/gsibec/gfs_gsi_global_192x96x127.nml
         processor layout x direction: 3
         processor layout y direction: 2
-##      debugging bypass gsi: true
         debugging mode: false
     saber outer blocks:
     - saber block name: gsi interpolation to model grid
@@ -50,11 +61,14 @@ cost function:
       debugging mode: false
     linear variable change:
       linear variable change name: Control2Analysis
-      input variables: [eastward_wind,northward_wind,air_temperature,air_pressure_at_surface,
-                        water_vapor_mixing_ratio_wrt_moist_air,mole_fraction_of_ozone_in_air]
+      input variables:
+      - eastward_wind
+      - northward_wind
+      - air_temperature
+      - air_pressure_at_surface
+      - water_vapor_mixing_ratio_wrt_moist_air
+      - mole_fraction_of_ozone_in_air
       output variables: *3dvars
-
-#---------------------------------
   observations:
     observers:
     - obs space:
@@ -67,7 +81,12 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/sondes_hyb-3dvar-geos_2020121500_m.nc4
-        simulated variables: [windEastward, windNorthward, airTemperature, stationPressure, specificHumidity]
+        simulated variables:
+        - windEastward
+        - windNorthward
+        - airTemperature
+        - stationPressure
+        - specificHumidity
       obs operator:
         name: Composite
         components:
@@ -80,13 +99,11 @@ cost function:
           - name: windEastward
           - name: windNorthward
           - name: airTemperature
-#         - name: virtualTemperature
           - name: specificHumidity
         - name: SfcPCorrected
           variables:
           - name: stationPressure
           da_psfc_scheme: GSI
-
       linear obs operator:
         name: Composite
         components:
@@ -99,42 +116,35 @@ cost function:
           - name: windEastward
           - name: windNorthward
           - name: airTemperature
-#         - name: virtualTemperature
           - name: specificHumidity
         - name: Identity
           variables:
           - name: stationPressure
-
       obs error:
         covariance model: diagonal
       obs filters:
       - filter: PreQC
         maxvalue: 4
-#     - filter: Background Check
-#       filter variables:
-#       - name: windEastward
-#       - name: windNorthward
-#       - name: airTemperature
-#       - name: stationPressure
-#       threshold: 6.0
       - filter: Perform Action
-        filter variables: [windEastward, windNorthward, airTemperature, specificHumidity]
-##      filter variables: [windEastward, windNorthward, airTemperature, virtualTemperature]
+        filter variables:
+        - windEastward
+        - windNorthward
+        - airTemperature
+        - specificHumidity
         action:
           name: assign error
           error function:
             name: GsiFinalObsError/windEastward
             name: GsiFinalObsError/windNorthward
             name: GsiFinalObsError/airTemperature
-##          name: GsiFinalObsError/virtualTemperature
             name: GsiFinalObsError/specificHumidity
       - filter: Perform Action
-        filter variables: [stationPressure]
+        filter variables:
+        - stationPressure
         action:
           name: assign error
           error function:
             name: GsiFinalObsError/stationPressure
-
     - obs space:
         name: ompsnm_npp
         obsdatain:
@@ -145,26 +155,23 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/ompsnm_npp_hyb-3dvar-geos_2020121500_m.nc4
-        simulated variables: [ozoneTotal]
+        simulated variables:
+        - ozoneTotal
       obs operator:
         name: AtmVertInterpLay
-        geovals: [mole_fraction_of_ozone_in_air]
-        coefficients: [0.007886131] # convert from ppmv to DU
-        nlevels: [1]
+        geovals:
+        - mole_fraction_of_ozone_in_air
+        coefficients:
+        - 0.007886131
+        nlevels:
+        - 1
       obs filters:
-#     - filter: Perform Action
-#       filter variables: [ozoneTotal]
-#       action:
-#         name: assign error
-#         error function:
-#           name: GsiFinalObsError/ozoneTotal
       - filter: Perform Action
         filter variables:
         - name: ozoneTotal
         action:
           name: assign error
           error parameter: 6.0
-       # range sanity check
       - filter: Bounds Check
         filter variables:
         - name: ozoneTotal
@@ -172,23 +179,6 @@ cost function:
         maxvalue: 1000
         action:
           name: reject
-#     # Reject SZA > 84
-#     - filter: Bounds Check
-#       filter variables:
-#       - name: ozoneTotal
-#       test variables:
-#       - name: MetaData/solarZenithAngle
-#       maxvalue: 84.
-#       action:
-#         name: reject
-#     # Gross check
-#     - filter: Background Check
-#       filter variables:
-#       - name: ozoneTotal
-#       threshold: 5.0
-#       action:
-#         name: reject
-
     - obs space:
         name: omi_aura
         obsdatain:
@@ -199,26 +189,23 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/omi_aura_hyb-3dvar-geos_2020121500_m.nc4
-        simulated variables: [ozoneTotal]
+        simulated variables:
+        - ozoneTotal
       obs operator:
         name: AtmVertInterpLay
-        geovals: [mole_fraction_of_ozone_in_air]
-        coefficients: [0.007886131] # convert from ppmv to DU
-        nlevels: [1]
+        geovals:
+        - mole_fraction_of_ozone_in_air
+        coefficients:
+        - 0.007886131
+        nlevels:
+        - 1
       obs filters:
-##    - filter: Perform Action
-##      filter variables: [ozoneTotal]
-##      action:
-##        name: assign error
-##        error function:
-##          name: GsiFinalObsError/ozoneTotal
       - filter: Perform Action
         filter variables:
         - name: ozoneTotal
         action:
           name: assign error
           error parameter: 6.0
-       # range sanity check
       - filter: Bounds Check
         filter variables:
         - name: ozoneTotal
@@ -226,7 +213,6 @@ cost function:
         maxvalue: 1000
         action:
           name: reject
-      # Reject SZA > 84
       - filter: Bounds Check
         filter variables:
         - name: ozoneTotal
@@ -235,29 +221,9 @@ cost function:
         maxvalue: 84.
         action:
           name: reject
-      # Reject rows 25+ (somewhat stringent but thats what we do in GEOS)
-#     - filter: Bounds Check
-#       filter variables:
-#       - name: ozoneTotal
-#       test variables:
-#       - name: MetaData/sensorScanPosition
-#       minvalue: 3
-#       maxvalue: 24
-#       action:
-#         name: reject
-#     # Gross check
-#     - filter: Background Check
-#       filter variables:
-#       - name: ozoneTotal
-#       threshold: 5.0
-#       action:
-#         name: reject
-
 output:
   filetype: fms restart
-##provider: gfs
   datapath: Data/analysis
-##filename: 3dvar-sondes-gfs.ana.%yyyy%mm%dd_%hh%MM%ssz.nc4
   prefix: 3dvar-gfs.ana.c12
   first: PT0H
   frequency: PT1H
@@ -267,42 +233,15 @@ variational:
   iterations:
   - ninner: 5
     gradient norm reduction: 1e-10
-##  test: on
     geometry:
       akbk: Data/fv3files/akbk127.nc4
-      layout: [1,1]
+      layout:
+      - 1
+      - 1
       npx: 13
       npy: 13
       npz: 127
       field metadata override: Data/fieldmetadata/gfs-restart.yaml
-#   online diagnostics:
-#     write increment: true
-#     increment:
-#       state component:
-#         filetype: fms restart
-#         provider: gfs
-#         datapath: Data/analysis
-#         filename: 3dvar_sondes_gfs.inc-iter1.%yyyy%mm%dd_%hh%MM%ssz.nc
-
-# - ninner: 5
-#   gradient norm reduction: 1e-10
-##  test: on
-#   geometry:
-#     akbk: Data/fv3files/akbk127.nc4
-#     layout: [1,1]
-#     npx: 13
-#     npy: 13
-#     npz: 127
-#     field metadata override: Data/fieldmetadata/gfs-restart.yaml
-##  online diagnostics:
-##    write increment: true
-##    increment:
-##      state component:
-##        filetype: fms restart
-##        provider: gfs
-##        datapath: Data/analysis
-##        filename: 3dvar_sondes_gfs.inc-iter2.%yyyy%mm%dd_%hh%MM%ssz.nc
-
 test:
   reference filename: testoutput/3dvar_gfs_sondes.ref
   float relative tolerance: 1.0e-1

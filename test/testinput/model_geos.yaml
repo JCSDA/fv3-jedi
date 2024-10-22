@@ -24,6 +24,22 @@ initial condition:
   filetype: cube sphere history
   provider: geos
   datapath: Data/ModelRunDirs/GEOS
-  filenames: [fvcore_internal_rst, moist_internal_rst, fvcore_internal_rst]
-  tile is a dimension: [false, false, false]
-  state variables: [U,V,PT,PKZ,PE,Q,QILS,QLLS,QICN,QLCN]
+  filenames:
+  - fvcore_internal_rst
+  - moist_internal_rst
+  - fvcore_internal_rst
+  tile is a dimension:
+  - false
+  - false
+  - false
+  state variables:
+  - U
+  - V
+  - PT
+  - PKZ
+  - PE
+  - Q
+  - QILS
+  - QLLS
+  - QICN
+  - QLCN

@@ -1,6 +1,14 @@
 cost function:
   cost type: 3D-Var
-  analysis variables: &3dvars [eastward_wind,northward_wind,air_temperature,air_pressure_at_surface,water_vapor_mixing_ratio_wrt_moist_air,cloud_liquid_ice,cloud_liquid_water,mole_fraction_of_ozone_in_air]
+  analysis variables: &3dvars
+  - eastward_wind
+  - northward_wind
+  - air_temperature
+  - air_pressure_at_surface
+  - water_vapor_mixing_ratio_wrt_moist_air
+  - cloud_liquid_ice
+  - cloud_liquid_water
+  - mole_fraction_of_ozone_in_air
   time window:
     begin: 2020-12-14T21:00:00Z
     length: PT6H
@@ -18,9 +26,33 @@ cost function:
     filetype: cube sphere history
     provider: geos
     datapath: Data/inputs/geos_c12
-    filenames: [geos.bkg.20201215_000000z.nc4, geos.bkg.crtmsrf.20201215_000000z.nc4]
-    state variables: [ua,va,t,ps,q,qi,ql,qr,qs,o3ppmv,phis,frocean,frlake,frseaice,vtype,
-                      stype,vfrac,sheleg,ts,soilt,soilm,u10m,v10m]
+    filenames:
+    - geos.bkg.20201215_000000z.nc4
+    - geos.bkg.crtmsrf.20201215_000000z.nc4
+    state variables:
+    - ua
+    - va
+    - t
+    - ps
+    - q
+    - qi
+    - ql
+    - qr
+    - qs
+    - o3ppmv
+    - phis
+    - frocean
+    - frlake
+    - frseaice
+    - vtype
+    - stype
+    - vfrac
+    - sheleg
+    - ts
+    - soilt
+    - soilm
+    - u10m
+    - v10m
   background error:
     covariance model: hybrid
     components:
@@ -70,7 +102,10 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/aircraft_hyb-3dvar-geos_2020121500_m.nc4
-        simulated variables: [windEastward, windNorthward, airTemperature]
+        simulated variables:
+        - windEastward
+        - windNorthward
+        - airTemperature
       obs operator:
         name: VertInterp
         vertical coordinate: air_pressure
@@ -97,7 +132,10 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/sondes_hyb-3dvar-geos_2020121500_m.nc4
-        simulated variables: [windEastward, windNorthward, airTemperature]
+        simulated variables:
+        - windEastward
+        - windNorthward
+        - airTemperature
       obs operator:
         name: VertInterp
         vertical coordinate: air_pressure
@@ -124,7 +162,8 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/gnssro_hyb-3dvar-geos_2020121500_m.nc4
-        simulated variables: [bendingAngle]
+        simulated variables:
+        - bendingAngle
       obs operator:
         name: GnssroBndNBAM
         obs options:
@@ -162,13 +201,14 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/amsua_metop-a_hyb-3dvar-geos_2020121500_m.nc4
-        simulated variables: [brightnessTemperature]
+        simulated variables:
+        - brightnessTemperature
         channels: 4-6,9-14
       obs operator:
         name: CRTM
-        Absorbers: [H2O,O3]
-#       Clouds: [Water, Ice]
-#       Cloud_Fraction: 1.0
+        Absorbers:
+        - H2O
+        - O3
         obs options:
           Sensor_ID: amsua_metop-a
           EndianType: little_endian
@@ -230,13 +270,14 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/amsua_metop-b_hyb-3dvar-geos_2020121500_m.nc4
-        simulated variables: [brightnessTemperature]
+        simulated variables:
+        - brightnessTemperature
         channels: 7-14
       obs operator:
         name: CRTM
-        Absorbers: [H2O,O3]
-#       Clouds: [Water, Ice]
-#       Cloud_Fraction: 1.0
+        Absorbers:
+        - H2O
+        - O3
         obs options:
           Sensor_ID: amsua_metop-b
           EndianType: little_endian
@@ -284,11 +325,6 @@ cost function:
             name: ObsValue/brightnessTemperature_6
           minvalue: 50.0
           maxvalue: 550.0
-### All ch5 are missing in current obs file.
-#2        - variable:
-#2            name: ObsValue/brightnessTemperature_15
-#2          minvalue: 50.0
-#2          maxvalue: 550.0
     - obs space:
         name: AMSUA-NOAA15
         obsdatain:
@@ -299,13 +335,14 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/amsua_n15_hyb-3dvar-geos_2020121500_m.nc4
-        simulated variables: [brightnessTemperature]
+        simulated variables:
+        - brightnessTemperature
         channels: 4,5,7-10,12,13
       obs operator:
         name: CRTM
-        Absorbers: [H2O,O3]
-#       Clouds: [Water, Ice]
-#       Cloud_Fraction: 1.0
+        Absorbers:
+        - H2O
+        - O3
         obs options:
           Sensor_ID: amsua_n15
           EndianType: little_endian
@@ -367,13 +404,14 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/amsua_n18_hyb-3dvar-geos_2020121500_m.nc4
-        simulated variables: [brightnessTemperature]
+        simulated variables:
+        - brightnessTemperature
         channels: 4,6,7,10-14
       obs operator:
         name: CRTM
-        Absorbers: [H2O,O3]
-#       Clouds: [Water, Ice]
-#       Cloud_Fraction: 1.0
+        Absorbers:
+        - H2O
+        - O3
         obs options:
           Sensor_ID: amsua_n18
           EndianType: little_endian
@@ -435,13 +473,14 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/amsua_n19_hyb-3dvar-geos_2020121500_m.nc4
-        simulated variables: [brightnessTemperature]
+        simulated variables:
+        - brightnessTemperature
         channels: 4-6,9-14
       obs operator:
         name: CRTM
-        Absorbers: [H2O,O3]
-#       Clouds: [Water, Ice]
-#       Cloud_Fraction: 1.0
+        Absorbers:
+        - H2O
+        - O3
         obs options:
           Sensor_ID: amsua_n19
           EndianType: little_endian
@@ -503,11 +542,14 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/mhs_n19_hofx_geos_2020121500_m.nc4
-        simulated variables: [brightnessTemperature]
+        simulated variables:
+        - brightnessTemperature
         channels: 1-5
       obs operator:
         name: CRTM
-        Absorbers: [H2O,O3]
+        Absorbers:
+        - H2O
+        - O3
         obs options:
           Sensor_ID: mhs_n19
           EndianType: little_endian
@@ -537,12 +579,17 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/mhs_metop-a_hyb-3dvar-geos_2020121500_m.nc4
-        simulated variables: [brightnessTemperature]
+        simulated variables:
+        - brightnessTemperature
         channels: 1-5
       obs operator:
         name: CRTM
-        Absorbers: [H2O,O3]
-        Clouds: [Water, Ice]
+        Absorbers:
+        - H2O
+        - O3
+        Clouds:
+        - Water
+        - Ice
         Cloud_Fraction: 1.0
         obs options:
           Sensor_ID: mhs_metop-a
@@ -573,12 +620,17 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/mhs_metop-b_hyb-3dvar-geos_2020121500_m.nc4
-        simulated variables: [brightnessTemperature]
+        simulated variables:
+        - brightnessTemperature
         channels: 1-5
       obs operator:
         name: CRTM
-        Absorbers: [H2O,O3]
-        Clouds: [Water, Ice]
+        Absorbers:
+        - H2O
+        - O3
+        Clouds:
+        - Water
+        - Ice
         Cloud_Fraction: 1.0
         obs options:
           Sensor_ID: mhs_metop-b
@@ -609,11 +661,14 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/atms_npp_hyb-3dvar-geos_2020121500_m.nc4
-        simulated variables: [brightnessTemperature]
+        simulated variables:
+        - brightnessTemperature
         channels: 5-15,17-22
       obs operator:
         name: CRTM
-        Absorbers: [H2O,O3]
+        Absorbers:
+        - H2O
+        - O3
         obs options:
           Sensor_ID: atms_npp
           EndianType: little_endian
@@ -664,15 +719,25 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/amsr2_gcom-w1_hyb-3dvar-geos_2020121500.nc4
-        simulated variables: [brightnessTemperature]
+        simulated variables:
+        - brightnessTemperature
         channels: 1-14
       obs operator:
         name: ObsAtmSfcInterp
-        geovals: [skin_temperature_at_surface_where_sea,water_area_fraction,wind_speed_at_surface]
+        geovals:
+        - skin_temperature_at_surface_where_sea
+        - water_area_fraction
+        - wind_speed_at_surface
       obs operator:
         name: CRTM
-        Absorbers: [H2O,O3]
-        Clouds: [Water, Ice, Rain, Snow]
+        Absorbers:
+        - H2O
+        - O3
+        Clouds:
+        - Water
+        - Ice
+        - Rain
+        - Snow
         Cloud_Fraction: 1.0
         obs options:
           Sensor_ID: amsr2_gcom-w1
@@ -719,7 +784,6 @@ cost function:
         test variables:
         - name: ObsFunction/SunGlintAngle
         minvalue: 20.0
-      #  Ckeck CLW retrievals from observations
       - filter: Bounds Check
         filter variables:
         - name: brightnessTemperature
@@ -731,14 +795,24 @@ cost function:
             clwret_ch18h: 8
             clwret_ch36v: 11
             clwret_ch36h: 12
-            # amsr2_sys_bias is taken from the subroutine retrieval_amsr2() in GSI.
-            sys_bias: &amsr2_sys_bias [0.4800, 3.0737, 0.7433, 3.6430,
-                                       3.5304, 4.4270, 5.1448, 5.0785,
-                                       4.9763, 9.3215, 2.5789, 5.5274,
-                                       0.6641, 1.3674]
-            clwret_types: [ObsValue]
+            sys_bias: &amsr2_sys_bias
+            - 0.4800
+            - 3.0737
+            - 0.7433
+            - 3.6430
+            - 3.5304
+            - 4.4270
+            - 5.1448
+            - 5.0785
+            - 4.9763
+            - 9.3215
+            - 2.5789
+            - 5.5274
+            - 0.6641
+            - 1.3674
+            clwret_types:
+            - ObsValue
         maxvalue: 1.0
-      #  Ckeck CLW retrievals from HofX
       - filter: Bounds Check
         filter variables:
         - name: brightnessTemperature
@@ -751,7 +825,8 @@ cost function:
             clwret_ch36v: 11
             clwret_ch36h: 12
             sys_bias: *amsr2_sys_bias
-            clwret_types: [HofX]
+            clwret_types:
+            - HofX
         maxvalue: 1.0
       - filter: Difference Check
         filter variables:
@@ -765,7 +840,8 @@ cost function:
             clwret_ch36v: 11
             clwret_ch36h: 12
             sys_bias: *amsr2_sys_bias
-            clwret_types: [ObsValue]
+            clwret_types:
+            - ObsValue
         reference:
           name: ObsFunction/CLWRetMW
           options:
@@ -774,7 +850,8 @@ cost function:
             clwret_ch36v: 11
             clwret_ch36h: 12
             sys_bias: *amsr2_sys_bias
-            clwret_types: [HofX]
+            clwret_types:
+            - HofX
         minvalue: -0.5
         maxvalue: 0.5
       - filter: BlackList
@@ -796,19 +873,69 @@ cost function:
                   clwret_ch36v: 11
                   clwret_ch36h: 12
                   sys_bias: *amsr2_sys_bias
-                  clwret_types: [ObsValue, HofX]
-              x0:    [ 0.05,  0.05, 0.05, 0.05, 0.10, 0.10,
-                       0.05,  0.05, 0.05, 0.05, 0.05, 0.05,
-                       0.05,  0.05]
-              x1:    [ 0.60,  0.60, 0.60, 0.60, 0.60, 0.50,
-                       0.30,  0.30, 0.30, 0.30, 0.30, 0.30,
-                       0.30,  0.30]
-              err0:  [  0.8,  0.9,  0.8,  0.9,  1.0, 1.1,
-                        2.0,  3.5,  3.0,  4.8,  5.0, 6.0,
-                        4.5,  6.3]
-              err1:  [  5.0,  5.0,  5.0,  5.0,  5.0, 18.5,
-                       20.0, 40.0, 20.0, 25.0, 30.0, 30.0,
-                       30.0, 20.0]
+                  clwret_types:
+                  - ObsValue
+                  - HofX
+              x0:
+              - 0.05
+              - 0.05
+              - 0.05
+              - 0.05
+              - 0.10
+              - 0.10
+              - 0.05
+              - 0.05
+              - 0.05
+              - 0.05
+              - 0.05
+              - 0.05
+              - 0.05
+              - 0.05
+              x1:
+              - 0.60
+              - 0.60
+              - 0.60
+              - 0.60
+              - 0.60
+              - 0.50
+              - 0.30
+              - 0.30
+              - 0.30
+              - 0.30
+              - 0.30
+              - 0.30
+              - 0.30
+              - 0.30
+              err0:
+              - 0.8
+              - 0.9
+              - 0.8
+              - 0.9
+              - 1.0
+              - 1.1
+              - 2.0
+              - 3.5
+              - 3.0
+              - 4.8
+              - 5.0
+              - 6.0
+              - 4.5
+              - 6.3
+              err1:
+              - 5.0
+              - 5.0
+              - 5.0
+              - 5.0
+              - 5.0
+              - 18.5
+              - 20.0
+              - 40.0
+              - 20.0
+              - 25.0
+              - 30.0
+              - 30.0
+              - 30.0
+              - 20.0
       - filter: Background Check
         apply at iterations: 0, 1
         filter variables:
@@ -833,7 +960,6 @@ cost function:
         absolute threshold: 50
         action:
           name: reject
-      # Only keep ch 9 and 11 active.
       - filter: Bounds Check
         filter variables:
         - name: brightnessTemperature
@@ -849,15 +975,24 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/gmi_gpm_hyb-3dvar-geos_2020121500_m.nc4
-        simulated variables: [brightnessTemperature]
+        simulated variables:
+        - brightnessTemperature
         channels: 5,6,7,10,12,13
       obs operator:
         name: ObsAtmSfcInterp
-        geovals: [skin_temperature_at_surface_where_sea,water_area_fraction]
+        geovals:
+        - skin_temperature_at_surface_where_sea
+        - water_area_fraction
       obs operator:
         name: CRTM
-        Absorbers: [H2O,O3]
-        Clouds: [Water, Ice, Rain, Snow]
+        Absorbers:
+        - H2O
+        - O3
+        Clouds:
+        - Water
+        - Ice
+        - Rain
+        - Snow
         Cloud_Fraction: 1.0
         obs options:
           Sensor_ID: gmi_gpm
@@ -887,20 +1022,12 @@ cost function:
             name: MetaData/sensorScanPosition
           minvalue: 5
           maxvalue: 70
-#2   Filter out all sample obs.
-#2        - variable:
-#2            name: MetaData/latitude
-#2          minvalue: -55.0
-#2          maxvalue: 55.0
         - variable:
             name: MetaData/height
           maxvalue: 2000
         - variable:
             name: GeoVaLs/water_area_fraction
           minvalue: 1
-#2        - variable:
-#2            name: GeoVaLs/skin_temperature_at_surface_where_sea
-#2          minvalue: 275
       - filter: BlackList
         filter variables:
         - name: brightnessTemperature
@@ -914,7 +1041,6 @@ cost function:
             name: MetaData/longitude
           minvalue: 25.0
           maxvalue: 40.0
-      #  CLW Retrieval Check from ObsValue
       - filter: Bounds Check
         filter variables:
         - name: brightnessTemperature
@@ -924,11 +1050,11 @@ cost function:
           options:
             clwret_ch37v: 6
             clwret_ch37h: 7
-            clwret_types: [ObsValue]
+            clwret_types:
+            - ObsValue
         maxvalue: 999.0
         action:
           name: reject
-      #  CLW Retrieval Check from HofX
       - filter: Bounds Check
         filter variables:
         - name: brightnessTemperature
@@ -938,11 +1064,11 @@ cost function:
           options:
             clwret_ch37v: 6
             clwret_ch37h: 7
-            clwret_types: [HofX]
+            clwret_types:
+            - HofX
         maxvalue: 999.0
         action:
           name: reject
-      # Assign observational error in all-sky DA.
       - filter: BlackList
         filter variables:
         - name: brightnessTemperature
@@ -959,19 +1085,51 @@ cost function:
                 options:
                   clwret_ch37v: 6
                   clwret_ch37h: 7
-                  clwret_types: [ObsValue, HofX]
-              x0:    [ 0.050,  0.050,  0.050,
-                       0.050,  0.050,  0.050]
-              x1:    [ 0.200,  0.200,  0.200,
-                       0.200,  0.300,  0.300]
-              x2:    [ 0.500,  0.500,  0.500,
-                       0.500,  0.500,  0.500]
-              err0:  [ 4.000,  3.800,300.000,
-                       5.000,  2.500,  3.000]
-              err1:  [11.000,  13.300, 23.000,
-                      20.000,  8.000, 13.000]
-              err2:  [35.000, 25.300,500.000,
-                      50.000, 30.000, 40.000]
+                  clwret_types:
+                  - ObsValue
+                  - HofX
+              x0:
+              - 0.050
+              - 0.050
+              - 0.050
+              - 0.050
+              - 0.050
+              - 0.050
+              x1:
+              - 0.200
+              - 0.200
+              - 0.200
+              - 0.200
+              - 0.300
+              - 0.300
+              x2:
+              - 0.500
+              - 0.500
+              - 0.500
+              - 0.500
+              - 0.500
+              - 0.500
+              err0:
+              - 4.000
+              - 3.800
+              - 300.000
+              - 5.000
+              - 2.500
+              - 3.000
+              err1:
+              - 11.000
+              - 13.300
+              - 23.000
+              - 20.000
+              - 8.000
+              - 13.000
+              err2:
+              - 35.000
+              - 25.300
+              - 500.000
+              - 50.000
+              - 30.000
+              - 40.000
       - filter: Background Check
         apply at iterations: 0, 1
         filter variables:
@@ -988,7 +1146,8 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/airs_aqua_hyb-3dvar-geos_2020121500_m.nc4
-        simulated variables: [brightnessTemperature]
+        simulated variables:
+        - brightnessTemperature
         channels: 7,15,20,21,22,27,28,40,52,69,
                   72,92,93,98,99,104,105,110,111,116,
                   117,123,128,129,138,139,144,145,150,151,
@@ -1003,7 +1162,9 @@ cost function:
                   1873,1876,1881,1882,1911,1917,1918,1924,1928
       obs operator:
         name: CRTM
-        Absorbers: [H2O,O3]
+        Absorbers:
+        - H2O
+        - O3
         obs options:
           Sensor_ID: airs_aqua
           EndianType: little_endian
@@ -1056,7 +1217,8 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/iasi_metop-a_hyb-3dvar-geos_2020121500_m.nc4
-        simulated variables: [brightnessTemperature]
+        simulated variables:
+        - brightnessTemperature
         channels: 16,38,49,51,55,57,59,61,63,66,
                   70,72,74,79,81,83,85,87,104,106,
                   109,111,113,116,119,122,125,128,131,133,
@@ -1074,7 +1236,9 @@ cost function:
                   1671
       obs operator:
         name: CRTM
-        Absorbers: [H2O,O3]
+        Absorbers:
+        - H2O
+        - O3
         obs options:
           Sensor_ID: iasi_metop-a
           EndianType: little_endian
@@ -1131,7 +1295,8 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/iasi_metop-b_hyb-3dvar-geos_2020121500_m.nc4
-        simulated variables: [brightnessTemperature]
+        simulated variables:
+        - brightnessTemperature
         channels: 16,38,49,51,55,57,59,61,63,66,
                   70,72,74,79,81,83,85,87,104,106,
                   109,111,113,116,119,122,125,128,131,133,
@@ -1149,7 +1314,9 @@ cost function:
                   1671
       obs operator:
         name: CRTM
-        Absorbers: [H2O,O3]
+        Absorbers:
+        - H2O
+        - O3
         obs options:
           Sensor_ID: iasi_metop-b
           EndianType: little_endian
@@ -1206,7 +1373,8 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/cris-fsr_npp_hyb-3dvar-geos_2020121500_m.nc4
-        simulated variables: [brightnessTemperature]
+        simulated variables:
+        - brightnessTemperature
         channels: 27,83,89,95,99,104,107,116,120,123,
                   126,130,133,136,138,142,145,150,153,157,
                   160,163,166,170,173,198,208,211,216,224,
@@ -1214,7 +1382,9 @@ cost function:
                   464,473,529,596,626,646,659
       obs operator:
         name: CRTM
-        Absorbers: [H2O,O3]
+        Absorbers:
+        - H2O
+        - O3
         obs options:
           Sensor_ID: cris-fsr_npp
           EndianType: little_endian
@@ -1252,7 +1422,8 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/sfc_hyb-3dvar-geos_2020121500_m.nc4
-        simulated variables: [stationPressure]
+        simulated variables:
+        - stationPressure
       obs operator:
         name: SfcPCorrected
         da_psfc_scheme: UKMO

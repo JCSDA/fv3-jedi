@@ -1,6 +1,17 @@
 cost function:
   cost type: 4D-Ens-Var
-  analysis variables: &avars [ua,va,t,ps,q,o3ppmv,phis,frocean,frlake,frseaice,ts]
+  analysis variables: &avars
+  - ua
+  - va
+  - t
+  - ps
+  - q
+  - o3ppmv
+  - phis
+  - frocean
+  - frlake
+  - frseaice
+  - ts
   time window:
     begin: 2020-12-14T21:00:00Z
     length: PT6H
@@ -11,7 +22,6 @@ cost function:
       namelist filename: Data/fv3files/input_geos_c12.nml
       field table filename: Data/fv3files/field_table_gmao
     akbk: Data/fv3files/akbk72.nc4
-#   layout: [1,1]
     npx: 13
     npy: 13
     npz: 72
@@ -23,14 +33,28 @@ cost function:
       provider: geos
       datapath: Data/inputs/geos_c12
       filename: geos.bkg.20201214_210000z.nc4
-      state variables: &statevars [u,v,ua,va,t,delp,ps,q,o3ppmv,phis,sheleg,ts,frocean,frlake,frseaice]
+      state variables: &statevars
+      - u
+      - v
+      - ua
+      - va
+      - t
+      - delp
+      - ps
+      - q
+      - o3ppmv
+      - phis
+      - sheleg
+      - ts
+      - frocean
+      - frlake
+      - frseaice
     - datetime: 2020-12-15T03:00:00Z
       filetype: cube sphere history
       provider: geos
       datapath: Data/inputs/geos_c12
       filename: geos.bkg.20201215_030000z.nc4
       state variables: *statevars
-#----------------------------------------------------------
   background error:
     covariance model: hybrid
     components:
@@ -53,19 +77,24 @@ cost function:
           processor layout x direction: 3
           processor layout y direction: 2
           debugging mode: false
-          state variables to inverse: &bvars [eastward_wind,northward_wind,air_temperature,air_pressure_at_surface,
-                                              fraction_of_ocean,fraction_of_lake,fraction_of_ice,
-                                              mole_fraction_of_ozone_in_air,
-                                              skin_temperature_at_surface,
-                                              geopotential_height_times_gravity_at_surface,
-                                              water_vapor_mixing_ratio_wrt_moist_air]
+          state variables to inverse: &bvars
+          - eastward_wind
+          - northward_wind
+          - air_temperature
+          - air_pressure_at_surface
+          - fraction_of_ocean
+          - fraction_of_lake
+          - fraction_of_ice
+          - mole_fraction_of_ozone_in_air
+          - skin_temperature_at_surface
+          - geopotential_height_times_gravity_at_surface
+          - water_vapor_mixing_ratio_wrt_moist_air
         linear variable change:
           linear variable change name: Control2Analysis
           input variables: *bvars
           output variables: *avars
       weight:
         value: 0.50
-
     - covariance:
         covariance model: ensemble
         members from template:
@@ -101,8 +130,7 @@ cost function:
                 level for 2d variables: last
               nicas:
                 resolution: 6
-                min effective resolution: 0.2  # Note: this is very much not recommended (resolution too low), only
-                                               # used because covariance quality is not important for CI tests
+                min effective resolution: 0.2
                 explicit length-scales: true
                 horizontal length-scale:
                 - groups:
@@ -188,11 +216,8 @@ cost function:
           linear variable change name: Control2Analysis
           input variables: *bvars
           output variables: *avars
-
       weight:
         value: 0.50
-
-#---------------------------------
   observations:
     observers:
     - obs space:
@@ -205,7 +230,12 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/sondes_hyb-3dvar-geos_2020121500_m.nc4
-        simulated variables: [windEastward, windNorthward, airTemperature, stationPressure, specificHumidity]
+        simulated variables:
+        - windEastward
+        - windNorthward
+        - airTemperature
+        - stationPressure
+        - specificHumidity
       obs operator:
         name: Composite
         components:
@@ -219,7 +249,6 @@ cost function:
           variables:
           - name: stationPressure
           da_psfc_scheme: GSI
-
       linear obs operator:
         name: Composite
         components:
@@ -232,21 +261,17 @@ cost function:
         - name: Identity
           variables:
           - name: stationPressure
-
       obs error:
         covariance model: diagonal
       obs filters:
       - filter: PreQC
         maxvalue: 4
-#     - filter: Background Check
-#       filter variables:
-#       - name: windEastward
-#       - name: windNorthward
-#       - name: airTemperature
-#       - name: stationPressure
-#       threshold: 6.0
       - filter: Perform Action
-        filter variables: [windEastward, windNorthward, airTemperature, specificHumidity]
+        filter variables:
+        - windEastward
+        - windNorthward
+        - airTemperature
+        - specificHumidity
         action:
           name: assign error
           error function:
@@ -255,18 +280,17 @@ cost function:
             name: GsiFinalObsError/airTemperature
             name: GsiFinalObsError/specificHumidity
       - filter: Perform Action
-        filter variables: [stationPressure]
+        filter variables:
+        - stationPressure
         action:
           name: assign error
           error function:
             name: GsiFinalObsError/stationPressure
-
 output:
   filetype: cube sphere history
   provider: geos
   datapath: Data/analysis
   filename: hyb-4denvar-sondes-geos.ana.%yyyy%mm%dd_%hh%MM%ssz.nc4
-# first: PT0H
   frequency: PT3H
 variational:
   minimizer:
@@ -274,41 +298,12 @@ variational:
   iterations:
   - ninner: 5
     gradient norm reduction: 1e-10
-##  test: on
     geometry:
       akbk: Data/fv3files/akbk72.nc4
-#     layout: [1,1]
       npx: 13
       npy: 13
       npz: 72
       field metadata override: Data/fieldmetadata/geos.yaml
-  # online diagnostics:
-  #   write increment: true
-  #   increment:
-  #     state component:
-  #       filetype: cube sphere history
-  #       provider: geos
-  #       datapath: Data/analysis
-  #       filename: 3dvar_sondes_geos.inc-iter1.%yyyy%mm%dd_%hh%MM%ssz.nc
-# - ninner: 5
-#   gradient norm reduction: 1e-10
-##  test: on
-#   geometry:
-#     akbk: Data/fv3files/akbk72.nc4
-#     layout: [1,1]
-#     npx: 13
-#     npy: 13
-#     npz: 72
-#     field metadata override: Data/fieldmetadata/geos.yaml
-#   online diagnostics:
-#     write increment: true
-#     increment:
-#       state component:
-#         filetype: cube sphere history
-#         provider: geos
-#         datapath: Data/analysis
-#         filename: 3dvar_sondes_geos.inc-iter2.%yyyy%mm%dd_%hh%MM%ssz.nc
-
 test:
   reference filename: testoutput/hyb-4denvar_geos_sondes_c12.ref
   float relative tolerance: 1.0e-1

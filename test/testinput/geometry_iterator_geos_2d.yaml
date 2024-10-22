@@ -7,6 +7,14 @@ geometry:
   npy: 13
   npz: 72
   field metadata override: Data/fieldmetadata/geos.yaml
-inc variables: [ua,va,t,delp,q,qi,ql,o3ppmv]
+inc variables:
+- ua
+- va
+- t
+- delp
+- q
+- qi
+- ql
+- o3ppmv
 increment test:
   date: 2020-12-14T21:00:00Z

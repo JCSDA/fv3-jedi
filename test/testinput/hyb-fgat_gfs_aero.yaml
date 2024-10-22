@@ -6,10 +6,24 @@ cost function:
     filename_core: 20201214.210000.fv_core.res.nc
     filename_trcr: 20201214.210000.fv_tracer.res.nc
     filename_cplr: 20201214.210000.coupler.res
-    state variables: [T,delp,sphum,
-                      so4,bc1,bc2,oc1,oc2,
-                      dust1,dust2,dust3,dust4,dust5,
-                      seas1,seas2,seas3,seas4]
+    state variables:
+    - T
+    - delp
+    - sphum
+    - so4
+    - bc1
+    - bc2
+    - oc1
+    - oc2
+    - dust1
+    - dust2
+    - dust3
+    - dust4
+    - dust5
+    - seas1
+    - seas2
+    - seas3
+    - seas4
   background error:
     covariance model: hybrid
     components:
@@ -25,9 +39,21 @@ cost function:
           template:
             datetime: 2020-12-14T21:00:00Z
             filetype: fms restart
-            state variables: &aerovars [mass_fraction_of_sulfate_in_air,mass_fraction_of_hydrophobic_black_carbon_in_air,mass_fraction_of_hydrophilic_black_carbon_in_air,mass_fraction_of_hydrophobic_organic_carbon_in_air,mass_fraction_of_hydrophilic_organic_carbon_in_air,
-                                        mass_fraction_of_dust001_in_air,mass_fraction_of_dust002_in_air,mass_fraction_of_dust003_in_air,mass_fraction_of_dust004_in_air,mass_fraction_of_dust005_in_air,
-                                        mass_fraction_of_sea_salt001_in_air,mass_fraction_of_sea_salt002_in_air,mass_fraction_of_sea_salt003_in_air,mass_fraction_of_sea_salt004_in_air]
+            state variables: &aerovars
+            - mass_fraction_of_sulfate_in_air
+            - mass_fraction_of_hydrophobic_black_carbon_in_air
+            - mass_fraction_of_hydrophilic_black_carbon_in_air
+            - mass_fraction_of_hydrophobic_organic_carbon_in_air
+            - mass_fraction_of_hydrophilic_organic_carbon_in_air
+            - mass_fraction_of_dust001_in_air
+            - mass_fraction_of_dust002_in_air
+            - mass_fraction_of_dust003_in_air
+            - mass_fraction_of_dust004_in_air
+            - mass_fraction_of_dust005_in_air
+            - mass_fraction_of_sea_salt001_in_air
+            - mass_fraction_of_sea_salt002_in_air
+            - mass_fraction_of_sea_salt003_in_air
+            - mass_fraction_of_sea_salt004_in_air
             datapath: Data/inputs/gfs_aero_c12/mem%mem%/
             filename_core: 20201214.210000.fv_core.res.nc
             filename_trcr: 20201214.210000.fv_tracer.res.nc
@@ -63,11 +89,14 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/hofx/aod_viirs_hyb-fgat-gfs_aero_2020121500_sf42.nc4
-        simulated variables: [aerosolOpticalDepth]
+        simulated variables:
+        - aerosolOpticalDepth
         channels: 4
       obs operator:
         name: AodCRTM
-        Absorbers: [H2O,O3]
+        Absorbers:
+        - H2O
+        - O3
         obs options:
           Sensor_ID: v.viirs-m_npp
           EndianType: little_endian

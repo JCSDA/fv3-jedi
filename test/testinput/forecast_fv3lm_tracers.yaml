@@ -8,7 +8,6 @@ geometry:
   npy: 13
   npz: 64
   field metadata override: Data/fieldmetadata/gfs-aerosol.yaml
-
 model:
   name: FV3LM
   use internal namelist: true
@@ -16,8 +15,22 @@ model:
   lm_do_dyn: 1
   lm_do_trb: 0
   lm_do_mst: 0
-  model variables: [u,v,ua,va,T,delp,sphum,ice_wat,liq_wat,o3mr,phis,dust1,dust2,dust3,dust4]
-
+  model variables:
+  - u
+  - v
+  - ua
+  - va
+  - T
+  - delp
+  - sphum
+  - ice_wat
+  - liq_wat
+  - o3mr
+  - phis
+  - dust1
+  - dust2
+  - dust3
+  - dust4
 initial condition:
   datetime: 2021-08-01T06:00:00Z
   filetype: fms restart
@@ -26,8 +39,22 @@ initial condition:
   filename_trcr: 20210801.060000.fv_tracer.res.nc
   filename_sfcw: 20210801.060000.fv_srf_wnd.res.nc
   filename_cplr: 20210801.060000.coupler.res
-  state variables: [u,v,ua,va,T,delp,sphum,ice_wat,liq_wat,o3mr,phis,dust1,dust2,dust3,dust4]
-
+  state variables:
+  - u
+  - v
+  - ua
+  - va
+  - T
+  - delp
+  - sphum
+  - ice_wat
+  - liq_wat
+  - o3mr
+  - phis
+  - dust1
+  - dust2
+  - dust3
+  - dust4
 output:
   filetype: fms restart
   datapath: Data/forecast
@@ -38,14 +65,20 @@ output:
 forecast to structured grid:
   grid type: latlon
   local interpolator type: oops unstructured grid interpolator
-  resolution in degrees: 15.0  # low resolution for testing
-  variables to output: [air_temperature, eastward_wind, northward_wind, mass_fraction_of_dust001_in_air]
-  pressure levels in hPa: [850, 500, 250]
+  resolution in degrees: 15.0
+  variables to output:
+  - air_temperature
+  - eastward_wind
+  - northward_wind
+  - mass_fraction_of_dust001_in_air
+  pressure levels in hPa:
+  - 850
+  - 500
+  - 250
   frequency: PT15M
   datapath: Data/forecast
   type: fc
   exp: forecast_fv3_aero
-
 test:
   reference filename: testoutput/forecast_fv3lm_tracers.ref
   test output filename: testoutput/forecast_fv3lm_tracers.test.out

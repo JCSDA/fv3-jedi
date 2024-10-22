@@ -14,9 +14,30 @@ geometry:
 initial condition:
   datetime: 2020-12-14T21:00:00Z
   filetype: fms restart
-  state variables: [u,v,ua,va,T,delp,sphum,ice_wat,liq_wat,o3mr,phis,
-                    slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
-                    u_srf,v_srf,f10m]
+  state variables:
+  - u
+  - v
+  - ua
+  - va
+  - T
+  - delp
+  - sphum
+  - ice_wat
+  - liq_wat
+  - o3mr
+  - phis
+  - slmsk
+  - sheleg
+  - tsea
+  - vtype
+  - stype
+  - vfrac
+  - stc
+  - smc
+  - snwdph
+  - u_srf
+  - v_srf
+  - f10m
   datapath: Data/inputs/gfs_c12/bkg/
   filename_core: 20201214.210000.fv_core.res.nc
   filename_trcr: 20201214.210000.fv_tracer.res.nc
@@ -30,9 +51,30 @@ model:
   lm_do_dyn: 1
   lm_do_trb: 0
   lm_do_mst: 0
-  model variables: [u,v,ua,va,T,delp,sphum,ice_wat,liq_wat,o3mr,phis,
-                    slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
-                    u_srf,v_srf,f10m]
+  model variables:
+  - u
+  - v
+  - ua
+  - va
+  - T
+  - delp
+  - sphum
+  - ice_wat
+  - liq_wat
+  - o3mr
+  - phis
+  - slmsk
+  - sheleg
+  - tsea
+  - vtype
+  - stype
+  - vfrac
+  - stc
+  - smc
+  - snwdph
+  - u_srf
+  - v_srf
+  - f10m
 observations:
   observers:
   - obs space:
@@ -42,14 +84,16 @@ observations:
           type: H5File
           obsfile: Data/obs/testinput_tier_1/gnssro_obs_2020121500_m.nc4
         obsgrouping:
-          group variables: [sequenceNumber]
+          group variables:
+          - sequenceNumber
           sort variable: impactHeightRO
           sort order: ascending
       obsdataout:
         engine:
           type: H5File
           obsfile: Data/hofx/GnssroBndROPP1D_hofx_gfs2020121500_m.nc4
-      simulated variables: [bendingAngle]
+      simulated variables:
+      - bendingAngle
     obs operator:
       name:  GnssroBndROPP1D
     obs filters:
@@ -76,14 +120,16 @@ observations:
           type: H5File
           obsfile: Data/obs/testinput_tier_1/gnssro_obs_2020121500_m.nc4
         obsgrouping:
-          group variables: [sequenceNumber]
+          group variables:
+          - sequenceNumber
           sort variable: impactHeightRO
           sort order: ascending
       obsdataout:
         engine:
           type: H5File
           obsfile: Data/hofx/GnssroBndROPP2D_hofx_gfs2020121500_m.nc4
-      simulated variables: [bendingAngle]
+      simulated variables:
+      - bendingAngle
     obs operator:
       name:  GnssroBndROPP2D
       obs options:
@@ -110,7 +156,6 @@ observations:
       threshold: 3
 prints:
   frequency: PT3H
-
 test:
   reference filename: testoutput/hofx_gnssro_ropp.ref
   test output filename: testoutput/hofx_gnssro_ropp.test.out

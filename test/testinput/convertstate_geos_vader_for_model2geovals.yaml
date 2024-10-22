@@ -13,14 +13,20 @@ output geometry:
   npy: 13
   npz: 72
   field metadata override: Data/fieldmetadata/geos.yaml
-
 variable change:
   variable change name: Model2GeoVaLs
-  input variables: &inputvars [ps, t, q]
-  output variables: [delp, pe, lnpe, pkz, p, pt, tv]
-  #vader custom cookbook:
-  #  air_potential_temperature: [AirPotentialTemperature_A]
-  #  virtual_temperature: [AirVirtualTemperature_A]
+  input variables: &inputvars
+  - ps
+  - t
+  - q
+  output variables:
+  - delp
+  - pe
+  - lnpe
+  - pkz
+  - p
+  - pt
+  - tv
 states:
 - input:
     datetime: 2020-12-14T21:00:00Z
@@ -28,13 +34,13 @@ states:
     filetype: cube sphere history
     provider: geos
     datapath: Data/inputs/geos_c12
-    filenames: [geos.bkg.20201214_210000z.nc4]
+    filenames:
+    - geos.bkg.20201214_210000z.nc4
   output:
    filetype: cube sphere history
    provider: geos
    datapath: Data/
    filename: geovals_vader.geos.%yyyy%mm%dd_%hh%MM%ssz.nc4
-
 test:
   reference filename: testoutput/convertstate_geos_vader_for_model2geovals.ref
   test output filename: testoutput/convertstate_geos_vader_for_model2geovals.test.out

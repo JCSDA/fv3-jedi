@@ -1,7 +1,6 @@
 files:
 - testinput/eda_block_3dvar_1.yaml
 - testinput/eda_block_3dvar_2.yaml
-
 test:
   reference filename: testoutput/eda_block_3dvar.ref
   test output filename: testoutput/eda_block_3dvar.test.out

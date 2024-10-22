@@ -1,6 +1,5 @@
 files:
   - testinput/enshofx_fv3lm_1.yaml
   - testinput/enshofx_fv3lm_2.yaml
-
 test:
   reference filename: testoutput/hofx_fv3lm.test.out

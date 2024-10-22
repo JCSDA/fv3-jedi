@@ -10,7 +10,11 @@ geometry:
 background:
   datetime: 2020-12-15T00:00:00Z
   filetype: fms restart
-  state variables: [stream_function,velocity_potential,air_temperature,air_pressure_at_surface]
+  state variables:
+  - stream_function
+  - velocity_potential
+  - air_temperature
+  - air_pressure_at_surface
   psinfile: true
   datapath: Data/staticb/balanced/mem001/
   filename_core: 20201215.000000.fv_core.res.nc
@@ -44,7 +48,6 @@ background error:
           unbalanced variable: stream_function
         - balanced variable: air_pressure_at_surface
           unbalanced variable: stream_function
-
 test:
   reference filename: testoutput/staticb_split_vbal_gfs.ref
   test output filename: testoutput/staticb_split_vbal_gfs.test.out

@@ -13,10 +13,27 @@ state test:
     filetype: cube sphere history
     provider: geos
     datapath: Data/inputs/geos_c12
-    filenames: [geos.bkg.20201214_210000z.nc4, geos.bkg.crtmsrf.20201214_210000z.nc4]
-    tile is a dimension: [true, true]
-    clobber existing files: [false, false]
-    state variables: [u,v,ua,va,t,delp,q,qi,ql,o3ppmv,phis]
+    filenames:
+    - geos.bkg.20201214_210000z.nc4
+    - geos.bkg.crtmsrf.20201214_210000z.nc4
+    tile is a dimension:
+    - true
+    - true
+    clobber existing files:
+    - false
+    - false
+    state variables:
+    - u
+    - v
+    - ua
+    - va
+    - t
+    - delp
+    - q
+    - qi
+    - ql
+    - o3ppmv
+    - phis
   state generate:
     analytic init:
       method: dcmip-test-4-0
@@ -25,4 +42,11 @@ state test:
   norm file: 660.9517923562712
   norm generated state: 14954.334047185948
   tolerance: 1.0e-08
-  construct to variables: [eastward_wind,northward_wind,air_temperature,air_pressure_at_surface,water_vapor_mixing_ratio_wrt_moist_air,cloud_liquid_ice,cloud_liquid_water]
+  construct to variables:
+  - eastward_wind
+  - northward_wind
+  - air_temperature
+  - air_pressure_at_surface
+  - water_vapor_mixing_ratio_wrt_moist_air
+  - cloud_liquid_ice
+  - cloud_liquid_water

@@ -7,12 +7,10 @@ geometry:
   npy: 13
   npz: 127
   field metadata override: Data/fieldmetadata/gfs-restart.yaml
-
 time window:
   begin: &date 2020-12-14T21:00:00Z
   length: PT6H
-
-increment variables: 
+increment variables:
 - ua
 - va
 - t
@@ -21,7 +19,6 @@ increment variables:
 - ice_wat
 - liq_wat
 - o3mr
-
 background:
    members from template:
      template:
@@ -33,7 +30,7 @@ background:
        filename_sfcd: 20201215.000000.sfc_data.nc
        filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
        filename_cplr: 20201215.000000.coupler.res
-       state variables: 
+       state variables:
        - ua
        - va
        - t
@@ -58,7 +55,6 @@ background:
      pattern: '%mem%'
      nmembers: 3
      zero padding: 3
-
 observations:
   observers:
   - obs space:
@@ -74,7 +70,9 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/scatwind_lgetkf-geos_2020121500_m.nc4
-      simulated variables: [windEastward, windNorthward]
+      simulated variables:
+      - windEastward
+      - windNorthward
     obs operator:
       name: VertInterp
       vertical coordinate: air_pressure
@@ -100,13 +98,14 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/amsua_n19_lgetkf-geos_2020121500_m.nc4
-      simulated variables: [brightnessTemperature]
+      simulated variables:
+      - brightnessTemperature
       channels: 4-6,9-14
     obs operator:
       name: CRTM
-      Absorbers: [H2O,O3]
-#       Clouds: [Water, Ice]
-#       Cloud_Fraction: 1.0
+      Absorbers:
+      - H2O
+      - O3
       obs options:
         Sensor_ID: amsua_n19
         EndianType: little_endian
@@ -142,7 +141,8 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/sfc_lgetkf-geos_2020121500_m.nc4
-      simulated variables: [stationPressure]
+      simulated variables:
+      - stationPressure
     obs operator:
       name: SfcPCorrected
       da_psfc_scheme: UKMO
@@ -171,7 +171,10 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/aircraft_lgetkf-geos_2020121500_m.nc4
-      simulated variables: [windEastward,windNorthward,airTemperature]
+      simulated variables:
+      - windEastward
+      - windNorthward
+      - airTemperature
     obs operator:
       name: VertInterp
       vertical coordinate: air_pressure
@@ -193,11 +196,9 @@ observations:
     - localization method: Horizontal Gaspari-Cohn
       lengthscale: 5000e3
       max nobs: 50
-
 driver:
   save posterior ensemble: false
   save posterior mean increment: true
-
 local ensemble DA:
   solver: GETKF
   vertical localization:
@@ -208,7 +209,6 @@ local ensemble DA:
     rtps: 0.5
     rtpp: 0.6
     mult: 1.1
-
 output:
   filetype: fms restart
   provider: gfs
@@ -218,7 +218,6 @@ output:
   frequency: PT1H
   type: ens
   date: *date
-
 output increment:
   filetype: fms restart
   datapath: Data/analysis/letkf/gfs/mem%{member}%/
@@ -226,8 +225,6 @@ output increment:
   prefix: lgetkf.inc.%yyyy%mm%dd_%hh%MM%ssz
   type: ens
   date: *date
-
-
 test:
   reference filename: testoutput/lgetkf.ref
   test output filename: testoutput/lgetkf.test.out

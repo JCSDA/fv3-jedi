@@ -15,12 +15,50 @@ output geometry:
   field metadata override: Data/fieldmetadata/gfs-history.yaml
 variable change:
   variable change name: Model2GeoVaLs
-  input variables: &inputvars [ua,va,t,delp,sphum,ice_wat,liq_wat,o3mr,phis,
-                               slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
-                               u_srf,v_srf,f10m]
-  output variables: [ua,va,t,delp,sphum,ice_wat,liq_wat,o3mr,geopotential_height_at_surface,
-                     slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdphMeters,
-                     u_srf,v_srf,f10m]
+  input variables: &inputvars
+  - ua
+  - va
+  - t
+  - delp
+  - sphum
+  - ice_wat
+  - liq_wat
+  - o3mr
+  - phis
+  - slmsk
+  - sheleg
+  - tsea
+  - vtype
+  - stype
+  - vfrac
+  - stc
+  - smc
+  - snwdph
+  - u_srf
+  - v_srf
+  - f10m
+  output variables:
+  - ua
+  - va
+  - t
+  - delp
+  - sphum
+  - ice_wat
+  - liq_wat
+  - o3mr
+  - geopotential_height_at_surface
+  - slmsk
+  - sheleg
+  - tsea
+  - vtype
+  - stype
+  - vfrac
+  - stc
+  - smc
+  - snwdphMeters
+  - u_srf
+  - v_srf
+  - f10m
 states:
 - input:
     datetime: 2020-12-15T00:00:00Z
@@ -38,9 +76,10 @@ states:
     filename: restart2history.nc4
     provider: ufs
     ufs soil nlev: 4
-    ufs fields split by level: [stc, smc]
+    ufs fields split by level:
+    - stc
+    - smc
     float precision in bytes: 4
-
 test:
   reference filename: testoutput/convertstate_gfs_restart2history.ref
   test output filename: testoutput/convertstate_gfs_restart2history.test.out

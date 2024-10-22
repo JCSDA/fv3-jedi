@@ -4,8 +4,12 @@ geometry:
     namelist filename: Data/ModelRunDirs/UFS_warmstart_2/input.nml
     field table filename: Data/ModelRunDirs/UFS_warmstart_2/field_table
   akbk: Data/fv3files/akbk127.nc4
-  layout: [1,1]
-  io_layout: [1,1]
+  layout:
+  - 1
+  - 1
+  io_layout:
+  - 1
+  - 1
   npx: 49
   npy: 49
   npz: 127
@@ -16,9 +20,28 @@ model:
   tstep: PT1H
   forecast length: *fclength
   ufs_run_directory: Data/ModelRunDirs/UFS_warmstart_2
-  model variables: [ua, va, t, delp, sphum, ice_wat, liq_wat, o3mr, phis, slmsk,
-                    sheleg, tsea, vtype, stype, vfrac, stc, smc, snwdph, u_srf, v_srf,
-                    f10m]
+  model variables:
+  - ua
+  - va
+  - t
+  - delp
+  - sphum
+  - ice_wat
+  - liq_wat
+  - o3mr
+  - phis
+  - slmsk
+  - sheleg
+  - tsea
+  - vtype
+  - stype
+  - vfrac
+  - stc
+  - smc
+  - snwdph
+  - u_srf
+  - v_srf
+  - f10m
 initial condition:
   datetime: 2021-03-23T06:00:00Z
   filetype: fms restart
@@ -28,9 +51,28 @@ initial condition:
   filename_sfcd: sfc_data.nc
   filename_sfcw: fv_srf_wnd.res.nc
   filename_cplr: coupler.res
-  state variables: [ua, va, t, delp, sphum, ice_wat, liq_wat, o3mr, phis, slmsk,
-                    sheleg, tsea, vtype, stype, vfrac, stc, smc, snwdph, u_srf, v_srf,
-                    f10m]
+  state variables:
+  - ua
+  - va
+  - t
+  - delp
+  - sphum
+  - ice_wat
+  - liq_wat
+  - o3mr
+  - phis
+  - slmsk
+  - sheleg
+  - tsea
+  - vtype
+  - stype
+  - vfrac
+  - stc
+  - smc
+  - snwdph
+  - u_srf
+  - v_srf
+  - f10m
 output:
   filetype: fms restart
   datapath: ../../../Data/forecast

@@ -3,7 +3,9 @@ geometry:
     namelist filename: Data/fv3files/input_geos_c90.nml
     field table filename: Data/fv3files/field_table_gmao
   akbk: Data/fv3files/akbk72.nc4
-  layout: [1,2]
+  layout:
+  - 1
+  - 2
   npx: 13
   npy: 13
   npz: 72
@@ -12,7 +14,15 @@ background:
   datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
   filetype: cube sphere history
   provider: geos
-  state variables: &stateVariables [eastward_wind,northward_wind,air_temperature,air_pressure_at_surface,water_vapor_mixing_ratio_wrt_moist_air,cloud_liquid_water,cloud_liquid_ice,ozone_mass_mixing_ratio]
+  state variables: &stateVariables
+  - eastward_wind
+  - northward_wind
+  - air_temperature
+  - air_pressure_at_surface
+  - water_vapor_mixing_ratio_wrt_moist_air
+  - cloud_liquid_water
+  - cloud_liquid_ice
+  - ozone_mass_mixing_ratio
   datapath: Data/inputs/geos_c12
   filename: geos.mem001._YYYY__MM__DD_._HH_0000z.nc4
 background error:
@@ -49,6 +59,5 @@ background error:
         distance class width: 500.0e3
         reduced levels: 5
         grid type: octahedral
-
 test:
   reference filename: testoutput/ensembleb_prep__YYYY__MM__DD__HH__geos.ref

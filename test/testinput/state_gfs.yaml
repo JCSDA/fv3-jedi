@@ -6,7 +6,9 @@ geometry:
   npx: 13
   npy: 13
   npz: 127
-  layout: [1,1]
+  layout:
+  - 1
+  - 1
   field metadata override: Data/fieldmetadata/gfs-restart.yaml
 state test:
   statefile:
@@ -18,7 +20,18 @@ state test:
     filename_sfcd: 20201215.000000.sfc_data.nc
     filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
     filename_cplr: 20201215.000000.coupler.res
-    state variables: [u,v,ua,va,T,delp,ps,sphum,ice_wat,liq_wat,o3mr]
+    state variables:
+    - u
+    - v
+    - ua
+    - va
+    - T
+    - delp
+    - ps
+    - sphum
+    - ice_wat
+    - liq_wat
+    - o3mr
   state generate:
     analytic init:
       method: dcmip-test-4-0
@@ -27,4 +40,11 @@ state test:
   norm file: 2794.0790946951747
   norm generated state: 17525.605789643301
   tolerance: 1.0e-08
-  construct to variables: [eastward_wind,northward_wind,air_temperature,air_pressure_at_surface,water_vapor_mixing_ratio_wrt_moist_air,cloud_liquid_ice,cloud_liquid_water]
+  construct to variables:
+  - eastward_wind
+  - northward_wind
+  - air_temperature
+  - air_pressure_at_surface
+  - water_vapor_mixing_ratio_wrt_moist_air
+  - cloud_liquid_ice
+  - cloud_liquid_water
