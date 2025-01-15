@@ -5,7 +5,8 @@
 
 module fields_metadata_mod
 
-use iso_c_binding
+use, intrinsic :: iso_c_binding, only: c_ptr, c_null_ptr, c_char, c_size_t, &
+       & c_int, c_int32_t, c_int64_t, c_float, c_double, c_bool, c_null_char
 
 use fckit_C_interop_module, only: c_ptr_to_string
 

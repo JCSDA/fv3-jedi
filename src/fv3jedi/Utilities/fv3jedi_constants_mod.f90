@@ -6,10 +6,11 @@
 module fv3jedi_constants_mod
 
 ! Bindings to c++ code
-use iso_c_binding
+use, intrinsic :: iso_c_binding, only: c_ptr, c_null_ptr, c_char, c_size_t, &
+       & c_int, c_int32_t, c_int64_t, c_float, c_double, c_bool, c_null_char
 
 ! oops uses
-use string_f_c_mod, only: f_c_string
+use string_f_c_mod, only: f_c_string, c_f_string
 
 ! fv3jedi uses
 use fv3jedi_kinds_mod, only: kind_real
