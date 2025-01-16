@@ -184,6 +184,10 @@ cost function:
           engine:
             type: H5File
             obsfile: Data/obs/testinput_tier_1/aircraft_obs_2020121500_m.nc4
+          obsgrouping:
+            group variables: [stationIdentification]
+            sort variable: pressure
+            sort order: descending
         obsdataout:
           engine:
             type: H5File
@@ -200,6 +204,29 @@ cost function:
         interpolation method: log-linear
       obs error:
         covariance model: diagonal
+      obs bias:
+        variables without bc: [windEastward, windNorthward]
+        input file: Data/obs/testinput_tier_1/acftbias_aircraft_2020121418.nc4
+        output file: Data/analysis/hyb-3dvar_gfs-acftbias_aircraft_2020121500_out.nc4
+        bc by record: true
+        variational bc:
+          predictors:
+          - name: constant
+          - name: obsMetadataPredictor
+            variable: instantaneousAltitudeRate
+          - name: obsMetadataPredictor
+            variable: instantaneousAltitudeRate
+            order: 2
+        covariance:
+          minimal required obs number: 20
+          variance range: [1.0e-6, 10.0]
+          step size: 1.0e-4
+          largest analysis variance: 10000.0
+          prior:
+            input file: Data/obs/testinput_tier_1/acftbias_aircraft_2020121418.nc4
+            inflation:
+              ratio: 1.1
+              ratio for small dataset: 2.0
       obs filters:
       - filter: PreQC
         maxvalue: 3
