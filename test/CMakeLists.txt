@@ -590,10 +590,11 @@ endif()
 
 # Set the test tiering
 # --------------------
-set( FV3JEDI_TEST_TIER 1 )
+set( FV3JEDI_TEST_TIER 1 CACHE STRING "FV3-JEDI test tier. Run tests up to and including this tier.")
 
 # Override FV3JEDI_TEST_TIER using environment variable
 if( DEFINED ENV{FV3JEDI_TEST_TIER} )
+    message(STATUS "The env variable FV3JEDI_TEST_TIER is defined, the test tier will be set from this env variable" )
     set( FV3JEDI_TEST_TIER "$ENV{FV3JEDI_TEST_TIER}" )
 endif()
 
