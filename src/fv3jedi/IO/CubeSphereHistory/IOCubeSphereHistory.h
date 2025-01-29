@@ -88,6 +88,11 @@ class IOCubeSphereHistoryParameters : public IOParametersBase {
   oops::OptionalParameter<int> floatPrecision{"float precision in bytes",
                                               "number of bytes of floating point precision",
                                               this};
+
+  // Compute pressure at the edges from pressure at the surface (instead of reading it)
+  oops::OptionalParameter<bool> computeP{"compute edge pressure from surface pressure",
+                                         "compute edge pressure from surface pressure",
+                                         this};
 };
 
 // -------------------------------------------------------------------------------------------------

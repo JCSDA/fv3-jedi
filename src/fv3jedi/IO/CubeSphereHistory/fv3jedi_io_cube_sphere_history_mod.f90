@@ -20,7 +20,7 @@ use string_utils, only: swap_name_member, replace_string
 ! fv3-jedi
 use fv3jedi_constants_mod,    only: constant
 use fv3jedi_geom_mod,         only: fv3jedi_geom
-use fv3jedi_field_mod,        only: fv3jedi_field, field_clen
+use fv3jedi_field_mod,        only: fv3jedi_field, field_clen, get_field, hasfield
 use fv3jedi_io_utils_mod
 use fv3jedi_kinds_mod,        only: kind_real
 use fv3jedi_netcdf_utils_mod, only: nccheck
@@ -72,6 +72,9 @@ type fv3jedi_io_csh_conf
 
   ! Date/time checking
   logical :: set_datetime_on_read
+
+  ! Option to compute pressure
+  logical :: compute_pressure
 
 end type fv3jedi_io_csh_conf
 
@@ -430,6 +433,14 @@ else
    self%conf%float_type = nf90_double
 end if
 
+! Option to compute edge pressure from surface pressure
+! -----------------------------------------------------
+if (conf%has('compute edge pressure from surface pressure')) then
+   call conf%get_or_die('compute edge pressure from surface pressure', self%conf%compute_pressure)
+else
+   self%conf%compute_pressure = .false.
+endif
+
 end subroutine parse_conf
 
 ! --------------------------------------------------------------------------------------------------
@@ -710,6 +721,10 @@ logical :: tile_is_a_dimension
 integer, pointer :: istart(:), icount(:)
 real(kind=kind_real), allocatable :: arrayg(:,:,:)
 
+! Fields needed for computing air_pressure_levels
+integer :: k
+type(fv3jedi_field), pointer :: ps, pe
+
 ! Get ncid and varid for each field
 ! ---------------------------------
 allocate(file_index(size(fields)))
@@ -725,6 +740,9 @@ call get_max_levels(fields, maxlev)
 ! Loop over fields
 ! ----------------
 do var = 1,size(fields)
+
+  ! Skip if the field name is air_pressure_levels and compute_pressure is true
+  if (self%conf%compute_pressure .and. trim(fields(var)%long_name) == 'air_pressure_levels') cycle
 
   ! Set pointers to the appropriate array ranges
   ! --------------------------------------------
@@ -786,6 +804,28 @@ do var = 1,size(fields)
 
 enddo
 
+! Optionally compute air_pressure_levels from air_pressure_at_surface
+! -----------------------------------------------------
+if (self%conf%compute_pressure) then
+
+  ! Assert that ps is a variable
+  if (.not.hasfield(fields, 'air_pressure_at_surface')) then
+    call abor1_ftn("io_cube_sphere_history.read_fields: If trying to compute " // &
+                   "air_pressure_levels from air_pressure_at_surface, then " // &
+                   "air_pressure_at_surface must be present in the fields being read.")
+  endif
+
+  ! Get pointers to variables
+  call get_field(fields, 'air_pressure_at_surface', ps)
+  call get_field(fields, 'air_pressure_levels', pe)
+
+  ! Compute air_pressure_levels
+  do k = 1, pe%npz
+     pe%array(:,:,k) = self%ak(k) + self%bk(k)*ps%array(:,:,1)
+  end do
+
+end if
+
 end subroutine read_fields
 
 ! --------------------------------------------------------------------------------------------------
@@ -828,6 +868,13 @@ allocate(found(self%nfiles))
 do f = 1, size(fields)
 
   found = 0
+
+  ! Skip if the field name is air_pressure_levels and compute_pressure is true
+  if (self%conf%compute_pressure .and. trim(fields(f)%long_name) == 'air_pressure_levels') then
+    varid(f) = -1
+    file_index(f) = -1
+    cycle
+  endif
 
   do n = 1, self%nfiles
 
