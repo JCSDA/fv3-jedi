@@ -143,7 +143,7 @@ character(len=field_clen), allocatable :: fields_to_do(:)
 real(kind=kind_real), pointer :: field_ptr(:,:,:)
 
 ! Winds
-logical :: have_uava, have_udvd
+logical :: have_uava
 real(kind=kind_real), allocatable, dimension(:,:,:) :: psi
 real(kind=kind_real), allocatable, dimension(:,:,:) :: chi
 real(kind=kind_real), allocatable, dimension(:,:,:) :: ud
@@ -160,9 +160,10 @@ logical :: have_t
 real(kind=kind_real), pointer,     dimension(:,:,:) :: tv
 real(kind=kind_real), allocatable, dimension(:,:,:) :: t
 
-! Surface Pressure
-logical :: have_ps
-real(kind=kind_real), allocatable, dimension(:,:,:) :: ps
+! Pressure thickness
+logical :: have_delp
+real(kind=kind_real), pointer,     dimension(:,:,:) :: ps
+real(kind=kind_real), allocatable, dimension(:,:,:) :: delp
 
 ! Ozone
 logical :: have_o3ppmv
@@ -180,20 +181,13 @@ if (.not.allocated(fields_to_do)) return
 
 ! Winds
 ! -----
-have_udvd = .false.
+have_uava = .false.
 if (dxc%has_field('psi') .and. dxc%has_field('chi')) then
   call dxc%get_field('psi', psi)
   call dxc%get_field('chi', chi)
   allocate(ud(geom%isc:geom%iec  ,geom%jsc:geom%jec+1,geom%npz))
   allocate(vd(geom%isc:geom%iec+1,geom%jsc:geom%jec  ,geom%npz))
   call psichi_to_udvd(geom, psi, chi, ud, vd)
-  have_udvd = .true.
-endif
-
-! A-Grid winds
-! ------------
-have_uava = .false.
-if (have_udvd) then
   allocate(ua(geom%isc:geom%iec,geom%jsc:geom%jec,geom%npz))
   allocate(va(geom%isc:geom%iec,geom%jsc:geom%jec,geom%npz))
   call d_to_a(geom, ud, vd, ua, va)
@@ -216,14 +210,14 @@ elseif (dxc%has_field('tv') .and. have_q) then
   have_t = .true.
 endif
 
-! Surface pressure
-! ----------------
-have_ps = .false.
+! Pressure thickness
+! ------------------
+have_delp = .false.
 if (dxc%has_field('ps')) then
   call dxc%get_field('ps', ps)
-! allocate(delp(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
-! call ps_to_delp_tl(geom, ps, delp)
-  have_ps = .true.
+  allocate(delp(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
+  call ps_to_delp_tl(geom, ps, delp)
+  have_delp = .true.
 endif
 
 ! Ozone
@@ -251,20 +245,10 @@ do f = 1, size(fields_to_do)
 
   select case (trim(fields_to_do(f)))
 
-  case ("ps")
+  case ("delp")
 
-    if (.not. have_ps) call field_fail('tl_'//fields_to_do(f))
-    field_ptr = ps
-
-  case ("ud")
-
-    if (.not. have_uava) call field_fail('tl_'//fields_to_do(f))
-    field_ptr = ud
-
-  case ("vd")
-
-    if (.not. have_uava) call field_fail('tl_'//fields_to_do(f))
-    field_ptr = vd
+    if (.not. have_delp) call field_fail('tl_'//fields_to_do(f))
+    field_ptr = delp
 
   case ("ua")
 
@@ -307,7 +291,7 @@ if(allocated(vd )) deallocate(vd )
 if(allocated(ua )) deallocate(ua )
 if(allocated(va )) deallocate(va )
 if(allocated(t  )) deallocate(t  )
-if(allocated(ps )) deallocate(ps )
+if(allocated(delp)) deallocate(delp)
 if(allocated(o3ana)) deallocate(o3ana)
 
 end subroutine multiply
@@ -327,7 +311,7 @@ character(len=field_clen), allocatable :: fields_to_do(:)
 real(kind=kind_real), pointer :: field_ptr(:,:,:)
 
 ! Winds
-logical :: have_psichi, have_udvd, have_uava
+logical :: have_psichi, have_uava
 real(kind=kind_real), pointer,     dimension(:,:,:) :: ua
 real(kind=kind_real), pointer,     dimension(:,:,:) :: va
 real(kind=kind_real), allocatable, dimension(:,:,:) :: ud
@@ -345,7 +329,8 @@ real(kind=kind_real), allocatable, dimension(:,:,:) :: tv
 
 ! Surface pressure
 logical :: have_ps
-real(kind=kind_real), pointer,     dimension(:,:,:) :: ps
+real(kind=kind_real), pointer,     dimension(:,:,:) :: delp
+real(kind=kind_real), allocatable, dimension(:,:,:) :: ps
 
 ! Ozone
 logical :: have_o3mr,have_o3ppmv
@@ -379,13 +364,9 @@ endif
 
 ! A-Grid winds
 ! ------------
-have_udvd = .false.
+have_psichi = .false.
 have_uava = .false.
-if (dxa%has_field('ud') .and. dxa%has_field('vd')) then
-  call dxa%get_field('ud', ud)
-  call dxa%get_field('vd', vd)
-  have_udvd = .true.
-elseif (dxa%has_field('ua') .and. dxa%has_field('va')) then
+if (dxa%has_field('ua') .and. dxa%has_field('va')) then
   call dxa%get_field('ua', ua)
   call dxa%get_field('va', va)
   allocate(ud(geom%isc:geom%iec  ,geom%jsc:geom%jec+1,1:geom%npz))
@@ -393,27 +374,23 @@ elseif (dxa%has_field('ua') .and. dxa%has_field('va')) then
   ud = 0.0_kind_real
   vd = 0.0_kind_real
   call d_to_a_ad(geom, ud, vd, ua, va)
-  have_udvd = .true.
-  have_uava = .true.
-endif
-
-! Winds
-! -----
-have_psichi = .false.
-if (have_udvd) then
   allocate(psi(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
   allocate(chi(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
   psi = 0.0_kind_real
   chi = 0.0_kind_real
   call psichi_to_udvd_adm(geom, psi, chi, ud, vd)
+  have_uava = .true.
   have_psichi = .true.
 endif
 
 ! Surface pressure
 ! ----------------
 have_ps = .false.
-if (dxa%has_field('ps')) then
-  call dxa%get_field('ps', ps)
+if (dxa%has_field('delp')) then
+  call dxa%get_field('delp', delp)
+  allocate(ps(geom%isc:geom%iec,geom%jsc:geom%jec,1))
+  call ps_to_delp_ad(geom, ps, delp)
+  have_ps = .true.
 endif
 
 ! Ozone
@@ -496,6 +473,7 @@ if(allocated(ud )) deallocate(ud )
 if(allocated(vd )) deallocate(vd )
 if(allocated(tv )) deallocate(tv )
 if(allocated(o3ctl)) deallocate(o3ctl)
+if(allocated(ps)) deallocate(ps)
 
 
 end subroutine multiplyadjoint

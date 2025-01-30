@@ -60,6 +60,7 @@ Data/fv3files/akbk72.nc4
 Data/fv3files/akbk127.nc4
 Data/fv3files/field_table_gmao
 Data/fv3files/field_table_gfdl
+Data/fv3files/field_table_cold
 Data/fv3files/field_table_lam_cmaq
 Data/fv3files/field_table_lam_rrfs
 Data/fv3files/fmsmpp.nml
@@ -109,41 +110,46 @@ list( APPEND fv3jedi_testinput
   testinput/3dvar_gfs_sondes_c12.yaml
   testinput/3dvar_gfs_0obs.yaml
   testinput/3dvar_gfs_aero.yaml
+  testinput/3dvar_gfs_sondes_c12.yaml
   testinput/3dvar_lam_cmaq.yaml
+  testinput/3dvar_snow.yaml
+  testinput/4denvar_seq.yaml
+  testinput/4denvar.yaml
   testinput/4dvar_append_obs.yaml
   testinput/4dvar_geos_aero.yaml
   testinput/4dvar_geos_cf.yaml
-  testinput/4denvar.yaml
-  testinput/4denvar_seq.yaml
   testinput/4dvar_hybrid_linear_model.yaml
   testinput/addincrement_geos.yaml
   testinput/addincrement_gfs.yaml
+  testinput/adjointforecast.yaml
+  testinput/a_to_d_regional.yaml
+  testinput/a_to_d.yaml
+  testinput/bumpparameters_nicas_geos_cf.yaml
   testinput/bumpparameters_nicas_geos_p12.yaml
   testinput/bumpparameters_nicas_geos.yaml
-  testinput/bumpparameters_nicas_geos_cf.yaml
+  testinput/bumpparameters_nicas_gfs_aero.yaml
   testinput/bumpparameters_nicas_gfs_p12.yaml
   testinput/bumpparameters_nicas_gfs.yaml
-  testinput/bumpparameters_nicas_gfs_aero.yaml
   testinput/bumpparameters_nicas_lam_cmaq.yaml
+  testinput/cold_to_warm_start.yaml
+  testinput/comparestates_gfs_restart2history2restart.yaml
   testinput/convertincrement_geos_model2geovals.yaml
+  testinput/convertstate_gchp_from_stretched_grid.yaml
+  testinput/convertstate_gchp_to_stretched_grid.yaml
+  testinput/convertstate_gchp.yaml
+  testinput/convertstate_geos_cf.yaml
   testinput/convertstate_geos_crtm_surface.yaml
+  testinput/convertstate_geos_fv3jedi_for_model2geovals.yaml
   testinput/convertstate_geos_model2geovals.yaml
   testinput/convertstate_geos_vader_for_model2geovals.yaml
-  testinput/convertstate_geos_fv3jedi_for_model2geovals.yaml
   testinput/convertstate_geos.yaml
-  testinput/convertstate_geos_cf.yaml
-  testinput/convertstate_gchp.yaml
-  testinput/convertstate_gchp_to_stretched_grid.yaml
-  testinput/convertstate_gchp_from_stretched_grid.yaml
   testinput/convertstate_gfs_ana2bvars.yaml
-  testinput/convertstate_gfs_coldstartwinds.yaml
-  testinput/convertstate_gfs_vertremap.yaml
-  testinput/convertstate_gfs_model2geovals.yaml
-  testinput/convertstate_gfs.yaml
-  testinput/convertstate_gfs_c2ll.yaml
   testinput/convertstate_gfs_c2gaussian.yaml
-  testinput/convertstate_gfs_restart2history.yaml
+  testinput/convertstate_gfs_c2ll.yaml
   testinput/convertstate_gfs_history2restart.yaml
+  testinput/convertstate_gfs_model2geovals.yaml
+  testinput/convertstate_gfs_restart2history.yaml
+  testinput/convertstate_gfs.yaml
   testinput/comparestates_gfs_restart2history2restart.yaml
   testinput/convertstate_gfs_restart2fms_nonrestart.yaml
   testinput/convertstate_gfs_fms_nonrestart2restart.yaml
@@ -152,11 +158,13 @@ list( APPEND fv3jedi_testinput
   testinput/diffstates_gfs.yaml
   testinput/diffstates_lam_cmaq.yaml
   testinput/diffusionparameters.yaml
-  testinput/dirac_geos.yaml
   testinput/dirac_geos_gsi_global.yaml
-  testinput/dirac_gfs.yaml
+  testinput/dirac_geos.yaml
   testinput/dirac_gfs_diffusion.yaml
   testinput/dirac_gfs_gsi_global.yaml
+  testinput/dirac_gfs.yaml
+  testinput/d_to_a_regional.yaml
+  testinput/d_to_a.yaml
   testinput/eda_3dvar_control_pert.yaml
   testinput/eda_4dvar_fv3lm_1.yaml
   testinput/eda_4dvar_fv3lm_2.yaml
@@ -164,6 +172,11 @@ list( APPEND fv3jedi_testinput
   testinput/eda_block_3dvar_1.yaml
   testinput/eda_block_3dvar_2.yaml
   testinput/eda_block_3dvar.yaml
+  testinput/ensembleb_dirac_local_gfs_12pe.yaml
+  testinput/ensembleb_loc_gfs.yaml
+  testinput/ensembleb_nicas_gfs.yaml
+  testinput/ensembleb_prep_DATE_geos.yaml
+  testinput/ensembleb_prep_DATE_gfs.yaml
   testinput/ensemble_ufs_forecast.yaml
   testinput/enshofx_fv3lm_1.yaml
   testinput/enshofx_fv3lm_2.yaml
@@ -172,11 +185,12 @@ list( APPEND fv3jedi_testinput
   testinput/ensmeanvariance_gfs.yaml
   testinput/enspert_geos_cf.yaml
   testinput/ensrecenter_gfs.yaml
+  testinput/ens_spread_geos.yaml
   testinput/errorcovariance_bump.yaml
   testinput/errorcovariance_gfs_gsi_global.yaml
   testinput/errorcovariance.yaml
-  testinput/forecast_fv3lm.yaml
   testinput/forecast_fv3lm_tracers.yaml
+  testinput/forecast_fv3lm.yaml
   testinput/forecast_geos.yaml
   testinput/forecast_ufs_1.yaml
   testinput/forecast_ufs_2.yaml
@@ -193,90 +207,91 @@ list( APPEND fv3jedi_testinput
   testinput/geometry_iterator_lam_cmaq.yaml
   testinput/geometry_lam_cmaq.yaml
   testinput/geometry_nested.yaml
+  testinput/geos_to_fms.yaml
   testinput/getvalues.yaml
   testinput/global_interpolator.yaml
-  testinput/hofx_fv3-geos.yaml
   testinput/hofx_fv3-geos_cf.yaml
+  testinput/hofx_fv3-geos.yaml
   testinput/hofx_fv3-gfs.yaml
   testinput/hofx_fv3lm.yaml
   testinput/hofx_gnssro_ropp.yaml
-  testinput/hofx_nomodel.yaml
   testinput/hofx_nomodel_abi_radii.yaml
   testinput/hofx_nomodel_amsua_fov.yaml
   testinput/hofx_nomodel_amsua_radii.yaml
   testinput/hofx_nomodel_lam_cmaq.yaml
-  testinput/hofx_nomodel_lam_rrfs.yaml
   testinput/hofx_nomodel_lam_rrfs_obs_on_lbc.yaml
+  testinput/hofx_nomodel_lam_rrfs.yaml
+  testinput/hofx_nomodel.yaml
   testinput/hofx_save_geovals.yaml
-  testinput/hybrid_linear_model.yaml
   testinput/hyb-3dvar_fsoi_backward.yaml
   testinput/hyb-3dvar_fsoi_forward.yaml
-  testinput/hyb-3dvar_geos.yaml
   testinput/hyb-3dvar_geos_sondes_c12.yaml
-  testinput/hyb-fgat_gfs_aero.yaml
+  testinput/hyb-3dvar_geos.yaml
   testinput/hyb-3dvar_gfs_gnssro_ropp.yaml
   testinput/hyb-3dvar_gfs.yaml
   testinput/hyb-3dvar_p12.yaml
   testinput/hyb-3dvar.yaml
-  testinput/hyb-4dvar_pseudo-geos.yaml
   testinput/hyb-4denvar_geos_sondes_c12.yaml
+  testinput/hyb-4dvar_pseudo-geos.yaml
   testinput/hyb-fgat_fv3lm.yaml
+  testinput/hyb-fgat_gfs_aero.yaml
+  testinput/hybrid_linear_model.yaml
   testinput/increment_geos.yaml
   testinput/increment_gfs.yaml
-  testinput/letkf.yaml
   testinput/letkf3d.yaml
-  testinput/lgetkf.yaml
-  testinput/lgetkf_linearobserver.yaml
-  testinput/3dvar_snow.yaml
-  testinput/letkf_snow.yaml
   testinput/letkf_observer_soil_moisture.yaml
-  testinput/adjointforecast.yaml
+  testinput/letkf_snow.yaml
+  testinput/letkf.yaml
+  testinput/lgetkf_linearobserver.yaml
+  testinput/lgetkf.yaml
+  testinput/linearization_error.yaml
   testinput/linearmodel_physics.yaml
   testinput/linearmodel.yaml
   testinput/linearvariablechange_geos.yaml
   testinput/linearvariablechange_gfs.yaml
-  testinput/linearization_error.yaml
   testinput/localization_bump.yaml
-  testinput/model_fv3lm.yaml
   testinput/model_fv3lm_tracers.yaml
+  testinput/model_fv3lm.yaml
   testinput/model_geos.yaml
-  testinput/model_ufs_c48_warmstart.yaml
   testinput/model_pseudo-geos.yaml
   testinput/model_pseudo-gfs.yaml
-  testinput/obslocalization.yaml
+  testinput/model_ufs_c48_warmstart.yaml
   testinput/obslocalizations.yaml
   testinput/obslocalization_vertical.yaml
+  testinput/obslocalization.yaml
   testinput/obsop_name_map.yaml
-  testinput/state_geos_aerosol_ext.yaml
-  testinput/state_geos.yaml
-  testinput/state_geos_cf.yaml
-  testinput/state_gchp.yaml
   testinput/state_gchp_stretched_grid.yaml
-  testinput/state_gfs.yaml
+  testinput/state_gchp.yaml
+  testinput/state_geos_aerosol_ext.yaml
+  testinput/state_geos_cf.yaml
+  testinput/state_geos.yaml
   testinput/state_gfs_history.yaml
-  testinput/state_lam_cmaq.yaml
+  testinput/state_gfs.yaml
   testinput/state_lam_atmos.yaml
-  testinput/staticb_dirac_global_gfs_6pe.yaml
-  testinput/staticb_dirac_global_gfs_12pe.yaml
-  testinput/staticb_dirac_local_gfs_6pe.yaml
-  testinput/staticb_dirac_local_gfs_12pe.yaml
-  testinput/staticb_nicas_gfs.yaml
-  testinput/staticb_split_nicas_gfs.yaml
-  testinput/staticb_split_vbal_gfs.yaml
-  testinput/staticb_estimate_gfs.yaml
-  testinput/staticb_vbal_geos.yaml
-  testinput/staticb_var_geos.yaml
-  testinput/staticb_cor_geos.yaml
-  testinput/staticb_nicas_geos.yaml
+  testinput/state_lam_cmaq.yaml
   testinput/staticb_cor_aero.yaml
+  testinput/staticb_cor_geos.yaml
+  testinput/staticb_dirac_global_gfs_12pe.yaml
+  testinput/staticb_dirac_global_gfs_6pe.yaml
   testinput/staticb_dirac_local_aero_12pe.yaml
+  testinput/staticb_dirac_local_gfs_12pe.yaml
+  testinput/staticb_dirac_local_gfs_6pe.yaml
+  testinput/staticb_ens-to-psichi_DATE_geos.yaml
+  testinput/staticb_ens-to-psichi_DATE_gfs.yaml
+  testinput/staticb_estimate_gfs.yaml
   testinput/staticb_nicas_aero.yaml
+  testinput/staticb_nicas_geos.yaml
+  testinput/staticb_nicas_gfs.yaml
+  testinput/staticb_prep_DATE_aero.yaml
+  testinput/staticb_prep_DATE_geos.yaml
+  testinput/staticb_prep_DATE_gfs.yaml
+  testinput/staticb_split_nicas_gfs.yaml
+  testinput/staticb_split_vbal_geos.yaml
+  testinput/staticb_split_vbal_gfs.yaml
   testinput/staticb_var_aero.yaml
-  testinput/ensembleb_loc_gfs.yaml
-  testinput/ensembleb_nicas_gfs.yaml
-  testinput/ensembleb_dirac_local_gfs_12pe.yaml
+  testinput/staticb_var_geos.yaml
+  testinput/staticb_vbal_geos.yaml
   testinput/unstructured_interpolator.yaml
-  testinput/variablechange_geos.yaml
   testinput/variablechange_gfs.yaml
   testinput/ens_spread_geos.yaml
   testinput/processperts_gfs.yaml
@@ -316,8 +331,6 @@ list( APPEND fv3jedi_testoutput
   testoutput/convertstate_geos_cf.ref
   testoutput/convertstate_gchp.ref
   testoutput/convertstate_gfs_ana2bvars.ref
-  testoutput/convertstate_gfs_coldstartwinds.ref
-  testoutput/convertstate_gfs_vertremap.ref
   testoutput/convertstate_gfs_model2geovals.ref
   testoutput/convertstate_gfs.ref
   testoutput/convertstate_gfs_c2ll.ref
@@ -994,19 +1007,6 @@ if ( HAS_FMS2_IO )
                     TEST_DEPENDS fv3jedi_test_tier1_convertstate_gfs_restart2fms_nonrestart )
 endif()
 
-if( FV3_FORECAST_MODEL MATCHES "FV3CORE" )
-  ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertstate_gfs_coldstartwinds
-                    MPI      6
-                    ARGS     testinput/convertstate_gfs_coldstartwinds.yaml
-                    COMMAND  fv3jedi_convertstate.x )
-
-  ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertstate_gfs_vertremap
-                    MPI      6
-                    ARGS     testinput/convertstate_gfs_vertremap.yaml
-                    COMMAND  fv3jedi_convertstate.x
-                    TEST_DEPENDS fv3jedi_test_tier1_convertstate_gfs_coldstartwinds)
-endif()
-
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertstate_gfs_model2geovals
                   MPI      6
                   ARGS     testinput/convertstate_gfs_model2geovals.yaml
@@ -1032,6 +1032,52 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertstate_geos_fv3jedi_for_mode
                   ARGS     testinput/convertstate_geos_fv3jedi_for_model2geovals.yaml
                   COMMAND  fv3jedi_convertstate.x )
 
+# Offline tools that make use of staggered winds
+# ----------------------------------------------
+
+# Cold starts to warm starts
+# --------------------------
+if( FV3_FORECAST_MODEL MATCHES "FV3CORE" )
+
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_cold_to_warm_start
+                  MPI      6
+                  ARGS     testinput/cold_to_warm_start.yaml
+                  COMMAND  fv3jedi_cold_to_warm.x )
+
+# D -> A
+# ------
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_d_to_a
+                  MPI      6
+                  ARGS     testinput/d_to_a.yaml
+                  COMMAND  fv3jedi_d_to_a.x )
+
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_d_to_a_regional
+                  MPI      12
+                  ARGS     testinput/d_to_a_regional.yaml
+                  COMMAND  fv3jedi_d_to_a.x )
+
+# A -> D
+# ------
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_a_to_d
+                  MPI      6
+                  ARGS     testinput/a_to_d.yaml
+                  COMMAND  fv3jedi_a_to_d.x )
+
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_a_to_d_regional
+                  MPI      12
+                  ARGS     testinput/a_to_d_regional.yaml
+                  COMMAND  fv3jedi_a_to_d.x
+                  TEST_DEPENDS fv3jedi_test_tier1_d_to_a_regional )
+
+# GEOS background to FMS restart (D-Grid winds)
+# ---------------------------------------------
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_geos_to_fms
+                  MPI      6
+                  ARGS     testinput/geos_to_fms.yaml
+                  COMMAND  fv3jedi_geos_to_fms.x )
+
+endif()
+
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertincrement_geos_model2geovals
                   MPI      6
                   ARGS     testinput/convertincrement_geos_model2geovals.yaml
@@ -1041,6 +1087,8 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_converttogauss_gfs
                   MPI      6
                   ARGS     testinput/converttogauss_gfs.yaml
                   COMMAND  fv3jedi_converttostructuredgrid.x )
+
+
 
 # CompareStates tests
 # -------------------
@@ -1057,11 +1105,6 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_variablechange_gfs
                   ARGS     testinput/variablechange_gfs.yaml
                   COMMAND  test_fv3jedi_variablechange.x )
 
-ecbuild_add_test( TARGET   fv3jedi_test_tier1_variablechange_geos
-                  MPI      6
-                  ARGS     testinput/variablechange_geos.yaml
-                  COMMAND  test_fv3jedi_variablechange.x )
-
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_linearvariablechange_gfs
                   MPI      6
                   ARGS     testinput/linearvariablechange_gfs.yaml
@@ -1071,7 +1114,6 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_linearvariablechange_geos
                   MPI      6
                   ARGS     testinput/linearvariablechange_geos.yaml
                   COMMAND  test_fv3jedi_linearvariablechange.x )
-
 
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_model_pseudo-gfs
                   MPI      6

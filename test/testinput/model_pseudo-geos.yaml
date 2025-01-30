@@ -20,7 +20,7 @@ model aux control: null
 model aux error: null
 model test:
   forecast length: PT2H
-  final norm: 38064110333508.109
+  final norm: 41282534177300.711
   tolerance: 1.0e-4
 initial condition:
   datetime: 2020-12-14T21:00:00Z
@@ -31,8 +31,6 @@ initial condition:
   - geos.bkg.20201214_210000z.nc4
   - geos.bkg.crtmsrf.20201214_210000z.nc4
   state variables:
-  - u
-  - v
   - ua
   - va
   - t

@@ -48,7 +48,6 @@ namespace fv3jedi {
     std::string getLongName() const {return longName_;}
     std::string getShrtName() const {return shrtName_;}
     std::string getDataKind() const {return dataKind_;}
-    std::string getStagrLoc() const {return stagrLoc_;}
     std::string getMathSpac() const {return mathSpac_;}
     std::string getVarUnits() const {return varUnits_;}
     std::string getInOuName() const {return inOuName_;}
@@ -56,36 +55,10 @@ namespace fv3jedi {
     std::string getIntrpTyp() const {return intrpTyp_;}
     std::string getIntrpMsk() const {return intrpMsk_;}
 
-    // Whether a field is a specific to the FV3 dycore or to a model using the FV3 dycore; we lump
-    // these together as "interface specific" fields. This is contrast to fields that have meaning
-    // outside the context of the FV3 dycore or a model, which are used outside of this model
-    // interface by JEDI.
-    //
-    // For now, we determine if a field is interface specific algorithmically:
-    // => a field is interface specific IFF (is it staggered OR its long name ends in _cold)
-    //
-    // But if more fine-grained control is needed, this could be set by a data member, as is done
-    // for other metadata fields.
-    bool getIsInterfaceSpecificField() const {
-      if (stagrLoc_ != "center") {
-        return true;
-      }
-      const std::string ending = "_cold";
-      if (longName_.size() > ending.size()) {
-        // check if last `ending.size` characters of longName equal ending
-        if (std::equal(longName_.begin() + longName_.size() - ending.size(),
-                       longName_.end(), ending.begin())) {
-          return true;
-        }
-      }
-      return false;
-    }
-
     // Set functions (strings)
     // -----------------------
     void setShrtName(std::string shrtName) {shrtName_ = shrtName;}
     void setDataKind(std::string dataKind) {dataKind_ = dataKind;}
-    void setStagrLoc(std::string stagrLoc) {stagrLoc_ = stagrLoc;}
     void setMathSpac(std::string mathSpac) {mathSpac_ = mathSpac;}
     void setVarUnits(std::string varUnits) {varUnits_ = varUnits;}
     void setInOuName(std::string inOuName) {inOuName_ = inOuName;}
@@ -138,7 +111,6 @@ namespace fv3jedi {
       this->validateVariable(ValidDataKind_, dataKind_);
       this->validateVariable(ValidIntrpTyp_, intrpTyp_);
       this->validateVariable(ValidMathSpac_, mathSpac_);
-      this->validateVariable(ValidStagrLoc_, stagrLoc_);
     }
 
    private:
@@ -146,7 +118,6 @@ namespace fv3jedi {
     std::string longName_;
     std::string shrtName_;
     std::string dataKind_;
-    std::string stagrLoc_;
     int numLevls_;
     std::string mathSpac_;
     bool isTracer_;
@@ -167,7 +138,6 @@ namespace fv3jedi {
     const std::vector<std::string> ValidDataKind_ = {"double", "integer"};
     const std::vector<std::string> ValidIntrpTyp_ = {"integer", "nearest", "default"};
     const std::vector<std::string> ValidMathSpac_ = {"vector", "magnitude", "direction"};
-    const std::vector<std::string> ValidStagrLoc_ = {"center", "eastwest", "northsouth", "corner"};
 
     // Print method
     void print(std::ostream & os) const {
@@ -175,7 +145,6 @@ namespace fv3jedi {
       os << std::endl << "   Short name: " << shrtName_;
       os << std::endl << "   Units: " << varUnits_;
       os << std::endl << "   Kind: " << dataKind_;
-      os << std::endl << "   Horizontal stagger location: " << stagrLoc_;
       os << std::endl << "   Levels: " << numLevls_;
       os << std::endl << "   Space: " << mathSpac_;
       os << std::endl << "   Tracer: " << isTracer_;
@@ -202,10 +171,6 @@ namespace fv3jedi {
     // Get long name from any of the potential field names
     oops::Variables getLongNameFromAnyName(const oops::Variables &) const;
     std::string getLongNameFromAnyName(const std::string &) const;
-
-    // Filter out any fields that are specific to the fv3-jedi interface, returns a
-    // Variables containing fields for passing to JEDI
-    oops::Variables removeInterfaceSpecificFields(const oops::Variables &) const;
 
    private:
     std::map<std::string, FieldMetadata> fieldsMetadata_;

@@ -24,7 +24,6 @@ namespace fv3jedi {
     std::string units;
     std::string kind;
     std::string tracer;  // Turned into bool but input as string to allow default checking
-    std::string horizontalStaggerLocation;
     std::string levels;
     std::string space;
   };
@@ -37,7 +36,6 @@ namespace fv3jedi {
     md.units = "units";
     md.kind = "kind";
     md.tracer = "tracer";
-    md.horizontalStaggerLocation = "horizontal stagger location";
     md.levels = "levels";
     md.space = "space";
   }
@@ -52,7 +50,6 @@ namespace fv3jedi {
     ASSERT_MSG(md.units != "units", "units was not set");
     ASSERT_MSG(md.kind != "kind", "kind was not set");
     ASSERT_MSG(md.tracer != "tracer", "tracer was not set");
-    ASSERT_MSG(md.horizontalStaggerLocation != "horizontal stagger location", "stagger not set");
     ASSERT_MSG(md.levels != "levels", "levels was not set");
     ASSERT_MSG(md.space != "space", "space was not set");
   }
@@ -71,7 +68,6 @@ namespace fv3jedi {
     fieldmetadata.setShrtName(md.shortName);
     fieldmetadata.setVarUnits(md.units);
     fieldmetadata.setDataKind(md.kind);
-    fieldmetadata.setStagrLoc(md.horizontalStaggerLocation);
     fieldmetadata.setNumLevls(md.levels);
     fieldmetadata.setMathSpac(md.space);
     fieldmetadata.setIsTracer(md.tracer);
@@ -103,53 +99,11 @@ namespace fv3jedi {
 
     // Default field metadata
     // ----------------------
-
-    md.longName = "u_component_of_native_D_grid_wind";
-    md.shortName = "ud";
-    md.units = "ms-1";
-    md.kind = "double";
-    md.tracer = "false";
-    md.horizontalStaggerLocation = "northsouth";
-    md.levels = "full";
-    md.space = "vector";
-    addFieldMetadata(fieldsmetadata, nlev, md);
-
-    md.longName = "v_component_of_native_D_grid_wind";
-    md.shortName = "vd";
-    md.units = "ms-1";
-    md.kind = "double";
-    md.tracer = "false";
-    md.horizontalStaggerLocation = "eastwest";
-    md.levels = "full";
-    md.space = "vector";
-    addFieldMetadata(fieldsmetadata, nlev, md);
-
-    md.longName = "u_component_of_native_C_grid_wind";
-    md.shortName = "uc";
-    md.units = "ms-1";
-    md.kind = "double";
-    md.tracer = "false";
-    md.horizontalStaggerLocation = "eastwest";
-    md.levels = "full";
-    md.space = "vector";
-    addFieldMetadata(fieldsmetadata, nlev, md);
-
-    md.longName = "v_component_of_native_C_grid_wind";
-    md.shortName = "vc";
-    md.units = "ms-1";
-    md.kind = "double";
-    md.tracer = "false";
-    md.horizontalStaggerLocation = "northsouth";
-    md.levels = "full";
-    md.space = "vector";
-    addFieldMetadata(fieldsmetadata, nlev, md);
-
     md.longName = "eastward_wind";
     md.shortName = "ua";
     md.units = "ms-1";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -159,7 +113,6 @@ namespace fv3jedi {
     md.units = "ms-1";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -169,7 +122,6 @@ namespace fv3jedi {
     md.units = "K";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -179,7 +131,6 @@ namespace fv3jedi {
     md.units = "K";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -189,7 +140,6 @@ namespace fv3jedi {
     md.units = "K";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -199,7 +149,6 @@ namespace fv3jedi {
     md.units = "pa";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -209,7 +158,6 @@ namespace fv3jedi {
     md.units = "Pa";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -219,7 +167,6 @@ namespace fv3jedi {
     md.units = "Pa";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "half";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -229,7 +176,6 @@ namespace fv3jedi {
     md.units = "Pa";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -239,7 +185,6 @@ namespace fv3jedi {
     md.units = "Pa";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -249,7 +194,6 @@ namespace fv3jedi {
     md.units = "Pa";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "half";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -259,7 +203,6 @@ namespace fv3jedi {
     md.units = "kgkg-1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -269,7 +212,6 @@ namespace fv3jedi {
     md.units = "kgkg-1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -279,7 +221,6 @@ namespace fv3jedi {
     md.units = "1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -289,7 +230,6 @@ namespace fv3jedi {
     md.units = "kgkg-1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -299,7 +239,6 @@ namespace fv3jedi {
     md.units = "kgkg-1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -309,7 +248,6 @@ namespace fv3jedi {
     md.units = "kgkg-1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -319,7 +257,6 @@ namespace fv3jedi {
     md.units = "kgkg-1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -329,7 +266,6 @@ namespace fv3jedi {
     md.units = "kgkg-1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -339,7 +275,6 @@ namespace fv3jedi {
     md.units = "kgkg-1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -349,7 +284,6 @@ namespace fv3jedi {
     md.units = "1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -359,7 +293,6 @@ namespace fv3jedi {
     md.units = "1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -369,7 +302,6 @@ namespace fv3jedi {
     md.units = "kgkg-1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -379,7 +311,6 @@ namespace fv3jedi {
     md.units = "kgkg-1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -389,7 +320,6 @@ namespace fv3jedi {
     md.units = "kgkg-1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -399,7 +329,6 @@ namespace fv3jedi {
     md.units = "kg-1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -409,7 +338,6 @@ namespace fv3jedi {
     md.units = "kg-1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -419,7 +347,6 @@ namespace fv3jedi {
     md.units = "kg-1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -429,7 +356,6 @@ namespace fv3jedi {
     md.units = "kg-1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -439,7 +365,6 @@ namespace fv3jedi {
     md.units = "kg-1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -449,7 +374,6 @@ namespace fv3jedi {
     md.units = "1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -459,7 +383,6 @@ namespace fv3jedi {
     md.units = "m2/s2";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -469,7 +392,6 @@ namespace fv3jedi {
     md.units = "ms-1";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -479,7 +401,6 @@ namespace fv3jedi {
     md.units = "m";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -489,7 +410,6 @@ namespace fv3jedi {
     md.units = "m";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -499,7 +419,6 @@ namespace fv3jedi {
     md.units = "m+2s";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -509,7 +428,6 @@ namespace fv3jedi {
     md.units = "m+2s";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -519,7 +437,6 @@ namespace fv3jedi {
     md.units = "m+2s";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -529,7 +446,6 @@ namespace fv3jedi {
     md.units = "m+2s";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -539,7 +455,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "integer";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -549,7 +464,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -559,7 +473,6 @@ namespace fv3jedi {
     md.units = "K";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -569,7 +482,6 @@ namespace fv3jedi {
     md.units = "K";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -579,7 +491,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "integer";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -589,7 +500,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "integer";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -599,7 +509,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -609,7 +518,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "4";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -619,7 +527,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "9";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -629,7 +536,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -639,7 +545,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "4";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -649,7 +554,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "9";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -659,7 +563,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -669,7 +572,6 @@ namespace fv3jedi {
     md.units = "mm";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -679,7 +581,6 @@ namespace fv3jedi {
     md.units = "m";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -689,7 +590,6 @@ namespace fv3jedi {
     md.units = "ms-1";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -699,7 +599,6 @@ namespace fv3jedi {
     md.units = "ms-1";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -709,7 +608,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -719,7 +617,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -729,7 +626,6 @@ namespace fv3jedi {
     md.units = "kgkg-1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -739,7 +635,6 @@ namespace fv3jedi {
     md.units = "kgkg-1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -749,7 +644,6 @@ namespace fv3jedi {
     md.units = "1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -759,7 +653,6 @@ namespace fv3jedi {
     md.units = "1";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -769,7 +662,6 @@ namespace fv3jedi {
     md.units = "1";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -779,7 +671,6 @@ namespace fv3jedi {
     md.units = "1";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -789,7 +680,6 @@ namespace fv3jedi {
     md.units = "1";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -799,7 +689,6 @@ namespace fv3jedi {
     md.units = "1";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -809,7 +698,6 @@ namespace fv3jedi {
     md.units = "m+2";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -819,7 +707,6 @@ namespace fv3jedi {
     md.units = "ms-1";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -829,7 +716,6 @@ namespace fv3jedi {
     md.units = "ms-2";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -839,7 +725,6 @@ namespace fv3jedi {
     md.units = "m";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -849,7 +734,6 @@ namespace fv3jedi {
     md.units = "kgm-2s-1";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -859,7 +743,6 @@ namespace fv3jedi {
     md.units = "kgm-2s-1";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -869,7 +752,6 @@ namespace fv3jedi {
     md.units = "kgm-2s-1";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -879,7 +761,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -889,7 +770,6 @@ namespace fv3jedi {
     md.units = "K";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -899,7 +779,6 @@ namespace fv3jedi {
     md.units = "1";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -909,7 +788,6 @@ namespace fv3jedi {
     md.units = "1";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -919,7 +797,6 @@ namespace fv3jedi {
     md.units = "kgm-3";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -929,7 +806,6 @@ namespace fv3jedi {
     md.units = "cm";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -939,7 +815,6 @@ namespace fv3jedi {
     md.units = "K";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -949,7 +824,6 @@ namespace fv3jedi {
     md.units = "Pa";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -959,7 +833,6 @@ namespace fv3jedi {
     md.units = "m";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -969,7 +842,6 @@ namespace fv3jedi {
     md.units = "m";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "half";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -979,7 +851,6 @@ namespace fv3jedi {
     md.units = "m";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -989,7 +860,6 @@ namespace fv3jedi {
     md.units = "m";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -999,7 +869,6 @@ namespace fv3jedi {
     md.units = "m";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1009,7 +878,6 @@ namespace fv3jedi {
     md.units = "1";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1019,7 +887,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1029,7 +896,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1039,7 +905,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1049,7 +914,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1059,7 +923,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1069,7 +932,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1079,7 +941,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1089,7 +950,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1099,7 +959,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1109,7 +968,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1119,7 +977,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1129,7 +986,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1139,7 +995,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1149,7 +1004,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1159,7 +1013,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1169,7 +1022,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1179,7 +1031,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1189,7 +1040,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1199,7 +1049,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1209,7 +1058,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1219,7 +1067,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1229,7 +1076,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1239,7 +1085,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1249,7 +1094,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1259,7 +1103,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1269,7 +1112,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "direction";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1279,7 +1121,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1289,7 +1130,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1299,7 +1139,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1309,7 +1148,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "integer";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1319,7 +1157,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "integer";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1329,7 +1166,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "integer";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1339,7 +1175,6 @@ namespace fv3jedi {
     md.units = "m";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1349,7 +1184,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1359,7 +1193,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1369,7 +1202,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1379,7 +1211,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1389,7 +1220,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1399,7 +1229,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1409,7 +1238,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1419,7 +1247,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1429,7 +1256,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1439,7 +1265,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1449,7 +1274,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1459,7 +1283,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1469,7 +1292,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1479,7 +1301,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1489,7 +1310,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1499,7 +1319,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1509,7 +1328,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1519,7 +1337,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1529,7 +1346,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1539,7 +1355,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1549,7 +1364,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1559,7 +1373,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1569,7 +1382,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1579,7 +1391,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1589,7 +1400,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1599,7 +1409,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1609,7 +1418,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1620,7 +1428,6 @@ namespace fv3jedi {
     md.units = "kgkg-1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1630,7 +1437,6 @@ namespace fv3jedi {
     md.units = "kgkg-1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1640,7 +1446,6 @@ namespace fv3jedi {
     md.units = "kgkg-1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1650,7 +1455,6 @@ namespace fv3jedi {
     md.units = "kgkg-1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1660,7 +1464,6 @@ namespace fv3jedi {
     md.units = "kgkg-1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1670,7 +1473,6 @@ namespace fv3jedi {
     md.units = "kgkg-1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1680,7 +1482,6 @@ namespace fv3jedi {
     md.units = "kgkg-1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1690,7 +1491,6 @@ namespace fv3jedi {
     md.units = "kgkg-1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1700,7 +1500,6 @@ namespace fv3jedi {
     md.units = "kgkg-1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1710,7 +1509,6 @@ namespace fv3jedi {
     md.units = "kgkg-1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1720,7 +1518,6 @@ namespace fv3jedi {
     md.units = "kgkg-1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1730,7 +1527,6 @@ namespace fv3jedi {
     md.units = "kgkg-1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1740,7 +1536,6 @@ namespace fv3jedi {
     md.units = "kgkg-1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1750,7 +1545,6 @@ namespace fv3jedi {
     md.units = "kgkg-1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1760,7 +1554,6 @@ namespace fv3jedi {
     md.units = "kgkg-1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1770,7 +1563,6 @@ namespace fv3jedi {
     md.units = "kgkg-1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1780,7 +1572,6 @@ namespace fv3jedi {
     md.units = "kgkg-1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1790,7 +1581,6 @@ namespace fv3jedi {
     md.units = "kgkg-1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1800,7 +1590,6 @@ namespace fv3jedi {
     md.units = "kgkg-1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1810,7 +1599,6 @@ namespace fv3jedi {
     md.units = "km-1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1820,7 +1608,6 @@ namespace fv3jedi {
     md.units = "km-1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1830,7 +1617,6 @@ namespace fv3jedi {
     md.units = "km-1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1840,7 +1626,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1850,7 +1635,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1860,7 +1644,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1871,7 +1654,6 @@ namespace fv3jedi {
     md.units = "mol mol-1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1881,7 +1663,6 @@ namespace fv3jedi {
     md.units = "mol mol-1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1891,7 +1672,6 @@ namespace fv3jedi {
     md.units = "mol mol-1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1901,7 +1681,6 @@ namespace fv3jedi {
     md.units = "mol mol-1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1911,7 +1690,6 @@ namespace fv3jedi {
     md.units = "mol mol-1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1921,7 +1699,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1931,7 +1708,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1941,7 +1717,6 @@ namespace fv3jedi {
     md.units = "none";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1951,7 +1726,6 @@ namespace fv3jedi {
     md.units = "kgkg-1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1961,7 +1735,6 @@ namespace fv3jedi {
     md.units = "mole_fraction_of_ozone_in_air";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1971,7 +1744,6 @@ namespace fv3jedi {
     md.units = "kgkg-1";
     md.kind = "double";
     md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
     md.levels = "full";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1981,7 +1753,6 @@ namespace fv3jedi {
     md.units = "m";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
@@ -1991,189 +1762,7 @@ namespace fv3jedi {
     md.units = "m";
     md.kind = "double";
     md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
     md.levels = "1";
-    md.space = "magnitude";
-
-    // Cold start variables
-    addFieldMetadata(fieldsmetadata, nlev, md);
-    md.longName = "d_grid_west_face_tangential_wind_component_cold_start";
-    md.shortName = "u_w_cold";
-    md.units = "ms-1";
-    md.kind = "double";
-    md.tracer = "false";
-    md.horizontalStaggerLocation = "eastwest";
-    md.levels = "half";
-    md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
-
-    md.longName = "d_grid_west_face_normal_wind_component_cold_start";
-    md.shortName = "v_w_cold";
-    md.units = "ms-1";
-    md.kind = "double";
-    md.tracer = "false";
-    md.horizontalStaggerLocation = "eastwest";
-    md.levels = "half";
-    md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
-
-    md.longName = "d_grid_south_face_tangential_wind_component_cold_start";
-    md.shortName = "u_s_cold";
-    md.units = "ms-1";
-    md.kind = "double";
-    md.tracer = "false";
-    md.horizontalStaggerLocation = "northsouth";
-    md.levels = "half";
-    md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
-
-    md.longName = "d_grid_south_face_normal_wind_component_cold_start";
-    md.shortName = "v_s_cold";
-    md.units = "ms-1";
-    md.kind = "double";
-    md.tracer = "false";
-    md.horizontalStaggerLocation = "northsouth";
-    md.levels = "half";
-    md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
-
-    md.longName = "u_component_of_native_D_grid_wind_cold_start";
-    md.shortName = "ud_cold";
-    md.units = "ms-1";
-    md.kind = "double";
-    md.tracer = "false";
-    md.horizontalStaggerLocation = "northsouth";
-    md.levels = "half";
-    md.space = "vector";
-    addFieldMetadata(fieldsmetadata, nlev, md);
-
-    md.longName = "v_component_of_native_D_grid_wind_cold_start";
-    md.shortName = "vd_cold";
-    md.units = "ms-1";
-    md.kind = "double";
-    md.tracer = "false";
-    md.horizontalStaggerLocation = "eastwest";
-    md.levels = "half";
-    md.space = "vector";
-    addFieldMetadata(fieldsmetadata, nlev, md);
-
-    md.longName = "surface_pressure_cold_start";
-    md.shortName = "ps_cold";
-    md.units = "Pa";
-    md.kind = "double";
-    md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
-    md.levels = "1";
-    md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
-
-    md.longName = "air_temperature_cold_start";
-    md.shortName = "t_cold";
-    md.units = "K";
-    md.kind = "double";
-    md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
-    md.levels = "half";
-    md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
-
-    md.longName = "air_pressure_thickness_cold_start";
-    md.shortName = "delp_cold";
-    md.units = "Pa";
-    md.kind = "double";
-    md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
-    md.levels = "half";
-    md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
-
-    md.longName = "upward_air_velocity_cold_start";
-    md.shortName = "w_cold";
-    md.units = "ms-1";
-    md.kind = "double";
-    md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
-    md.levels = "half";
-    md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
-
-    md.longName = "layer_thickness_cold_start";
-    md.shortName = "zh_cold";
-    md.units = "m";
-    md.kind = "double";
-    md.tracer = "false";
-    md.horizontalStaggerLocation = "center";
-    md.levels = "halfplusone";
-    md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
-
-    md.longName = "specific_humidity_cold_start";
-    md.shortName = "sphum_cold";
-    md.units = "kgkg-1";
-    md.kind = "double";
-    md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
-    md.levels = "half";
-    md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
-
-    md.longName = "cloud_liquid_water_cold_start";
-    md.shortName = "liq_wat_cold";
-    md.units = "kgkg-1";
-    md.kind = "double";
-    md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
-    md.levels = "half";
-    md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
-
-    md.longName = "ozone_mass_mixing_ratio_cold_start";
-    md.shortName = "o3mr_cold";
-    md.units = "kgkg-1";
-    md.kind = "double";
-    md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
-    md.levels = "half";
-    md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
-
-    md.longName = "ice_wat_cold_start";
-    md.shortName = "ice_wat_cold";
-    md.units = "kgkg-1";
-    md.kind = "double";
-    md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
-    md.levels = "half";
-    md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
-
-    md.longName = "rainwat_cold_start";
-    md.shortName = "rainwat_cold";
-    md.units = "kgkg-1";
-    md.kind = "double";
-    md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
-    md.levels = "half";
-    md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
-
-    md.longName = "snowwat_cold_start";
-    md.shortName = "snowwat_cold";
-    md.units = "kgkg-1";
-    md.kind = "double";
-    md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
-    md.levels = "half";
-    md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
-
-    md.longName = "graupel_cold_start";
-    md.shortName = "graupel_cold";
-    md.units = "kgkg-1";
-    md.kind = "double";
-    md.tracer = "true";
-    md.horizontalStaggerLocation = "center";
-    md.levels = "half";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
   }

@@ -32,8 +32,6 @@ type field_metadata
  character(len=clen) :: units
  character(len=clen) :: kind
  logical :: tracer
- logical :: interface_specific
- character(len=clen) :: horizontal_stagger_location
  integer :: levels
  character(len=clen) :: space
  character(len=clen) :: io_name
@@ -50,7 +48,7 @@ end interface
 
 interface
   subroutine c_get_field_metadata(ptr, longshortio_name, long_name, short_name, units, &
-                                  kindd, tracer, interface_specific, horizontal_stagger_location, &
+                                  kindd, tracer, &
                                   levels, space, io_name, io_file, interpolation_type, &
                                   interpolation_source_point_mask) &
                                   bind(c, name='get_field_metadata_f')
@@ -63,8 +61,6 @@ interface
     character(len=1, kind=c_char) :: units(clen)
     character(len=1, kind=c_char) :: kindd(clen)
     logical(c_bool) :: tracer
-    logical(c_bool) :: interface_specific
-    character(len=1, kind=c_char) :: horizontal_stagger_location(clen)
     integer(kind=c_int) :: levels
     character(len=1, kind=c_char) :: space(clen)
     character(len=1, kind=c_char) :: io_name(clen)
@@ -105,8 +101,6 @@ character(len=1, kind=c_char), allocatable :: short_name(:)
 character(len=1, kind=c_char), allocatable :: units(:)
 character(len=1, kind=c_char), allocatable :: kindd(:)
 logical(c_bool) :: tracer
-logical(c_bool) :: interface_specific
-character(len=1, kind=c_char), allocatable :: horizontal_stagger_location(:)
 integer(kind=c_int) :: levels
 character(len=1, kind=c_char), allocatable :: space(:)
 character(len=1, kind=c_char), allocatable :: io_name(:)
@@ -130,7 +124,6 @@ allocate(long_name(clen))
 allocate(short_name(clen))
 allocate(units(clen))
 allocate(kindd(clen))
-allocate(horizontal_stagger_location(clen))
 allocate(space(clen))
 allocate(io_name(clen))
 allocate(io_file(clen))
@@ -141,7 +134,6 @@ long_name = c_null_char
 short_name = c_null_char
 units = c_null_char
 kindd = c_null_char
-horizontal_stagger_location = c_null_char
 space = c_null_char
 io_name = c_null_char
 io_file = c_null_char
@@ -150,12 +142,11 @@ interpolation_source_point_mask = c_null_char
 
 ! Get information from C++ object
 call c_get_field_metadata(self%ptr, longshortio_name, long_name, short_name, units, kindd, &
-                          tracer, interface_specific, horizontal_stagger_location, levels, space, &
+                          tracer, levels, space, &
                           io_name, io_file, interpolation_type, interpolation_source_point_mask)
 
 ! Copy non string
 fmd%tracer = tracer
-fmd%interface_specific = interface_specific
 fmd%levels = levels
 
 ! Copy string
@@ -163,7 +154,6 @@ call c_f_string(long_name, fmd%long_name)
 call c_f_string(short_name, fmd%short_name)
 call c_f_string(units, fmd%units)
 call c_f_string(kindd, fmd%kind)
-call c_f_string(horizontal_stagger_location, fmd%horizontal_stagger_location)
 call c_f_string(space, fmd%space)
 call c_f_string(io_name, fmd%io_name)
 call c_f_string(io_file, fmd%io_file)

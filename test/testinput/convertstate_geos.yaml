@@ -23,8 +23,6 @@ states:
     - geos.bkg.20201214_210000z.nc4
     - geos.bkg.crtmsrf.20201214_210000z.nc4
     state variables:
-    - u
-    - v
     - ua
     - va
     - t

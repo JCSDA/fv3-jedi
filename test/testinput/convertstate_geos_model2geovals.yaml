@@ -19,8 +19,8 @@ variable change:
   hydrometeor effective radii method: gsi
   mask over: land
   input variables: &inputvars
-  - u
-  - v
+  - ua
+  - va
   - t
   - delp
   - q

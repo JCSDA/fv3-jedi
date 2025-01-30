@@ -16,7 +16,7 @@ use fckit_configuration_module,   only: fckit_configuration
 use fms_io_mod,                   only: restart_file_type, register_restart_field
 use fms_io_mod,                   only: free_restart_type, restore_state, save_restart
 use fms_io_mod,                   only: set_domain, nullify_domain
-use mpp_domains_mod,              only: east, north, center, domain2D
+use mpp_domains_mod,              only: center, domain2D
 use mpp_mod,                      only: mpp_pe, mpp_root_pe
 
 ! fv3jedi
@@ -344,7 +344,7 @@ type(fv3jedi_field),  intent(inout) :: fields(:)
 
 type(restart_file_type) :: restart(numfiles)
 logical :: rstflag(numfiles)
-integer :: n, indexrst, position, var, idrst
+integer :: n, indexrst, var, idrst
 
 logical :: havedelp
 integer :: indexof_ps, indexof_delp
@@ -378,14 +378,6 @@ do var = 1,size(fields)
     fields(indexof_ps)%io_name = 'DELP'
   endif
 
-  ! Convert fv3jedi position to fms position
-  position = center
-  if (fields(var)%horizontal_stagger_location == 'northsouth') then
-    position = north
-  elseif (fields(var)%horizontal_stagger_location == 'eastwest') then
-    position = east
-  endif
-
   ! Get file to use
   call get_io_file(self, fields(var), indexrst)
 
@@ -395,7 +387,7 @@ do var = 1,size(fields)
   ! Register this restart
   idrst = register_restart_field( restart(indexrst), trim(self%filenames(indexrst)), &
                                   trim(fields(var)%io_name), fields(var)%array, &
-                                  domain=self%domain, position=position )
+                                  domain=self%domain, position=center )
 
 enddo
 
@@ -440,7 +432,7 @@ type(fv3jedi_field),  intent(in)    :: fields(:)     !< Fields to be written
 type(datetime),       intent(in)    :: vdate         !< DateTime
 
 logical :: rstflag(numfiles)
-integer :: n, indexrst, position, var, idrst, date(6)
+integer :: n, indexrst, var, idrst, date(6)
 integer :: idate, isecs
 type(restart_file_type) :: restart(numfiles)
 character(len=64)  :: datefile
@@ -487,21 +479,13 @@ do var = 1,size(fields)
   ! Get file to use
   call get_io_file(self, fields(var), indexrst)
 
-  ! Convert fv3jedi position to fms position
-  position = center
-  if (fields(var)%horizontal_stagger_location == 'northsouth') then
-    position = north
-  elseif (fields(var)%horizontal_stagger_location == 'eastwest') then
-    position = east
-  endif
-
   ! Flag to read this restart
   rstflag(indexrst) = .true.
 
   ! Register this restart
   idrst = register_restart_field( restart(indexrst), trim(self%filenames(indexrst)), &
                                   fields(var)%io_name, fields(var)%array, domain=self%domain, &
-                                  position=position, longname = trim(fields(var)%long_name), &
+                                  position=center, longname = trim(fields(var)%long_name), &
                                   units = trim(fields(var)%units) )
 
 enddo

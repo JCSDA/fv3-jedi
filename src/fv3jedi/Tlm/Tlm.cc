@@ -26,8 +26,8 @@ namespace fv3jedi {
 // -------------------------------------------------------------------------------------------------
 static oops::interface::LinearModelMaker<Traits, Tlm> makerTLM_("FV3JEDITLM");
 // -------------------------------------------------------------------------------------------------
-Tlm::Tlm(const Geometry & resol, const eckit::Configuration & config)
-  : keySelf_(0), tstep_(), trajmap_(), linvars_(), an2model_(), finalVars_()
+Tlm::Tlm(const Geometry & geom, const eckit::Configuration & config)
+  : geom_(geom), keySelf_(0), tstep_(), trajmap_(), linvars_()
 {
   oops::Log::trace() << "Tlm::Tlm starting" << std::endl;
 
@@ -35,14 +35,10 @@ Tlm::Tlm(const Geometry & resol, const eckit::Configuration & config)
   tstep_ = util::Duration(config.getString("tstep"));
 
   oops::Variables tlvars(config, "tlm variables");
-  linvars_ = oops::Variables(resol.fieldsMetaData().getLongNameFromAnyName(tlvars));
-
-  eckit::LocalConfiguration linVarChangeConfig;
-  linVarChangeConfig.set("linear variable change name", "Analysis2Model");
-  an2model_.reset(new LinearVariableChange(resol, linVarChangeConfig));
+  linvars_ = oops::Variables(geom_.fieldsMetaData().getLongNameFromAnyName(tlvars));
 
   // Implementation
-  fv3jedi_tlm_create_f90(keySelf_, resol.toFortran(), config);
+  fv3jedi_tlm_create_f90(keySelf_, geom_.toFortran(), config);
 
   oops::Log::trace() << "Tlm::Tlm done" << std::endl;
 }
@@ -63,19 +59,11 @@ Tlm::~Tlm() {
 void Tlm::setTrajectory(const State & xx, State & xlr, const ModelBias & bias) {
   oops::Log::trace() << "Tlm::setTrajectory starting" << std::endl;
 
-  // Interpolate to resolution of the trajectory
-  xlr.changeResolution(xx);
-
-  // Make sure interface-specific fields are synchronized
-  xlr.synchronizeInterfaceFields();
-
-  an2model_->changeVarTraj(xlr, linvars_);
-
   // Set trajectory
   int keyTraj = 0;
   fv3jedi_traj_set_f90(keyTraj, xlr.toFortran());
   ASSERT(keyTraj != 0);
-  trajmap_[xx.validTime()] = keyTraj;
+  trajmap_[xlr.validTime()] = keyTraj;
 
   oops::Log::trace() << "Tlm::setTrajectory done" << std::endl;
 }
@@ -92,18 +80,8 @@ void Tlm::initializeTL(Increment & dx) const {
     ABORT("Tlm: trajectory not available");
   }
 
-  ASSERT_MSG(!finalVars_, "finalVars_ should always be null when calling initializeTL");
-  if (!(linvars_ <= dx.variablesIncludingInterfaceFields())) {
-    finalVars_.reset(new oops::Variables(dx.variablesIncludingInterfaceFields()));
-    an2model_->changeVarTL(dx, linvars_);
-    dx.setInterfaceFieldsOutOfDate(false);  // an2model should have updated model fields
-  } else {
-    // Make sure interface-specific fields are synchronized
-    dx.synchronizeInterfaceFields();
-  }
-
   // Implementation
-  fv3jedi_tlm_initialize_tl_f90(keySelf_, dx.toFortran(), itra->second);
+  fv3jedi_tlm_initialize_tl_f90(keySelf_, geom_.toFortran(), dx.toFortran(), itra->second);
 
   oops::Log::trace() << "Tlm::initializeTL done" << std::endl;
 }
@@ -121,7 +99,7 @@ void Tlm::stepTL(Increment & dx, const ModelBiasIncrement &) const {
   }
 
   // Implementation
-  fv3jedi_tlm_step_tl_f90(keySelf_, dx.toFortran(), itra->second);
+  fv3jedi_tlm_step_tl_f90(keySelf_, geom_.toFortran(), dx.toFortran(), itra->second);
 
   // Tick increment clock
   dx.validTime() += tstep_;
@@ -133,13 +111,7 @@ void Tlm::finalizeTL(Increment & dx) const {
   oops::Log::trace() << "Tlm::finalizeTL starting" << std::endl;
 
   // Implementation
-  fv3jedi_tlm_finalize_tl_f90(keySelf_, dx.toFortran());
-
-  if (finalVars_) {
-    const bool force_varchange = true;
-    an2model_->changeVarInverseTL(dx, *finalVars_, force_varchange);
-    finalVars_.reset(nullptr);  // reset to null for next initializeTL
-  }
+  fv3jedi_tlm_finalize_tl_f90(keySelf_, geom_.toFortran(), dx.toFortran());
 
   oops::Log::trace() << "Tlm::finalizeTL done" << std::endl;
 }
@@ -156,17 +128,8 @@ void Tlm::initializeAD(Increment & dx) const {
     ABORT("Tlm: trajectory not available");
   }
 
-  ASSERT_MSG(!finalVars_, "finalVars_ should always be null when calling initializeAD");
-  if (!(linvars_ <= dx.variablesIncludingInterfaceFields())) {
-    finalVars_.reset(new oops::Variables(dx.variablesIncludingInterfaceFields()));
-    an2model_->changeVarInverseAD(dx, linvars_);
-  } else {
-    // Make sure interface-specific fields are synchronized
-    dx.synchronizeInterfaceFields();
-  }
-
   // Implementation
-  fv3jedi_tlm_initialize_ad_f90(keySelf_, dx.toFortran(), itra->second);
+  fv3jedi_tlm_initialize_ad_f90(keySelf_, geom_.toFortran(), dx.toFortran(), itra->second);
 
   oops::Log::trace() << "Tlm::initializeAD done" << std::endl;
 }
@@ -186,12 +149,8 @@ void Tlm::stepAD(Increment & dx, ModelBiasIncrement &) const {
     ABORT("Tlm: trajectory not available");
   }
 
-  // Make sure interface-specific fields are synchronized
-  // They could be desynchronized if an adjoint postprocessor was run before stepAD
-  dx.synchronizeInterfaceFields();
-
   // Implementation
-  fv3jedi_tlm_step_ad_f90(keySelf_, dx.toFortran(), itra->second);
+  fv3jedi_tlm_step_ad_f90(keySelf_, geom_.toFortran(), dx.toFortran(), itra->second);
 
   oops::Log::trace() << "Tlm::stepAD done" << std::endl;
 }
@@ -199,18 +158,8 @@ void Tlm::stepAD(Increment & dx, ModelBiasIncrement &) const {
 void Tlm::finalizeAD(Increment & dx) const {
   oops::Log::trace() << "Tlm::finalizeAD starting" << std::endl;
 
-  // Make sure interface-specific fields are synchronized
-  // They could be desynchronized if an adjoint postprocessor was run before finalizeAD
-  dx.synchronizeInterfaceFields();
-
   // Implementation
-  fv3jedi_tlm_finalize_ad_f90(keySelf_, dx.toFortran());
-
-  if (finalVars_) {
-    const bool force_varchange = true;
-    an2model_->changeVarAD(dx, *finalVars_, force_varchange);
-    finalVars_.reset(nullptr);  // reset to null for next initializeAD
-  }
+  fv3jedi_tlm_finalize_ad_f90(keySelf_, geom_.toFortran(), dx.toFortran());
 
   oops::Log::trace() << "Tlm::finalizeAD done" << std::endl;
 }

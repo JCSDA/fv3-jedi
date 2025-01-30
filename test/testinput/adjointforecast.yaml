@@ -17,8 +17,8 @@ linear forecast:
     lm_do_trb: 0
     lm_do_mst: 0
     tlm variables:
-    - u
-    - v
+    - ua
+    - va
     - T
     - delp
     - sphum
@@ -28,8 +28,8 @@ linear forecast:
     - phis
     trajectory:
       model variables:
-      - u
-      - v
+      - ua
+      - va
       - T
       - delp
       - sphum
@@ -56,8 +56,6 @@ forecast:
     lm_do_trb: 0
     lm_do_mst: 0
     model variables:
-    - u
-    - v
     - ua
     - va
     - T
@@ -67,6 +65,10 @@ forecast:
     - liq_wat
     - o3mr
     - phis
+    datapath: Data/inputs/gfs_c12/bkg/
+    filename_core: 20201214.210000.fv_core.res.nc
+    filename_core_out: checkpoint.adjointforecast.fv_core.res.nc
+    datapath_out: Data/forecast
   initial condition:
     filetype: fms restart
     datetime: 2020-12-14T21:00:00Z
@@ -77,8 +79,6 @@ forecast:
     filename_sfcw: 20201214.210000.fv_srf_wnd.res.nc
     filename_cplr: 20201214.210000.coupler.res
     state variables:
-    - u
-    - v
     - ua
     - va
     - T
@@ -116,8 +116,6 @@ forecast aspect:
     filename_sfcw: 20201214.220000.fv_srf_wnd.res.nc
     filename_cplr: 20201214.220000.coupler.res
     state variables:
-    - u
-    - v
     - ua
     - va
     - T

@@ -31,8 +31,6 @@ linear model:
       lm_do_trb: 0
       lm_do_mst: 0
       tlm variables:
-      - u
-      - v
       - ua
       - va
       - T
@@ -43,8 +41,6 @@ linear model:
       - o3mr
       trajectory:
         model variables: &modelvars
-        - u
-        - v
         - ua
         - va
         - T
@@ -82,6 +78,10 @@ model:
   lm_do_trb: 0
   lm_do_mst: 0
   model variables: *modelvars
+  datapath: Data/inputs/gfs_c12/bkg/
+  filename_core: 20201214.230000.fv_core.res.nc
+  filename_core_out: checkpoint.hybrid_linear_model.fv_core.res.nc
+  datapath_out: Data/forecast
 model aux control: null
 initial condition:
   datetime: 2020-12-14T23:00:00Z
@@ -93,8 +93,6 @@ initial condition:
   filename_sfcw: 20201214.230000.fv_srf_wnd.res.nc
   filename_cplr: 20201214.230000.coupler.res
   state variables:
-  - u
-  - v
   - ua
   - va
   - T

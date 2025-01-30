@@ -53,11 +53,6 @@ list( APPEND fv3jedi_src_files
   IO/Utils/IOBase.h
   LinearVariableChange/LinearVariableChange.cc
   LinearVariableChange/LinearVariableChange.h
-  LinearVariableChange/Analysis2Model/fv3jedi_linvarcha_a2m.interface.F90
-  LinearVariableChange/Analysis2Model/fv3jedi_linvarcha_a2m_mod.f90
-  LinearVariableChange/Analysis2Model/LinVarChaA2M.cc
-  LinearVariableChange/Analysis2Model/LinVarChaA2M.h
-  LinearVariableChange/Analysis2Model/LinVarChaA2M.interface.h
   LinearVariableChange/Base/LinearVariableChangeBase.cc
   LinearVariableChange/Base/LinearVariableChangeBase.h
   LinearVariableChange/Control2Analysis/fv3jedi_linvarcha_c2a.interface.F90
@@ -103,18 +98,8 @@ list( APPEND fv3jedi_src_files
   VariableChange/VaderCookbook.h
   VariableChange/VariableChange.cc
   VariableChange/VariableChange.h
-  VariableChange/Analysis2Model/fv3jedi_varcha_a2m.interface.F90
-  VariableChange/Analysis2Model/fv3jedi_varcha_a2m_mod.f90
-  VariableChange/Analysis2Model/VarChaA2M.cc
-  VariableChange/Analysis2Model/VarChaA2M.h
-  VariableChange/Analysis2Model/VarChaA2M.interface.h
   VariableChange/Base/VariableChangeBase.cc
   VariableChange/Base/VariableChangeBase.h
-  VariableChange/ColdStartWinds/fv3jedi_vc_coldstartwinds.interface.F90
-  VariableChange/ColdStartWinds/fv3jedi_vc_coldstartwinds_mod.f90
-  VariableChange/ColdStartWinds/VarChaColdStartWinds.cc
-  VariableChange/ColdStartWinds/VarChaColdStartWinds.h
-  VariableChange/ColdStartWinds/VarChaColdStartWinds.interface.h
   VariableChange/Control2Analysis/fv3jedi_varcha_c2a.interface.F90
   VariableChange/Control2Analysis/fv3jedi_varcha_c2a_mod.f90
   VariableChange/Control2Analysis/VarChaC2A.cc
@@ -133,11 +118,6 @@ list( APPEND fv3jedi_src_files
   VariableChange/Utils/surface_variables_mod.f90
   VariableChange/Utils/temperature_variables_mod.f90
   VariableChange/Utils/wind_variables_mod.f90
-  VariableChange/VertRemap/fv3jedi_vc_vertremap.interface.F90
-  VariableChange/VertRemap/fv3jedi_vc_vertremap_mod.f90
-  VariableChange/VertRemap/VarChaVertRemap.cc
-  VariableChange/VertRemap/VarChaVertRemap.h
-  VariableChange/VertRemap/VarChaVertRemap.interface.h
   Tlm/fv3jedi_tlm_mod.f90
   Tlm/fv3jedi_traj_mod.f90
   Tlm/Tlm.cc
@@ -165,11 +145,6 @@ ENDIF()
 # Source files when building with stand alone fv3 (GFDL_atmos_cubed_sphere)
 list( APPEND fv3jedi_fv3_src_files
   Geometry/fv_init_control_mod.F90
-  VariableChange/VertRemap/fv3jedi_vc_vertremap.interface.F90
-  VariableChange/VertRemap/fv3jedi_vc_vertremap_mod.f90
-  VariableChange/VertRemap/VarChaVertRemap.cc
-  VariableChange/VertRemap/VarChaVertRemap.h
-  VariableChange/VertRemap/VarChaVertRemap.interface.h
 )
 
 # Source files when building with GEOS

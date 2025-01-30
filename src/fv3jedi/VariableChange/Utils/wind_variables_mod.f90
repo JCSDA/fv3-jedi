@@ -1154,8 +1154,8 @@ jm2 = (npy-1)/2
 uatemp(:,:,:) = 0.0
 vatemp(:,:,:) = 0.0
 
-uatemp(is:ie,js:je,:) = ua
-vatemp(is:ie,js:je,:) = va
+uatemp(is:ie,js:je,:) = ua(is:ie,js:je,:)
+vatemp(is:ie,js:je,:) = va(is:ie,js:je,:)
 
 call mpp_update_domains(uatemp, geom%domain, complete=.true.)
 call mpp_update_domains(vatemp, geom%domain, complete=.true.)

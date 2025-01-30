@@ -1,8 +1,6 @@
 Input state: 
 ----------------------------------------------------------------------------------------------------
-State print | number of fields = 10 | cube sphere face size: C12
-u_component_of_native_D_grid_wind            | Min:-9.5192576596985276e+01 Max:+1.3351170867852491e+02 RMS:+1.8862308192258048e+01
-v_component_of_native_D_grid_wind            | Min:-1.4904560857273032e+02 Max:+1.2079411754282057e+02 RMS:+2.0931509018712323e+01
+State print | number of fields = 8 | cube sphere face size: C12
 eastward_wind                                | Min:-1.0683894069329422e+02 Max:+1.7565275658260484e+02 RMS:+2.6572912739623099e+01
 northward_wind                               | Min:-1.0131538350191839e+02 Max:+1.1392380235253057e+02 RMS:+1.1336995062132797e+01
 air_temperature                              | Min:+1.6475966767142899e+02 Max:+3.0610194334043456e+02 RMS:+2.4634246724992545e+02
@@ -14,9 +12,7 @@ mole_fraction_of_ozone_in_air                | Min:+1.2994716161816921e-02 Max:+
 ----------------------------------------------------------------------------------------------------
 Output state: 
 ----------------------------------------------------------------------------------------------------
-State print | number of fields = 10 | cube sphere face size: C24
-u_component_of_native_D_grid_wind            | Min:-9.8132800493174088e+01 Max:+1.3431761765008858e+02 RMS:+1.8901732511774476e+01
-v_component_of_native_D_grid_wind            | Min:-1.5681485384112366e+02 Max:+1.1984436283504370e+02 RMS:+2.0624974089972127e+01
+State print | number of fields = 8 | cube sphere face size: C24
 eastward_wind                                | Min:-1.0343126401646457e+02 Max:+1.6111466631827241e+02 RMS:+2.5761610962129080e+01
 northward_wind                               | Min:-9.3316012995392697e+01 Max:+1.0936789457559536e+02 RMS:+1.0390032670354088e+01
 air_temperature                              | Min:+1.6870514892507924e+02 Max:+3.0565292410427890e+02 RMS:+2.4633065247336273e+02

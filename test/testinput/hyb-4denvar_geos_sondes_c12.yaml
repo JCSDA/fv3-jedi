@@ -34,8 +34,6 @@ cost function:
       datapath: Data/inputs/geos_c12
       filename: geos.bkg.20201214_210000z.nc4
       state variables: &statevars
-      - u
-      - v
       - ua
       - va
       - t
@@ -275,9 +273,6 @@ cost function:
         action:
           name: assign error
           error function:
-            name: GsiFinalObsError/windEastward
-            name: GsiFinalObsError/windNorthward
-            name: GsiFinalObsError/airTemperature
             name: GsiFinalObsError/specificHumidity
       - filter: Perform Action
         filter variables:

@@ -168,8 +168,8 @@ assimilation:
     prefix: eda-3dvar-gfs
     frequency: PT1H
 template:
-  pattern with zero padding: %mem_pad%
-  pattern without zero padding: %mem%
+  pattern with zero padding: "%mem_pad%"
+  pattern without zero padding: "%mem%"
   number of pert members: 1
   first pert member index: 1
   run pert members only: false

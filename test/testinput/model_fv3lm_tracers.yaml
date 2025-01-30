@@ -16,8 +16,6 @@ model:
   lm_do_trb: 0
   lm_do_mst: 0
   model variables:
-  - u
-  - v
   - ua
   - va
   - T
@@ -32,18 +30,20 @@ model:
   - dust3
   - dust4
   - dust5
+  datapath: Data/inputs/gfs_aero_c12/bkg
+  filename_core: 20210801.060000.fv_core.res.nc
+  filename_core_out: checkpoint.model_fv3lm_tracers.fv_core.res.nc
+  datapath_out: Data/forecast
 model aux control: null
 model aux error: null
 model test:
   forecast length: PT1H
-  final norm: 539.72815305207303
+  final norm: 579.67301660636792
   tolerance: 1.0e-4
 initial condition:
   datetime: 2021-08-01T06:00:00Z
   filetype: fms restart
   state variables:
-  - u
-  - v
   - ua
   - va
   - T

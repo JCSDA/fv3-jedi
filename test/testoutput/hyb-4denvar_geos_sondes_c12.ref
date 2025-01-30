@@ -2,11 +2,9 @@ CostJb   : Nonlinear Jb = 0.0000000000000000e+00
 CostJo   : Nonlinear Jo(Radiosonde) = 8.7245254917985847e+04, nobs = 1457, Jo/n = 5.9880065146181089e+01, err = 2.0329386501381626e+00
 CostFunction: Nonlinear J = 8.7245254917985847e+04
 DRPCGMinimizer: reduction in residual norm = 1.8398398844524488e-02
-CostFunction::addIncrement: Analysis: 
+CostFunction::addIncrement: Analysis:
 ----------------------------------------------------------------------------------------------------
-State print | number of fields = 15 | cube sphere face size: C12
-u_component_of_native_D_grid_wind            | Min:-9.5227956863737717e+01 Max:+1.3348211594103751e+02 RMS:+1.8862085288351008e+01
-v_component_of_native_D_grid_wind            | Min:-1.4905501410659039e+02 Max:+1.2079674125841242e+02 RMS:+2.0931496762141954e+01
+State print | number of fields = 13 | cube sphere face size: C12
 eastward_wind                                | Min:-1.0683786845068151e+02 Max:+1.7566109696468243e+02 RMS:+2.6572883676864457e+01
 northward_wind                               | Min:-1.0131617417454790e+02 Max:+1.1392584334959439e+02 RMS:+1.1336648862152403e+01
 air_temperature                              | Min:+1.6475955771486906e+02 Max:+3.0610207870572003e+02 RMS:+2.4634278701743725e+02
@@ -22,9 +20,7 @@ fraction_of_lake                             | Min:-1.9674837026978065e-32 Max:+
 fraction_of_ice                              | Min:-1.5320405482223902e-36 Max:+1.0000000000000000e+00 RMS:+1.4336055637502587e-01
 ----------------------------------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------------------
-State print | number of fields = 15 | cube sphere face size: C12
-u_component_of_native_D_grid_wind            | Min:-9.2354297590245622e+01 Max:+1.4370696765822120e+02 RMS:+1.9441988447217408e+01
-v_component_of_native_D_grid_wind            | Min:-1.2918321331891852e+02 Max:+1.1717629679577861e+02 RMS:+2.0606817562074820e+01
+State print | number of fields = 13 | cube sphere face size: C12
 eastward_wind                                | Min:-1.0566766838127721e+02 Max:+1.6764287037077094e+02 RMS:+2.6747948598995738e+01
 northward_wind                               | Min:-1.0835327712633833e+02 Max:+1.0437369209114003e+02 RMS:+1.1395340951770411e+01
 air_temperature                              | Min:+1.6498922199684839e+02 Max:+3.0925885119256355e+02 RMS:+2.4634254540956587e+02

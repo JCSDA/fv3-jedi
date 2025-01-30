@@ -56,8 +56,6 @@ initial condition:
   filename_sfcw: fv_srf_wnd.res.nc
   filename_cplr: coupler.res
   state variables:
-  - u
-  - v
   - ua
   - va
   - T

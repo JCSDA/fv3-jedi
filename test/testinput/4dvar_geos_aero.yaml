@@ -11,8 +11,6 @@ cost function:
     lm_do_trb: 0
     lm_do_mst: 0
     model variables:
-    - u
-    - v
     - ua
     - va
     - t
@@ -35,6 +33,10 @@ cost function:
     - SS003
     - SS004
     - SS005
+    datapath: Data/inputs/geos_c12
+    filename_core: 20210805_210000.geos.fv_core.res.nc
+    filename_core_out: checkpoint.4dvar_geos_aero.fv_core.res.nc
+    datapath_out: Data/forecast
   analysis variables:
   - eastward_wind
   - northward_wind
@@ -78,8 +80,6 @@ cost function:
     - bkg.eta.fc.2021-08-05T210000Z.bkg.nc
     - geos.crtmsrf.nc4
     state variables:
-    - u
-    - v
     - ua
     - va
     - t
@@ -148,7 +148,7 @@ variational:
   minimizer:
     algorithm: DRPCG
   iterations:
-  - ninner: 10
+  - ninner: 2
     gradient norm reduction: 1e-10
     test: on
     geometry:
@@ -166,8 +166,6 @@ variational:
       linear model namelist filename: Data/fv3files/inputpert_4dvar.nml
       tstep: PT15M
       tlm variables: &modelvars
-      - u
-      - v
       - ua
       - va
       - t

@@ -54,16 +54,6 @@ integer :: f, i, j, k
 logical :: found_neg
 type(fv3jedi_field), pointer :: state
 
-logical :: found_incr_ua, found_state_ud
-integer :: dummy_index
-real(kind=kind_real), pointer, dimension(:,:,:) :: ua
-real(kind=kind_real), pointer, dimension(:,:,:) :: va
-real(kind=kind_real), pointer, dimension(:,:,:) :: ud
-real(kind=kind_real), pointer, dimension(:,:,:) :: vd
-real(kind=kind_real), allocatable, dimension(:,:,:) :: incr_ud
-real(kind=kind_real), allocatable, dimension(:,:,:) :: incr_vd
-
-
 ! Loop over the increment fields and add them to the state
 do f = 1, size(increment_fields)
 
@@ -97,30 +87,6 @@ do f = 1, size(increment_fields)
   nullify(state)
 
 enddo
-
-! Check whether we should also update a background D-grid wind from an increment A-grid wind
-found_incr_ua = hasfield(increment_fields, "ua", dummy_index)
-found_state_ud = hasfield(self%fields, "ud", dummy_index)
-if (found_incr_ua .and. found_state_ud) then
-  if (self%interface_fields_are_out_of_date) then
-    call abor1_ftn("fv3jedi_state.add_incr: can't add A-grid wind increment" &
-                   //" to out-of-date D-grid background")
-  end if
-
-  allocate(incr_ud(geom%isc:geom%iec, geom%jsc:geom%jec+1, geom%npz))
-  allocate(incr_vd(geom%isc:geom%iec+1, geom%jsc:geom%jec, geom%npz))
-  call get_field(increment_fields, "ua", ua)
-  call get_field(increment_fields, "va", va)
-  call a_to_d(geom, ua, va, incr_ud, incr_vd)
-
-  call get_field(self%fields, "ud", ud)
-  call get_field(self%fields, "vd", vd)
-  ud = ud + incr_ud
-  vd = vd + incr_vd
-
-  deallocate(incr_ud)
-  deallocate(incr_vd)
-end if
 
 end subroutine add_increment
 

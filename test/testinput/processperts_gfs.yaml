@@ -12,8 +12,6 @@ background:
   datetime: 2020-12-15T00:00:00Z
   filetype: fms restart
   state variables:
-  - u
-  - v
   - ua
   - va
   - T

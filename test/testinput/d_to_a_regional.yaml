@@ -1,0 +1,22 @@
+fms:
+  namelist filename: Data/fv3files/fmsmpp.nml
+  field table filename: Data/fv3files/field_table_lam_rrfs
+  stackmax: 4000000
+geometry:
+  akbk: Data/inputs/lam_rrfs/INPUT/akbk65.nc
+  namelist filename: Data/fv3files/input_lam_rrfs.nml
+  field metadata override: Data/fieldmetadata/gfs-restart.yaml
+input:
+  datapath: Data/inputs/lam_rrfs/bkg
+  filename_core: 20201215.000000.rrfs_C403.fv_core.res.tile1.nc
+output:
+  datapath: Data/convertstate/
+  filename_core: 20201215.000000.rrfs_C403.d_to_a.fv_core.res.nc
+testing:
+  min_u: -25.6298298902707
+  max_u: 94.7189865894694
+  rms_u: 23.0756179442355
+  min_v: -62.6077800835472
+  max_v: 56.9268754494892
+  rms_v: 11.9294061999990
+  tol: 1e-4

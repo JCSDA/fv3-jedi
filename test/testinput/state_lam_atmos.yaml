@@ -16,8 +16,8 @@ state test:
     filename_sfcw: 20200903.180000.fv_srf_wnd.res.tile1.nc
     filename_cplr: 20200903.180000.coupler.res
     state variables:
-    - u
-    - v
+    - ua
+    - va
     - T
     - delp
     - ps
@@ -26,7 +26,7 @@ state test:
     - liq_wat
     - o3mr
   date: 2020-09-03T18:00:00Z
-  norm file: 6780377.2597526349
+  norm file: 4897929.0372456973
   norm generated state: 698.89279361001775
   tolerance: 1.0e-08
   construct to variables:

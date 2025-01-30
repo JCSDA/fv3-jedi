@@ -1,47 +1,43 @@
 CostJb   : Nonlinear Jb = 0.0000000000000000e+00
-CostJo   : Nonlinear Jo(Aircraft) = 2.9728899811434881e+03, nobs = 1508, Jo/n = 1.9714124543391831e+00, err = 2.1902424069617163e+00
-CostFunction: Nonlinear J = 2.9728899811434881e+03
-DRPCGMinimizer: reduction in residual norm = 7.9189775158590814e-01
+CostJo   : Nonlinear Jo(Aircraft) = 2.9728899811446963e+03, nobs = 1508, Jo/n = 1.9714124543399842e+00, err = 2.1902424069617163e+00
+CostFunction: Nonlinear J = 2.9728899811446963e+03
+DRPCGMinimizer: reduction in residual norm = 9.8798646151770231e-01
 CostFunction::addIncrement: Analysis: 
 ----------------------------------------------------------------------------------------------------
-State print | number of fields = 11 | cube sphere face size: C12
-u_component_of_native_D_grid_wind            | Min:-1.3496839860227720e+02 Max:+1.2784919739475956e+02 RMS:+1.5837341467929411e+01
-v_component_of_native_D_grid_wind            | Min:-1.4277243558859954e+02 Max:+1.2322578006339259e+02 RMS:+1.7374587250987510e+01
-eastward_wind                                | Min:-9.9870309952313477e+01 Max:+1.6846199863588103e+02 RMS:+2.2146985098984594e+01
-northward_wind                               | Min:-9.8786770253960455e+01 Max:+1.1111138969589075e+02 RMS:+1.0634298839915823e+01
-air_temperature                              | Min:+1.5727112567965133e+02 Max:+3.0671884243290475e+02 RMS:+2.4964139659797112e+02
-air_pressure_thickness                       | Min:+6.0598415272007855e-01 Max:+1.7947824744653003e+03 RMS:+9.5767736976387641e+02
-water_vapor_mixing_ratio_wrt_moist_air       | Min:+0.0000000000000000e+00 Max:+9.2337301332603289e-02 RMS:+5.0054090518897925e-03
+State print | number of fields = 9 | cube sphere face size: C12
+eastward_wind                                | Min:-9.9870309952536118e+01 Max:+1.6846199869710580e+02 RMS:+2.2146985736062621e+01
+northward_wind                               | Min:-9.8786770852083336e+01 Max:+1.1111138970213649e+02 RMS:+1.0634300135746965e+01
+air_temperature                              | Min:+1.5727112567846368e+02 Max:+3.0671884221339798e+02 RMS:+2.4964139711067628e+02
+air_pressure_thickness                       | Min:+6.0596593920897135e-01 Max:+1.7947824743937647e+03 RMS:+9.5767736975589924e+02
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+0.0000000000000000e+00 Max:+1.1525280855745183e-01 RMS:+5.4326706362199679e-03
 cloud_liquid_ice                             | Min:+0.0000000000000000e+00 Max:+5.0754207489580477e-04 RMS:+1.5795718671717992e-05
 cloud_liquid_water                           | Min:+0.0000000000000000e+00 Max:+9.8037403300115758e-04 RMS:+3.3869746788463320e-05
-ozone_mass_mixing_ratio                      | Min:+0.0000000000000000e+00 Max:+2.3572761383482399e-05 RMS:+4.3568440033018546e-06
+ozone_mass_mixing_ratio                      | Min:+0.0000000000000000e+00 Max:+2.3572761383482399e-05 RMS:+4.3568440033018504e-06
 geopotential_height_times_gravity_at_surface | Min:-2.6477954101562500e+02 Max:+4.9483356501111783e+04 RMS:+5.9494834270643069e+03
 ----------------------------------------------------------------------------------------------------
 
 
 
-CostJb   : Nonlinear Jb = 0.1481883993808164
-CostJo   : Nonlinear Jo(Aircraft) = 5200.12573799952, nobs = 2401, Jo/n = 2.16581663390234, err = 2.353577123902644
-CostFunction: Nonlinear J = 5200.273926398901
-DRPCGMinimizer: reduction in residual norm = 0.857457103270283
+CostJb   : Nonlinear Jb = 0.3919608664786253
+CostJo   : Nonlinear Jo(Aircraft) = 4977.570706804308, nobs = 2402, Jo/n = 2.072260910409787, err = 2.353639978006127
+CostFunction: Nonlinear J = 4977.962667670787
+DRPCGMinimizer: reduction in residual norm = 0.6833817249046192
 CostFunction::addIncrement: Analysis: 
 ----------------------------------------------------------------------------------------------------
-State print | number of fields = 11 | cube sphere face size: C12
-u_component_of_native_D_grid_wind            | Min:-1.3496839860284283e+02 Max:+1.2784919738247910e+02 RMS:+1.5837341514144430e+01
-v_component_of_native_D_grid_wind            | Min:-1.4277243557716466e+02 Max:+1.2322578018928635e+02 RMS:+1.7374587313650341e+01
-eastward_wind                                | Min:-9.9870309952993793e+01 Max:+1.6846199864548129e+02 RMS:+2.2146985102938778e+01
-northward_wind                               | Min:-9.8786770621069635e+01 Max:+1.1111138974430789e+02 RMS:+1.0634298996676408e+01
-air_temperature                              | Min:+1.5727112567920324e+02 Max:+3.0671883461009691e+02 RMS:+2.4964139951116931e+02
-air_pressure_thickness                       | Min:+6.0596854937067213e-01 Max:+1.7947824748955206e+03 RMS:+9.5767736974561853e+02
-water_vapor_mixing_ratio_wrt_moist_air       | Min:+0.0000000000000000e+00 Max:+2.1641602313516131e-01 RMS:+5.6606394282168052e-03
+State print | number of fields = 9 | cube sphere face size: C12
+eastward_wind                                | Min:-9.9870309954341693e+01 Max:+1.6846199876990264e+02 RMS:+2.2146986062311569e+01
+northward_wind                               | Min:-9.8786771430292404e+01 Max:+1.1111138971113330e+02 RMS:+1.0634301208200940e+01
+air_temperature                              | Min:+1.5727112568400423e+02 Max:+3.0671883987128194e+02 RMS:+2.4964139848324933e+02
+air_pressure_thickness                       | Min:+6.0594133451924437e-01 Max:+1.7947824739084299e+03 RMS:+9.5767736974363754e+02
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+0.0000000000000000e+00 Max:+1.5515151515678993e-01 RMS:+5.9976824379313551e-03
 cloud_liquid_ice                             | Min:+0.0000000000000000e+00 Max:+5.0754207489580477e-04 RMS:+1.5795718671717992e-05
 cloud_liquid_water                           | Min:+0.0000000000000000e+00 Max:+9.8037403300115758e-04 RMS:+3.3869746788463320e-05
-ozone_mass_mixing_ratio                      | Min:+0.0000000000000000e+00 Max:+2.3572761383482399e-05 RMS:+4.3568440033018546e-06
+ozone_mass_mixing_ratio                      | Min:+0.0000000000000000e+00 Max:+2.3572761383482399e-05 RMS:+4.3568440033018504e-06
 geopotential_height_times_gravity_at_surface | Min:-2.6477954101562500e+02 Max:+4.9483356501111783e+04 RMS:+5.9494834270643069e+03
 ----------------------------------------------------------------------------------------------------
 
 
 
-CostJb   : Nonlinear Jb = 0.5020854204746139
-CostJo   : Nonlinear Jo(Aircraft) = 5227.762977967365, nobs = 2401, Jo/n = 2.17732735442206, err = 2.353577123902644
-CostFunction: Nonlinear J = 5228.26506338784
+CostJb   : Nonlinear Jb = 0.7154935194407468
+CostJo   : Nonlinear Jo(Aircraft) = 4491.759978711387, nobs = 2402, Jo/n = 1.870008317531801, err = 2.353639978006127
+CostFunction: Nonlinear J = 4492.475472230827

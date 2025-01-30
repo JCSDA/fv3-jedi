@@ -1,8 +1,6 @@
 State: 
 ----------------------------------------------------------------------------------------------------
-State print | number of fields = 23 | cube sphere face size: C12
-u_component_of_native_D_grid_wind            | Min:-1.3264378074042199e+02 Max:+1.2905970568873809e+02 RMS:+1.5886323431502014e+01
-v_component_of_native_D_grid_wind            | Min:-1.2536309805703813e+02 Max:+1.1867617397795367e+02 RMS:+1.7204080076122629e+01
+State print | number of fields = 21 | cube sphere face size: C12
 eastward_wind                                | Min:-1.0808005226726641e+02 Max:+1.5254285196689409e+02 RMS:+2.2156165197969532e+01
 northward_wind                               | Min:-1.0151447572667882e+02 Max:+1.0656765405741353e+02 RMS:+1.0393969791347702e+01
 air_temperature                              | Min:+1.5865009407036410e+02 Max:+3.0653885708773061e+02 RMS:+2.4962364131438429e+02

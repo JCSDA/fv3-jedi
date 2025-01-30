@@ -1,8 +1,6 @@
 Initial state: 
 ----------------------------------------------------------------------------------------------------
-State print | number of fields = 11 | cube sphere face size: C12
-u_component_of_native_D_grid_wind            | Min:-1.3496839860265715e+02 Max:+1.2784919740746092e+02 RMS:+1.5837341454338334e+01
-v_component_of_native_D_grid_wind            | Min:-1.4277243559862308e+02 Max:+1.2322577990478851e+02 RMS:+1.7374587166101474e+01
+State print | number of fields = 9 | cube sphere face size: C12
 eastward_wind                                | Min:-9.9870309951732608e+01 Max:+1.6846199862531310e+02 RMS:+2.2146985103933666e+01
 northward_wind                               | Min:-9.8786769912619121e+01 Max:+1.1111138963306223e+02 RMS:+1.0634298691496230e+01
 air_temperature                              | Min:+1.5727112567986427e+02 Max:+3.0671885029730902e+02 RMS:+2.4964139399382486e+02
@@ -15,9 +13,7 @@ geopotential_height_times_gravity_at_surface | Min:-2.6477954101562500e+02 Max:+
 ----------------------------------------------------------------------------------------------------
 Forecast state: 
 ----------------------------------------------------------------------------------------------------
-State print | number of fields = 11 | cube sphere face size: C12
-u_component_of_native_D_grid_wind            | Min:-1.3343877641435924e+02 Max:+1.3193197951413504e+02 RMS:+1.5929853938050352e+01
-v_component_of_native_D_grid_wind            | Min:-1.4303161263212951e+02 Max:+1.2045768179152849e+02 RMS:+1.7359485569128221e+01
+State print | number of fields = 9 | cube sphere face size: C12
 eastward_wind                                | Min:-9.6146516514486819e+01 Max:+1.5225774146831458e+02 RMS:+2.0973153955442744e+01
 northward_wind                               | Min:-8.4118948122701269e+01 Max:+1.0134032752787677e+02 RMS:+9.2138884827567473e+00
 air_temperature                              | Min:+1.5735364445515941e+02 Max:+3.0613359319221399e+02 RMS:+2.4961173842781614e+02
@@ -30,9 +26,7 @@ geopotential_height_times_gravity_at_surface | Min:-2.6477954101562500e+02 Max:+
 ----------------------------------------------------------------------------------------------------
 Verifying state: 
 ----------------------------------------------------------------------------------------------------
-State print | number of fields = 11 | cube sphere face size: C12
-u_component_of_native_D_grid_wind            | Min:-1.3571542427549940e+02 Max:+1.2628645387985041e+02 RMS:+1.5853844175141601e+01
-v_component_of_native_D_grid_wind            | Min:-1.3828166879311172e+02 Max:+1.2070870160225643e+02 RMS:+1.7301772419373577e+01
+State print | number of fields = 9 | cube sphere face size: C12
 eastward_wind                                | Min:-1.0148899855130111e+02 Max:+1.5723148663996616e+02 RMS:+2.2148693872419845e+01
 northward_wind                               | Min:-9.7774193695427343e+01 Max:+1.1036906067032112e+02 RMS:+1.0533887426685716e+01
 air_temperature                              | Min:+1.5788816779129883e+02 Max:+3.0646313320523024e+02 RMS:+2.4963147707185504e+02
@@ -59,13 +53,13 @@ geopotential_height_times_gravity_at_surface | Min:+0.0000000000000000e+00 Max:+
 Final increment state: 
 ----------------------------------------------------------------------------------------------------
 Increment print | number of fields = 9 | cube sphere face size: C12
-eastward_wind                                | Min:-7.9149723124001383e+01 Max:+8.3093440105111952e+01 RMS:+9.7801632213190004e+00
-northward_wind                               | Min:-5.5438940839256979e+01 Max:+9.0322033944670324e+01 RMS:+9.5477413300581269e+00
-air_temperature                              | Min:-1.7255985559725218e+02 Max:+1.1482178481354748e+02 RMS:+1.8602612539176175e+01
-air_pressure_thickness                       | Min:-4.9433957215652771e+02 Max:+7.2118008671853727e+02 RMS:+1.5678242816959184e+01
-water_vapor_mixing_ratio_wrt_moist_air       | Min:-2.7968469297089268e+04 Max:+1.8349112461496654e+04 RMS:+2.8775241486258451e+03
-cloud_liquid_ice                             | Min:-1.7364144401798258e-04 Max:+3.9262264822319850e-04 RMS:+9.1049732509349789e-06
-cloud_liquid_water                           | Min:-9.1322409724030210e-04 Max:+7.1143336144671178e-04 RMS:+2.2219330701116819e-05
-ozone_mass_mixing_ratio                      | Min:-3.2146883497234579e-06 Max:+7.0491170638768609e-06 RMS:+7.3984305370507607e-08
+eastward_wind                                | Min:-7.9680036926453084e+01 Max:+8.3853403679456193e+01 RMS:+9.7939925005421937e+00
+northward_wind                               | Min:-5.5502885033791124e+01 Max:+9.0151406055797267e+01 RMS:+9.5632683987509530e+00
+air_temperature                              | Min:-1.7384348918242983e+02 Max:+1.1488423010526591e+02 RMS:+1.8657403083878396e+01
+air_pressure_thickness                       | Min:-4.9269804238889975e+02 Max:+7.2082160609454468e+02 RMS:+1.5686702860061889e+01
+water_vapor_mixing_ratio_wrt_moist_air       | Min:-2.8167906004927561e+04 Max:+1.8355812798471015e+04 RMS:+2.8858767670043212e+03
+cloud_liquid_ice                             | Min:-1.7422792239950741e-04 Max:+3.9180681395759411e-04 RMS:+9.1342258390652876e-06
+cloud_liquid_water                           | Min:-9.0924563865741139e-04 Max:+7.2426044568609188e-04 RMS:+2.2273633853470953e-05
+ozone_mass_mixing_ratio                      | Min:-3.2019826716867035e-06 Max:+7.0647952557745286e-06 RMS:+7.4098754986499412e-08
 geopotential_height_times_gravity_at_surface | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 ----------------------------------------------------------------------------------------------------

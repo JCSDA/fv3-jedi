@@ -416,7 +416,6 @@ do var = 1, size(fields)
   ! Only certain fields can be written for now
   ! ------------------------------------------
   if ( trim(fields(var)%space) == 'magnitude' .and. &
-       trim(fields(var)%horizontal_stagger_location) == 'center' .and. &
        .not. fields(var)%kind == 'integer' ) then
 
     ! Interpolate the field to the output grid grid
@@ -532,8 +531,8 @@ subroutine splat(idrt,jmax,slat,wlat)
 !                        platform, and Numerical Recipies calls elsewise.
 ! - 2010-12-30  SLOVACEK update alignment so preprocessor does not cause
 !                        compilation failure
-! - 2012-09-01  E.Mirvis & M.Iredell merging & debugging linux errors 
-!                        of _d and _8 using generic LU factorization.   
+! - 2012-09-01  E.Mirvis & M.Iredell merging & debugging linux errors
+!                        of _d and _8 using generic LU factorization.
 ! - 2012-11-05  E.Mirvis generic FFTPACK and LU lapack were removed
 !
 ! ARGUMENTS:

@@ -22,7 +22,7 @@ model aux control: null
 model aux error: null
 model test:
   forecast length: PT2H
-  final norm: 2778.4438671601524
+  final norm: 3100.4118453169021
   tolerance: 1.0e-4
 initial condition:
   datetime: 2020-12-14T21:00:00Z
@@ -34,8 +34,6 @@ initial condition:
   filename_sfcw: 20201214.210000.fv_srf_wnd.res.nc
   filename_cplr: 20201214.210000.coupler.res
   state variables:
-  - u
-  - v
   - ua
   - va
   - T

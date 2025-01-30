@@ -16,8 +16,6 @@ model:
   lm_do_trb: 0
   lm_do_mst: 0
   model variables:
-  - u
-  - v
   - ua
   - va
   - T
@@ -27,6 +25,10 @@ model:
   - liq_wat
   - o3mr
   - phis
+  datapath: Data/inputs/gfs_c12/bkg/
+  filename_core: 20201214.210000.fv_core.res.nc
+  filename_core_out: checkpoint.forecast_fv3lm.fv_core.res.nc
+  datapath_out: Data/forecast
 initial condition:
   datetime: 2020-12-14T21:00:00Z
   filetype: fms restart
@@ -37,8 +39,6 @@ initial condition:
   filename_sfcw: 20201214.210000.fv_srf_wnd.res.nc
   filename_cplr: 20201214.210000.coupler.res
   state variables:
-  - u
-  - v
   - ua
   - va
   - T

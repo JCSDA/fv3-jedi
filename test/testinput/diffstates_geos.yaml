@@ -20,8 +20,6 @@ state1:
   datapath: Data/analysis
   filename: hyb-4dvar-geos.ana.20201214_210000z.nc4
   state variables:
-  - u
-  - v
   - ua
   - va
   - t
@@ -37,8 +35,6 @@ state2:
   datapath: Data/inputs/geos_c12
   filename: geos.bkg.20201214_210000z.nc4
   state variables:
-  - u
-  - v
   - ua
   - va
   - t

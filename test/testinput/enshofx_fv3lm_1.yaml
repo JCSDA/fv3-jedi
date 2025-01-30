@@ -16,8 +16,6 @@ initial condition:
   filetype: cube sphere history
   provider: geos
   state variables:
-  - u
-  - v
   - ua
   - va
   - t
@@ -52,8 +50,6 @@ model:
   lm_do_trb: 0
   lm_do_mst: 0
   model variables:
-  - u
-  - v
   - ua
   - va
   - t
@@ -75,6 +71,10 @@ model:
   - soilm
   - u10m
   - v10m
+  datapath: Data/inputs/geos_c12
+  filename_core: 20201214_210000.geos.fv_core.res.nc
+  filename_core_out: checkpoint.enshofx_fv3lm_1.fv_core.res.nc
+  datapath_out: Data/forecast
 observations:
   get values:
     variable change:

@@ -191,14 +191,18 @@ self%f_comm = comm
 
 ! Stretch factor, target_lon, and target_lat
 ! --------------
-call conf%get_or_die("stretch_fac",sf)
-call conf%get_or_die("target_lon",t_lon)
-call conf%get_or_die("target_lat",t_lat)
+sf = 0
+t_lon = 0.0
+t_lat = 0.0
+if (conf%has("stretch_fac")) call conf%get_or_die("stretch_fac",sf)
+if (conf%has("target_lon"))  call conf%get_or_die("target_lon",t_lon)
+if (conf%has("target_lat"))  call conf%get_or_die("target_lat",t_lat)
 self%stretch_fac = sf
 self%target_lon = t_lon
 self%target_lat = t_lat
 
-call conf%get_or_die("iterator dimension", iterator_dimension)
+iterator_dimension = 2
+if (conf%has("iterator dimension")) call conf%get_or_die("iterator dimension", iterator_dimension)
 self%iterator_dimension = iterator_dimension
 
 ! Update the fms namelist with this Geometry
@@ -371,9 +375,12 @@ self%bounded_domain =  Atm(1)%gridstruct%bounded_domain
 
 allocate(self%vCoord(self%npz))
 
-call conf%get_or_die("vert coordinate", str)
-self%vertcoord_type = str
-deallocate(str)
+self%vertcoord_type = 'sigma'
+if (conf%has("vert coordinate")) then
+  call conf%get_or_die("vert coordinate", str)
+  self%vertcoord_type = str
+  deallocate(str)
+endif
 
 !Unstructured lat/lon
 self%ngrid = (self%iec-self%isc+1)*(self%jec-self%jsc+1)
@@ -405,7 +412,8 @@ self%domain => self%domain_fix
 
 ! Optionally write the geometry to file
 ! -------------------------------------
-call conf%get_or_die("write geom",do_write_geom)
+do_write_geom = .false.
+if (conf%has("write geom")) call conf%get_or_die("write geom",do_write_geom)
 
 if (do_write_geom) then
   call write_geom(self)
@@ -1555,6 +1563,9 @@ subroutine get_coords_and_connectivities_regional(self, &
   if (quad_counter-1 /= num_quad_boundary_nodes) then
     call abor1_ftn('fv3jedi_geom_mod: inconsistent quad counter when getting connectivities')
   end if
+
+  ! Avoid compilation warning
+  raw_tri_boundary_nodes = 0
 
 end subroutine get_coords_and_connectivities_regional
 

@@ -40,7 +40,6 @@ namespace fv3jedi {
 State::State(const Geometry & geom, const oops::Variables & vars, const util::DateTime & time)
   : geom_(geom),
     vars_(geom_.fieldsMetaData().getLongNameFromAnyName(vars)),
-    varsJedi_(geom_.fieldsMetaData().removeInterfaceSpecificFields(vars)),
     time_(time)
 {
   oops::Log::trace() << "State::State (from geom, vars and time) starting" << std::endl;
@@ -51,7 +50,7 @@ State::State(const Geometry & geom, const oops::Variables & vars, const util::Da
 // -------------------------------------------------------------------------------------------------
 
 State::State(const Geometry & geom, const eckit::Configuration & config)
-  : geom_(geom), vars_(), varsJedi_(), time_(util::DateTime())
+  : geom_(geom), vars_(), time_(util::DateTime())
 {
   oops::Log::trace() << "State::State (from geom and parameters) starting" << std::endl;
   StateParameters params;
@@ -72,7 +71,6 @@ State::State(const Geometry & geom, const eckit::Configuration & config)
 
   // Set long name variables
   vars_ = geom_.fieldsMetaData().getLongNameFromAnyName(vars_);
-  varsJedi_ = geom_.fieldsMetaData().removeInterfaceSpecificFields(vars_);
 
   // Datetime from the config for read and analytical
   ASSERT(params.datetime.value() != boost::none);
@@ -98,7 +96,7 @@ State::State(const Geometry & geom, const eckit::Configuration & config)
 // -------------------------------------------------------------------------------------------------
 
 State::State(const Geometry & resol, const State & other)
-  : geom_(resol), vars_(other.vars_), varsJedi_(other.varsJedi_), time_(other.time_)
+  : geom_(resol), vars_(other.vars_), time_(other.time_)
 {
   oops::Log::trace() << "State::State (from geom and other) starting" << std::endl;
   fv3jedi_state_create_f90(keyState_, geom_.toFortran(), vars_, time_);
@@ -112,16 +110,15 @@ State::State(const oops::Variables & vars, const State & other) : State(other)
 {
   oops::Log::trace() << "State::State (from vars and other) starting" << std::endl;
   eckit::LocalConfiguration varChangeConfig;
-  varChangeConfig.set("variable change name", "Analysis2Model");
-  VariableChange an2model(varChangeConfig, geom_);
-  an2model.changeVarInverse(*this, vars);
+  VariableChange varChange(varChangeConfig, geom_);
+  varChange.changeVar(*this, vars);
   oops::Log::trace() << "State::State (from vars and other) done" << std::endl;
 }
 
 // -------------------------------------------------------------------------------------------------
 
 State::State(const State & other)
-  : geom_(other.geom_), vars_(other.vars_), varsJedi_(other.varsJedi_), time_(other.time_)
+  : geom_(other.geom_), vars_(other.vars_), time_(other.time_)
 {
   oops::Log::trace() << "State::State (from other) starting" << std::endl;
   fv3jedi_state_create_f90(keyState_, geom_.toFortran(), vars_, time_);
@@ -174,9 +171,6 @@ void State::changeResolution(const State & other) {
   other.toFieldSet(source);
   interp.apply(source, target);
   this->fromFieldSet(target);
-
-  // Interpolation did not act on interface fields
-  this->setInterfaceFieldsOutOfDate(true);
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -184,7 +178,6 @@ void State::changeResolution(const State & other) {
 void State::updateFields(const oops::Variables & newVars) {
   const oops::Variables newLongVars = geom_.fieldsMetaData().getLongNameFromAnyName(newVars);
   vars_ = newLongVars;
-  varsJedi_ = geom_.fieldsMetaData().removeInterfaceSpecificFields(newLongVars);
   fv3jedi_state_update_fields_f90(keyState_, geom_.toFortran(), vars_);
 }
 
@@ -196,10 +189,6 @@ State & State::operator+=(const Increment & dx) {
   ASSERT(dx.variables() <= vars_);
   // Interpolate increment to state resolution
   Increment dx_sr(geom_, dx);
-  // Make sure State's data representations are synchronized.
-  // Note: empirically, this is not needed (as of Oct 2023) for Variational applications, but is
-  // needed for EnsRecenter, because that adds an increment to an *interpolated* state.
-  this->synchronizeInterfaceFields();
   // Call transform and add
   fv3jedi_state_add_increment_f90(keyState_, dx_sr.toFortran(), geom_.toFortran());
   return *this;
@@ -232,8 +221,6 @@ void State::write(const eckit::Configuration & config) const {
   StateWriteParameters params;
   params.deserialize(config);
   IOBase_ io(IOFactory::create(geom_, *params.ioParametersWrapper.ioParameters.value()));
-
-  this->synchronizeInterfaceFields();
   io->write(*this);
 }
 
@@ -288,7 +275,6 @@ void State::accumul(const double & zz, const State & xx) {
 // -------------------------------------------------------------------------------------------------
 
 double State::norm() const {
-  this->synchronizeInterfaceFields();
   double zz = 0.0;
   fv3jedi_state_norm_f90(keyState_, zz);
   return zz;
@@ -297,25 +283,13 @@ double State::norm() const {
 // -------------------------------------------------------------------------------------------------
 
 void State::toFieldSet(atlas::FieldSet & fset) const {
-  fv3jedi_state_to_fieldset_f90(keyState_, geom_.toFortran(), varsJedi_, fset.get());
+  fv3jedi_state_to_fieldset_f90(keyState_, geom_.toFortran(), vars_, fset.get());
 }
 
 // -------------------------------------------------------------------------------------------------
 
 void State::fromFieldSet(const atlas::FieldSet & fset) {
-  fv3jedi_state_from_fieldset_f90(keyState_, geom_.toFortran(), varsJedi_, fset.get());
-}
-
-// -------------------------------------------------------------------------------------------------
-
-void State::synchronizeInterfaceFields() const {
-  fv3jedi_state_synchronize_interface_fields_f90(keyState_, geom_.toFortran());
-}
-
-// -----------------------------------------------------------------------------
-
-void State::setInterfaceFieldsOutOfDate(const bool outofdate) const {
-  fv3jedi_state_set_interface_fields_outofdate_f90(keyState_, outofdate);
+  fv3jedi_state_from_fieldset_f90(keyState_, geom_.toFortran(), vars_, fset.get());
 }
 
 // -----------------------------------------------------------------------------

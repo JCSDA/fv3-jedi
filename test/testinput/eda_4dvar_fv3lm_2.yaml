@@ -1,4 +1,14 @@
 cost function:
+  cost type: 4D-Var
+  analysis variables: &anavars
+  - eastward_wind
+  - northward_wind
+  - air_temperature
+  - air_pressure_thickness
+  - water_vapor_mixing_ratio_wrt_moist_air
+  - cloud_liquid_ice
+  - cloud_liquid_water
+  - ozone_mass_mixing_ratio
   background:
     datetime: 2020-12-14T21:00:00Z
     filetype: fms restart
@@ -9,12 +19,9 @@ cost function:
     filename_sfcw: 20201214.210000.fv_srf_wnd.res.nc
     filename_cplr: 20201214.210000.coupler.res
     state variables:
-    - u
-    - v
     - ua
     - va
     - T
-    - ps
     - delp
     - sphum
     - ice_wat
@@ -76,6 +83,18 @@ cost function:
             - model:
                 variables:
                 - air_pressure_at_surface
+        linear variable change:
+          linear variable change name: Control2Analysis
+          input variables:
+          - eastward_wind
+          - northward_wind
+          - air_temperature
+          - air_pressure_at_surface
+          - water_vapor_mixing_ratio_wrt_moist_air
+          - cloud_liquid_ice
+          - cloud_liquid_water
+          - ozone_mass_mixing_ratio
+          output variables: *anavars
       weight:
         value: 0.1
     - covariance:
@@ -84,7 +103,7 @@ cost function:
           template:
             datetime: 2020-12-14T21:00:00Z
             filetype: fms restart
-            state variables: &incvars
+            state variables: &bvars
             - eastward_wind
             - northward_wind
             - air_temperature
@@ -106,7 +125,7 @@ cost function:
           localization method: SABER
           saber central block:
             saber block name: BUMP_NICAS
-            active variables: *incvars
+            active variables: *bvars
             read:
               io:
                 files prefix: Data/bump/fv3jedi_bumpparameters_nicas_gfs
@@ -116,6 +135,18 @@ cost function:
               drivers:
                 multivariate strategy: duplicated
                 read local nicas: true
+        linear variable change:
+          linear variable change name: Control2Analysis
+          input variables:
+          - eastward_wind
+          - northward_wind
+          - air_temperature
+          - air_pressure_at_surface
+          - water_vapor_mixing_ratio_wrt_moist_air
+          - cloud_liquid_ice
+          - cloud_liquid_water
+          - ozone_mass_mixing_ratio
+          output variables: *anavars
       weight:
         value: 0.9
   observations:
@@ -261,13 +292,9 @@ cost function:
         - name: brightnessTemperature
           channels: 1-15
         threshold: 3.0
-  cost type: 4D-Var
-  analysis variables: *incvars
   time window:
     begin: 2020-12-14T21:00:00Z
     length: PT6H
-  variable change:
-    variable change name: Analysis2Model
   model:
     name: FV3LM
     namelist filename: Data/fv3files/input_gfs_c12.nml
@@ -276,8 +303,6 @@ cost function:
     lm_do_mst: 0
     tstep: PT1H
     model variables:
-    - u
-    - v
     - ua
     - va
     - T
@@ -299,6 +324,7 @@ cost function:
     - u_srf
     - v_srf
     - f10m
+    initialize model from A-Grid winds: true
   geometry:
     fms initialization:
       namelist filename: Data/fv3files/fmsmpp.nml
@@ -332,8 +358,8 @@ variational:
       linear model namelist filename: Data/fv3files/inputpert_4dvar.nml
       tstep: PT1H
       tlm variables:
-      - ud
-      - vd
+      - ua
+      - va
       - T
       - delp
       - sphum
@@ -345,13 +371,6 @@ variational:
       lm_do_mst: 0
       trajectory:
         model variables:
-        - ud
-        - vd
-        - ua
-        - va
-        - T
-        - delp
-        - sphum
         - ice_wat
         - liq_wat
         - o3mr
@@ -370,8 +389,8 @@ variational:
       linear model namelist filename: Data/fv3files/inputpert_4dvar.nml
       tstep: PT1H
       tlm variables:
-      - ud
-      - vd
+      - ua
+      - va
       - T
       - delp
       - sphum
@@ -383,8 +402,6 @@ variational:
       lm_do_mst: 0
       trajectory:
         model variables:
-        - ud
-        - vd
         - ua
         - va
         - T

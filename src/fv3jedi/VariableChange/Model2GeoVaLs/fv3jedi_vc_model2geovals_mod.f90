@@ -145,8 +145,8 @@ real(kind=kind_real), allocatable :: o3ppmv(:,:,:)         !Ozone ppmv
 logical :: have_winds
 real(kind=kind_real), allocatable :: ua    (:,:,:)         !Eastward wind
 real(kind=kind_real), allocatable :: va    (:,:,:)         !Northward wind
-real(kind=kind_real), pointer     :: ud    (:,:,:)         !u component D-grid
-real(kind=kind_real), pointer     :: vd    (:,:,:)         !v component D-grid
+real(kind=kind_real), allocatable :: ud    (:,:,:)         !u component D-grid
+real(kind=kind_real), allocatable :: vd    (:,:,:)         !v component D-grid
 
 ! Surface roughness length
 logical :: have_zorl
@@ -457,14 +457,6 @@ if (xm%has_field('ua')) then
   call xm%get_field('ua', ua)
   call xm%get_field('va', va)
   have_winds = .true.
-elseif (xm%has_field('ud')) then
-  call xm%get_field('ud', ud)
-  call xm%get_field('vd', vd)
-  allocate(ua(self%isc:self%iec,self%jsc:self%jec,self%npz))
-  allocate(va(self%isc:self%iec,self%jsc:self%jec,self%npz))
-  call d_to_a(geom, ud, vd, ua, va)
-  have_winds = .true.
-  nullify(ud,vd)
 endif
 
 ! Land sea mask
@@ -873,15 +865,7 @@ end if
 ! Vorticity
 ! ---------
 have_vort = .false.
-if (xm%has_field('ud') .and. xm%has_field('vd')) then
-  call xm%get_field('ud', ud)
-  call xm%get_field('vd', vd)
-  allocate(vort(self%isc:self%iec,self%jsc:self%jec,self%npz))
-  allocate(divg(self%isc:self%iec,self%jsc:self%jec,self%npz))
-  call udvd_to_vortdivg(geom, ud, vd, vort, divg)
-  have_vort = .true.
-  nullify(ud, vd)
-elseif (have_winds) then
+if (have_winds) then
   allocate(vort(self%isc:self%iec,self%jsc:self%jec,self%npz))
   allocate(divg(self%isc:self%iec,self%jsc:self%jec,self%npz))
   allocate(ud(self%isc:self%iec  ,self%jsc:self%jec+1,self%npz))
@@ -1215,8 +1199,6 @@ if (allocated(soilm)) deallocate(soilm)
 if (associated(zorl)) nullify(zorl)
 if (associated(field_ptr)) nullify(field_ptr)
 if (associated(q)) nullify(q)
-if (associated(ud)) nullify(ud)
-if (associated(vd)) nullify(vd)
 if (associated(frocean)) nullify(frocean)
 if (associated(frlake)) nullify(frlake)
 if (associated(frseaice)) nullify(frseaice)
@@ -1232,6 +1214,8 @@ if (associated(qlcn)) nullify(qlcn)
 if (associated(qrcn)) nullify(qrcn)
 if (associated(qscn)) nullify(qscn)
 
+if (allocated(ud)) deallocate(ud)
+if (allocated(vd)) deallocate(vd)
 if (allocated(fields_to_do)) deallocate(fields_to_do)
 if (allocated(qsat)) deallocate(qsat)
 if (allocated(rh)) deallocate(rh)

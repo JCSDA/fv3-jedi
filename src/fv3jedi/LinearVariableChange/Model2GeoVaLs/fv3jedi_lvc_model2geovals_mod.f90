@@ -227,8 +227,6 @@ real(kind=kind_real), pointer :: field_ptr(:,:,:)
 logical :: have_winds
 real(kind=kind_real), allocatable :: ua  (:,:,:)         !A-grid wind u component
 real(kind=kind_real), allocatable :: va  (:,:,:)         !A-grid wind v component
-real(kind=kind_real), pointer     :: ud  (:,:,:)         !D-grid wind u component
-real(kind=kind_real), pointer     :: vd  (:,:,:)         !D-grid wind v component
 
 !Virtual temperature
 logical :: have_tv
@@ -292,22 +290,10 @@ endif
 if (.not.allocated(fields_to_do)) return
 
 
-! Assertion on D-Grid winds
-! -------------------------
-if (dxg%has_field('ud')) call abor1_ftn("GeoVaLs state should not have D-Grid winds")
-
-
 ! Winds
 ! -----
 have_winds = .false.
-if (dxm%has_field('ud')) then
-  call dxm%get_field('ud', ud)
-  call dxm%get_field('vd', vd)
-  allocate(ua(self%isc:self%iec,self%jsc:self%jec,self%npz))
-  allocate(va(self%isc:self%iec,self%jsc:self%jec,self%npz))
-  call d_to_a(geom, ud, vd, ua, va)
-  have_winds = .true.
-elseif (dxm%has_field('ua')) then
+if (dxm%has_field('ua') .and. dxm%has_field('va')) then
     call dxm%get_field('ua', ua)
     call dxm%get_field('va', va)
     have_winds = .true.
@@ -536,12 +522,10 @@ logical, allocatable :: field_passed(:)
 integer :: noassim_index
 
 !Winds
-logical :: have_awinds, have_dwinds
+logical :: have_awinds
 integer :: ua_index, va_index
 real(kind=kind_real), pointer     :: ua   (:,:,:)         !A-grid wind u component
 real(kind=kind_real), pointer     :: va   (:,:,:)         !A-grid wind v component
-real(kind=kind_real), allocatable :: ud   (:,:,:)         !D-grid wind u component
-real(kind=kind_real), allocatable :: vd   (:,:,:)         !D-grid wind v component
 
 !Virtual temperature
 logical :: have_tv
@@ -640,18 +624,10 @@ fields_to_do(1:num_not_copied) = not_copied_(1:num_not_copied)
 ! Winds
 ! -----
 have_awinds = .false.
-have_dwinds = .false.
 if (dxg%has_field( "ua", ua_index) .and. dxg%has_field( "va", va_index)) then
   call dxg%get_field('ua', ua)
   call dxg%get_field('va', va)
-  if (dxm%has_field('ud')) then
-    allocate(ud(self%isc:self%iec  ,self%jsc:self%jec+1,self%npz))
-    allocate(vd(self%isc:self%iec+1,self%jsc:self%jec  ,self%npz))
-    ud = 0.0_kind_real
-    vd = 0.0_kind_real
-    call d_to_a_ad(geom, ud, vd, ua, va)
-    have_dwinds = .true.
-  elseif (dxm%has_field('ua')) then
+  if (dxm%has_field('ua') .and. dxm%has_field('va')) then
     have_awinds = .true.
   else
     call abor1_ftn("fv3jedi_lvc_model2geovals_mod.multiplyadjoint: Winds found in GeoVaLs but"// &
@@ -854,20 +830,6 @@ do fm = 1, size(fields_to_do)
   call dxm%get_field(trim(fields_to_do(fm)), field_ptr)
 
   select case(trim(fields_to_do(fm)))
-
-  case ("ud")
-
-    if (have_dwinds) then
-      field_passed(ua_index) = .true.
-      field_ptr = field_ptr + ud
-    endif
-
-  case ("vd")
-
-    if (have_dwinds) then
-      field_passed(va_index) = .true.
-      field_ptr = field_ptr + vd
-    endif
 
   case ("ua")
 

@@ -40,7 +40,6 @@ namespace fv3jedi {
 Increment::Increment(const Geometry & geom, const oops::Variables & vars,
                      const util::DateTime & time)
   : geom_(geom), vars_(geom_.fieldsMetaData().getLongNameFromAnyName(vars)),
-    varsJedi_(geom_.fieldsMetaData().removeInterfaceSpecificFields(vars)),
     time_(time)
 {
   oops::Log::trace() << "Increment::Increment (from geom, vars and time) starting" << std::endl;
@@ -50,7 +49,7 @@ Increment::Increment(const Geometry & geom, const oops::Variables & vars,
 }
 // -------------------------------------------------------------------------------------------------
 Increment::Increment(const Geometry & geom, const Increment & other, const bool ad)
-  : geom_(geom), vars_(other.vars_), varsJedi_(other.varsJedi_), time_(other.time_)
+  : geom_(geom), vars_(other.vars_), time_(other.time_)
 {
   oops::Log::trace() << "Increment::Increment (from geom and other) starting" << std::endl;
   fv3jedi_increment_create_f90(keyInc_, geom_.toFortran(), vars_, time_);
@@ -92,15 +91,11 @@ Increment::Increment(const Geometry & geom, const Increment & other, const bool 
     interp.apply(source, target);
     this->fromFieldSet(target);
   }
-
-  // Interpolation did not act on interface fields
-  this->setInterfaceFieldsOutOfDate(true);
-
   oops::Log::trace() << "Increment::Increment (from geom and other) done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
 Increment::Increment(const Increment & other, const bool copy)
-  : geom_(other.geom_), vars_(other.vars_), varsJedi_(other.varsJedi_), time_(other.time_)
+  : geom_(other.geom_), vars_(other.vars_), time_(other.time_)
 {
   oops::Log::trace() << "Increment::Increment (from other and bool copy) starting" << std::endl;
   fv3jedi_increment_create_f90(keyInc_, geom_.toFortran(), vars_, time_);
@@ -120,10 +115,9 @@ void Increment::diff(const State & x1, const State & x2) {
   ASSERT(this->validTime() == x1.validTime());
   ASSERT(this->validTime() == x2.validTime());
   // States should have the same variables
-  ASSERT(x1.variablesIncludingInterfaceFields() == x2.variablesIncludingInterfaceFields());
+  ASSERT(x1.variables() == x2.variables());
   // Increment variables must be a equal to or a subset of the State variables
-  // (But interface-specific vars can be in increment without being in State, hence varsJedi in LHS)
-  ASSERT(varsJedi_ <= x1.variablesIncludingInterfaceFields());
+  ASSERT(vars_ <= x1.variables());
   // States at increment resolution
   State x1_ir(geom_, x1);
   State x2_ir(geom_, x2);
@@ -140,7 +134,6 @@ Increment & Increment::operator=(const Increment & rhs) {
 void Increment::updateFields(const oops::Variables & newVars) {
   const oops::Variables newLongVars = geom_.fieldsMetaData().getLongNameFromAnyName(newVars);
   vars_ = newLongVars;
-  varsJedi_ = geom_.fieldsMetaData().removeInterfaceSpecificFields(newLongVars);
   fv3jedi_increment_update_fields_f90(keyInc_, geom_.toFortran(), vars_);
 }
 // -------------------------------------------------------------------------------------------------
@@ -225,19 +218,11 @@ void Increment::setLocal(const oops::LocalIncrement & values, const GeometryIter
 }
 // -------------------------------------------------------------------------------------------------
 void Increment::toFieldSet(atlas::FieldSet & fset) const {
-  fv3jedi_increment_to_fieldset_f90(keyInc_, geom_.toFortran(), varsJedi_, fset.get());
+  fv3jedi_increment_to_fieldset_f90(keyInc_, geom_.toFortran(), vars_, fset.get());
 }
 // -------------------------------------------------------------------------------------------------
 void Increment::fromFieldSet(const atlas::FieldSet & fset) {
-  fv3jedi_increment_from_fieldset_f90(keyInc_, geom_.toFortran(), varsJedi_, fset.get());
-}
-// -------------------------------------------------------------------------------------------------
-void Increment::synchronizeInterfaceFields() const {
-  fv3jedi_increment_synchronize_interface_fields_f90(keyInc_, geom_.toFortran());
-}
-// -------------------------------------------------------------------------------------------------
-void Increment::setInterfaceFieldsOutOfDate(const bool outofdate) const {
-  fv3jedi_increment_set_interface_fields_outofdate_f90(keyInc_, outofdate);
+  fv3jedi_increment_from_fieldset_f90(keyInc_, geom_.toFortran(), vars_, fset.get());
 }
 // -------------------------------------------------------------------------------------------------
 void Increment::read(const eckit::Configuration & config) {
@@ -263,12 +248,10 @@ void Increment::write(const eckit::Configuration & config) const {
   std::unique_ptr<IOBase> io(IOFactory::create(geom_,
                                                *params.ioParametersWrapper.ioParameters.value()));
   // Perform write
-  this->synchronizeInterfaceFields();
   io->write(*this);
 }
 // -------------------------------------------------------------------------------------------------
 double Increment::norm() const {
-  this->synchronizeInterfaceFields();
   double zz = 0.0;
   fv3jedi_increment_norm_f90(keyInc_, zz);
   return zz;

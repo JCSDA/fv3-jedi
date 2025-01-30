@@ -26,8 +26,6 @@ state:
   datapath: Data/inputs/geos_c12
   filename: geos.bkg.20201214_210000z.nc4
   state variables:
-  - u
-  - v
   - ua
   - va
   - t

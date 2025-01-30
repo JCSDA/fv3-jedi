@@ -187,7 +187,7 @@ character(len=field_clen), allocatable :: fields_to_do(:)
 real(kind=kind_real), pointer :: field_ptr(:,:,:)
 
 ! Stream function/velocity potential
-logical :: have_udvd, have_vodi, have_uava
+logical :: have_vodi, have_uava
 real(kind=kind_real), pointer     ::   psi(:,:,:)     ! Stream function
 real(kind=kind_real), pointer     ::   chi(:,:,:)     ! Velocity potentail
 real(kind=kind_real), allocatable ::    ud(:,:,:)     ! D-grid u wind
@@ -196,6 +196,11 @@ real(kind=kind_real), allocatable ::  vort(:,:,:)     ! Vorticity
 real(kind=kind_real), allocatable ::  divg(:,:,:)     ! Divergence
 real(kind=kind_real), allocatable ::    ua(:,:,:)     ! D-grid u wind
 real(kind=kind_real), allocatable ::    va(:,:,:)     ! D-grid v wind
+
+! Pressure
+logical :: have_delp
+real(kind=kind_real), pointer     ::  ps  (:,:,:)     ! Pressure thickness
+real(kind=kind_real), allocatable ::  delp(:,:,:)     ! Pressure thickness
 
 ! Clouds
 logical :: have_cld4
@@ -218,7 +223,6 @@ if (.not.allocated(fields_to_do)) return
 
 ! Wind variables
 ! --------------
-have_udvd = .false.
 have_uava = .false.
 have_vodi = .false.
 if (xctl%has_field('psi') .and. xctl%has_field('chi')) then
@@ -227,7 +231,6 @@ if (xctl%has_field('psi') .and. xctl%has_field('chi')) then
   allocate(ud(geom%isc:geom%iec  ,geom%jsc:geom%jec+1,1:geom%npz))
   allocate(vd(geom%isc:geom%iec+1,geom%jsc:geom%jec  ,1:geom%npz))
   call psichi_to_udvd(geom, psi, chi, ud, vd)
-  have_udvd = .true.
   if (.not. self%skip_femps_init) then
     allocate(vort(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
     allocate(divg(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
@@ -235,16 +238,20 @@ if (xctl%has_field('psi') .and. xctl%has_field('chi')) then
                             self%lev_final)
     have_vodi = .true.
   endif
-endif
-
-! A-grid winds
-! ------------
-have_uava = .false.
-if (have_udvd) then
   allocate(ua(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
   allocate(va(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
   call d_to_a(geom, ud, vd, ua, va)
   have_uava = .true.
+endif
+
+! Pressure
+! --------
+have_delp = .false.
+if (xctl%has_field('ps')) then
+  call xctl%get_field('ps', ps)
+  allocate(delp(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
+  call ps_to_delp(geom, ps, delp)
+  have_delp = .true.
 endif
 
 ! Clouds
@@ -271,16 +278,6 @@ do f = 1, size(fields_to_do)
   call xana%get_field(trim(fields_to_do(f)),  field_ptr)
 
   select case (trim(fields_to_do(f)))
-
-  case ("ud")
-
-    if (.not. have_udvd) call field_fail(fields_to_do(f))
-    field_ptr = ud
-
-  case ("vd")
-
-    if (.not. have_udvd) call field_fail(fields_to_do(f))
-    field_ptr = vd
 
   case ("ua")
 
@@ -322,6 +319,11 @@ do f = 1, size(fields_to_do)
     if (.not. have_cld4) call field_fail(fields_to_do(f))
     field_ptr = qlcn
 
+  case ("delp")
+
+    if (.not. have_delp) call field_fail(fields_to_do(f))
+    field_ptr = delp
+
   end select
 
 enddo
@@ -343,7 +345,7 @@ character(len=field_clen), allocatable :: fields_to_do(:)
 real(kind=kind_real), pointer :: field_ptr(:,:,:)
 
 ! Stream function/velocity potential
-logical :: have_udvd, have_pcvd
+logical :: have_pcvd
 real(kind=kind_real), pointer     ::    ua(:,:,:)     ! D-grid u wind
 real(kind=kind_real), pointer     ::    va(:,:,:)     ! D-grid v wind
 real(kind=kind_real), allocatable ::    ud(:,:,:)     ! D-grid u wind
@@ -353,9 +355,13 @@ real(kind=kind_real), allocatable ::   chi(:,:,:)     ! Velocity potentail
 real(kind=kind_real), allocatable ::  vort(:,:,:)     ! Vorticity
 real(kind=kind_real), allocatable ::  divg(:,:,:)     ! Divergence
 
+! Pressure
+logical :: have_ps
+real(kind=kind_real), allocatable ::  ps  (:,:,:)     ! Pressure thickness
+real(kind=kind_real), pointer     ::  delp(:,:,:)     ! Pressure thickness
+
 ! Humidity
 logical :: have_rhum
-real(kind=kind_real), pointer     ::  delp(:,:,:)     ! Pressure thickness
 real(kind=kind_real), pointer     ::     t(:,:,:)     ! Temperature
 real(kind=kind_real), pointer     ::     q(:,:,:)     ! Specific humidity
 real(kind=kind_real), allocatable ::  qsat(:,:,:)     ! Saturation specific humidity
@@ -383,22 +389,13 @@ if (.not.allocated(fields_to_do)) return
 
 ! Wind variables
 ! --------------
-have_udvd = .false.
-if (xana%has_field('ud') .and. xana%has_field('vd')) then
-  call xana%get_field('ud', ud)
-  call xana%get_field('vd', vd)
-  have_udvd = .true.
-elseif (xana%has_field('ua') .and. xana%has_field('va')) then
+have_pcvd = .false.
+if (xana%has_field('ua') .and. xana%has_field('va')) then
   call xana%get_field('ua', ua)
   call xana%get_field('va', va)
   allocate(ud(geom%isc:geom%iec  ,geom%jsc:geom%jec+1,1:geom%npz))
   allocate(vd(geom%isc:geom%iec+1,geom%jsc:geom%jec  ,1:geom%npz))
   call a_to_d(geom, ua, va, ud, vd)
-  have_udvd = .true.
-endif
-
-have_pcvd = .false.
-if (have_udvd) then
   allocate( psi(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
   allocate( chi(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
   allocate(vort(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
@@ -409,6 +406,15 @@ if (have_udvd) then
   have_pcvd = .true.
 endif
 
+! Surface pressure
+! ----------------
+have_ps = .false.
+if (xana%has_field('delp')) then
+  call xana%get_field('delp', delp)
+  allocate(ps(geom%isc:geom%iec,geom%jsc:geom%jec,1))
+  ps(:,:,1) = sum(delp, dim=3) + geom%ptop
+  have_ps = .true.
+endif
 
 ! Humidity
 ! --------
@@ -500,6 +506,11 @@ do f = 1, size(fields_to_do)
 
     if (.not. have_cfrc) call field_fail(fields_to_do(f))
     field_ptr = qicnf
+
+  case ("ps")
+
+    if (.not. have_ps) call field_fail(fields_to_do(f))
+    field_ptr = ps
 
   end select
 

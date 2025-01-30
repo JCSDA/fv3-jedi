@@ -15,7 +15,7 @@ extern "C" {
   void get_field_metadata_f(const FieldsMetadata* fieldsMetadata,
                             const char longshortioNameC[], char longNameC[],
                             char shrtNameC[], char varUnitsC[], char dataKindC[],
-                            bool& tracer, bool& interfaceSpecific, char stagrLocC[],
+                            bool& tracer,
                             int & levels, char mathSpacC[],
                             char inOuNameC[], char inOuFileC[], char intrpTypC[],
                             char intrpMskC[]);

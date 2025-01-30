@@ -1,0 +1,29 @@
+fms:
+  namelist filename: Data/fv3files/fmsmpp.nml
+  field table filename: Data/fv3files/field_table_gmao
+  stackmax: 4000000
+geometry:
+  akbk: Data/fv3files/akbk72.nc4
+  io_layout:
+  - 1
+  - 1
+  layout:
+  - 1
+  - 1
+  ntiles: 6
+  npx: 13
+  npy: 13
+  npz: 72
+input:
+  filename: Data/inputs/geos_c12/geos.bkg.20201214_210000z.nc4
+output:
+  datapath: Data/convertstate/
+  filename_core: 20201214_210000.geos.fv_core.res.nc
+testing:
+  min_u: -95.1925765969853
+  max_u: 133.511708678525
+  rms_u: 18.8623081922580
+  min_v: -149.045608572730
+  max_v: 120.794117542821
+  rms_v: 20.9315090187123
+  tol: 1e-4

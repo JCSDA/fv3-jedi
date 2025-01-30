@@ -5,9 +5,6 @@
 
 module fv3jedi_traj_mod
 
-! fv3-jedi-lm
-use fv3jedi_lm_utils_mod, only: fv3jedi_traj => fv3jedi_lm_traj, deallocate_traj
-
 ! fv3-jedi
 use fv3jedi_kinds_mod,    only: kind_real
 use fv3jedi_state_mod,    only: fv3jedi_state
@@ -16,9 +13,28 @@ use fv3jedi_state_mod,    only: fv3jedi_state
 
 implicit none
 private
-public :: fv3jedi_traj
-public :: set
-public :: wipe
+public :: fv3jedi_traj, set, wipe
+
+! --------------------------------------------------------------------------------------------------
+
+type :: fv3jedi_traj
+  ! Very similar to the fv3-jedi-lm trajectory (model state), except without D-Grid winds.
+  ! Note that D-Grid winds should not be interpolated directly and the traj is almost always
+  ! interpolated so there is no benefit to having D-Grid winds here and doing so only serves to
+  ! complicate the code.
+  integer :: isc,iec,jsc,jec,npz,ntracers
+  real(kind_real),     allocatable, dimension(:,:,:)   :: ua, va, t, delp
+  real(kind_real),     allocatable, dimension(:,:,:,:) :: tracers
+  character(len=2048), allocatable, dimension(:)       :: tracer_names
+  real(kind_real),     allocatable, dimension(:,:,:)   :: w, delz
+  real(kind_real),     allocatable, dimension(:,:,:)   :: cfcn
+  real(kind_real),     allocatable, dimension(:,:,:)   :: qls, qcn
+  real(kind_real),     allocatable, dimension(:,:)     :: phis
+  real(kind_real),     allocatable, dimension(:,:)     :: frocean, frland
+  real(kind_real),     allocatable, dimension(:,:)     :: varflt, ustar, bstar
+  real(kind_real),     allocatable, dimension(:,:)     :: zpbl, cm, ct, cq
+  real(kind_real),     allocatable, dimension(:,:)     :: kcbl, ts, khl, khu
+end type fv3jedi_traj
 
 ! --------------------------------------------------------------------------------------------------
 
@@ -26,33 +42,28 @@ contains
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine set(self, state)
+subroutine set(traj, state)
 
-implicit none
-type(fv3jedi_traj),  intent(inout) :: self
+type(fv3jedi_traj),  intent(inout) :: traj
 type(fv3jedi_state), intent(in)    :: state
 
 integer :: isc,iec,jsc,jec,npz,ft,f,index,number_tracers
 logical :: sphum_found = .false.
 
-! Pointers to rank 2 state
-real(kind=kind_real), allocatable, dimension(:,:,:) :: u_tmp
-real(kind=kind_real), allocatable, dimension(:,:,:) :: v_tmp
-
-real(kind=kind_real), pointer, dimension(:,:,:) :: phis
-real(kind=kind_real), pointer, dimension(:,:,:) :: frocean
-real(kind=kind_real), pointer, dimension(:,:,:) :: frland
-real(kind=kind_real), pointer, dimension(:,:,:) :: varflt
-real(kind=kind_real), pointer, dimension(:,:,:) :: ustar
-real(kind=kind_real), pointer, dimension(:,:,:) :: bstar
-real(kind=kind_real), pointer, dimension(:,:,:) :: zpbl
-real(kind=kind_real), pointer, dimension(:,:,:) :: cm
-real(kind=kind_real), pointer, dimension(:,:,:) :: ct
-real(kind=kind_real), pointer, dimension(:,:,:) :: cq
-real(kind=kind_real), pointer, dimension(:,:,:) :: kcbl
-real(kind=kind_real), pointer, dimension(:,:,:) :: tsm
-real(kind=kind_real), pointer, dimension(:,:,:) :: khl
-real(kind=kind_real), pointer, dimension(:,:,:) :: khu
+real(kind=kind_real), pointer, dimension(:,:,:) :: phis => null()
+real(kind=kind_real), pointer, dimension(:,:,:) :: frocean => null()
+real(kind=kind_real), pointer, dimension(:,:,:) :: frland => null()
+real(kind=kind_real), pointer, dimension(:,:,:) :: varflt => null()
+real(kind=kind_real), pointer, dimension(:,:,:) :: ustar => null()
+real(kind=kind_real), pointer, dimension(:,:,:) :: bstar => null()
+real(kind=kind_real), pointer, dimension(:,:,:) :: zpbl => null()
+real(kind=kind_real), pointer, dimension(:,:,:) :: cm => null()
+real(kind=kind_real), pointer, dimension(:,:,:) :: ct => null()
+real(kind=kind_real), pointer, dimension(:,:,:) :: cq => null()
+real(kind=kind_real), pointer, dimension(:,:,:) :: kcbl => null()
+real(kind=kind_real), pointer, dimension(:,:,:) :: tsm => null()
+real(kind=kind_real), pointer, dimension(:,:,:) :: khl => null()
+real(kind=kind_real), pointer, dimension(:,:,:) :: khu => null()
 
 isc = state%isc
 iec = state%iec
@@ -60,78 +71,66 @@ jsc = state%jsc
 jec = state%jec
 npz = state%npz
 
-self%ntracers = state%ntracers
+traj%ntracers = state%ntracers
 
 ! Allocate traj
-allocate(self%u      (isc:iec, jsc:jec, npz))
-allocate(self%v      (isc:iec, jsc:jec, npz))
-allocate(self%ua     (isc:iec, jsc:jec, npz))
-allocate(self%va     (isc:iec, jsc:jec, npz))
-allocate(self%t      (isc:iec, jsc:jec, npz))
-allocate(self%delp   (isc:iec, jsc:jec, npz))
-allocate(self%w      (isc:iec, jsc:jec, npz))
-allocate(self%delz   (isc:iec, jsc:jec, npz))
-allocate(self%qls    (isc:iec, jsc:jec, npz))
-allocate(self%qcn    (isc:iec, jsc:jec, npz))
-allocate(self%cfcn   (isc:iec, jsc:jec, npz))
-allocate(self%phis   (isc:iec, jsc:jec))
-allocate(self%frocean(isc:iec, jsc:jec))
-allocate(self%frland (isc:iec, jsc:jec))
-allocate(self%varflt (isc:iec, jsc:jec))
-allocate(self%ustar  (isc:iec, jsc:jec))
-allocate(self%bstar  (isc:iec, jsc:jec))
-allocate(self%zpbl   (isc:iec, jsc:jec))
-allocate(self%cm     (isc:iec, jsc:jec))
-allocate(self%ct     (isc:iec, jsc:jec))
-allocate(self%cq     (isc:iec, jsc:jec))
-allocate(self%kcbl   (isc:iec, jsc:jec))
-allocate(self%ts     (isc:iec, jsc:jec))
-allocate(self%khl    (isc:iec, jsc:jec))
-allocate(self%khu    (isc:iec, jsc:jec))
+allocate(traj%ua     (isc:iec, jsc:jec, npz))
+allocate(traj%va     (isc:iec, jsc:jec, npz))
+allocate(traj%t      (isc:iec, jsc:jec, npz))
+allocate(traj%delp   (isc:iec, jsc:jec, npz))
+allocate(traj%w      (isc:iec, jsc:jec, npz))
+allocate(traj%delz   (isc:iec, jsc:jec, npz))
+allocate(traj%qls    (isc:iec, jsc:jec, npz))
+allocate(traj%qcn    (isc:iec, jsc:jec, npz))
+allocate(traj%cfcn   (isc:iec, jsc:jec, npz))
+allocate(traj%phis   (isc:iec, jsc:jec))
+allocate(traj%frocean(isc:iec, jsc:jec))
+allocate(traj%frland (isc:iec, jsc:jec))
+allocate(traj%varflt (isc:iec, jsc:jec))
+allocate(traj%ustar  (isc:iec, jsc:jec))
+allocate(traj%bstar  (isc:iec, jsc:jec))
+allocate(traj%zpbl   (isc:iec, jsc:jec))
+allocate(traj%cm     (isc:iec, jsc:jec))
+allocate(traj%ct     (isc:iec, jsc:jec))
+allocate(traj%cq     (isc:iec, jsc:jec))
+allocate(traj%kcbl   (isc:iec, jsc:jec))
+allocate(traj%ts     (isc:iec, jsc:jec))
+allocate(traj%khl    (isc:iec, jsc:jec))
+allocate(traj%khu    (isc:iec, jsc:jec))
 
 ! Initialize all to zero incase not in state
 ! ------------------------------------------
-self%u       = 0.0_kind_real
-self%v       = 0.0_kind_real
-self%ua      = 0.0_kind_real
-self%va      = 0.0_kind_real
-self%t       = 0.0_kind_real
-self%delp    = 0.0_kind_real
-self%w       = 0.0_kind_real
-self%delz    = 0.0_kind_real
-self%qls     = 0.0_kind_real
-self%qcn     = 0.0_kind_real
-self%cfcn    = 0.0_kind_real
-self%phis    = 0.0_kind_real
-self%frocean = 0.0_kind_real
-self%frland  = 0.0_kind_real
-self%varflt  = 0.0_kind_real
-self%ustar   = 0.0_kind_real
-self%bstar   = 0.0_kind_real
-self%zpbl    = 0.0_kind_real
-self%cm      = 0.0_kind_real
-self%ct      = 0.0_kind_real
-self%cq      = 0.0_kind_real
-self%kcbl    = 0.0_kind_real
-self%ts      = 0.0_kind_real
-self%khl     = 0.0_kind_real
-self%khu     = 0.0_kind_real
+traj%ua      = 0.0_kind_real
+traj%va      = 0.0_kind_real
+traj%t       = 0.0_kind_real
+traj%delp    = 0.0_kind_real
+traj%w       = 0.0_kind_real
+traj%delz    = 0.0_kind_real
+traj%qls     = 0.0_kind_real
+traj%qcn     = 0.0_kind_real
+traj%cfcn    = 0.0_kind_real
+traj%phis    = 0.0_kind_real
+traj%frocean = 0.0_kind_real
+traj%frland  = 0.0_kind_real
+traj%varflt  = 0.0_kind_real
+traj%ustar   = 0.0_kind_real
+traj%bstar   = 0.0_kind_real
+traj%zpbl    = 0.0_kind_real
+traj%cm      = 0.0_kind_real
+traj%ct      = 0.0_kind_real
+traj%cq      = 0.0_kind_real
+traj%kcbl    = 0.0_kind_real
+traj%ts      = 0.0_kind_real
+traj%khl     = 0.0_kind_real
+traj%khu     = 0.0_kind_real
 
 
 ! Copy mandatory parts of the trajecotry
 ! --------------------------------------
-allocate(u_tmp(isc:iec  , jsc:jec+1, npz))
-allocate(v_tmp(isc:iec+1, jsc:jec  , npz))
-
-call state%get_field('ud'   , u_tmp     )
-call state%get_field('vd'   , v_tmp     )
-call state%get_field('t'    , self%t    )
-call state%get_field('delp' , self%delp )
-
-self%u = u_tmp(isc:iec, jsc:jec, :)
-self%v = v_tmp(isc:iec, jsc:jec, :)
-
-deallocate(u_tmp, v_tmp)
+call state%get_field('ua'  , traj%ua   )
+call state%get_field('va'  , traj%va   )
+call state%get_field('t'   , traj%t   )
+call state%get_field('delp', traj%delp)
 
 
 ! Allocate all the tracers that will be part of what gets advected
@@ -147,11 +146,11 @@ if (state%has_field('cfcn')) number_tracers = number_tracers - 1
 
 ! Allocate the tracers
 
-if (.not. allocated(self%tracers) .or. size(self%tracers, 4) .ne. number_tracers) then
-  if (allocated(self%tracers)) deallocate(self%tracers)
-  allocate(self%tracers(state%isc:state%iec, state%jsc:state%jec, state%npz, number_tracers))
-  if (allocated(self%tracer_names)) deallocate(self%tracer_names)
-  allocate(self%tracer_names(number_tracers))
+if (.not. allocated(traj%tracers) .or. size(traj%tracers, 4) .ne. number_tracers) then
+  if (allocated(traj%tracers)) deallocate(traj%tracers)
+  allocate(traj%tracers(state%isc:state%iec, state%jsc:state%jec, state%npz, number_tracers))
+  if (allocated(traj%tracer_names)) deallocate(traj%tracer_names)
+  allocate(traj%tracer_names(number_tracers))
 end if
 
 ! Fill the tracers
@@ -172,8 +171,8 @@ do f = 1, state%nf
       ft = ft + 1
       index = ft
     end if
-    self%tracers(:,:,:,index) = state%fields(f)%array
-    self%tracer_names(index)  = trim(state%fields(f)%long_name)
+    traj%tracers(:,:,:,index) = state%fields(f)%array
+    traj%tracer_names(index)  = trim(state%fields(f)%long_name)
   end if
 end do
 
@@ -186,82 +185,111 @@ end if
 ! ----------------------------------------------
 
 ! Copy optional parts of the trajecotry (Rank 3)
-if (state%has_field('ua'  )) call state%get_field('ua'  , self%ua  )
-if (state%has_field('va'  )) call state%get_field('va'  , self%va  )
-if (state%has_field('w'   )) call state%get_field('w'   , self%w   )
-if (state%has_field('delz')) call state%get_field('delz', self%delz)
-if (state%has_field('qls' )) call state%get_field('qls' , self%qls )
-if (state%has_field('qcn' )) call state%get_field('qcn' , self%qcn )
-if (state%has_field('cfcn')) call state%get_field('cfcn', self%cfcn)
+if (state%has_field('w'   )) call state%get_field('w'   , traj%w   )
+if (state%has_field('delz')) call state%get_field('delz', traj%delz)
+if (state%has_field('qls' )) call state%get_field('qls' , traj%qls )
+if (state%has_field('qcn' )) call state%get_field('qcn' , traj%qcn )
+if (state%has_field('cfcn')) call state%get_field('cfcn', traj%cfcn)
 
 ! Copy optional parts of the trajecotry (Rank 2)
 if (state%has_field('phis')) then
   call state%get_field('phis', phis)
-  self%phis = phis(:,:,1)
+  traj%phis = phis(:,:,1)
 endif
 if (state%has_field('frocean')) then
   call state%get_field('frocean', frocean)
-  self%frocean = frocean(:,:,1)
+  traj%frocean = frocean(:,:,1)
 endif
 if (state%has_field('frland')) then
   call state%get_field('frland', frland)
-  self%frland = frland(:,:,1)
+  traj%frland = frland(:,:,1)
 endif
 if (state%has_field('varflt')) then
   call state%get_field('varflt', varflt)
-  self%varflt = varflt(:,:,1)
+  traj%varflt = varflt(:,:,1)
 endif
 if (state%has_field('ustar')) then
   call state%get_field('ustar', ustar)
-  self%ustar = ustar(:,:,1)
+  traj%ustar = ustar(:,:,1)
 endif
 if (state%has_field('bstar')) then
   call state%get_field('bstar', bstar)
-  self%bstar = bstar(:,:,1)
+  traj%bstar = bstar(:,:,1)
 endif
 if (state%has_field('zpbl')) then
   call state%get_field('zpbl', zpbl)
-  self%zpbl = zpbl(:,:,1)
+  traj%zpbl = zpbl(:,:,1)
 endif
 if (state%has_field('cm')) then
   call state%get_field('cm', cm)
-  self%cm = cm(:,:,1)
+  traj%cm = cm(:,:,1)
 endif
 if (state%has_field('ct')) then
   call state%get_field('ct', ct)
-  self%ct = ct(:,:,1)
+  traj%ct = ct(:,:,1)
 endif
 if (state%has_field('cq')) then
   call state%get_field('cq', cq)
-  self%cq = cq(:,:,1)
+  traj%cq = cq(:,:,1)
 endif
 if (state%has_field('kcbl')) then
   call state%get_field('kcbl', kcbl)
-  self%kcbl = kcbl(:,:,1)
+  traj%kcbl = kcbl(:,:,1)
 endif
 if (state%has_field('tsm')) then
   call state%get_field('tsm', tsm)
-  self%ts = tsm(:,:,1)
+  traj%ts = tsm(:,:,1)
 endif
 if (state%has_field('khl')) then
   call state%get_field('khl', khl)
-  self%khl = khl(:,:,1)
+  traj%khl = khl(:,:,1)
 endif
 if (state%has_field('khu')) then
   call state%get_field('khu', khu)
-  self%khu = khu(:,:,1)
+  traj%khu = khu(:,:,1)
 endif
 
 end subroutine set
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine wipe(self)
+subroutine wipe(traj)
 
-implicit none
-type(fv3jedi_traj), pointer :: self
+! Arguments
+type(fv3jedi_traj), intent(inout) :: traj
 
-call deallocate_traj(self)
+traj%isc = 0
+traj%iec = 0
+traj%jsc = 0
+traj%jec = 0
+traj%npz = 0
+traj%ntracers = 0
+
+if (allocated(traj%ua))           deallocate(traj%ua)
+if (allocated(traj%va))           deallocate(traj%va)
+if (allocated(traj%t))            deallocate(traj%t)
+if (allocated(traj%delp))         deallocate(traj%delp)
+if (allocated(traj%tracers))      deallocate(traj%tracers)
+if (allocated(traj%tracer_names)) deallocate(traj%tracer_names)
+if (allocated(traj%w))            deallocate(traj%w)
+if (allocated(traj%delz))         deallocate(traj%delz)
+if (allocated(traj%cfcn))         deallocate(traj%cfcn)
+if (allocated(traj%qls))          deallocate(traj%qls)
+if (allocated(traj%qcn))          deallocate(traj%qcn)
+if (allocated(traj%phis))         deallocate(traj%phis)
+if (allocated(traj%frocean))      deallocate(traj%frocean)
+if (allocated(traj%frland))       deallocate(traj%frland)
+if (allocated(traj%varflt))       deallocate(traj%varflt)
+if (allocated(traj%ustar))        deallocate(traj%ustar)
+if (allocated(traj%bstar))        deallocate(traj%bstar)
+if (allocated(traj%zpbl))         deallocate(traj%zpbl)
+if (allocated(traj%cm))           deallocate(traj%cm)
+if (allocated(traj%ct))           deallocate(traj%ct)
+if (allocated(traj%cq))           deallocate(traj%cq)
+if (allocated(traj%kcbl))         deallocate(traj%kcbl)
+if (allocated(traj%ts))           deallocate(traj%ts)
+if (allocated(traj%khl))          deallocate(traj%khl)
+if (allocated(traj%khu))          deallocate(traj%khu)
 
 end subroutine wipe
 

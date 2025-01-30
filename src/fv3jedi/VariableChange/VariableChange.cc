@@ -64,7 +64,7 @@ void VariableChange::changeVar(State & x, const oops::Variables & vars_out) cons
 
   // Return if output vars already in input
   // --------------------------------------
-  if (vars <= x.variablesIncludingInterfaceFields()) {
+  if (vars <= x.variables()) {
     x.updateFields(vars);
     oops::Log::info() << "VariableChange::changeVar done (identity)" << std::endl;
     return;
@@ -74,7 +74,7 @@ void VariableChange::changeVar(State & x, const oops::Variables & vars_out) cons
   // ------------------------------------------------------
 
   // Record start variables
-  oops::Variables varsFilled = x.variablesIncludingInterfaceFields();
+  oops::Variables varsFilled = x.variables();
 
   oops::Variables varsVader = vars;
   varsVader -= varsFilled;  // Pass only the needed variables
@@ -93,11 +93,6 @@ void VariableChange::changeVar(State & x, const oops::Variables & vars_out) cons
       x.fromFieldSet(xfs);
     }
   }
-
-  // The to/fromFieldSet above is for a var change, so we know it's just adding/removing fields,
-  // and is not editing the values within a particular field. So, the interface-specific fields are
-  // still up to date (unless the var changes are coded incorrectly...).
-  x.setInterfaceFieldsOutOfDate(false);
 
   // Perform fv3jedi factory variable change
   // ---------------------------------------
@@ -122,8 +117,7 @@ void VariableChange::changeVar(State & x, const oops::Variables & vars_out) cons
 
 // -------------------------------------------------------------------------------------------------
 
-void VariableChange::changeVarInverse(State & x, const oops::Variables & vars_out,
-                                      const bool force_varchange) const {
+void VariableChange::changeVarInverse(State & x, const oops::Variables & vars_out) const {
   // Trace
   oops::Log::trace() << "VariableChange::changeVarInverse starting" << std::endl;
 
@@ -133,7 +127,7 @@ void VariableChange::changeVarInverse(State & x, const oops::Variables & vars_ou
 
   // Return if output vars already in input
   // --------------------------------------
-  if ((vars <= x.variablesIncludingInterfaceFields()) && !force_varchange) {
+  if ((vars <= x.variables())) {
     x.updateFields(vars);
     oops::Log::info() << "VariableChange::changeVarInverse done (identity)" << std::endl;
     return;
@@ -143,7 +137,7 @@ void VariableChange::changeVarInverse(State & x, const oops::Variables & vars_ou
   // ------------------------------------------------------
 
   // Record start variables
-  oops::Variables varsFilled = x.variablesIncludingInterfaceFields();
+  oops::Variables varsFilled = x.variables();
 
   oops::Variables varsVader = vars;
   varsVader -= varsFilled;  // Pass only the needed variables
@@ -160,11 +154,6 @@ void VariableChange::changeVarInverse(State & x, const oops::Variables & vars_ou
     x.updateFields(varsFilled);
     x.fromFieldSet(xfs);
   }
-
-  // The to/fromFieldSet above is for a var change, so we know it's just adding/removing fields,
-  // and is not editing the values within a particular field. So, the interface-specific fields are
-  // still up to date (unless the var changes are coded incorrectly...).
-  x.setInterfaceFieldsOutOfDate(false);
 
   // Perform fv3jedi factory variable change
   // ---------------------------------------

@@ -19,7 +19,6 @@
 #include "fv3jedi/Geometry/Geometry.h"
 #include "fv3jedi/Model/fv3lm/ModelFV3LM.interface.h"
 #include "fv3jedi/Utilities/Traits.h"
-#include "fv3jedi/VariableChange/Base/VariableChangeBase.h"
 
 // Forward declarations
 namespace eckit {
@@ -59,8 +58,6 @@ class ModelFV3LM: public oops::interface::ModelBase<Traits>,
   util::Duration tstep_;
   const Geometry geom_;
   oops::Variables vars_;
-  std::unique_ptr<VariableChange> an2model_;
-  mutable std::unique_ptr<const oops::Variables> finalVars_;
 };
 // -------------------------------------------------------------------------------------------------
 

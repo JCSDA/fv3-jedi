@@ -21,8 +21,6 @@ state test:
     filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
     filename_cplr: 20201215.000000.coupler.res
     state variables:
-    - u
-    - v
     - ua
     - va
     - T
@@ -37,7 +35,7 @@ state test:
       method: dcmip-test-4-0
     datetime: 2020-12-15T00:00:00Z
   date: 2020-12-15T00:00:00Z
-  norm file: 2794.0790946951747
+  norm file: 3123.5572529289711
   norm generated state: 17525.605789643301
   tolerance: 1.0e-08
   construct to variables:

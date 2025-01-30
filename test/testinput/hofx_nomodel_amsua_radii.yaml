@@ -20,8 +20,6 @@ state:
   filename_sfcw: 20210801.180000.fv_srf_wnd.res.nc
   filename_cplr: 20210801.180000.coupler.res
   state variables:
-  - u
-  - v
   - ua
   - va
   - T

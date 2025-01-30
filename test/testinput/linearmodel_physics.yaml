@@ -29,8 +29,6 @@ linear model:
   lm_do_trb: 1
   lm_do_mst: 1
   tlm variables:
-  - u
-  - v
   - ua
   - va
   - t
@@ -41,8 +39,6 @@ linear model:
   - o3ppmv
   trajectory:
     model variables:
-    - u
-    - v
     - ua
     - va
     - t
@@ -106,8 +102,6 @@ initial condition:
   - geos.bkg.20201215_000000z.nc4
   - geos.bkg.crtmsrf.20201215_000000z.nc4
   state variables:
-  - u
-  - v
   - ua
   - va
   - t

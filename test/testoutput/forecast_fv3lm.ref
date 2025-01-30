@@ -1,8 +1,6 @@
 Initial state: 
 ----------------------------------------------------------------------------------------------------
-State print | number of fields = 11 | cube sphere face size: C12
-u_component_of_native_D_grid_wind            | Min:-1.3496839860265715e+02 Max:+1.2784919740746092e+02 RMS:+1.5837341454338334e+01
-v_component_of_native_D_grid_wind            | Min:-1.4277243559862308e+02 Max:+1.2322577990478851e+02 RMS:+1.7374587166101474e+01
+State print | number of fields = 9 | cube sphere face size: C12
 eastward_wind                                | Min:-9.9870309951732608e+01 Max:+1.6846199862531310e+02 RMS:+2.2146985103933666e+01
 northward_wind                               | Min:-9.8786769912619121e+01 Max:+1.1111138963306223e+02 RMS:+1.0634298691496230e+01
 air_temperature                              | Min:+1.5727112567986427e+02 Max:+3.0671885029730902e+02 RMS:+2.4964139399382486e+02
@@ -15,9 +13,7 @@ geopotential_height_times_gravity_at_surface | Min:-2.6477954101562500e+02 Max:+
 ----------------------------------------------------------------------------------------------------
 Final state: 
 ----------------------------------------------------------------------------------------------------
-State print | number of fields = 11 | cube sphere face size: C12
-u_component_of_native_D_grid_wind            | Min:-1.3343877641435924e+02 Max:+1.3193197951413504e+02 RMS:+1.5929853938050352e+01
-v_component_of_native_D_grid_wind            | Min:-1.4303161263212951e+02 Max:+1.2045768179152849e+02 RMS:+1.7359485569128221e+01
+State print | number of fields = 9 | cube sphere face size: C12
 eastward_wind                                | Min:-9.6146516514486819e+01 Max:+1.5225774146831458e+02 RMS:+2.0973153955442744e+01
 northward_wind                               | Min:-8.4118948122701269e+01 Max:+1.0134032752787677e+02 RMS:+9.2138884827567473e+00
 air_temperature                              | Min:+1.5735364445515941e+02 Max:+3.0613359319221399e+02 RMS:+2.4961173842781614e+02

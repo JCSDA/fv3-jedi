@@ -1,0 +1,30 @@
+fms:
+  namelist filename: Data/fv3files/fmsmpp.nml
+  field table filename: Data/fv3files/field_table_cold
+  stackmax: 4000000
+geometry:
+  akbk: Data/fv3files/akbk127.nc4
+  io_layout:
+  - 1
+  - 1
+  layout:
+  - 1
+  - 1
+  ntiles: 6
+  npx: 13
+  npy: 13
+  npz: 127
+input:
+  datapath: Data/inputs/gfs_c12/bkg/
+  filename_core: 20201215.000000.fv_core.res.nc
+output:
+  datapath: Data/convertstate/
+  filename_core: 20201215.000000.a_to_d.fv_core.res.nc
+testing:
+  min_u: -132.643871536386
+  max_u: 129.059696094749
+  rms_u: 15.8863209980814
+  min_v: -125.363135790643
+  max_v: 118.676218142968
+  rms_v: 17.2040792620938
+  tol: 1e-4

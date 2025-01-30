@@ -9,35 +9,6 @@ geometry:
   field metadata override: Data/fieldmetadata/gfs-restart.yaml
 variable change tests:
   - variable change:
-      variable change name: Analysis2Model
-      input variables:
-      - ua
-      - va
-      - t
-      - ps
-      output variables:
-      - u
-      - v
-      - ua
-      - va
-      - delp
-      - t
-    state:
-      datetime: 2020-12-15T00:00:00Z
-      filetype: fms restart
-      datapath: Data/inputs/gfs_c12/bkg/
-      filename_core: 20201215.000000.fv_core.res.nc
-      filename_trcr: 20201215.000000.fv_tracer.res.nc
-      filename_sfcd: 20201215.000000.sfc_data.nc
-      filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
-      filename_cplr: 20201215.000000.coupler.res
-      state variables:
-      - ua
-      - va
-      - t
-      - ps
-    tolerance inverse: 1.0e1
-  - variable change:
       variable change name: Control2Analysis
       femps_iterations: 50
       femps_ngrids: 2

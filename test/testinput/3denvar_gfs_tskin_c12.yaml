@@ -143,9 +143,6 @@ cost function:
         action:
           name: assign error
           error function:
-            name: GsiFinalObsError/windEastward
-            name: GsiFinalObsError/windNorthward
-            name: GsiFinalObsError/airTemperature
             name: GsiFinalObsError/specificHumidity
       - filter: Perform Action
         filter variables:

@@ -40,7 +40,7 @@ public fv3jedi_io_fms
 integer, parameter :: numfiles = 9
 
 type fv3jedi_io_fms
- logical :: is_restart  
+ logical :: is_restart
  logical :: input_is_date_templated
  character(len=128) :: datapath
  character(len=128) :: filename_nonrestart ! For non-restarts
@@ -122,7 +122,7 @@ else
 endif
 
 if ( self%is_restart ) then
-   
+
    !Set default filenames
    !---------------------
    self%filenames_conf(self%index_core) = 'fv_core.res.nc'
@@ -212,7 +212,7 @@ else
    ! Filename
    ! --------
    if ( conf%has("filename_nonrestart") ) then
-      call conf%get_or_die("filename_nonrestart", str)      
+      call conf%get_or_die("filename_nonrestart", str)
       if (len(str) > 128) then
          call abor1_ftn('fv3jedi_io_fms_mod.create: filename_nonrestart too long, max FMS char length= 128')
       end if
@@ -353,7 +353,7 @@ if ( self%is_restart ) then
 else
    ! Config filename to filename
    self%filename_nonrestart = trim(self%filename_nonrestart_conf)
-   
+
    ! Swap out datetime templates if needed
    if (index(self%filename_nonrestart,"%yyyy") > 0) &
         self%filename_nonrestart = replace_text(self%filename_nonrestart,'%yyyy',yyyy)
@@ -368,7 +368,7 @@ else
    if (index(self%filename_nonrestart,"%ss"  ) > 0) &
         self%filename_nonrestart = replace_text(self%filename_nonrestart,'%ss'  ,ss  )
 end if
-   
+
 end subroutine setup_date
 
 ! --------------------------------------------------------------------------------------------------
@@ -426,7 +426,7 @@ type(fv3jedi_field),  intent(inout) :: fields(:)
 
 type(FmsNetcdfDomainFile_t) :: fileobj(numfiles)
 logical :: rstflag(numfiles)
-integer :: n, indexrst, position, var, idrst
+integer :: n, indexrst, var, idrst
 
 logical :: havedelp
 integer :: indexof_ps, indexof_delp
@@ -458,14 +458,6 @@ do var = 1,size(fields)
     fields(indexof_ps)%io_name = trim(fmd%io_name)
   endif
 
-  ! Convert fv3jedi position to fms position 
-  position = center
-  if (fields(var)%horizontal_stagger_location == 'northsouth') then
-    position = north
-  elseif (fields(var)%horizontal_stagger_location == 'eastwest') then
-    position = east
-  endif
-
   ! Get file to use
   call get_io_file(self, fields(var), indexrst)
 
@@ -484,7 +476,7 @@ do var = 1,size(fields)
 
   ! Register restart field
   call fv3jedi_register_field(fileobj(indexrst), trim(fields(var)%io_name), fields(var)%array, &
-                              position, trim(fields(var)%long_name), trim(fields(var)%units), .true.)
+                              center, trim(fields(var)%long_name), trim(fields(var)%units), .true.)
 enddo
 
 ! Loop over files and read fields
@@ -522,25 +514,17 @@ subroutine read_nonrestart_fields(self, fields)
 type(fv3jedi_io_fms), intent(inout) :: self
 type(fv3jedi_field),  intent(inout) :: fields(:)
 
-integer                     :: var, position
+integer                     :: var
 type(FmsNetcdfDomainFile_t) :: fileobj
 
 ! Open file for reading
 if ( open_file(fileobj, trim(self%datapath)//'/'//trim(self%filename_nonrestart), 'read', self%domain) ) then
    ! Loop through fields
    do var = 1,size(fields)
-      ! Convert fv3jedi position to fms position 
-      position = center
-      if (fields(var)%horizontal_stagger_location == 'northsouth') then
-         position = north
-      elseif (fields(var)%horizontal_stagger_location == 'eastwest') then
-         position = east
-      endif
-
       ! Register field
       call fv3jedi_register_field(fileobj, trim(fields(var)%io_name), fields(var)%array, &
-                                  position, trim(fields(var)%long_name), trim(fields(var)%units), .false.)
-      
+                                  center, trim(fields(var)%long_name), trim(fields(var)%units), .false.)
+
       ! Read field
       call read_data(fileobj, trim(fields(var)%io_name), fields(var)%array)
    end do
@@ -564,7 +548,7 @@ type(fv3jedi_field),  intent(in)    :: fields(:)     !< Fields to be written
 type(datetime),       intent(in)    :: vdate         !< DateTime
 
 logical :: rstflag(numfiles)
-integer :: n, indexrst, position, var, idrst, date(6)
+integer :: n, indexrst, var, idrst, date(6)
 integer :: idate, isecs
 type(FmsNetcdfDomainFile_t) :: fileobj(numfiles)
 character(len=64)  :: datefile
@@ -606,17 +590,9 @@ rstflag(:) = .false.
 ! ------------------------------------------------
 do var = 1,size(fields)
 
-  ! Convert fv3jedi position to fms position 
-  position = center
-  if (fields(var)%horizontal_stagger_location == 'northsouth') then
-    position = north
-  elseif (fields(var)%horizontal_stagger_location == 'eastwest') then
-    position = east
-  endif
-   
   ! Get file to use
   call get_io_file(self, fields(var), indexrst)
-  
+
   ! Flag to read this restart
   if ( .not. rstflag(indexrst) ) then
      if ( open_file(fileobj(indexrst), &
@@ -632,7 +608,7 @@ do var = 1,size(fields)
 
   ! Register restart field
   call fv3jedi_register_field(fileobj(indexrst), trim(fields(var)%io_name), fields(var)%array, &
-                              position, trim(fields(var)%long_name), trim(fields(var)%units), .true.)
+                              center, trim(fields(var)%long_name), trim(fields(var)%units), .true.)
 enddo
 
 ! Loop over files and write fields
@@ -665,7 +641,7 @@ subroutine write_nonrestart_all(self, fields)
 type(fv3jedi_io_fms), intent(inout) :: self
 type(fv3jedi_field),  intent(in)    :: fields(:)
 
-integer                     :: var, n, position
+integer                     :: var, n
 type(FmsNetcdfDomainFile_t) :: fileobj
 logical                     :: write_field
 
@@ -688,17 +664,9 @@ if ( open_file(fileobj, trim(self%datapath)//'/'//trim(self%filename_nonrestart)
       end if
 
       if ( write_field ) then
-         ! Convert fv3jedi position to fms position 
-         position = center
-         if (fields(var)%horizontal_stagger_location == 'northsouth') then
-            position = north
-         elseif (fields(var)%horizontal_stagger_location == 'eastwest') then
-            position = east
-         endif
-
          ! Register field
          call fv3jedi_register_field(fileobj, trim(fields(var)%io_name), fields(var)%array, &
-                                     position, trim(fields(var)%long_name), trim(fields(var)%units), .false.)
+                                     center, trim(fields(var)%long_name), trim(fields(var)%units), .false.)
 
          ! Write field
          call write_data(fileobj, trim(fields(var)%io_name), fields(var)%array)
@@ -712,7 +680,7 @@ else
                   // trim(self%datapath)//'/'//trim(self%filename_nonrestart) // &
                   ' could not be opened')
 end if
-   
+
 end subroutine write_nonrestart_all
 
 ! --------------------------------------------------------------------------------------------------
@@ -736,7 +704,7 @@ subroutine fv3jedi_register_field(fileobj, io_name, array, position, long_name, 
      ndims = get_variable_num_dimensions(fileobj, trim(io_name))
      allocate(dim_names(ndims))
      call get_variable_dimension_names(fileobj, trim(io_name), dim_names)
-     
+
      ! Register x-axis
      if ( .not. is_dimension_registered(fileobj, trim(dim_names(1))) ) then
         if ( position /= north ) then
@@ -760,10 +728,10 @@ subroutine fv3jedi_register_field(fileobj, io_name, array, position, long_name, 
         call register_restart_field(fileobj, trim(io_name), array)
      end if
   else ! For write
-     
+
      ! Register x-axis
      ! ---------------
-     
+
      is_registered = .false.
      do idim = 1,fileobj%nx
         if ( fileobj%xdims(idim)%pos == position ) then
@@ -772,7 +740,7 @@ subroutine fv3jedi_register_field(fileobj, io_name, array, position, long_name, 
            exit
         end if
      end do
-     
+
      if ( .not. is_registered ) then
         write (xdim_name,'(A,I0)') 'xaxis_', fileobj%nx+1
         
@@ -787,10 +755,10 @@ subroutine fv3jedi_register_field(fileobj, io_name, array, position, long_name, 
         call register_variable_attribute(fileobj, trim(xdim_name), 'units', 'none', str_len=len('none'))
         call register_variable_attribute(fileobj, trim(xdim_name), 'cartesian_axis', 'X', str_len=len('X'))
      end if
-        
+
      ! Register y-axis
      ! ---------------
-     
+
      is_registered = .false.
      do idim = 1,fileobj%ny
         if ( fileobj%ydims(idim)%pos == position ) then
@@ -799,7 +767,7 @@ subroutine fv3jedi_register_field(fileobj, io_name, array, position, long_name, 
            exit
         end if
      end do
-     
+
      if ( .not. is_registered ) then
         write (ydim_name,'(A,I0)') 'yaxis_', fileobj%ny+1
         
@@ -821,7 +789,7 @@ subroutine fv3jedi_register_field(fileobj, io_name, array, position, long_name, 
      ! Count length of third array dimension
      array_shape = shape(array)
      nz_field = array_shape(3)
-     
+
      if ( nz_field > 1 ) then
         ndims = get_num_dimensions(fileobj)
         allocate(dim_names(ndims))
@@ -837,7 +805,7 @@ subroutine fv3jedi_register_field(fileobj, io_name, array, position, long_name, 
                  zdim_name = trim(dim_names(idim))
                  exit
               end if
-           
+
               num_zaxes = num_zaxes + 1
            end if
         end do
@@ -891,7 +859,7 @@ subroutine fv3jedi_register_field(fileobj, io_name, array, position, long_name, 
      end if
 
   end if
-  
+
 end subroutine fv3jedi_register_field
 
 ! --------------------------------------------------------------------------------------------------

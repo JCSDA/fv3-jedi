@@ -3,11 +3,9 @@ CostJo   : Nonlinear Jo(GnssroBndROPP1D) = 7.6945817814388931e+01, nobs = 132, J
 CostJo   : Nonlinear Jo(GnssroBndROPP2D) = 7.8826487758438788e+01, nobs = 132, Jo/n = 5.9717036180635441e-01, err = 8.8915342725866394e-04
 CostFunction: Nonlinear J = 1.5577230557282772e+02
 DRPCGMinimizer: reduction in residual norm = 1.2670623867089520e-01
-CostFunction::addIncrement: Analysis: 
+CostFunction::addIncrement: Analysis:
 ----------------------------------------------------------------------------------------------------
-State print | number of fields = 23 | cube sphere face size: C12
-u_component_of_native_D_grid_wind            | Min:-1.3264378075615122e+02 Max:+1.2905970568873809e+02 RMS:+1.5886323431475313e+01
-v_component_of_native_D_grid_wind            | Min:-1.2536309808331181e+02 Max:+1.1867617390452405e+02 RMS:+1.7204080078769564e+01
+State print | number of fields = 21 | cube sphere face size: C12
 eastward_wind                                | Min:-1.0808005056665989e+02 Max:+1.5254285196689409e+02 RMS:+2.2156165197729838e+01
 northward_wind                               | Min:-1.0151447580910654e+02 Max:+1.0656765405741548e+02 RMS:+1.0393969797400093e+01
 air_temperature                              | Min:+1.5865009406699366e+02 Max:+3.0653885708773061e+02 RMS:+2.4962364131183074e+02

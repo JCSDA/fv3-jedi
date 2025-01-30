@@ -242,7 +242,11 @@ type(fv3jedi_state), intent(inout) :: state
 integer :: n, rc
 
 !Convert JEDI state to GEOS state
-!call state_to_geos( state, self )
+!call state_to_geos( state, self )  ! Note that this should not be here. It is not necessary to
+                                    ! go from JEDI to GEOS each time step as JEDI does not adjust
+                                    ! anything between time steps. Move to init and think about
+                                    ! what it should really be doing, especially as it relates to
+                                    ! staggered and non-staggered winds.
 
 !Cycle GEOS through this time step of JEDI
 do n = 1,self%GEOSsubsteps
@@ -330,15 +334,15 @@ do i = 1, num_items
 
     ! The below need to be listed in Cap.rc as e.g.
     ! CAP_EXPORTS:
-    ! U_DGRID,DYN
+    ! UA,DYN
     ! Q,MOIST
     ! ::
 
     ! DYN
-    case ("U_DGRID")
-      short_name = 'ud'
-    case ("V_DGRID")
-      short_name = 'vd'
+    case ("UA")
+      short_name = 'ua'
+    case ("VA")
+      short_name = 'va'
     case ("PT")
       short_name = 'pt'
     case ("PE")

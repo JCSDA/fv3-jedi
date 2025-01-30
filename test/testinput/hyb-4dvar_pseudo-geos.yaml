@@ -3,7 +3,7 @@ cost function:
   - eastward_wind
   - northward_wind
   - air_temperature
-  - air_pressure_at_surface
+  - air_pressure_thickness
   - water_vapor_mixing_ratio_wrt_moist_air
   - cloud_liquid_ice
   - cloud_liquid_water
@@ -17,13 +17,10 @@ cost function:
     - geos.bkg.%yyyy%mm%dd_%hh%MM%ssz.nc4
     - geos.bkg.crtmsrf.%yyyy%mm%dd_%hh%MM%ssz.nc4
     state variables:
-    - u
-    - v
     - ua
     - va
     - t
     - delp
-    - ps
     - q
     - qi
     - ql
@@ -99,6 +96,18 @@ cost function:
             - model:
                 variables:
                 - air_pressure_at_surface
+        linear variable change:
+          linear variable change name: Control2Analysis
+          input variables:
+          - eastward_wind
+          - northward_wind
+          - air_temperature
+          - air_pressure_at_surface
+          - water_vapor_mixing_ratio_wrt_moist_air
+          - cloud_liquid_ice
+          - cloud_liquid_water
+          - mole_fraction_of_ozone_in_air
+          output variables: *anavars
       weight:
         value: 0.1
     - covariance:
@@ -144,6 +153,18 @@ cost function:
               drivers:
                 multivariate strategy: duplicated
                 read local nicas: true
+        linear variable change:
+          linear variable change name: Control2Analysis
+          input variables:
+          - eastward_wind
+          - northward_wind
+          - air_temperature
+          - air_pressure_at_surface
+          - water_vapor_mixing_ratio_wrt_moist_air
+          - cloud_liquid_ice
+          - cloud_liquid_water
+          - mole_fraction_of_ozone_in_air
+          output variables: *anavars
       weight:
          value: 0.9
   observations:
@@ -327,8 +348,8 @@ variational:
       linear model namelist filename: Data/fv3files/inputpert_4dvar.nml
       tstep: PT1H
       tlm variables:
-      - u
-      - v
+      - ua
+      - va
       - t
       - delp
       - q
@@ -340,8 +361,8 @@ variational:
       lm_do_mst: 1
       trajectory:
         model variables:
-        - u
-        - v
+        - ua
+        - va
         - t
         - delp
         - q

@@ -16,8 +16,6 @@ output geometry:
 variable change:
   variable change name: Model2GeoVaLs
   input variables: &vars
-  - u
-  - v
   - ua
   - va
   - T

@@ -15,8 +15,6 @@ model:
   lm_do_trb: 0
   lm_do_mst: 0
   model variables:
-  - u
-  - v
   - ua
   - va
   - T
@@ -26,18 +24,20 @@ model:
   - liq_wat
   - o3mr
   - phis
+  datapath: Data/inputs/gfs_c12/bkg/
+  filename_core: 20201214.210000.fv_core.res.nc
+  filename_core_out: checkpoint.model_fv3lm.fv_core.res.nc
+  datapath_out: Data/forecast
 model aux control: null
 model aux error: null
 model test:
   forecast length: PT1H
-  final norm: 354.70206401769235
+  final norm: 396.44254865600925
   tolerance: 1.0e-4
 initial condition:
   datetime: 2020-12-14T21:00:00Z
   filetype: fms restart
   state variables:
-  - u
-  - v
   - ua
   - va
   - T

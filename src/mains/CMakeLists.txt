@@ -28,7 +28,7 @@ ecbuild_add_executable( TARGET  fv3jedi_converttostructuredgrid.x
 
 ecbuild_add_executable( TARGET  fv3jedi_diffstates.x
                         SOURCES fv3jediDiffStates.cc
-                        LIBS	${FV3JEDI_LIBRARIES}  
+                        LIBS	${FV3JEDI_LIBRARIES}
                       )
 
 ecbuild_add_executable( TARGET  fv3jedi_eda.x
@@ -114,7 +114,31 @@ ecbuild_add_executable( TARGET  fv3jedi_processperts.x
                         SOURCES fv3jediProcessPerts.cc
                         LIBS    ${FV3JEDI_LIBRARIES}
                                 saber
-                      )	      
+                      )
+
+if( FV3_FORECAST_MODEL MATCHES "FV3CORE" )
+
+  ecbuild_add_executable( TARGET  fv3jedi_cold_to_warm.x
+                          SOURCES fv3jediColdToWarm.f90
+                          LIBS	${FV3JEDI_LIBRARIES}
+                        )
+
+  ecbuild_add_executable( TARGET  fv3jedi_a_to_d.x
+                          SOURCES fv3jediAtoD.f90
+                          LIBS	${FV3JEDI_LIBRARIES}
+                        )
+
+  ecbuild_add_executable( TARGET  fv3jedi_d_to_a.x
+                          SOURCES fv3jediDtoA.f90
+                          LIBS	${FV3JEDI_LIBRARIES}
+                        )
+
+  ecbuild_add_executable( TARGET  fv3jedi_geos_to_fms.x
+                          SOURCES fv3jediGeosToFms.f90
+                          LIBS	${FV3JEDI_LIBRARIES}
+                        )
+
+endif()
 
 # Plotting utility
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/fv3jedi_plot_field.py ${CMAKE_BINARY_DIR}/bin/fv3jedi_plot_field.x COPYONLY)

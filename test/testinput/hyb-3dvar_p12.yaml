@@ -30,8 +30,6 @@ cost function:
     datapath: Data/
     prefix: 20201215.000000.c24
     state variables:
-    - u
-    - v
     - ua
     - va
     - T

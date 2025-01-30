@@ -8,9 +8,7 @@ CostFunction: Nonlinear J = 5.9954489754655269e+03
 DRPCGMinimizer: reduction in residual norm = 2.7316785398676602e-01
 CostFunction::addIncrement: Analysis: 
 ----------------------------------------------------------------------------------------------------
-State print | number of fields = 23 | cube sphere face size: C24
-u_component_of_native_D_grid_wind            | Min:-1.3096867703135200e+02 Max:+1.3576913304841429e+02 RMS:+1.5955140193115662e+01
-v_component_of_native_D_grid_wind            | Min:-1.3394781560449817e+02 Max:+1.1895000751794558e+02 RMS:+1.6938339710412283e+01
+State print | number of fields = 21 | cube sphere face size: C24
 eastward_wind                                | Min:-1.0473489029735822e+02 Max:+1.4034660675403819e+02 RMS:+2.1345784506437067e+01
 northward_wind                               | Min:-9.2575441244400480e+01 Max:+1.0100100177055781e+02 RMS:+9.3518640144416754e+00
 air_temperature                              | Min:+1.6035734227974962e+02 Max:+3.0542230033915183e+02 RMS:+2.4961068071838568e+02
@@ -60,9 +58,7 @@ CostFunction: Nonlinear J = 5745.2669567074590304
 DRPCGMinimizer: reduction in residual norm = 0.6170718085500797
 CostFunction::addIncrement: Analysis: 
 ----------------------------------------------------------------------------------------------------
-State print | number of fields = 23 | cube sphere face size: C24
-u_component_of_native_D_grid_wind            | Min:-1.3096867669729869e+02 Max:+1.3576913279958725e+02 RMS:+1.5955140197181814e+01
-v_component_of_native_D_grid_wind            | Min:-1.3394781559806933e+02 Max:+1.1895000651697802e+02 RMS:+1.6938339696349317e+01
+State print | number of fields = 21 | cube sphere face size: C24
 eastward_wind                                | Min:-1.0473489022996357e+02 Max:+1.4034660646216412e+02 RMS:+2.1345784495737650e+01
 northward_wind                               | Min:-9.2575441144941706e+01 Max:+1.0100100161171906e+02 RMS:+9.3518640113143547e+00
 air_temperature                              | Min:+1.6035734231973959e+02 Max:+3.0542230035567985e+02 RMS:+2.4961068075637746e+02

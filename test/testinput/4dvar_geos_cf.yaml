@@ -35,8 +35,6 @@ cost function:
     datapath: Data/inputs/geos_c12
     filename: geoscf_jedi.20210805_0600z.nc4
     state variables:
-    - u
-    - v
     - ua
     - va
     - T
@@ -102,8 +100,6 @@ variational:
       linear model namelist filename: Data/fv3files/inputpert_4dvar.nml
       tstep: PT3H
       tlm variables: &modelvars
-      - u
-      - v
       - ua
       - va
       - T

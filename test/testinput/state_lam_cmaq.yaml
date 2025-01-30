@@ -16,8 +16,8 @@ state test:
     filename_sfcw: 20200903.180000.fv_srf_wnd.res.tile1.nc
     filename_cplr: 20200903.180000.coupler.res
     state variables:
-    - u
-    - v
+    - ua
+    - va
     - T
     - delp
     - ps
@@ -30,7 +30,7 @@ state test:
     - volume_mixing_ratio_of_o3
     - volume_mixing_ratio_of_co
   date: 2020-09-03T18:00:00Z
-  norm file: 5537954.3477927418
+  norm file: 4000442.2125598933
   tolerance: 1.0e-08
   construct to variables:
   - eastward_wind

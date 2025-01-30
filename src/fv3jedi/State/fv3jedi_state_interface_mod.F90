@@ -322,42 +322,6 @@ end subroutine fv3jedi_state_from_fieldset_c
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine fv3jedi_state_synchronize_interface_fields_c(c_key_self, c_key_geom) &
- & bind (c,name='fv3jedi_state_synchronize_interface_fields_f90')
-
-implicit none
-integer(c_int), intent(in) :: c_key_self
-integer(c_int), intent(in) :: c_key_geom
-
-type(fv3jedi_state), pointer :: self
-type(fv3jedi_geom),  pointer :: geom
-
-call fv3jedi_state_registry%get(c_key_self, self)
-call fv3jedi_geom_registry%get(c_key_geom, geom)
-
-call self%synchronize_interface_fields(geom)
-
-end subroutine fv3jedi_state_synchronize_interface_fields_c
-
-! --------------------------------------------------------------------------------------------------
-
-subroutine fv3jedi_state_set_interface_fields_outofdate_c(c_key_self, c_outofdate) &
- & bind (c,name='fv3jedi_state_set_interface_fields_outofdate_f90')
-
-implicit none
-integer(c_int), intent(in) :: c_key_self
-logical(c_bool), intent(in) :: c_outofdate
-
-type(fv3jedi_state), pointer :: self
-
-call fv3jedi_state_registry%get(c_key_self, self)
-
-self%interface_fields_are_out_of_date = c_outofdate
-
-end subroutine fv3jedi_state_set_interface_fields_outofdate_c
-
-! --------------------------------------------------------------------------------------------------
-
 subroutine fv3jedi_state_sersize_c(c_key_self,inc_size) bind(c,name='fv3jedi_state_sersize_f90')
 
 implicit none

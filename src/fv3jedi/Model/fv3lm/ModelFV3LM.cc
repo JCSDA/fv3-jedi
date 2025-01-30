@@ -34,6 +34,14 @@ class ModelFV3LMParameters : public oops::Parameters {
   oops::RequiredParameter<oops::Variables> modelVariables{ "model variables", this};
   oops::RequiredParameter<util::Duration> tstep{ "tstep", this};
 
+  oops::Parameter<bool> atod{ "initialize model from A-Grid winds", false, this};
+
+  oops::OptionalParameter<std::string> datapath{ "datapath", this};
+  oops::OptionalParameter<std::string> filenameCore{ "filename_core", this};
+
+  oops::OptionalParameter<std::string> datapath_out{ "datapath_out", this};
+  oops::OptionalParameter<std::string> filenameCoreOut{ "filename_core_out", this};
+
   oops::RequiredParameter<int> lm_do_dyn{ "lm_do_dyn", this};
   oops::RequiredParameter<int> lm_do_trb{ "lm_do_trb", this};
   oops::RequiredParameter<int> lm_do_mst{ "lm_do_mst", this};
@@ -46,20 +54,13 @@ class ModelFV3LMParameters : public oops::Parameters {
 static oops::interface::ModelMaker<Traits, ModelFV3LM> makermodel_("FV3LM");
 // -------------------------------------------------------------------------------------------------
 ModelFV3LM::ModelFV3LM(const Geometry & resol, const eckit::Configuration & config)
-  : keyConfig_(0), tstep_(0), geom_(resol), vars_(), an2model_(), finalVars_()
+  : keyConfig_(0), tstep_(0), geom_(resol), vars_()
 {
   oops::Log::trace() << "ModelFV3LM::ModelFV3LM starting" << std::endl;
   ModelFV3LMParameters params;
   params.deserialize(config);
   vars_ = oops::Variables(geom_.fieldsMetaData().getLongNameFromAnyName(params.modelVariables));
   tstep_ = util::Duration(config.getString("tstep"));
-  fv3jedi_fv3lm_create_f90(config, geom_.toFortran(), keyConfig_);
-
-  // This code prevents having to put VarChange params in yaml, since there is no actual user option
-  eckit::LocalConfiguration varChangeConfig;
-  varChangeConfig.set("variable change name", "Analysis2Model");
-  an2model_.reset(new VariableChange(varChangeConfig, resol));
-
   fv3jedi_fv3lm_create_f90(params.toConfiguration(), geom_.toFortran(), keyConfig_);
   oops::Log::trace() << "ModelFV3LM::ModelFV3LM done" << std::endl;
 }
@@ -72,11 +73,6 @@ ModelFV3LM::~ModelFV3LM() {
 // -------------------------------------------------------------------------------------------------
 void ModelFV3LM::initialize(State & xx) const {
   oops::Log::trace() << "ModelFV3LM::initialize starting" << std::endl;
-  ASSERT_MSG(!finalVars_, "finalVars_ should always be null when calling initialize");
-  if (!(vars_ <= xx.variablesIncludingInterfaceFields())) {
-    finalVars_.reset(new oops::Variables(xx.variablesIncludingInterfaceFields()));
-    an2model_->changeVar(xx, vars_);
-  }
   fv3jedi_fv3lm_initialize_f90(keyConfig_, xx.toFortran());
   oops::Log::trace() << "ModelFV3LM::initialize done" << std::endl;
 }
@@ -91,11 +87,6 @@ void ModelFV3LM::step(State & xx, const ModelBias &) const {
 void ModelFV3LM::finalize(State & xx) const {
   oops::Log::trace() << "ModelFV3LM::finalize starting" << std::endl;
   fv3jedi_fv3lm_finalize_f90(keyConfig_, xx.toFortran());
-  if (finalVars_) {
-    const bool force_varchange = true;
-    an2model_->changeVarInverse(xx, *finalVars_, force_varchange);
-    finalVars_.reset(nullptr);  // reset to null for next initialize
-  }
   oops::Log::trace() << "ModelFV3LM::finalize done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------

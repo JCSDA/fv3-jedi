@@ -1,0 +1,43 @@
+fms:
+  namelist filename: Data/fv3files/fmsmpp.nml
+  field table filename: Data/fv3files/field_table_cold
+  stackmax: 4000000
+geometry:
+  akbk: Data/fv3files/akbk127.nc4
+  hydrostatic: false
+  io_layout:
+  - 1
+  - 1
+  layout:
+  - 1
+  - 1
+  ntiles: 6
+  npx: 13
+  npy: 13
+  npz: 127
+  nwat: 6
+  use internal namelist: false
+  data source fv3gfs: false
+input:
+  datapath: Data/inputs/gfs_c12/
+  filename_cold: cold/20200101.000000.gfs_data.nc
+  filename_orog: oro/C12_oro_data.nc
+output:
+  datetime: '2020-01-01T00:00:00Z'
+  datapath: Data/convertstate/
+  prefix: 20200101.000000.cold2fv3.
+remap:
+  input is cold starts: true
+  npx: 13
+  npy: 13
+  npz: 127
+  nwat: 6
+  hydrostatic: false
+  data source fv3gfs: false
+testing:
+  rms_u: 18.0228814219275
+  rms_v: 18.6277693772519
+  rms_t: 249.787094492139
+  rms_delp: 956.873630430463
+  rms_phis: 527.931276228465
+  tol: 1e-4

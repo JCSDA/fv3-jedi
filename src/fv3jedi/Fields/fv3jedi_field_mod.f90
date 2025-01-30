@@ -47,8 +47,6 @@ type :: fv3jedi_field
  character(len=field_clen) :: units                           ! Field units
  character(len=field_clen) :: kind                            ! Data kind, real, integer etc (always allocate real data)
  logical                   :: tracer                          ! Whether field is tracer or not
- logical                   :: interface_specific              ! Whether field is an interface-specific field
- character(len=field_clen) :: horizontal_stagger_location     ! Stagger location in horizontal
  character(len=field_clen) :: space                           ! Vector, magnitude, direction
  character(len=field_clen) :: io_name                         ! Name used for IO
  character(len=field_clen) :: io_file                         ! File used for IO
@@ -87,8 +85,6 @@ self%short_name = fmd%short_name
 self%units = fmd%units
 self%kind = fmd%kind
 self%tracer = fmd%tracer
-self%interface_specific = fmd%interface_specific
-self%horizontal_stagger_location = fmd%horizontal_stagger_location
 self%npz = fmd%levels
 self%space = fmd%space
 self%io_name = fmd%io_name
@@ -100,13 +96,7 @@ self%interpolation_source_point_mask = fmd%interpolation_source_point_mask
 ! -----------------------------
 if(.not.self%lalloc) then
 
-  if (trim(self%horizontal_stagger_location) == 'center') then
-    allocate(self%array(self%isc:self%iec,self%jsc:self%jec,1:self%npz))
-  elseif (trim(self%horizontal_stagger_location) == 'northsouth') then
-    allocate(self%array(self%isc:self%iec,self%jsc:self%jec+1,1:self%npz))
-  elseif (trim(self%horizontal_stagger_location) == 'eastwest') then
-    allocate(self%array(self%isc:self%iec+1,self%jsc:self%jec,1:self%npz))
-  endif
+  allocate(self%array(self%isc:self%iec,self%jsc:self%jec,1:self%npz))
 
   ! Initialize to zero and set allocated
   self%array = 0.0_kind_real
@@ -358,14 +348,8 @@ type(fv3jedi_field), intent(in) :: fields2(:)
 character(len=*),    intent(in) :: calling_method
 
 integer :: var
-integer :: ninterface_specific
 
-ninterface_specific = 0
-do var = 1,size(fields1)
-  if (fields1(var)%interface_specific) ninterface_specific = ninterface_specific + 1
-end do
-
-if (size(fields2) .ne. size(fields1) - ninterface_specific) then
+if (size(fields2) .ne. size(fields1)) then
   if (fields1(1)%comm%rank() == 0) then
     print*, 'fv3jedi.fields checkvalidsubset inconsistent number of fields'
   end if
@@ -374,26 +358,14 @@ if (size(fields2) .ne. size(fields1) - ninterface_specific) then
 endif
 
 do var = 1,size(fields1)
-  if (fields1(var)%interface_specific) then
-    ! check interface-specific field is NOT in fields2
-    if (hasfield(fields2, fields1(var)%short_name)) then
-      if (fields1(1)%comm%rank() == 0) then
-        print*, 'fv3jedi.fields checkvalidsubset found unexpected interface-specific field in RHS'
-      end if
-      call print_fields_debug(fields1, fields2)
-      call abor1_ftn(trim(calling_method)//"(checkvalidsubset): field "//trim(fields1(var)%short_name)//&
-                     " is an interface-specific field that should not be in RHS")
+  ! check generic field is in fields2
+  if (.not.hasfield(fields2, fields1(var)%short_name)) then
+    if (fields1(1)%comm%rank() == 0) then
+      print*, 'fv3jedi.fields checkvalidsubset missing an expected field in RHS'
     end if
-  else
-    ! check generic field is in fields2
-    if (.not.hasfield(fields2, fields1(var)%short_name)) then
-      if (fields1(1)%comm%rank() == 0) then
-        print*, 'fv3jedi.fields checkvalidsubset missing an expected field in RHS'
-      end if
-      call print_fields_debug(fields1, fields2)
-      call abor1_ftn(trim(calling_method)//"(checkvalidsubset): field "//trim(fields1(var)%short_name)//&
-                                             " not in RHS")
-    end if
+    call print_fields_debug(fields1, fields2)
+    call abor1_ftn(trim(calling_method)//"(checkvalidsubset): field "//trim(fields1(var)%short_name)//&
+                                            " not in RHS")
   end if
 enddo
 
