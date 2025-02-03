@@ -110,6 +110,7 @@ ln -svf ${INPUTDATA_ROOT}/FV3_input_data48/global_snoclim.1.875.grb .
 ${SED} -i 's/quilting:                .true./quilting:                .false./g' model_configure
 ${SED} -i 's/start_day:               22/start_day:               23/g' model_configure
 ${SED} -i '/quilting_restart/d' model_configure
+${SED} -i 's/6 -1/24 -1/g' model_configure
 
 #change ufs.configure to use only 6 cores (no write component)
 ${SED} -i 's/0 7/0 5/g' ufs.configure
@@ -131,3 +132,4 @@ ${SED} -i '/&fms_nml/i \
 
 # Use C48 instead of C96 everywhere
 ${SED} -i 's/C96/C48/g' input.nml
+rm -rf RESTART

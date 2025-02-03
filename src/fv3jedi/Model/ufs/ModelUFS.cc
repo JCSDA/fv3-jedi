@@ -31,15 +31,14 @@ ModelUFS::ModelUFS(const Geometry & resol, const eckit::Configuration & modelCon
     vars_(geom_.fieldsMetaData().getLongNameFromAnyName(oops::Variables(modelConf,
                                                                         "model variables")))
 {
-  char tmpdir_[10000];
   const eckit::LocalConfiguration confcopy(modelConf);
   oops::Log::trace() << "ModelUFS::ModelUFS starting" << std::endl;
-  getcwd(tmpdir_, 10000);
+  getcwd(topdir_, 10000);
   strcpy(ufsdir_, modelConf.getString("ufs_run_directory").c_str());
   chdir(ufsdir_);
   fv3jedi_ufs_create_f90(keyConfig_, modelConf, geom_.toFortran());
   oops::Log::trace() << "ModelUFS::ModelUFS done" << std::endl;
-  chdir(tmpdir_);
+  chdir(topdir_);
 }
 // -------------------------------------------------------------------------------------------------
 ModelUFS::~ModelUFS() {
@@ -78,12 +77,14 @@ void ModelUFS::step(State & xx, const ModelBias &) const
   util::DateTime * dtp2 = &xx.validTime();
   fv3jedi_ufs_step_f90(keyConfig_, xx.toFortran(), &dtp1, &dtp2);
   oops::Log::trace() << "ModelUFS::step done" << std::endl;
+  chdir(topdir_);
 }
 // -------------------------------------------------------------------------------------------------
 void ModelUFS::finalize(State & xx) const {
   oops::Log::trace() << "ModelUFS::finalize starting" << std::endl;
   fv3jedi_ufs_finalize_f90(keyConfig_, xx.toFortran());
   oops::Log::trace() << "ModelUFS::finalize done" << std::endl;
+  chdir(topdir_);
 }
 // -------------------------------------------------------------------------------------------------
 int ModelUFS::saveTrajectory(State & xx, const ModelBias &) const {

@@ -72,7 +72,6 @@ call fv3jedi_state_registry%add(c_key_self)
 call fv3jedi_state_registry%get(c_key_self,self)
 
 vars = oops_variables(c_vars)
-
 ! Create Fortran pointer to datetime
 call c_f_datetime(c_time, self%time)
 
@@ -361,6 +360,53 @@ call self%serialize(c_vsize,c_vect_inc)
 
 end subroutine fv3jedi_state_serialize_c
 
+! --------------------------------------------------------------------------------------------------
+subroutine fv3jedi_state_deserializeSection_c(c_key_self,c_vsize,c_vect_inc,isc,iec,jsc,jec,isc_sg,iec_sg,jsc_sg,jec_sg,local_ind) &
+           bind(c,name='fv3jedi_state_deserializeSection_f90')
+implicit none
+
+! Passed variables
+integer(c_int),intent(in) :: c_key_self           !< State
+integer(c_int),intent(in) :: c_vsize              !< Size
+real(c_double),intent(in) :: c_vect_inc(c_vsize) !< Vector
+integer(c_int),intent(in) :: isc                  !< Size
+integer(c_int),intent(in) :: iec                  !< Size
+integer(c_int),intent(in) :: jsc                  !< Size
+integer(c_int),intent(in) :: jec                  !< Size
+integer(c_int),intent(in) :: isc_sg               !< Size
+integer(c_int),intent(in) :: iec_sg               !< Size
+integer(c_int),intent(in) :: jsc_sg               !< Size
+integer(c_int),intent(in) :: jec_sg               !< Size
+integer(c_int),intent(inout) :: local_ind          !< Size
+
+type(fv3jedi_state),pointer :: self
+! Local variables
+integer :: ind, var, i, j, k
+
+call fv3jedi_state_registry%get(c_key_self, self)
+! Call Fortran
+
+! Initialize
+ind = 0
+! Copy
+do var = 1, self%nf
+  do k = 1,self%fields(var)%npz
+    do j = jsc,jec
+      do i = isc,iec
+        ind = ind + 1  ! need to update index in bigger array
+        if((i >= isc_sg) .and. (i <= iec_sg)) then  ! probably a faster way to do this. 
+          if((j >= jsc_sg) .and. (j <= jec_sg)) then   
+            self%fields(var)%array(i, j, k) = c_vect_inc(ind)
+            local_ind = local_ind + 1
+          endif
+        endif
+      enddo
+    enddo
+  enddo
+enddo
+local_ind = ind
+
+end subroutine fv3jedi_state_deserializeSection_c
 ! --------------------------------------------------------------------------------------------------
 
 subroutine fv3jedi_state_deserialize_c(c_key_self,c_vsize,c_vect_inc,c_index) &

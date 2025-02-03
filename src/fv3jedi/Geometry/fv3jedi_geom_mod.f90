@@ -25,6 +25,7 @@ use mpp_mod,                    only: mpp_exit, mpp_pe, mpp_npes, mpp_error, FAT
 use mpp_domains_mod,            only: domain2D, mpp_deallocate_domain, mpp_define_layout, &
                                       mpp_define_mosaic, mpp_define_io_domain, mpp_domains_exit, &
                                       mpp_domains_set_stack_size
+use ensemble_manager_mod,       only: get_ensemble_id,get_ensemble_size
 use field_manager_mod,          only: fm_string_len, field_manager_init
 
 ! fv3 uses
@@ -88,6 +89,7 @@ type :: fv3jedi_geom
   logical :: bounded_domain = .false.
   character(len=10) :: vertcoord_type
 
+  integer :: ensNum
   integer :: grid_type = 0
   logical :: dord4 = .true.
   type(atlas_functionspace) :: afunctionspace
@@ -611,11 +613,6 @@ deallocate(self%lon_us)
 call self%afunctionspace%final()
 call self%afunctionspace_for_bump%final()
 
-! Could finalize the fms routines. Possibly needs to be done only when key = 0
-!call fms_io_exit
-!call mpp_domains_exit
-!call mpp_exit
-
 end subroutine delete
 
 ! --------------------------------------------------------------------------------------------------
@@ -754,11 +751,12 @@ subroutine setup_domain(domain, nx, ny, ntiles, layout_in, io_layout, halo)
  integer, allocatable, dimension(:)   :: tile1, tile2
  integer, allocatable, dimension(:)   :: istart1, iend1, jstart1, jend1
  integer, allocatable, dimension(:)   :: istart2, iend2, jstart2, jend2
- integer, allocatable :: tile_id(:)
+ integer, allocatable :: tile_id(:), ensNum
  logical :: is_symmetry
 
   pe = mpp_pe()
   npes = mpp_npes()
+  ensNum = get_ensemble_id()
 
   if (mod(npes,ntiles) /= 0) then
      call mpp_error(NOTE, "setup_domain: npes can not be divided by ntiles")
@@ -795,9 +793,10 @@ subroutine setup_domain(domain, nx, ny, ntiles, layout_in, io_layout, halo)
   do n = 1, ntiles
      global_indices(:,n) = (/1,nx,1,ny/)
      layout2D(:,n)       = layout
-     pe_start(n)         = (n-1)*npes_per_tile
-     pe_end(n)           = n*npes_per_tile-1
+     pe_start(n)         = (n-1)*npes_per_tile + (ensNum -1) * 6 * npes_per_tile
+     pe_end(n)           = n*npes_per_tile-1 + (ensNum -1) * 6 * npes_per_tile
   enddo
+
   num_alloc = max(1, num_contact)
   ! this code copied from domain_decomp in fv_mp_mod.f90
   allocate(tile1(num_alloc), tile2(num_alloc) )

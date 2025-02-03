@@ -58,6 +58,7 @@ class ModelUFS: public oops::interface::ModelBase<Traits>,
   const Geometry geom_;
   const oops::Variables vars_;
   char ufsdir_[10000];
+  char topdir_[10000];
 };
 // -----------------------------------------------------------------------------
 

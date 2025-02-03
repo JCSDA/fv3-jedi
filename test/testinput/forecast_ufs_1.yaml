@@ -1,8 +1,8 @@
-forecast length: &fclength PT1H
+forecast length: &fclength PT6H
 geometry:
   fms initialization:
-    namelist filename: Data/ModelRunDirs/UFS_warmstart/input.nml
-    field table filename: Data/ModelRunDirs/UFS_warmstart/field_table
+    namelist filename: Data/ModelRunDirs/UFS_warmstart_1/input.nml
+    field table filename: Data/ModelRunDirs/UFS_warmstart_1/field_table
   akbk: Data/fv3files/akbk127.nc4
   layout:
   - 1
@@ -14,12 +14,13 @@ geometry:
   npy: 49
   npz: 127
   ntiles: 6
+  member_number: 1
   field metadata override: Data/fieldmetadata/ufs.yaml
 model:
   name: UFS
-  tstep: PT1H
+  tstep: PT6H
   forecast length: *fclength
-  ufs_run_directory: Data/ModelRunDirs/UFS_warmstart
+  ufs_run_directory: Data/ModelRunDirs/UFS_warmstart_1
   model variables:
   - ua
   - va
@@ -46,7 +47,7 @@ initial condition:
   datetime: 2021-03-23T06:00:00Z
   forecast length: *fclength
   filetype: fms restart
-  datapath: Data/ModelRunDirs/UFS_warmstart/INPUT
+  datapath: Data/ModelRunDirs/UFS_warmstart_1/INPUT
   filename_core: fv_core.res.nc
   filename_trcr: fv_tracer.res.nc
   filename_sfcd: sfc_data.nc

@@ -42,7 +42,7 @@ Geometry::Geometry(const eckit::Configuration & config, const eckit::mpi::Comm &
   }
 
   // Geometry constructor
-  fv3jedi_geom_setup_f90(keyGeom_, params.toConfiguration(), &comm_, nLevels_);
+  fv3jedi_geom_setup_f90(keyGeom_, params.toConfiguration(), &comm_, nLevels_, tileNum_);
 
   // Construct the field sets and add to Geometry
   fieldsMeta_.reset(new FieldsMetadata(params.fieldsMetadataParameters, nLevels_));

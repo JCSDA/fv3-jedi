@@ -25,7 +25,7 @@ module fv3jedi_ufs_mod
   use NUOPC
   use NUOPC_Driver
   use UFSDriver, only: esmSS => UFSDriver_SS
-  use mpp_mod,            only: read_input_nml,mpp_pe
+  use mpp_mod,            only: read_input_nml,mpp_pe,mpp_set_current_pelist
 
   implicit none
   private
@@ -459,7 +459,7 @@ contains
     esmf_err_abort(rc)
 
     call ESMF_LogWrite("Exit "//subname, ESMF_LOGMSG_INFO)
-!   call self%comm%barrier()
+    call mpp_set_current_pelist()
 
   end subroutine finalize
 

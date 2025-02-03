@@ -55,6 +55,7 @@ class GeometryParameters : public oops::Parameters {
 
  public:
   oops::OptionalParameter<std::string> akbk{ "akbk", this};
+  oops::OptionalParameter<std::string> ensMember{ "member_number", this};
   oops::Parameter<bool> doSchmidt{ "do_schmidt", false, this};
   oops::OptionalParameter<FMSinitParameters> fmsInit{ "fms initialization", this};
   oops::Parameter<bool> hydrostatic{ "hydrostatic", true, this};

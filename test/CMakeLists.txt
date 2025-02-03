@@ -189,6 +189,8 @@ list( APPEND fv3jedi_testinput
   testinput/errorcovariance_bump.yaml
   testinput/errorcovariance_gfs_gsi_global.yaml
   testinput/errorcovariance.yaml
+  testinput/forecast_c48_001.yaml
+  testinput/forecast_c48_002.yaml
   testinput/forecast_fv3lm_tracers.yaml
   testinput/forecast_fv3lm.yaml
   testinput/forecast_geos.yaml
@@ -239,6 +241,7 @@ list( APPEND fv3jedi_testinput
   testinput/increment_geos.yaml
   testinput/increment_gfs.yaml
   testinput/letkf3d.yaml
+  testinput/letkf_inline_c48.yaml
   testinput/letkf_observer_soil_moisture.yaml
   testinput/letkf_snow.yaml
   testinput/letkf.yaml
@@ -757,7 +760,7 @@ file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/randomization/)
 if (FV3_FORECAST_MODEL MATCHES "UFS")
   if( UFS_APP MATCHES "^(ATM)$" OR UFS_APP MATCHES "^(S2S)$" )
     set(FV3_FORECAST_MODEL_RUNDIR_WARMSTART ${CMAKE_SOURCE_DIR}/fv3-jedi-data/testinput_tier_1/inputs/control_c48_intel/)
-    set(FV3_FORECAST_MODEL_TESTDIR_WARMSTART ${CMAKE_CURRENT_BINARY_DIR}/Data/ModelRunDirs/${FV3_FORECAST_MODEL}_warmstart/)
+    set(FV3_FORECAST_MODEL_TESTDIR_WARMSTART ${CMAKE_CURRENT_BINARY_DIR}/Data/ModelRunDirs/${FV3_FORECAST_MODEL}_warmstart_1/)
     file(MAKE_DIRECTORY ${FV3_FORECAST_MODEL_TESTDIR_WARMSTART})
 
     set(FV3_FORECAST_MODEL_RUNDIR_WARMSTART_2 ${CMAKE_SOURCE_DIR}/fv3-jedi-data/testinput_tier_1/inputs/control_c48_intel/)
@@ -766,6 +769,9 @@ if (FV3_FORECAST_MODEL MATCHES "UFS")
 
     set(FV3_SETUP_UFS_DATA_SCRIPT setup-c48.sh)
     configure_file(${FV3_SETUP_UFS_DATA_SCRIPT} ${CMAKE_BINARY_DIR}/bin/${FV3_SETUP_UFS_DATA_SCRIPT} COPYONLY)
+
+    set(FV3_SETUP_LETKF_DATA_SCRIPT prep-letkf.sh)
+    configure_file(${FV3_SETUP_LETKF_DATA_SCRIPT} ${CMAKE_BINARY_DIR}/bin/${FV3_SETUP_LETKF_DATA_SCRIPT} COPYONLY)
 
     set(FV3_SETUP_UFS_RUNDIR_SCRIPT fv3jedi_setup_ufs_rundir.py)
     configure_file(${FV3_SETUP_UFS_RUNDIR_SCRIPT} ${CMAKE_BINARY_DIR}/bin/${FV3_SETUP_UFS_RUNDIR_SCRIPT} COPYONLY)
@@ -1199,6 +1205,18 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_EnsGETKF_ufs_warmstart
                   ARGS     testinput/ensemble_ufs_forecast.yaml
                   COMMAND  fv3jedi_EnsGETKF.x
                   TEST_DEPENDS fv3jedi_setup_ufs_rundir_warmstart )
+
+ecbuild_add_test( TARGET  fv3jedi_setup_letkf_ufs_rundir
+                      TYPE    SCRIPT
+                      COMMAND ${CMAKE_BINARY_DIR}/bin/${FV3_SETUP_LETKF_DATA_SCRIPT}
+                      ARGS    ${FV3_FORECAST_MODEL_RUNDIR_WARMSTART} ${FV3_FORECAST_MODEL_TESTDIR_WARMSTART}
+                      TEST_DEPENDS fv3jedi_test_tier1_EnsGETKF_ufs_warmstart )
+
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_letkf_inline_ufs 
+                  MPI      12
+                  ARGS     testinput/letkf_inline_c48.yaml
+                  COMMAND  fv3jedi_letkf.x
+                  TEST_DEPENDS fv3jedi_setup_letkf_ufs_rundir )
 endif()
 
 # Disabled until setup of GEOS model rundir is added (e.g., see fv3jedi_setup_ufs_rundir_warmstart)

@@ -30,6 +30,9 @@ extern "C" {
   void fv3jedi_state_sersize_f90(const F90state &, int &);
 
   void fv3jedi_state_serialize_f90(const F90state &, const std::size_t &, double[]);
+  void fv3jedi_state_deserializeSection_f90(const F90state &, const std::size_t &, const double[],
+                 const int &, const int &, const int &, const int &, int &, int &, int &, int &,
+                 const std::size_t &);
 
   void fv3jedi_state_deserialize_f90(const F90state &, const std::size_t &, const double[],
                                      const std::size_t &);

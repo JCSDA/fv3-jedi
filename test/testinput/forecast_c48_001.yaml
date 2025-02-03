@@ -1,0 +1,41 @@
+forecast length: &fclength PT6H
+geometry:
+  fms initialization:
+    namelist filename: Data/ModelRunDirs/c48_001/input.nml
+    field table filename: Data/ModelRunDirs/c48_001/field_table
+  akbk: Data/fv3files/akbk127.nc4
+  layout: [1,1]
+  io_layout: [1,1]
+  npx: 49
+  npy: 49
+  npz: 127
+  ntiles: 6
+  member_number: 1
+  field metadata override: Data/fieldmetadata/ufs.yaml
+model:
+  name: UFS
+  tstep: PT6H
+  forecast length: *fclength
+  ufs_run_directory: Data/ModelRunDirs/c48_001
+  model variables: [ua,va,t,delp,sphum,ice_wat,liq_wat,o3mr,phis,
+                         slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
+                         u_srf,v_srf,f10m]
+initial condition:
+  datetime: 2021-03-23T06:00:00Z
+  filetype: fms restart
+  datapath: Data/ModelRunDirs/c48_001/INPUT
+  filename_core: fv_core.res.nc
+  filename_trcr: fv_tracer.res.nc
+  filename_sfcd: sfc_data.nc
+  filename_sfcw: fv_srf_wnd.res.nc
+  filename_cplr: coupler.res
+  state variables: [ua,va,t,delp,sphum,ice_wat,liq_wat,o3mr,phis,
+                         slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
+                         u_srf,v_srf,f10m]
+output:
+  filetype: fms restart
+  datapath: ../../../Data/forecast
+  prefix: forecast.jediex.
+  first: PT6H
+  frequency: PT6H
+
