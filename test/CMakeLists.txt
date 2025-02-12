@@ -245,7 +245,9 @@ list( APPEND fv3jedi_testinput
   testinput/letkf_observer_soil_moisture.yaml
   testinput/letkf_snow.yaml
   testinput/letkf.yaml
+  testinput/letkf_perturbed.yaml
   testinput/lgetkf_linearobserver.yaml
+  testinput/lgetkf_perturbed_linearobserver.yaml
   testinput/lgetkf.yaml
   testinput/linearization_error.yaml
   testinput/linearmodel_physics.yaml
@@ -393,12 +395,14 @@ list( APPEND fv3jedi_testoutput
   testoutput/hyb-4denvar_geos_sondes_c12.ref
   testoutput/hyb-fgat_fv3lm.ref
   testoutput/letkf.ref
+  testoutput/letkf_perturbed.ref
   testoutput/letkf3d.ref
   testoutput/3dvar_snow.ref
   testoutput/letkf_snow.ref
   testoutput/letkf_observer_soil_moisture.ref
   testoutput/lgetkf.ref
   testoutput/lgetkf_linearobserver.ref
+  testoutput/lgetkf_perturbed_linearobserver.ref
   testoutput/linearization_error.ref
   testoutput/adjointforecast.ref
   testoutput/staticb_dirac_global_gfs_6pe.ref
@@ -1600,6 +1604,11 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_letkf
                   ARGS     testinput/letkf.yaml
                   COMMAND  fv3jedi_letkf.x )
 
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_letkf_perturbed
+                  MPI      6
+                  ARGS     testinput/letkf_perturbed.yaml
+                  COMMAND  fv3jedi_letkf.x )
+
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_letkf3d_vertloc
                   MPI      6
                   ARGS     testinput/letkf3d.yaml
@@ -1613,6 +1622,11 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_lgetkf
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_lgetkf_linearobserver
                   MPI      6
                   ARGS     testinput/lgetkf_linearobserver.yaml
+                  COMMAND  fv3jedi_letkf.x )
+
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_lgetkf_perturbed_linearobserver
+                  MPI      6
+                  ARGS     testinput/lgetkf_perturbed_linearobserver.yaml
                   COMMAND  fv3jedi_letkf.x )
 
 # Land DA

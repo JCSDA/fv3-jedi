@@ -1,0 +1,178 @@
+geometry:
+  fms initialization:
+    namelist filename: Data/fv3files/fmsmpp.nml
+    field table filename: Data/fv3files/field_table
+  akbk: Data/fv3files/akbk127.nc4
+  npx: 13
+  npy: 13
+  npz: 127
+  field metadata override: Data/fieldmetadata/gfs-restart.yaml
+
+time window:
+  begin: &date 2020-12-14T21:00:00Z
+  length: PT6H
+
+increment variables: 
+- ua
+- va
+- t
+- delp
+- sphum
+- ice_wat
+- liq_wat
+- o3mr
+
+background:
+   members from template:
+     template:
+       datetime: 2020-12-15T00:00:00Z
+       filetype: fms restart
+       datapath: Data/inputs/gfs_c12/mem%mem%/
+       filename_core: 20201215.000000.fv_core.res.nc
+       filename_trcr: 20201215.000000.fv_tracer.res.nc
+       filename_sfcd: 20201215.000000.sfc_data.nc
+       filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
+       filename_cplr: 20201215.000000.coupler.res
+       state variables: 
+       - ua
+       - va
+       - t
+       - delp
+       - sphum
+       - ice_wat
+       - liq_wat
+       - o3mr
+       - phis
+       - slmsk
+       - sheleg
+       - tsea
+       - vtype
+       - stype
+       - vfrac
+       - stc
+       - smc
+       - snwdph
+       - u_srf
+       - v_srf
+       - f10m
+     pattern: '%mem%'
+     nmembers: 3
+     zero padding: 3
+
+observations:
+  observers:
+  - obs space:
+      name: Scatwind
+      distribution:
+        name: Halo
+        halo size: 5000e3
+      obsdatain:
+        engine:
+          type: H5File
+          obsfile: Data/obs/testinput_tier_1/scatwind_obs_2020121500_m.nc4
+      obsdataout:
+        engine:
+          type: H5File
+          obsfile: Data/hofx/scatwind_lgetkf_perturbed-geos_2020121500_m.nc4
+      # Note: the same seed must be used for all members for the zero-mean perturbations option to work
+      obs perturbations seed: 1
+      simulated variables: [windEastward, windNorthward]
+    obs operator:
+      name: VertInterp
+      vertical coordinate: air_pressure
+      observation vertical coordinate: pressure
+      observation vertical coordinate group: MetaData
+      interpolation method: log-linear
+    obs error:
+      covariance model: diagonal
+      obs perturbations amplitude: 1.0
+    obs localizations:
+    - localization method: Horizontal Box car
+      lengthscale: 5000e3
+      max nobs: 1000
+  - obs space:
+      name: AMSUA-NOAA19
+      distribution:
+        name: Halo
+        halo size: 5000e3
+      obsdatain:
+        engine:
+          type: H5File
+          obsfile: Data/obs/testinput_tier_1/amsua_n19_obs_2020121500_m.nc4
+      obsdataout:
+        engine:
+          type: H5File
+          obsfile: Data/hofx/amsua_n19_lgetkf_perturbed-geos_2020121500_m.nc4
+      # Note: the same seed must be used for all members for the zero-mean perturbations option to work
+      obs perturbations seed: 1
+      simulated variables: [brightnessTemperature]
+      channels: 4-6,9-14
+    obs operator:
+      name: CRTM
+      Absorbers: [H2O,O3]
+#       Clouds: [Water, Ice]
+#       Cloud_Fraction: 1.0
+      obs options:
+        Sensor_ID: amsua_n19
+        EndianType: little_endian
+        CoefficientPath: Data/crtm/
+    obs error:
+      covariance model: diagonal
+      obs perturbations amplitude: 1.0
+    obs filters:
+    - filter: Bounds Check
+      filter variables:
+      - name: brightnessTemperature
+        channels: 4-6,9-14
+      minvalue: 100.0
+      maxvalue: 500.0
+    - filter: Background Check
+      filter variables:
+      - name: brightnessTemperature
+        channels: 4-6,9-14
+      threshold: 3.0
+    obs localizations:
+    - localization method: Horizontal Gaspari-Cohn
+      lengthscale: 1000e3
+      max nobs: 100
+
+driver:
+  save posterior ensemble: false
+  save posterior mean increment: true
+
+local ensemble DA:
+  solver: Perturbed GETKF
+  use linear observer: true
+  vertical localization:
+    fraction of retained variance: .5
+    lengthscale: 1.5
+    lengthscale units: logp
+  inflation:
+    rtps: 0.5
+    rtpp: 0.6
+    mult: 1.1
+
+output:
+  filetype: fms restart
+  provider: gfs
+  datapath: Data/analysis/letkf/gfs/mem%{member}%/
+  filename: lgetkf_perturbed.ana.%yyyy%mm%dd_%hh%MM%ssz.nc4
+  first: PT0H
+  frequency: PT1H
+  type: ens
+  date: *date
+
+output increment:
+  filetype: fms restart
+  datapath: Data/analysis/letkf/gfs/mem%{member}%/
+  filename is datetime templated: true
+  prefix: lgetkf_perturbed.inc.%yyyy%mm%dd_%hh%MM%ssz
+  type: ens
+  date: *date
+
+
+test:
+  reference filename: testoutput/lgetkf_perturbed_linearobserver.ref
+  test output filename: testoutput/lgetkf_perturbed_linearobserver.test.out
+  float absolute tolerance: 1.0e-3
+  float relative tolerance: 1.0e-3

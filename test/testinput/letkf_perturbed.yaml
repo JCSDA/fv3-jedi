@@ -6,7 +6,6 @@ geometry:
   npx: 13
   npy: 13
   npz: 127
-  member_number: 0
   field metadata override: Data/fieldmetadata/gfs-restart.yaml
 time window:
   begin: &date 2020-12-14T21:00:00Z
@@ -61,7 +60,9 @@ observations:
       obsdataout:
         engine:
           type: H5File
-          obsfile: Data/hofx/scatwind_letkf-gfs_2020121500_m.nc4
+          obsfile: Data/hofx/scatwind_letkf_perturbed-gfs_2020121500_m.nc4
+      # Note: the same seed must be used for all members for the zero-mean perturbations option to work
+      obs perturbations seed: 1
       simulated variables:
       - windEastward
       - windNorthward
@@ -73,6 +74,7 @@ observations:
       interpolation method: log-linear
     obs error:
       covariance model: diagonal
+      obs perturbations amplitude: 1.0
     obs localizations:
     - localization method: Horizontal Box car
       lengthscale: 5000e3
@@ -89,7 +91,9 @@ observations:
       obsdataout:
         engine:
           type: H5File
-          obsfile: Data/hofx/amsua_n19_letkf-gfs_2020121500_m.nc4
+          obsfile: Data/hofx/amsua_n19_letkf_perturbed-gfs_2020121500_m.nc4
+      # Note: the same seed must be used for all members for the zero-mean perturbations option to work
+      obs perturbations seed: 1
       simulated variables:
       - brightnessTemperature
       channels: 4-6,9-14
@@ -104,6 +108,7 @@ observations:
         CoefficientPath: Data/crtm/
     obs error:
       covariance model: diagonal
+      obs perturbations amplitude: 1.0
     obs filters:
     - filter: Bounds Check
       filter variables:
@@ -121,36 +126,6 @@ observations:
       lengthscale: 1000e3
       max nobs: 100
   - obs space:
-      name: SfcObs
-      distribution:
-        name: Halo
-        halo size: 2000e3
-      obsdatain:
-        engine:
-          type: H5File
-          obsfile: Data/obs/testinput_tier_1/sfc_obs_2020121500_m.nc4
-      obsdataout:
-        engine:
-          type: H5File
-          obsfile: Data/hofx/sfc_letkf-gfs_2020121500_m.nc4
-      simulated variables:
-      - stationPressure
-    obs operator:
-      name: SfcPCorrected
-      da_psfc_scheme: UKMO
-    linear obs operator:
-      name: Identity
-    obs error:
-      covariance model: diagonal
-    obs filters:
-    - filter: Background Check
-      threshold: 1000
-    obs localizations:
-    - localization method: Horizontal SOAR
-      soar horizontal decay: 0.000018
-      lengthscale: 2000e3
-      max nobs: 1000
-  - obs space:
       name: Aircraft
       distribution:
         name: Halo
@@ -162,7 +137,9 @@ observations:
       obsdataout:
         engine:
           type: H5File
-          obsfile: Data/hofx/aircraft_letkf-gfs_2020121500_m.nc4
+          obsfile: Data/hofx/aircraft_letkf_perturbed-gfs_2020121500_m.nc4
+      # Note: the same seed must be used for all members for the zero-mean perturbations option to work
+      obs perturbations seed: 1
       simulated variables:
       - windEastward
       - windNorthward
@@ -175,6 +152,7 @@ observations:
       interpolation method: log-linear
     obs error:
       covariance model: diagonal
+      obs perturbations amplitude: 1.0
     obs filters:
     - filter: PreQC
       maxvalue: 3
@@ -192,7 +170,7 @@ driver:
   save posterior ensemble: false
   save posterior mean increment: true
 local ensemble DA:
-  solver: LETKF
+  solver: Perturbed LETKF
   inflation:
     rtps: 0.5
     rtpp: 0.6
@@ -200,12 +178,12 @@ local ensemble DA:
 output:
   filetype: auxgrid
   gridtype: latlon
-  filename: Data/analysis/letkf/gfs/mem%{member}%/letkf.
+  filename: Data/analysis/letkf/gfs/mem%{member}%/letkf.perturbed.
 output increment:
   filetype: auxgrid
   gridtype: latlon
-  filename: Data/analysis/letkf/gfs/mem%{member}%/xainc.letkf.
+  filename: Data/analysis/letkf/gfs/mem%{member}%/xainc.letkf_perturbed.
 test:
-  reference filename: testoutput/letkf.ref
-  test output filename: testoutput/letkf.test.out
+  reference filename: testoutput/letkf_perturbed.ref
+  test output filename: testoutput/letkf_perturbed.test.out
   float relative tolerance: 1.0e-3
