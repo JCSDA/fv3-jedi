@@ -893,7 +893,7 @@ namespace fv3jedi {
 
     md.longName = "mass_content_of_cloud_liquid_water_in_atmosphere_layer";
     md.shortName = "mass_content_of_cloud_liquid_water_in_atmosphere_layer";
-    md.units = "none";
+    md.units = "kg m-2";
     md.kind = "double";
     md.tracer = "false";
     md.levels = "full";
@@ -902,7 +902,7 @@ namespace fv3jedi {
 
     md.longName = "mass_content_of_cloud_ice_in_atmosphere_layer";
     md.shortName = "mass_content_of_cloud_ice_in_atmosphere_layer";
-    md.units = "none";
+    md.units = "kg m-2";
     md.kind = "double";
     md.tracer = "false";
     md.levels = "full";
@@ -911,7 +911,7 @@ namespace fv3jedi {
 
     md.longName = "mass_content_of_rain_in_atmosphere_layer";
     md.shortName = "mass_content_of_rain_in_atmosphere_layer";
-    md.units = "none";
+    md.units = "kg m-2";
     md.kind = "double";
     md.tracer = "false";
     md.levels = "full";
@@ -920,7 +920,7 @@ namespace fv3jedi {
 
     md.longName = "mass_content_of_snow_in_atmosphere_layer";
     md.shortName = "mass_content_of_snow_in_atmosphere_layer";
-    md.units = "none";
+    md.units = "kg m-2";
     md.kind = "double";
     md.tracer = "false";
     md.levels = "full";
@@ -929,7 +929,7 @@ namespace fv3jedi {
 
     md.longName = "mass_content_of_graupel_in_atmosphere_layer";
     md.shortName = "mass_content_of_graupel_in_atmosphere_layer";
-    md.units = "none";
+    md.units = "kg m-2";
     md.kind = "double";
     md.tracer = "false";
     md.levels = "full";
@@ -938,10 +938,64 @@ namespace fv3jedi {
 
     md.longName = "mass_content_of_hail_in_atmosphere_layer";
     md.shortName = "mass_content_of_hail_in_atmosphere_layer";
-    md.units = "none";
+    md.units = "kg m-2";
     md.kind = "double";
     md.tracer = "false";
     md.levels = "full";
+    md.space = "magnitude";
+    addFieldMetadata(fieldsmetadata, nlev, md);
+
+    md.longName = "mass_content_of_cloud_liquid_water_in_atmosphere_column";
+    md.shortName = "mass_content_of_cloud_liquid_water_in_atmosphere_column";
+    md.units = "kg m-2";
+    md.kind = "double";
+    md.tracer = "false";
+    md.levels = "1";
+    md.space = "magnitude";
+    addFieldMetadata(fieldsmetadata, nlev, md);
+
+    md.longName = "mass_content_of_cloud_ice_in_atmosphere_column";
+    md.shortName = "mass_content_of_cloud_ice_in_atmosphere_column";
+    md.units = "kg m-2";
+    md.kind = "double";
+    md.tracer = "false";
+    md.levels = "1";
+    md.space = "magnitude";
+    addFieldMetadata(fieldsmetadata, nlev, md);
+
+    md.longName = "mass_content_of_rain_in_atmosphere_column";
+    md.shortName = "mass_content_of_rain_in_atmosphere_column";
+    md.units = "kg m-2";
+    md.kind = "double";
+    md.tracer = "false";
+    md.levels = "1";
+    md.space = "magnitude";
+    addFieldMetadata(fieldsmetadata, nlev, md);
+
+    md.longName = "mass_content_of_snow_in_atmosphere_column";
+    md.shortName = "mass_content_of_snow_in_atmosphere_column";
+    md.units = "kg m-2";
+    md.kind = "double";
+    md.tracer = "false";
+    md.levels = "1";
+    md.space = "magnitude";
+    addFieldMetadata(fieldsmetadata, nlev, md);
+
+    md.longName = "mass_content_of_graupel_in_atmosphere_column";
+    md.shortName = "mass_content_of_graupel_in_atmosphere_column";
+    md.units = "kg m-2";
+    md.kind = "double";
+    md.tracer = "false";
+    md.levels = "1";
+    md.space = "magnitude";
+    addFieldMetadata(fieldsmetadata, nlev, md);
+
+    md.longName = "mass_content_of_hail_in_atmosphere_column";
+    md.shortName = "mass_content_of_hail_in_atmosphere_column";
+    md.units = "kg m-2";
+    md.kind = "double";
+    md.tracer = "false";
+    md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
 

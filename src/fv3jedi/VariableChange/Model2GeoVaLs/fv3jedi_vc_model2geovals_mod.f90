@@ -217,6 +217,11 @@ real(kind=kind_real), allocatable :: qr_efr  (:,:,:)
 real(kind=kind_real), allocatable :: qs_efr  (:,:,:)
 real(kind=kind_real), allocatable :: qg_efr  (:,:,:)
 real(kind=kind_real), allocatable :: watercov(:,:)
+real(kind=kind_real), allocatable :: ql_colm (:,:,:)
+real(kind=kind_real), allocatable :: qi_colm (:,:,:)
+real(kind=kind_real), allocatable :: qr_colm (:,:,:)
+real(kind=kind_real), allocatable :: qs_colm (:,:,:)
+real(kind=kind_real), allocatable :: qg_colm (:,:,:)
 
 ! CO2
 logical :: have_co2
@@ -638,6 +643,10 @@ if (have_slmsk .and. have_t .and. have_pressures .and. have_q .and. have_qiql ) 
   qi_ade = 0.0_kind_real
   ql_efr = 0.0_kind_real
   qi_efr = 0.0_kind_real
+  allocate(ql_colm(self%isc:self%iec,self%jsc:self%jec,1))
+  allocate(qi_colm(self%isc:self%iec,self%jsc:self%jec,1))
+  ql_colm = 0.0_kind_real
+  qi_colm = 0.0_kind_real
 
   !TODO Is it water_area_fraction or sea_coverage fed in here?
   watercov = 0.0_kind_real
@@ -651,18 +660,24 @@ if (have_slmsk .and. have_t .and. have_pressures .and. have_q .and. have_qiql ) 
     allocate(qr_efr(self%isc:self%iec,self%jsc:self%jec,self%npz))
     qr_ade = 0.0_kind_real
     qr_efr = 0.0_kind_real
+    allocate(qr_colm(self%isc:self%iec,self%jsc:self%jec,1))
+    qr_colm = 0.0_kind_real
   endif
   if (have_qs ) then
     allocate(qs_ade(self%isc:self%iec,self%jsc:self%jec,self%npz))
     allocate(qs_efr(self%isc:self%iec,self%jsc:self%jec,self%npz))
     qs_ade = 0.0_kind_real
     qs_efr = 0.0_kind_real
+    allocate(qs_colm(self%isc:self%iec,self%jsc:self%jec,1))
+    qs_colm = 0.0_kind_real
   endif
   if (have_qg ) then
     allocate(qg_ade(self%isc:self%iec,self%jsc:self%jec,self%npz))
     allocate(qg_efr(self%isc:self%iec,self%jsc:self%jec,self%npz))
     qg_ade = 0.0_kind_real
     qg_efr = 0.0_kind_real
+    allocate(qg_colm(self%isc:self%iec,self%jsc:self%jec,1))
+    qg_colm = 0.0_kind_real
   endif
 
 ! Call routine that computes liquid/ice water paths and effective radii.
@@ -729,6 +744,17 @@ if (have_slmsk .and. have_t .and. have_pressures .and. have_q .and. have_qiql ) 
           ql_ade=ql_ade,qi_ade=qi_ade,                                             &
           ql_efr=ql_efr,qi_efr=qi_efr,                                             &
           method=self%radii_method, use_mask=self%use_mask)
+  endif
+  ql_colm(:,:,1) = sum(ql_ade,3)
+  qi_colm(:,:,1) = sum(qi_ade,3)
+  if( have_qr ) then
+    qr_colm(:,:,1) = sum(qr_ade,3)
+  endif
+  if( have_qs ) then
+    qs_colm(:,:,1) = sum(qs_ade,3)
+  endif
+  if( have_qg ) then
+    qg_colm(:,:,1) = sum(qg_ade,3)
   endif
   have_crtm_cld = .true.
 endif
@@ -1005,6 +1031,31 @@ do f = 1, size(fields_to_do)
     if (.not. have_crtm_cld) call field_fail(fields_to_do(f))
     field_ptr = qg_ade
 
+  case ("mass_content_of_cloud_liquid_water_in_atmosphere_column")
+
+    if (.not. have_crtm_cld) call field_fail(fields_to_do(f))
+    field_ptr = ql_colm
+
+  case ("mass_content_of_cloud_ice_in_atmosphere_column")
+
+    if (.not. have_crtm_cld) call field_fail(fields_to_do(f))
+    field_ptr = qi_colm
+
+  case ("mass_content_of_rain_in_atmosphere_column")
+
+    if (.not. have_crtm_cld) call field_fail(fields_to_do(f))
+    field_ptr = qr_colm
+
+  case ("mass_content_of_snow_in_atmosphere_column")
+
+    if (.not. have_crtm_cld) call field_fail(fields_to_do(f))
+    field_ptr = qs_colm
+
+  case ("mass_content_of_graupel_in_atmosphere_column")
+
+    if (.not. have_crtm_cld) call field_fail(fields_to_do(f))
+    field_ptr = qg_colm
+
   case ("effective_radius_of_cloud_liquid_water_particle")
 
     if (.not. have_crtm_cld) call field_fail(fields_to_do(f))
@@ -1259,6 +1310,11 @@ if (allocated(qi_efr)) deallocate(qi_efr)
 if (allocated(qr_efr)) deallocate(qr_efr)
 if (allocated(qs_efr)) deallocate(qs_efr)
 if (allocated(qg_efr)) deallocate(qg_efr)
+if (allocated(ql_colm)) deallocate(ql_colm)
+if (allocated(qi_colm)) deallocate(qi_colm)
+if (allocated(qr_colm)) deallocate(qr_colm)
+if (allocated(qs_colm)) deallocate(qs_colm)
+if (allocated(qg_colm)) deallocate(qg_colm)
 if (allocated(watercov)) deallocate(watercov)
 if (allocated(sss)) deallocate(sss)
 if (allocated(land_type_index_npoess)) deallocate(land_type_index_npoess)

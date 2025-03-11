@@ -238,7 +238,7 @@ real(kind=kind_real), allocatable :: tv  (:,:,:)         !Virtual temperature
 logical :: have_qmr
 real(kind=kind_real), allocatable :: qmr (:,:,:)         !Humidity mixing ratio
 
-!Cloud liquid water mixing ratio
+!Cloud mass content in atmospheric layers
 logical :: have_ql,have_qi,have_qr,have_qs,have_qg
 real(kind=kind_real), allocatable :: clwpath (:,:,:)     !Cloud liquid  water path
 real(kind=kind_real), allocatable :: ciwpath (:,:,:)     !Cloud ice     water path
@@ -481,6 +481,11 @@ do f = 1, size(fields_to_do)
   case ("skin_temperature_at_surface_where_land")
   case ("skin_temperature_at_surface_where_ice")
   case ("skin_temperature_at_surface_where_snow")
+  case ("mass_content_of_cloud_liquid_water_in_atmosphere_column")
+  case ("mass_content_of_cloud_ice_in_atmosphere_column")
+  case ("mass_content_of_rain_in_atmosphere_column")
+  case ("mass_content_of_snow_in_atmosphere_column")
+  case ("mass_content_of_graupel_in_atmosphere_column")
   case ("pe")
   case ("p")
 
@@ -799,6 +804,16 @@ if (dxg%has_field( "mass_content_of_rain_in_atmosphere_layer", noassim_index)) &
 if (dxg%has_field( "mass_content_of_snow_in_atmosphere_layer", noassim_index)) &
   field_passed(noassim_index) = .true.
 if (dxg%has_field( "mass_content_of_graupel_in_atmosphere_layer", noassim_index)) &
+  field_passed(noassim_index) = .true.
+if (dxg%has_field( "mass_content_of_cloud_liquid_water_in_atmosphere_column", noassim_index)) &
+  field_passed(noassim_index) = .true.
+if (dxg%has_field( "mass_content_of_cloud_ice_in_atmosphere_column", noassim_index)) &
+  field_passed(noassim_index) = .true.
+if (dxg%has_field( "mass_content_of_rain_in_atmosphere_column", noassim_index)) &
+  field_passed(noassim_index) = .true.
+if (dxg%has_field( "mass_content_of_snow_in_atmosphere_column", noassim_index)) &
+  field_passed(noassim_index) = .true.
+if (dxg%has_field( "mass_content_of_graupel_in_atmosphere_column", noassim_index)) &
   field_passed(noassim_index) = .true.
 if (dxg%has_field( "skin_temperature_at_surface_where_sea", noassim_index)) &
   field_passed(noassim_index) = .true.
