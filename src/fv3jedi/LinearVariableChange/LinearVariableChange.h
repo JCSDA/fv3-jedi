@@ -46,12 +46,13 @@ class LinearVariableChange : public util::Printable {
 
  private:
   void print(std::ostream &) const override;
+  void initVaderTLAD(oops::Variables &) const;
   LinearVariableChangeParametersWrapper params_;
   const Geometry & geom_;
   std::unique_ptr<LinearVariableChangeBase> linearVariableChange_;
   FieldsMetadata fieldsMetadata_;
   std::unique_ptr<vader::Vader> vader_;
-  oops::Variables varsVaderPopulates_;
+  mutable oops::Variables varsVaderPopulates_;
 };
 
 // -------------------------------------------------------------------------------------------------

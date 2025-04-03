@@ -54,31 +54,42 @@ void LinearVariableChange::changeVarTraj(const State & xfg, const oops::Variable
   // Make sure vars are longname
   const oops::Variables vars = fieldsMetadata_.getLongNameFromAnyName(vars_out);
 
-  // Call Vader's changeVarTraj to populate its trajectory
-  State vader_xfg(xfg);
-
-  // Record start variables
-  oops::Variables varsFilled = vader_xfg.variables();
-
+  // Call Vader's changeVarTraj to populate its initial trajectory FieldSet
   oops::Variables varsVader = vars;
-  varsVader -= varsFilled;  // Pass only the needed variables
 
-  // Call Vader. On entry, varsVader holds the vars requested from Vader; on exit,
-  // it holds the vars NOT fullfilled by Vader, i.e., the vars still to be requested elsewhere.
-  // vader_.changeVarTraj also returns the variables fulfilled by Vader.
   atlas::FieldSet xfgfs;
-  vader_xfg.toFieldSet(xfgfs);
-  varsVaderPopulates_ = vader_->changeVarTraj(xfgfs, varsVader);
-  if (varsVaderPopulates_.size() > 0) {
-    varsFilled += varsVaderPopulates_;
-    vader_xfg.updateFields(varsFilled);
-    vader_xfg.fromFieldSet(xfgfs);
+  xfg.toFieldSet(xfgfs);
+  vader_->changeVarTraj(xfgfs, varsVader);
+
+  // If input and output variables are specified in the yaml, we use those variables to finish
+  // initializing vader's linear variable change now. Otherwise we have to wait until changeVarTL or
+  // changeVarAD is called to find out the ingredient/increment vars.
+  const auto &lvc_params = params_.linearVariableChangeParameters.value();
+  if (lvc_params.inputVariables.value() != boost::none &&
+      lvc_params.outputVariables.value() != boost::none) {
+    oops::Variables inputVars = *lvc_params.inputVariables.value();
+    oops::Variables outputVars = *lvc_params.outputVariables.value();
+    ASSERT_MSG(outputVars == vars_out, "outputVariables in config file must match output "
+          "variables passed to changeVarTraj");
+    oops::Variables ingredientVars = fieldsMetadata_.getLongNameFromAnyName(inputVars);
+    initVaderTLAD(ingredientVars);
   }
 
-  // Create the model variable change
-  linearVariableChange_.reset(LinearVariableChangeFactory::create(vader_xfg, vader_xfg, geom_,
-             params_.linearVariableChangeParameters.value()));
+  // Create the native fortran linear variable change object
+  linearVariableChange_.reset(LinearVariableChangeFactory::create(xfg, xfg, geom_,
+    params_.linearVariableChangeParameters.value()));
+
   oops::Log::trace() << "LinearVariableChange::changeVarTraj done" << std::endl;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void LinearVariableChange::initVaderTLAD(oops::Variables & ingredientVars) const {
+  oops::Log::trace() << "LinearVariableChange::initVaderTLAD starting" << std::endl;
+  oops::Variables originalIngredientVars = ingredientVars;
+  varsVaderPopulates_ = vader_->initTLAD(ingredientVars);
+  varsVaderPopulates_ -= originalIngredientVars;
+  oops::Log::trace() << "LinearVariableChange::initVaderTLAD done" << std::endl;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -95,15 +106,16 @@ void LinearVariableChange::changeVarTL(Increment & dx, const oops::Variables & v
     return;
   }
 
-  // Call Vader. On entry, varsVaderWillPopulate holds the vars requested from Vader; on exit,
-  // it should be empty, since we know which variables Vader will do from the changeVarTraj
-  // call.
-  atlas::FieldSet dxfs;
-  dx.toFieldSet(dxfs);
-  oops::Variables varsVaderWillPopulate = varsVaderPopulates_;
-  if (varsVaderWillPopulate.size() > 0) {
-    vader_->changeVarTL(dxfs, varsVaderWillPopulate);
-    ASSERT(varsVaderWillPopulate.size() == 0);
+  // Make sure this object is fully initialized
+  if (vader_->needsTLADInit()) {
+    oops::Variables ingredientVars = dx.variables();
+    initVaderTLAD(ingredientVars);
+  }
+  // If Vader is doing anything, call Vader
+  if (varsVaderPopulates_.size() > 0) {
+    atlas::FieldSet dxfs;
+    dx.toFieldSet(dxfs);
+    vader_->changeVarTL(dxfs);
 
     // Set intermediate state for the Increment containing original fields plus the ones
     // Vader has done
@@ -173,6 +185,11 @@ void LinearVariableChange::changeVarAD(Increment & dx, const oops::Variables & v
     return;
   }
 
+  // Make sure this object is fully initialized
+  if (vader_->needsTLADInit()) {
+    oops::Variables ingredientVars(vars);
+    initVaderTLAD(ingredientVars);
+  }
   // Create dxin as a copy of dx, minus the variables created by Vader (in the forward direction)
   // This way we ensure the model code will not be able to do the adjoint for these vars
   Increment dxin(dx, true);  // true => full copy
@@ -199,8 +216,8 @@ void LinearVariableChange::changeVarAD(Increment & dx, const oops::Variables & v
       dxout_fs.add(field);
     }
 
-    vader_->changeVarAD(dxout_fs, varsVaderWillAdjoint);
-
+    oops::Variables varsAdjointed = vader_->changeVarAD(dxout_fs);
+    varsVaderWillAdjoint -= varsAdjointed;
     // After changeVarAD, vader should have removed everything from varsVaderWillAdjoint,
     // indicating it did all the adjoints we expected it to.
     ASSERT(varsVaderWillAdjoint.size() == 0);

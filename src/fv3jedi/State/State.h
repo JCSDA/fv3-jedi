@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "eckit/config/Configuration.h"
+#include "eckit/mpi/Comm.h"
 
 #include "oops/base/ParameterTraitsVariables.h"
 #include "oops/base/Variables.h"
