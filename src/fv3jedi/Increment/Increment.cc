@@ -26,6 +26,7 @@
 #include "oops/generic/GlobalInterpolator.h"
 #include "oops/util/DateTime.h"
 #include "oops/util/Duration.h"
+#include "oops/util/FieldSetOperations.h"
 #include "oops/util/Logger.h"
 
 #include "fv3jedi/Geometry/Geometry.h"
@@ -165,6 +166,13 @@ void Increment::zero(const util::DateTime & vt) {
 // -------------------------------------------------------------------------------------------------
 void Increment::ones() {
   fv3jedi_increment_ones_f90(keyInc_);
+}
+// -------------------------------------------------------------------------------------------------
+void Increment::sqrt() {
+  atlas::FieldSet fset{};
+  toFieldSet(fset);
+  util::sqrtFieldSet(fset);
+  fromFieldSet(fset);
 }
 // -------------------------------------------------------------------------------------------------
 void Increment::axpy(const double & zz, const Increment & dx, const bool check) {

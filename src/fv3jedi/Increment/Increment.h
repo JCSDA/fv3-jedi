@@ -107,6 +107,7 @@ class Increment : public util::Printable,
   Increment & operator+=(const Increment &);
   Increment & operator-=(const Increment &);
   Increment & operator*=(const double &);
+  void sqrt();
   void axpy(const double &, const Increment &, const bool check = true);
   double dot_product_with(const Increment &) const;
   void schur_product_with(const Increment &);
