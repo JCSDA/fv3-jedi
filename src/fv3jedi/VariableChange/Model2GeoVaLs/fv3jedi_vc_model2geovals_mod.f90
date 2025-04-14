@@ -103,6 +103,11 @@ real(kind=kind_real), pointer :: field_ptr(:,:,:)
 logical :: have_q
 real(kind=kind_real), pointer     :: q     (:,:,:)         !Specific humidity
 
+! moist_air_density
+logical :: have_airdens
+real(kind=kind_real), allocatable :: rho_air (:,:,:)       !moist_air_density
+real(kind=kind_real), allocatable :: q_ge_0 (:,:,:)
+
 ! Relative humidity
 logical :: have_qsat, have_rh
 real(kind=kind_real), allocatable :: rh    (:,:,:)         !Relative humidity
@@ -282,6 +287,10 @@ real(kind=kind_real), allocatable :: divg     (:,:,:)
 logical :: have_tropprs
 real(kind=kind_real), allocatable :: tprs     (:,:,:)
 
+real(kind=kind_real) :: rdry, zvir
+! Constants
+rdry = constant('rdry')
+zvir = constant('zvir')
 
 
 ! Identity part of the change of fields
@@ -629,6 +638,18 @@ if (xm%has_field('rain_nc')) then
   have_nr = .true.
 endif
 
+! Calculate moist_air_density
+! ----------------------------
+have_airdens = .false.
+if (have_t .and. have_pressures .and. have_q) then
+  allocate(rho_air(self%isc:self%iec,self%jsc:self%jec,self%npz))
+  allocate(q_ge_0(self%isc:self%iec,self%jsc:self%jec,self%npz))
+  q_ge_0 = q
+  where(q < 0.0_kind_real) q_ge_0 = 0.0_kind_real
+  rho_air = prs / (rdry * t * (1.0_kind_real + zvir * q_ge_0))
+  deallocate(q_ge_0)
+  have_airdens = .true.
+endif
 
 ! Get CRTM moisture fields
 ! ------------------------
@@ -686,61 +707,61 @@ if (have_slmsk .and. have_t .and. have_pressures .and. have_q .and. have_qiql ) 
 
   if (have_nc .and. have_ni .and. have_nr .and. have_qr .and. have_qs .and. have_qg) then
     call crtm_ade_efr(geom=geom, p=prs, t=t, delp=delp, sea_frac=watercov,         &
-          q=q, ql=ql, qi=qi, qr=qr, qs=qs, qg=qg, nc=nc, ni=ni, nr=nr,             &
+          q=q, rho_air=rho_air, ql=ql, qi=qi, qr=qr, qs=qs, qg=qg, nc=nc, ni=ni, nr=nr,             &
           ql_ade=ql_ade,qi_ade=qi_ade,qr_ade=qr_ade,qs_ade=qs_ade,qg_ade=qg_ade,   &
           ql_efr=ql_efr,qi_efr=qi_efr,qr_efr=qr_efr,qs_efr=qs_efr,qg_efr=qg_efr,   &
           method=self%radii_method, use_mask=self%use_mask)
   elseif (have_ni .and. have_nr .and. have_qr .and. have_qg) then
     call crtm_ade_efr(geom=geom, p=prs, t=t, delp=delp, sea_frac=watercov,         &
-          q=q, ql=ql, qi=qi, qr=qr, qs=qs, qg=qg, ni=ni, nr=nr,                    &
+          q=q, rho_air=rho_air, ql=ql, qi=qi, qr=qr, qs=qs, qg=qg, ni=ni, nr=nr,                    &
           ql_ade=ql_ade,qi_ade=qi_ade,qr_ade=qr_ade,qs_ade=qs_ade,qg_ade=qg_ade,   &
           ql_efr=ql_efr,qi_efr=qi_efr,qr_efr=qr_efr,qs_efr=qs_efr,qg_efr=qg_efr,   &
           method=self%radii_method, use_mask=self%use_mask)
   elseif (have_ni .and. have_qs .and. have_qr .and. have_qg) then
     call crtm_ade_efr(geom=geom, p=prs, t=t, delp=delp, sea_frac=watercov,         &
-          q=q, ql=ql, qi=qi, qr=qr, qs=qs, qg=qg, ni=ni,                           &
+          q=q, rho_air=rho_air, ql=ql, qi=qi, qr=qr, qs=qs, qg=qg, ni=ni,                           &
           ql_ade=ql_ade,qi_ade=qi_ade,qr_ade=qr_ade,qs_ade=qs_ade,qg_ade=qg_ade,   &
           ql_efr=ql_efr,qi_efr=qi_efr,qr_efr=qr_efr,qs_efr=qs_efr,qg_efr=qg_efr,   &
           method=self%radii_method, use_mask=self%use_mask)
   elseif (have_qr .and. have_qs .and. have_qg) then
     call crtm_ade_efr(geom=geom, p=prs, t=t, delp=delp, sea_frac=watercov,         &
-          q=q, ql=ql, qi=qi, qr=qr, qs=qs, qg=qg,                                  &
+          q=q, rho_air=rho_air, ql=ql, qi=qi, qr=qr, qs=qs, qg=qg,                                  &
           ql_ade=ql_ade,qi_ade=qi_ade,qr_ade=qr_ade,qs_ade=qs_ade,qg_ade=qg_ade,   &
           ql_efr=ql_efr,qi_efr=qi_efr,qr_efr=qr_efr,qs_efr=qs_efr,qg_efr=qg_efr,   &
           method=self%radii_method, use_mask=self%use_mask)
   elseif (have_qr .and. have_qs) then
     call crtm_ade_efr(geom=geom, p=prs, t=t, delp=delp, sea_frac=watercov,         &
-          q=q, ql=ql, qi=qi, qr=qr, qs=qs,                                         &
+          q=q, rho_air=rho_air, ql=ql, qi=qi, qr=qr, qs=qs,                                         &
           ql_ade=ql_ade,qi_ade=qi_ade,qr_ade=qr_ade,qs_ade=qs_ade,                 &
           ql_efr=ql_efr,qi_efr=qi_efr,qr_efr=qr_efr,qs_efr=qs_efr,                 &
           method=self%radii_method, use_mask=self%use_mask)
   elseif (have_qr .and. have_qg) then
     call crtm_ade_efr(geom=geom, p=prs, t=t, delp=delp, sea_frac=watercov,         &
-          q=q, ql=ql, qi=qi, qr=qr, qg=qg,                                         &
+          q=q, rho_air=rho_air, ql=ql, qi=qi, qr=qr, qg=qg,                                         &
           ql_ade=ql_ade,qi_ade=qi_ade,qr_ade=qr_ade,qg_ade=qg_ade,                 &
           ql_efr=ql_efr,qi_efr=qi_efr,qr_efr=qr_efr,qg_efr=qg_efr,                 &
           method=self%radii_method, use_mask=self%use_mask)
   elseif (have_qs .and. have_qg) then
     call crtm_ade_efr(geom=geom, p=prs, t=t, delp=delp, sea_frac=watercov,         &
-          q=q, ql=ql, qi=qi, qs=qs, qg=qg,                                         &
+          q=q, rho_air=rho_air, ql=ql, qi=qi, qs=qs, qg=qg,                                         &
           ql_ade=ql_ade,qi_ade=qi_ade,qs_ade=qs_ade,qg_ade=qg_ade,                 &
           ql_efr=ql_efr,qi_efr=qi_efr,qs_efr=qs_efr,qg_efr=qg_efr,                 &
           method=self%radii_method, use_mask=self%use_mask)
   elseif (have_qs) then
     call crtm_ade_efr(geom=geom, p=prs, t=t, delp=delp, sea_frac=watercov,         &
-          q=q, ql=ql, qi=qi, qs=qs,                                                &
+          q=q, rho_air=rho_air, ql=ql, qi=qi, qs=qs,                                                &
           ql_ade=ql_ade,qi_ade=qi_ade,qs_ade=qs_ade,                               &
           ql_efr=ql_efr,qi_efr=qi_efr,qs_efr=qs_efr,                               &
           method=self%radii_method, use_mask=self%use_mask)
   elseif (have_qr) then
     call crtm_ade_efr(geom=geom, p=prs, t=t, delp=delp, sea_frac=watercov,         &
-          q=q, ql=ql, qi=qi, qr=qr,                                                &
+          q=q, rho_air=rho_air, ql=ql, qi=qi, qr=qr,                                                &
           ql_ade=ql_ade,qi_ade=qi_ade,qr_ade=qr_ade,                               &
           ql_efr=ql_efr,qi_efr=qi_efr,qr_efr=qr_efr,                               &
           method=self%radii_method, use_mask=self%use_mask)
   else
     call crtm_ade_efr(geom=geom, p=prs, t=t, delp=delp, sea_frac=watercov,         &
-          q=q, ql=ql, qi=qi,                                                       &
+          q=q, rho_air=rho_air, ql=ql, qi=qi,                                                       &
           ql_ade=ql_ade,qi_ade=qi_ade,                                             &
           ql_efr=ql_efr,qi_efr=qi_efr,                                             &
           method=self%radii_method, use_mask=self%use_mask)
@@ -946,6 +967,11 @@ do f = 1, size(fields_to_do)
 
     if (.not. have_qsat) call field_fail(fields_to_do(f))
     field_ptr = qsat
+
+  case ("airdens", "moist_air_density")
+
+    if (.not. have_airdens) call field_fail(fields_to_do(f))
+    field_ptr = rho_air
 
   case ("rh")
 
@@ -1343,6 +1369,7 @@ if (allocated(snwdph)) deallocate(snwdph)
 if (allocated(snwdph_meters)) deallocate(snwdph_meters)
 if (allocated(vort)) deallocate(vort)
 if (allocated(tprs)) deallocate(tprs)
+if (allocated(rho_air)) deallocate(rho_air)
 
 end subroutine changevar
 

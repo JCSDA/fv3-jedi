@@ -72,7 +72,7 @@ contains
 !> Compute cloud area density and effective radius for the crtm --------------
 !>----------------------------------------------------------------------------
 
-subroutine crtm_ade_efr( geom,p,T,delp,sea_frac,q,ql,qi,qr,qs,qg,nc,ni,nr,ns,ng, &
+subroutine crtm_ade_efr( geom,p,T,delp,sea_frac,q,rho_air,ql,qi,qr,qs,qg,nc,ni,nr,ns,ng, &
                          ql_ade,qi_ade,qr_ade,qs_ade,qg_ade,                     &
                          ql_efr,qi_efr,qr_efr,qs_efr,qg_efr, method, use_mask)
 
@@ -85,6 +85,7 @@ real(kind=kind_real), intent(in)  :: t(geom%isc:geom%iec,geom%jsc:geom%jec, 1:ge
 real(kind=kind_real), intent(in)  :: delp(geom%isc:geom%iec,geom%jsc:geom%jec, 1:geom%npz)  !Layer thickness | Pa
 real(kind=kind_real), intent(in)  :: sea_frac(geom%isc:geom%iec,geom%jsc:geom%jec)          !Sea fraction | 1
 real(kind=kind_real), intent(in)  :: q(geom%isc:geom%iec,geom%jsc:geom%jec, 1:geom%npz)     !Specific humidity | kg/kg
+real(kind=kind_real), intent(in)  :: rho_air(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz) !moist_air_density | kg/m^3
 real(kind=kind_real), intent(in)  :: ql(geom%isc:geom%iec,geom%jsc:geom%jec, 1:geom%npz)    !Mixing ratio of cloud liquid water | kg/kg
 real(kind=kind_real), intent(in)  :: qi(geom%isc:geom%iec,geom%jsc:geom%jec, 1:geom%npz)    !Mixing ratio of cloud ice | kg/kg
 real(kind=kind_real), intent(in), optional  :: qr(geom%isc:geom%iec,geom%jsc:geom%jec, 1:geom%npz)    !Mixing ratio of rain | kg/kg
@@ -118,9 +119,8 @@ logical :: have_qr, have_qs, have_qg, have_nc, have_ni, have_nr, have_ns, have_n
 logical :: mask_land, mask_sea
 real :: tempK, wcontent, nconc, answer, ygra1, zans1
 integer :: mu, idx_rei
-real(kind=kind_real), allocatable :: rho_air(:,:,:)
 real, allocatable :: nnc(:,:,:), nnr(:,:,:), nng(:,:,:)
-real(kind=kind_real) :: rdry, grav, tice, zvir
+real(kind=kind_real) :: grav, tice
 !+---+
 
 if (geom%f_comm%rank() == 0 ) then
@@ -129,10 +129,8 @@ if (geom%f_comm%rank() == 0 ) then
 endif
 
 ! Constants
-rdry = constant('rdry')
 grav = constant('grav')
 tice = constant('tice')
-zvir = constant('zvir')
 
 mask_land = .false.
 mask_sea = .false.
@@ -181,7 +179,6 @@ npz = geom%npz
 ! Allocate some convenient arrays
 ! -------------------------------
 allocate(seamask(isc:iec,jsc:jec,1:npz))  ! 2-D really, but 3-D is convenient for where statement
-allocate(rho_air(isc:iec,jsc:jec,1:npz))
 
 
 ! Set outputs to zero
@@ -210,16 +207,6 @@ do j = jsc,jec
   do i = isc,iec
      seamask(i,j,:) = min(max(0.0_kind_real,sea_frac(i,j)),1.0_kind_real)  >= 0.99_kind_real
   enddo
-enddo
-
-! Calculate air density
-! ---------------------
-do k = 1,npz
-   do j = jsc,jec
-     do i = isc,iec
-        rho_air(i,j,k) = p(i,j,k)/(rdry*t(i,j,k)* (1.0_kind_real + zvir * max(q(i,j,k),0.0_kind_real)))
-     enddo
-   enddo
 enddo
 
 ! Convert hydrometeor mixing ratio to liquid/ice water path (kg/kg to kg/m^2)
@@ -603,7 +590,6 @@ elseif (mask_sea) then
 endif
 
 deallocate(seamask)
-deallocate(rho_air)
 
 end subroutine crtm_ade_efr
 
