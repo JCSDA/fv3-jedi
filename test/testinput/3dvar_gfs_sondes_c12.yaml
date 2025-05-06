@@ -52,13 +52,20 @@ cost function:
         processor layout y direction: 2
         debugging mode: false
     saber outer blocks:
-    - saber block name: gsi interpolation to model grid
-      gsi akbk: Data/fv3files/akbk127.nc4
-      gsi error covariance file: Data/inputs/nmcbalance/gsi-coeffs-gfs-global-l127x192y96.nc4
-      gsi berror namelist file: Data/gsibec/gfs_gsi_global_192x96x127.nml
-      processor layout x direction: 3
-      processor layout y direction: 2
-      debugging mode: false
+    - saber block name: interpolation
+      inner geometry:
+        function space: StructuredColumns
+        custom grid matching gsi:
+          type: gaussian
+          lats: 96
+          lons: 192
+        custom partitioner matching gsi:
+          bands: 2
+        halo: 1
+      forward interpolator:
+        local interpolator type: oops unstructured grid interpolator
+      inverse interpolator:
+        local interpolator type: oops unstructured grid interpolator
       state variables to inverse:
       - eastward_wind
       - northward_wind

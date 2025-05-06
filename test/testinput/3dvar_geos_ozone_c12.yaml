@@ -38,19 +38,29 @@ cost function:
         processor layout y direction: 2
         debugging mode: false
     saber outer blocks:
-    - saber block name: gsi interpolation to model grid
-      gsi akbk: Data/fv3files/akbk72.nc4
-      gsi error covariance file: Data/inputs/nmcbalance/gsi-coeffs-geos-global-l72x72y46.nc4
-      gsi berror namelist file: Data/gsibec//geos_gsi_global_o3_72x46x72.nml
-      processor layout x direction: 3
-      processor layout y direction: 2
-      debugging mode: false
-      state variables to inverse: &bvars
+    - saber block name: interpolation
+      inner geometry:
+        function space: StructuredColumns
+        custom grid matching gsi:
+          type: latlon
+          lats: 46
+          lons: 72
+        custom partitioner matching gsi:
+          bands: 2
+        halo: 1
+      forward interpolator:
+        local interpolator type: oops unstructured grid interpolator
+      inverse interpolator:
+        local interpolator type: oops unstructured grid interpolator
+      state variables to inverse:
       - air_pressure_at_surface
+      - geopotential_height_times_gravity_at_surface
       - mole_fraction_of_ozone_in_air
     linear variable change:
       linear variable change name: Control2Analysis
-      input variables: *bvars
+      input variables:
+      - air_pressure_at_surface
+      - mole_fraction_of_ozone_in_air
       output variables: *avars
   observations:
     observers:
