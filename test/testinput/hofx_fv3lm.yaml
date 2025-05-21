@@ -153,6 +153,30 @@ observations:
       covariance model: diagonal ufo
     get values:
       time interpolation: linear
+output:
+  filetype: cube sphere history
+  provider: geos
+  datapath: Data/forecast
+  filename: test_hofx4d.fc.%yyyy%mm%dd_%hh%MM%ssz.nc4
+  first: PT0H
+  frequency: PT3H
+forecast to structured grid:
+  grid type: latlon
+  local interpolator type: oops unstructured grid interpolator
+  resolution in degrees: 10.0
+  variables to output:
+  - air_temperature
+  - eastward_wind
+  - northward_wind
+  pressure levels in hPa:
+  - 850
+  - 500
+  - 250
+  frequency: PT3H
+  datapath: Data/forecast
+  date colons: false
+  type: fc
+  exp: test_hofx4d
 prints:
   frequency: PT3H
 test:
