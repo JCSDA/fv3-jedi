@@ -89,6 +89,7 @@ Data/gsibec/dirac_gsi_gfs_global.nml
 Data/gsibec/geos_gsi_global_72x46x72.nml
 Data/gsibec/geos_gsi_global_o3_72x46x72.nml
 Data/gsibec/geos_gsi_global_tskin_72x46x72.nml
+Data/gsibec/geos_hyb4dgsi_global_72x46x72.nml
 Data/gsibec/gfs_gsi_global_192x96x127.nml
 Data/gsibec/gfs_gsicv_global_192x96x127.nml
 )
@@ -234,6 +235,7 @@ list( APPEND fv3jedi_testinput
   testinput/hyb-3dvar_p12.yaml
   testinput/hyb-3dvar.yaml
   testinput/hyb-4denvar_geos_sondes_c12.yaml
+  testinput/hyb-4denvar_llens_geos.yaml
   testinput/hyb-4dvar_pseudo-geos.yaml
   testinput/hyb-fgat_fv3lm.yaml
   testinput/hyb-fgat_gfs_aero.yaml
@@ -393,6 +395,7 @@ list( APPEND fv3jedi_testoutput
   testoutput/hyb-3dvar_p12.ref
   testoutput/hyb-4dvar_pseudo-geos.ref
   testoutput/hyb-4denvar_geos_sondes_c12.ref
+  testoutput/hyb-4denvar_llens_geos.ref
   testoutput/hyb-fgat_fv3lm.ref
   testoutput/letkf.ref
   testoutput/letkf_perturbed.ref
@@ -1393,6 +1396,12 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier2_hyb-4denvar_geos_sondes
                   MPI      6
                   ARGS     testinput/hyb-4denvar_geos_sondes_c12.yaml
                   COMMAND  fv3jedi_var.x )
+if( ${sp_FOUND} )
+  ecbuild_add_test( TARGET   fv3jedi_test_tier2_hyb-4denvar_llens_geos
+                    MPI      6
+                    ARGS     testinput/hyb-4denvar_llens_geos.yaml
+                    COMMAND  fv3jedi_var.x )
+endif()
 endif()
 
 if( ${sp_FOUND} )
