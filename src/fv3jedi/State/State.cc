@@ -38,9 +38,7 @@ namespace fv3jedi {
 // -------------------------------------------------------------------------------------------------
 
 State::State(const Geometry & geom, const oops::Variables & vars, const util::DateTime & time)
-  : geom_(geom),
-    vars_(geom_.fieldsMetaData().getLongNameFromAnyName(vars)),
-    time_(time)
+  : geom_(geom), vars_(vars), time_(time)
 {
   oops::Log::trace() << "State::State (from geom, vars and time) starting" << std::endl;
   fv3jedi_state_create_f90(keyState_, geom_.toFortran(), vars_, time_);
@@ -60,17 +58,24 @@ State::State(const Geometry & geom, const eckit::Configuration & config)
   if (params.analytic.value() != boost::none) {
     // Variables are hard coded for analytic initial condition (must not be provided)
     ASSERT(params.stateVariables.value() == boost::none);
-    vars_ = oops::Variables({"ua", "va", "t", "delp", "p", "sphum", "ice_wat", "liq_wat", "phis",
-                             "o3mr", "w"});
+    vars_ = oops::Variables({
+      "eastward_wind",
+      "northward_wind",
+      "air_temperature",
+      "air_pressure_thickness",
+      "air_pressure",
+      "water_vapor_mixing_ratio_wrt_moist_air",
+      "cloud_liquid_ice",
+      "cloud_liquid_water",
+      "geopotential_height_times_gravity_at_surface",
+      "ozone_mass_mixing_ratio",
+      "upward_air_velocity"
+      });
   } else {
     // If variables are being read they must be defined in the config
     ASSERT(params.stateVariables.value() != boost::none);
     vars_ = oops::Variables(*params.stateVariables.value());
   }
-  stdvars_ = vars_;  // The original "standard" names are required by NUOPC_Advertise
-
-  // Set long name variables
-  vars_ = geom_.fieldsMetaData().getLongNameFromAnyName(vars_);
 
   // Datetime from the config for read and analytical
   ASSERT(params.datetime.value() != boost::none);
@@ -79,9 +84,13 @@ State::State(const Geometry & geom, const eckit::Configuration & config)
   // Datetime from the config for read and analytical
   ASSERT(params.datetime.value() != boost::none);
   time_ = util::DateTime(*params.datetime.value());
+
+  oops::Log::trace() << "State::State (from geom and parameters) AAA" << std::endl;
 
   // Allocate state
   fv3jedi_state_create_f90(keyState_, geom_.toFortran(), vars_, time_);
+
+  oops::Log::trace() << "State::State (from geom and parameters) BBB" << std::endl;
 
   // Generate analytical state or read from file
   if (params.analytic.value() != boost::none) {
@@ -176,8 +185,7 @@ void State::changeResolution(const State & other) {
 // -------------------------------------------------------------------------------------------------
 
 void State::updateFields(const oops::Variables & newVars) {
-  const oops::Variables newLongVars = geom_.fieldsMetaData().getLongNameFromAnyName(newVars);
-  vars_ = newLongVars;
+  vars_ = newVars;
   fv3jedi_state_update_fields_f90(keyState_, geom_.toFortran(), vars_);
 }
 
@@ -203,6 +211,7 @@ void State::analytic_init(const eckit::Configuration & config, const Geometry & 
 // -------------------------------------------------------------------------------------------------
 
 void State::read(const eckit::Configuration & config) {
+  oops::Log::trace() << "State::read starting" << std::endl;
   StateParameters params;
   params.deserialize(config);
   // Optionally set the datetime on read (needed for some bump applications)
@@ -212,7 +221,8 @@ void State::read(const eckit::Configuration & config) {
     }
   }
   IOBase_ io(IOFactory::create(geom_, *params.ioParametersWrapper.ioParameters.value()));
-  io->read(*this);
+  io->readBase(*this);
+  oops::Log::trace() << "State::read done" << std::endl;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -221,7 +231,7 @@ void State::write(const eckit::Configuration & config) const {
   StateWriteParameters params;
   params.deserialize(config);
   IOBase_ io(IOFactory::create(geom_, *params.ioParametersWrapper.ioParameters.value()));
-  io->write(*this);
+  io->writeBase(*this);
 }
 
 // -------------------------------------------------------------------------------------------------

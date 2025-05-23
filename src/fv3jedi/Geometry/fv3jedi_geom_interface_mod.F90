@@ -312,23 +312,29 @@ end subroutine c_fv3jedi_geom_set_functionspace_pointer
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_geom_set_and_fill_geometry_fields(c_key_self, c_afieldset) &
+subroutine c_fv3jedi_geom_set_and_fill_geometry_fields(c_key_self, c_afieldset, c_field_masks) &
                                        bind(c,name='fv3jedi_geom_set_and_fill_geometry_fields_f90')
 
 integer(c_int),     intent(in) :: c_key_self
 type(c_ptr), value, intent(in) :: c_afieldset
+type(c_ptr), value, intent(in) :: c_field_masks
 
 type(fv3jedi_geom), pointer :: self
-type(atlas_fieldset) :: afieldset
+type(atlas_fieldset)        :: afieldset
+type(fckit_configuration)   :: f_field_masks
 
 ! LinkedList
 ! ----------
 call fv3jedi_geom_registry%get(c_key_self,self)
 afieldset = atlas_fieldset(c_afieldset)
 
+! Fortran APIs
+! ------------
+f_field_masks = fckit_configuration(c_field_masks)
+
 ! Call implementation
 ! -------------------
-call self%set_and_fill_geometry_fields(afieldset)
+call self%set_and_fill_geometry_fields(afieldset, f_field_masks)
 
 end subroutine c_fv3jedi_geom_set_and_fill_geometry_fields
 

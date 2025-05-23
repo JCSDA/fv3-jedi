@@ -9,7 +9,6 @@ geometry:
   npx: 13
   npy: 13
   npz: 72
-  field metadata override: Data/fieldmetadata/geos.yaml
 background:
   datetime: 2020-12-15T00:00:00Z
   filetype: cube sphere history
@@ -22,6 +21,12 @@ background:
   - air_temperature
   - air_pressure_at_surface
   - water_vapor_mixing_ratio_wrt_moist_air
+  field io names: &field_io_names
+    air_horizontal_streamfunction: psi
+    air_horizontal_velocity_potential: chi
+    air_temperature: t
+    air_pressure_at_surface: ps
+    water_vapor_mixing_ratio_wrt_moist_air: q
 background error:
   covariance model: SABER
   saber central block:
@@ -77,6 +82,7 @@ background error:
           provider: geos
           datapath: Data/staticb
           filename: geos.var.20201214.210000.nc4
+          field io names: *field_io_names
       - parameter: m4
         component: 1
         file:
@@ -86,6 +92,7 @@ background error:
           provider: geos
           datapath: Data/staticb/
           filename: geos.m4.20201214.210000.nc4
+          field io names: *field_io_names
       - parameter: var
         component: 2
         file:
@@ -95,6 +102,7 @@ background error:
           provider: geos
           datapath: Data/staticb/
           filename: geos.var.20201215.000000.nc4
+          field io names: *field_io_names
       - parameter: m4
         component: 2
         file:
@@ -104,6 +112,7 @@ background error:
           provider: geos
           datapath: Data/staticb/
           filename: geos.m4.20201215.000000.nc4
+          field io names: *field_io_names
       - parameter: var
         component: 3
         file:
@@ -113,6 +122,7 @@ background error:
           provider: geos
           datapath: Data/staticb/
           filename: geos.var.20201215.030000.nc4
+          field io names: *field_io_names
       - parameter: m4
         component: 3
         file:
@@ -122,6 +132,7 @@ background error:
           provider: geos
           datapath: Data/staticb/
           filename: geos.m4.20201215.030000.nc4
+          field io names: *field_io_names
       output model files:
       - parameter: stddev
         file:
@@ -129,6 +140,7 @@ background error:
           provider: geos
           datapath: Data/staticb/
           filename: geos.stddev.nc4
+          field io names: *field_io_names
 test:
   reference filename: testoutput/staticb_var_geos.ref
   test output filename: testoutput/staticb_var_geos.test.out

@@ -6,16 +6,17 @@ geometry:
   npx: 13
   npy: 13
   npz: 127
-  field metadata override: Data/fieldmetadata/gfs-restart.yaml
   time invariant fields:
     state fields:
       datetime: 2023-05-01T12:00:00Z
       filetype: fms restart
       skip coupler file: true
       state variables:
-      - orog_filt
+      - filtered_orography
       datapath: Data/inputs/gfs_c12/oro/
       filename_orog: C12_oro_data.nc
+      field io names: &field_io_names
+        filtered_orography: orog_filt
     derived fields:
     - nominal_surface_pressure
 time window:

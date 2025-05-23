@@ -1,12 +1,12 @@
 cost function:
   cost type: 3D-Var
   analysis variables: &avars
-  - ps
-  - ts
-  - frocean
-  - frlake
-  - frseaice
-  - frland
+  - air_pressure_at_surface
+  - skin_temperature_at_surface
+  - fraction_of_ocean
+  - fraction_of_lake
+  - fraction_of_ice
+  - fraction_of_land
   time window:
     begin: 2020-12-14T21:00:00Z
     length: PT6H
@@ -18,7 +18,6 @@ cost function:
     npx: 13
     npy: 13
     npz: 72
-    field metadata override: Data/fieldmetadata/geos.yaml
   background:
     datetime: 2020-12-15T00:00:00Z
     filetype: cube sphere history
@@ -26,15 +25,24 @@ cost function:
     datapath: Data/inputs/geos_c12
     filename: geos.bkg.20201215_000000z.nc4
     state variables:
-    - ps
-    - delp
-    - phis
+    - air_pressure_at_surface
+    - air_pressure_thickness
+    - geopotential_height_times_gravity_at_surface
     - sheleg
-    - ts
-    - frocean
-    - frland
-    - frseaice
-    - frlake
+    - skin_temperature_at_surface
+    - fraction_of_ocean
+    - fraction_of_land
+    - fraction_of_ice
+    - fraction_of_lake
+    field io names: &field_io_names
+      air_pressure_at_surface: ps
+      skin_temperature_at_surface: ts
+      fraction_of_ocean: frocean
+      fraction_of_lake: frlake
+      fraction_of_ice: frseaice
+      fraction_of_land: frland
+      air_pressure_thickness: delp
+      geopotential_height_times_gravity_at_surface: phis
   background error:
     covariance model: SABER
     saber central block:
@@ -108,6 +116,7 @@ output:
   filename: 3dvars-geos-tskin.ana.%yyyy%mm%dd_%hh%MM%ssz.nc4
   first: PT0H
   frequency: PT1H
+  field io names: *field_io_names
 variational:
   minimizer:
     algorithm: DRPCG
@@ -119,7 +128,6 @@ variational:
       npx: 13
       npy: 13
       npz: 72
-      field metadata override: Data/fieldmetadata/geos.yaml
     diagnostics:
       departures: ombg
 test:

@@ -6,18 +6,24 @@ geometry:
   npx: 49
   npy: 49
   npz: 127
-  field metadata override: Data/fieldmetadata/gfs_v17-land.yaml
   time invariant fields:
     state fields:
       datetime: 2023-05-01T12:00:00Z
       filetype: fms restart
       skip coupler file: true
       state variables:
-      - orog_filt
+      - filtered_orography
       datapath: Data/inputs/gfs_land_c48/grid/
       filename_orog: C48_oro_data.nc
+      field io names: &field_io_names
+        filtered_orography: orog_filt
+        totalSnowDepth: snodl
     derived fields:
     - nominal_surface_pressure
+  field interpolation methods:
+    totalSnowDepth: 'nearest'
+    vtype: 'nearest'
+    slmsk: 'nearest'
 time window:
   begin: 2023-05-01T00:00:00Z
   length: PT24H
@@ -26,21 +32,23 @@ background:
    - datetime: 2023-05-01T12:00:00Z
      filetype: fms restart
      state variables:
-     - snodl
+     - totalSnowDepth
      - vtype
      - slmsk
      datapath: Data/inputs/gfs_land_c48/mem001/
      filename_sfcd: 20230501.120000.sfc_data.nc
      filename_cplr: 20230501.120000.coupler.res
+     field io names: *field_io_names
    - datetime: 2023-05-01T12:00:00Z
      filetype: fms restart
      state variables:
-     - snodl
+     - totalSnowDepth
      - vtype
      - slmsk
      datapath: Data/inputs/gfs_land_c48/mem002/
      filename_sfcd: 20230501.120000.sfc_data.nc
      filename_cplr: 20230501.120000.coupler.res
+     field io names: *field_io_names
 observations:
   observers:
   - obs space:
@@ -109,10 +117,12 @@ output:
   filetype: auxgrid
   gridtype: latlon
   filename: Data/analysis/letkf/gfs_land/mem%{member}%/letkf.
+  field io names: *field_io_names
 output increment:
   filetype: auxgrid
   gridtype: latlon
   filename: Data/analysis/letkf/gfs_land/mem%{member}%/xainc.
+  field io names: *field_io_names
 test:
   reference filename: testoutput/letkf_snow.ref
   test output filename: testoutput/letkf_snow.test.out

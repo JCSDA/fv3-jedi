@@ -9,7 +9,6 @@ geometry:
   npx: 13
   npy: 13
   npz: 72
-  field metadata override: Data/fieldmetadata/geos.yaml
 background:
   datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
   filetype: cube sphere history
@@ -22,6 +21,12 @@ background:
   - water_vapor_mixing_ratio_wrt_moist_air
   datapath: Data/staticb/balanced/mem001/
   filename: geos._YYYY__MM__DD_._HH_0000z.nc4
+  field io names: &field_io_names
+    air_horizontal_streamfunction: psi
+    air_horizontal_velocity_potential: chi
+    air_temperature: t
+    air_pressure_at_surface: ps
+    water_vapor_mixing_ratio_wrt_moist_air: q
 background error:
   covariance model: SABER
   iterative ensemble loading: true
@@ -34,6 +39,7 @@ background error:
         state variables: *stateVariables
         datapath: Data/staticb/balanced/mem%mem%/
         filename: geos._YYYY__MM__DD_._HH_0000z.nc4
+        field io names: *field_io_names
       pattern: '%mem%'
       nmembers: 10
       zero padding: 3
@@ -43,6 +49,7 @@ background error:
     provider: geos
     datapath: Data/staticb/unbalanced/mem%{member}%/
     filename: geos._YYYY__MM__DD_._HH_0000z.nc4
+    field io names: *field_io_names
   saber central block:
     saber block name: BUMP_NICAS
     calibration:
@@ -84,12 +91,14 @@ background error:
           provider: geos
           datapath: Data/staticb/
           filename: geos.var._YYYY__MM__DD_._HH_0000.nc4
+          field io names: *field_io_names
       - parameter: m4
         file:
           filetype: cube sphere history
           provider: geos
           datapath: Data/staticb/
           filename: geos.m4._YYYY__MM__DD_._HH_0000.nc4
+          field io names: *field_io_names
   saber outer blocks:
   - saber block name: BUMP_VerticalBalance
     active variables:

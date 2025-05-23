@@ -40,8 +40,7 @@ namespace fv3jedi {
 
 Increment::Increment(const Geometry & geom, const oops::Variables & vars,
                      const util::DateTime & time)
-  : geom_(geom), vars_(geom_.fieldsMetaData().getLongNameFromAnyName(vars)),
-    time_(time)
+  : geom_(geom), vars_(vars), time_(time)
 {
   oops::Log::trace() << "Increment::Increment (from geom, vars and time) starting" << std::endl;
   fv3jedi_increment_create_f90(keyInc_, geom_.toFortran(), vars_, time_);
@@ -133,8 +132,7 @@ Increment & Increment::operator=(const Increment & rhs) {
 }
 // -------------------------------------------------------------------------------------------------
 void Increment::updateFields(const oops::Variables & newVars) {
-  const oops::Variables newLongVars = geom_.fieldsMetaData().getLongNameFromAnyName(newVars);
-  vars_ = newLongVars;
+  vars_ = newVars;
   fv3jedi_increment_update_fields_f90(keyInc_, geom_.toFortran(), vars_);
 }
 // -------------------------------------------------------------------------------------------------
@@ -246,7 +244,7 @@ void Increment::read(const eckit::Configuration & config) {
   std::unique_ptr<IOBase> io(IOFactory::create(geom_,
                                                *params.ioParametersWrapper.ioParameters.value()));
   // Perform read
-  io->read(*this);
+  io->readBase(*this);
 }
 // -------------------------------------------------------------------------------------------------
 void Increment::write(const eckit::Configuration & config) const {
@@ -256,7 +254,7 @@ void Increment::write(const eckit::Configuration & config) const {
   std::unique_ptr<IOBase> io(IOFactory::create(geom_,
                                                *params.ioParametersWrapper.ioParameters.value()));
   // Perform write
-  io->write(*this);
+  io->writeBase(*this);
 }
 // -------------------------------------------------------------------------------------------------
 double Increment::norm() const {

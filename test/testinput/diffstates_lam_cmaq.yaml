@@ -4,11 +4,9 @@ state geometry:
     field table filename: Data/fv3files/field_table_lam_cmaq
   namelist filename: Data/fv3files/input_lam_cmaq.nml
   akbk: Data/fv3files/akbk64.nc4
-  field metadata override: Data/fieldmetadata/lam_cmaq.yaml
 increment geometry:
   namelist filename: Data/fv3files/input_lam_cmaq.nml
   akbk: Data/fv3files/akbk64.nc4
-  field metadata override: Data/fieldmetadata/lam_cmaq.yaml
 state1:
   datetime: 2020-09-03T18:00:00Z
   filetype: fms restart
@@ -20,6 +18,8 @@ state1:
   filename_cplr: 20200903.180000.3dvar_lam_cmaq_no2.coupler.res
   state variables:
   - volume_mixing_ratio_of_no2
+  field io names: &field_io_names
+    volume_mixing_ratio_of_no2: no2
 state2:
   datetime: 2020-09-03T18:00:00Z
   filetype: fms restart
@@ -31,10 +31,12 @@ state2:
   filename_cplr: 20200903.180000.coupler.res
   state variables:
   - volume_mixing_ratio_of_no2
+  field io names: *field_io_names
 output:
   filetype: fms restart
   datapath: Data/increment/
   prefix: 3dvar_lam_cmaq_no2
+  field io names: *field_io_names
 test:
   reference filename: testoutput/diffstates_lam_cmaq.ref
   test output filename: testoutput/diffstates_lam_cmaq.test.out

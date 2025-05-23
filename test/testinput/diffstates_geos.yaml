@@ -6,13 +6,11 @@ state geometry:
   npx: 13
   npy: 13
   npz: 72
-  field metadata override: Data/fieldmetadata/geos.yaml
 increment geometry:
   akbk: Data/fv3files/akbk72.nc4
   npx: 13
   npy: 13
   npz: 72
-  field metadata override: Data/fieldmetadata/geos.yaml
 state1:
   datetime: 2020-12-14T21:00:00Z
   filetype: cube sphere history
@@ -20,14 +18,23 @@ state1:
   datapath: Data/analysis
   filename: hyb-4dvar-geos.ana.20201214_210000z.nc4
   state variables:
-  - ua
-  - va
-  - t
-  - delp
-  - q
-  - qi
-  - ql
-  - o3ppmv
+  - eastward_wind
+  - northward_wind
+  - air_temperature
+  - air_pressure_thickness
+  - water_vapor_mixing_ratio_wrt_moist_air
+  - cloud_liquid_ice
+  - cloud_liquid_water
+  - mole_fraction_of_ozone_in_air
+  field io names: &field_io_names
+    eastward_wind: ua
+    northward_wind: va
+    air_temperature: t
+    air_pressure_thickness: delp
+    water_vapor_mixing_ratio_wrt_moist_air: q
+    cloud_liquid_ice: qi
+    cloud_liquid_water: ql
+    mole_fraction_of_ozone_in_air: o3ppmv
 state2:
   datetime: 2020-12-14T21:00:00Z
   filetype: cube sphere history
@@ -35,19 +42,21 @@ state2:
   datapath: Data/inputs/geos_c12
   filename: geos.bkg.20201214_210000z.nc4
   state variables:
-  - ua
-  - va
-  - t
-  - delp
-  - q
-  - qi
-  - ql
-  - o3ppmv
+  - eastward_wind
+  - northward_wind
+  - air_temperature
+  - air_pressure_thickness
+  - water_vapor_mixing_ratio_wrt_moist_air
+  - cloud_liquid_ice
+  - cloud_liquid_water
+  - mole_fraction_of_ozone_in_air
+  field io names: *field_io_names
 output:
   filetype: cube sphere history
   provider: geos
   datapath: Data/increment
   filename: hyb-4dvar-geos.inc.%yyyy%mm%dd_%hh%MM%ssz.nc4
+  field io names: *field_io_names
 test:
   float absolute tolerance: 1.0e-7
   reference filename: testoutput/diffstates_geos.ref

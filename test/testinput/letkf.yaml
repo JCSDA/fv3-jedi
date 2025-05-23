@@ -7,7 +7,6 @@ geometry:
   npy: 13
   npz: 127
   member_number: 0
-  field metadata override: Data/fieldmetadata/gfs-restart.yaml
 time window:
   begin: &date 2020-12-14T21:00:00Z
   length: PT6H
@@ -17,26 +16,26 @@ background:
        datetime: 2020-12-15T00:00:00Z
        filetype: fms restart
        state variables:
-       - ua
-       - va
-       - t
-       - delp
-       - sphum
-       - ice_wat
-       - liq_wat
-       - o3mr
-       - phis
+       - eastward_wind
+       - northward_wind
+       - air_temperature
+       - air_pressure_thickness
+       - water_vapor_mixing_ratio_wrt_moist_air
+       - cloud_liquid_ice
+       - cloud_liquid_water
+       - ozone_mass_mixing_ratio
+       - geopotential_height_times_gravity_at_surface
        - slmsk
        - sheleg
-       - tsea
+       - skin_temperature_at_surface
        - vtype
        - stype
        - vfrac
        - stc
-       - smc
-       - snwdph
-       - u_srf
-       - v_srf
+       - soilMoistureVolumetric
+       - totalSnowDepth
+       - eastward_wind_at_surface
+       - northward_wind_at_surface
        - f10m
        datapath: Data/inputs/gfs_c12/mem%mem%/
        filename_core: 20201215.000000.fv_core.res.nc
@@ -44,6 +43,21 @@ background:
        filename_sfcd: 20201215.000000.sfc_data.nc
        filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
        filename_cplr: 20201215.000000.coupler.res
+       field io names: &field_io_names
+         eastward_wind: ua
+         northward_wind: va
+         air_temperature: T
+         air_pressure_thickness: delp
+         water_vapor_mixing_ratio_wrt_moist_air: sphum
+         cloud_liquid_ice: ice_wat
+         cloud_liquid_water: liq_wat
+         ozone_mass_mixing_ratio: o3mr
+         geopotential_height_times_gravity_at_surface: phis
+         skin_temperature_at_surface: tsea
+         soilMoistureVolumetric: smc
+         totalSnowDepth: snwdph
+         eastward_wind_at_surface: u_srf
+         northward_wind_at_surface: v_srf
      pattern: '%mem%'
      nmembers: 3
      zero padding: 3
@@ -201,10 +215,12 @@ output:
   filetype: auxgrid
   gridtype: latlon
   filename: Data/analysis/letkf/gfs/mem%{member}%/letkf.
+  field io names: *field_io_names
 output increment:
   filetype: auxgrid
   gridtype: latlon
   filename: Data/analysis/letkf/gfs/mem%{member}%/xainc.letkf.
+  field io names: *field_io_names
 test:
   reference filename: testoutput/letkf.ref
   test output filename: testoutput/letkf.test.out

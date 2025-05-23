@@ -11,7 +11,6 @@
 #include <ostream>
 #include <string>
 
-#include "oops/base/Variables.h"
 #include "oops/interface/ModelBase.h"
 #include "oops/util/Duration.h"
 #include "oops/util/ObjectCounter.h"
@@ -57,7 +56,6 @@ class ModelFV3LM: public oops::interface::ModelBase<Traits>,
   F90model keyConfig_;
   util::Duration tstep_;
   const Geometry geom_;
-  oops::Variables vars_;
 };
 // -------------------------------------------------------------------------------------------------
 

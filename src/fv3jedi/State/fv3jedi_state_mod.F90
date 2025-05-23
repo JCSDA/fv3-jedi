@@ -58,7 +58,7 @@ type(fv3jedi_field), pointer :: state
 do f = 1, size(increment_fields)
 
   ! Get pointer to state
-  call self%get_field(increment_fields(f)%short_name, state)
+  call self%get_field(increment_fields(f)%long_name, state)
 
   ! Add increment to state
   state%array = state%array + increment_fields(f)%array
@@ -155,17 +155,17 @@ if (geom%f_comm%rank() == 0) then
 endif
 
 ! Pointers to fields
-call self%get_field('ua'     , ua  )
-call self%get_field('va'     , va  )
-call self%get_field('t'      , t   )
-call self%get_field('delp'   , delp)
-call self%get_field('p'      , p   )
-call self%get_field('sphum'  , q   )
-call self%get_field('ice_wat', qi  )
-call self%get_field('liq_wat', ql  )
-call self%get_field('phis'   , phis)
-call self%get_field('o3mr'   , o3  )
-call self%get_field('w'      , w   )
+call self%get_field('eastward_wind',                                ua  )
+call self%get_field('northward_wind',                               va  )
+call self%get_field('air_temperature',                              t   )
+call self%get_field('air_pressure_thickness',                       delp)
+call self%get_field('air_pressure',                                 p   )
+call self%get_field('water_vapor_mixing_ratio_wrt_moist_air',       q   )
+call self%get_field('cloud_liquid_ice',                             qi  )
+call self%get_field('cloud_liquid_water',                           ql  )
+call self%get_field('geopotential_height_times_gravity_at_surface', phis)
+call self%get_field('ozone_mass_mixing_ratio',                      o3  )
+call self%get_field('upward_air_velocity',                          w   )
 
 ! Initialize fields
 ua   = 0.0_kind_real

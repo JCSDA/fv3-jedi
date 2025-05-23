@@ -19,27 +19,43 @@ cost function:
     filename_sfcw: 20201214.210000.fv_srf_wnd.res.nc
     filename_cplr: 20201214.210000.coupler.res
     state variables:
-    - ua
-    - va
-    - T
-    - delp
-    - sphum
-    - ice_wat
-    - liq_wat
-    - o3mr
-    - phis
+    - eastward_wind
+    - northward_wind
+    - air_temperature
+    - air_pressure_thickness
+    - water_vapor_mixing_ratio_wrt_moist_air
+    - cloud_liquid_ice
+    - cloud_liquid_water
+    - ozone_mass_mixing_ratio
+    - geopotential_height_times_gravity_at_surface
     - slmsk
     - sheleg
-    - tsea
+    - skin_temperature_at_surface
     - vtype
     - stype
     - vfrac
     - stc
-    - smc
-    - snwdph
-    - u_srf
-    - v_srf
+    - soilMoistureVolumetric
+    - totalSnowDepth
+    - eastward_wind_at_surface
+    - northward_wind_at_surface
     - f10m
+    field io names: &field_io_names
+      eastward_wind: ua
+      northward_wind: va
+      air_temperature: T
+      air_pressure_thickness: delp
+      water_vapor_mixing_ratio_wrt_moist_air: sphum
+      cloud_liquid_ice: ice_wat
+      cloud_liquid_water: liq_wat
+      ozone_mass_mixing_ratio: o3mr
+      geopotential_height_times_gravity_at_surface: phis
+      skin_temperature_at_surface: tsea
+      soilMoistureVolumetric: smc
+      totalSnowDepth: snwdph
+      eastward_wind_at_surface: u_srf
+      northward_wind_at_surface: v_srf
+      air_pressure_at_surface: ps
   background error:
     covariance model: hybrid
     components:
@@ -118,6 +134,7 @@ cost function:
             filename_sfcd: 20201214.210000.sfc_data.nc
             filename_sfcw: 20201214.210000.fv_srf_wnd.res.nc
             filename_cplr: 20201214.210000.coupler.res
+            field io names: *field_io_names
           pattern: '%mem%'
           nmembers: 10
           zero padding: 3
@@ -295,26 +312,26 @@ cost function:
     lm_do_mst: 0
     tstep: PT1H
     model variables:
-    - ua
-    - va
-    - T
-    - delp
-    - sphum
-    - ice_wat
-    - liq_wat
-    - o3mr
-    - phis
+    - eastward_wind
+    - northward_wind
+    - air_temperature
+    - air_pressure_thickness
+    - water_vapor_mixing_ratio_wrt_moist_air
+    - cloud_liquid_ice
+    - cloud_liquid_water
+    - ozone_mass_mixing_ratio
+    - geopotential_height_times_gravity_at_surface
     - slmsk
     - sheleg
-    - tsea
+    - skin_temperature_at_surface
     - vtype
     - stype
     - vfrac
     - stc
-    - smc
-    - snwdph
-    - u_srf
-    - v_srf
+    - soilMoistureVolumetric
+    - totalSnowDepth
+    - eastward_wind_at_surface
+    - northward_wind_at_surface
     - f10m
     initialize model from A-Grid winds: true
   geometry:
@@ -325,12 +342,12 @@ cost function:
     npx: 13
     npy: 13
     npz: 127
-    field metadata override: Data/fieldmetadata/gfs-restart.yaml
 output:
   filetype: fms restart
   datapath: Data/analysis/eda/gfs/mem001
   prefix: eda-4dvar-gfs
   frequency: PT3H
+  field io names: *field_io_names
 variational:
   minimizer:
     algorithm: DRPCG
@@ -343,34 +360,14 @@ variational:
       npx: 13
       npy: 13
       npz: 127
-      field metadata override: Data/fieldmetadata/gfs-restart.yaml
     linear model:
       name: FV3JEDITLM
       namelist filename: Data/fv3files/input_gfs_c12.nml
       linear model namelist filename: Data/fv3files/inputpert_4dvar.nml
       tstep: PT1H
-      tlm variables:
-      - ua
-      - va
-      - T
-      - delp
-      - sphum
-      - ice_wat
-      - liq_wat
-      - o3mr
       lm_do_dyn: 1
       lm_do_trb: 0
       lm_do_mst: 0
-      trajectory:
-        model variables:
-        - ua
-        - va
-        - T
-        - delp
-        - sphum
-        - ice_wat
-        - liq_wat
-        - o3mr
   - ninner: 1
     gradient norm reduction: 1e-10
     test: on
@@ -379,31 +376,11 @@ variational:
       npx: 13
       npy: 13
       npz: 127
-      field metadata override: Data/fieldmetadata/gfs-restart.yaml
     linear model:
       name: FV3JEDITLM
       namelist filename: Data/fv3files/input_gfs_c12.nml
       linear model namelist filename: Data/fv3files/inputpert_4dvar.nml
       tstep: PT1H
-      tlm variables:
-      - ua
-      - va
-      - T
-      - delp
-      - sphum
-      - ice_wat
-      - liq_wat
-      - o3mr
       lm_do_dyn: 1
       lm_do_trb: 0
       lm_do_mst: 0
-      trajectory:
-        model variables:
-        - ua
-        - va
-        - T
-        - delp
-        - sphum
-        - ice_wat
-        - liq_wat
-        - o3mr

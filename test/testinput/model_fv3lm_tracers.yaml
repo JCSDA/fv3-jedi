@@ -7,7 +7,6 @@ geometry:
   npy: 13
   npz: 64
   ntiles: 6
-  field metadata override: Data/fieldmetadata/gfs-aerosol.yaml
 model:
   name: FV3LM
   use internal namelist: true
@@ -16,20 +15,20 @@ model:
   lm_do_trb: 0
   lm_do_mst: 0
   model variables:
-  - ua
-  - va
-  - T
-  - delp
-  - sphum
-  - ice_wat
-  - liq_wat
-  - o3mr
-  - phis
-  - dust1
-  - dust2
-  - dust3
-  - dust4
-  - dust5
+  - eastward_wind
+  - northward_wind
+  - air_temperature
+  - air_pressure_thickness
+  - water_vapor_mixing_ratio_wrt_moist_air
+  - cloud_liquid_ice
+  - cloud_liquid_water
+  - ozone_mass_mixing_ratio
+  - geopotential_height_times_gravity_at_surface
+  - mass_fraction_of_dust001_in_air
+  - mass_fraction_of_dust002_in_air
+  - mass_fraction_of_dust003_in_air
+  - mass_fraction_of_dust004_in_air
+  - mass_fraction_of_dust005_in_air
   datapath: Data/inputs/gfs_aero_c12/bkg
   filename_core: 20210801.060000.fv_core.res.nc
   filename_core_out: checkpoint.model_fv3lm_tracers.fv_core.res.nc
@@ -44,22 +43,37 @@ initial condition:
   datetime: 2021-08-01T06:00:00Z
   filetype: fms restart
   state variables:
-  - ua
-  - va
-  - T
-  - delp
-  - sphum
-  - ice_wat
-  - liq_wat
-  - o3mr
-  - phis
-  - dust1
-  - dust2
-  - dust3
-  - dust4
-  - dust5
+  - eastward_wind
+  - northward_wind
+  - air_temperature
+  - air_pressure_thickness
+  - water_vapor_mixing_ratio_wrt_moist_air
+  - cloud_liquid_ice
+  - cloud_liquid_water
+  - ozone_mass_mixing_ratio
+  - geopotential_height_times_gravity_at_surface
+  - mass_fraction_of_dust001_in_air
+  - mass_fraction_of_dust002_in_air
+  - mass_fraction_of_dust003_in_air
+  - mass_fraction_of_dust004_in_air
+  - mass_fraction_of_dust005_in_air
   datapath: Data/inputs/gfs_aero_c12/bkg
   filename_core: 20210801.060000.fv_core.res.nc
   filename_trcr: 20210801.060000.fv_tracer.res.nc
   filename_sfcw: 20210801.060000.fv_srf_wnd.res.nc
   filename_cplr: 20210801.060000.coupler.res
+  field io names: &field_io_names
+    eastward_wind: ua
+    northward_wind: va
+    air_temperature: T
+    air_pressure_thickness: DELP
+    water_vapor_mixing_ratio_wrt_moist_air: sphum
+    cloud_liquid_ice: ice_wat
+    cloud_liquid_water: liq_wat
+    ozone_mass_mixing_ratio: o3mr
+    geopotential_height_times_gravity_at_surface: phis
+    mass_fraction_of_dust001_in_air: dust1
+    mass_fraction_of_dust002_in_air: dust2
+    mass_fraction_of_dust003_in_air: dust3
+    mass_fraction_of_dust004_in_air: dust4
+    mass_fraction_of_dust005_in_air: dust5

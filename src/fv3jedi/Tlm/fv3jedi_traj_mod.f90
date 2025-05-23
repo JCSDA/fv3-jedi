@@ -127,10 +127,10 @@ traj%khu     = 0.0_kind_real
 
 ! Copy mandatory parts of the trajecotry
 ! --------------------------------------
-call state%get_field('ua'  , traj%ua   )
-call state%get_field('va'  , traj%va   )
-call state%get_field('t'   , traj%t   )
-call state%get_field('delp', traj%delp)
+call state%get_field('eastward_wind', traj%ua)
+call state%get_field('northward_wind', traj%va)
+call state%get_field('air_temperature', traj%t)
+call state%get_field('air_pressure_thickness', traj%delp)
 
 
 ! Allocate all the tracers that will be part of what gets advected
@@ -140,9 +140,12 @@ call state%get_field('delp', traj%delp)
 number_tracers = state%ntracers
 
 ! Remove qls, qcn, cfcn
-if (state%has_field('qls'))  number_tracers = number_tracers - 1
-if (state%has_field('qcn'))  number_tracers = number_tracers - 1
-if (state%has_field('cfcn')) number_tracers = number_tracers - 1
+if (state%has_field('initial_mass_fraction_of_large_scale_cloud_condensate')) &
+  number_tracers = number_tracers - 1
+if (state%has_field('initial_mass_fraction_of_convective_cloud_condensate')) &
+  number_tracers = number_tracers - 1
+if (state%has_field('convective_cloud_area_fraction')) &
+  number_tracers = number_tracers - 1
 
 ! Allocate the tracers
 
@@ -158,13 +161,16 @@ ft = 1
 do f = 1, state%nf
   if (state%fields(f)%tracer) then
 
-    ! Skip if the short_name is qls, qcn or cfcn
-    if (trim(state%fields(f)%short_name) == 'qls'  ) cycle
-    if (trim(state%fields(f)%short_name) == 'qcn'  ) cycle
-    if (trim(state%fields(f)%short_name) == 'cfcn' ) cycle
+    ! Skip parameterizaion specific cloud/moisture tracers
+    if (trim(state%fields(f)%long_name) == &
+       'initial_mass_fraction_of_large_scale_cloud_condensate') cycle
+    if (trim(state%fields(f)%long_name) == &
+       'initial_mass_fraction_of_convective_cloud_condensate') cycle
+    if (trim(state%fields(f)%long_name) == &
+       'convective_cloud_area_fraction') cycle
 
     ! Put specific humidity in the first spot
-    if (trim(state%fields(f)%short_name) == 'sphum') then
+    if (trim(state%fields(f)%long_name) == 'water_vapor_mixing_ratio_wrt_moist_air') then
       index = 1
       sphum_found = .true.
     else
@@ -177,7 +183,8 @@ do f = 1, state%nf
 end do
 
 if(.not.sphum_found) then
-  call abor1_ftn("fv3jedi_traj_mod:set: sphum is not listed in 'state variables'")
+  call abor1_ftn("fv3jedi_traj_mod:set: (water_vapor_mixing_ratio_wrt_moist_air) sphum is not " // &
+                 "listed in 'state variables'")
 end if
 
 
@@ -185,67 +192,76 @@ end if
 ! ----------------------------------------------
 
 ! Copy optional parts of the trajecotry (Rank 3)
-if (state%has_field('w'   )) call state%get_field('w'   , traj%w   )
-if (state%has_field('delz')) call state%get_field('delz', traj%delz)
-if (state%has_field('qls' )) call state%get_field('qls' , traj%qls )
-if (state%has_field('qcn' )) call state%get_field('qcn' , traj%qcn )
-if (state%has_field('cfcn')) call state%get_field('cfcn', traj%cfcn)
+if (state%has_field('upward_air_velocity')) &
+  call state%get_field('upward_air_velocity', traj%w)
+
+if (state%has_field('layer_thickness')) &
+  call state%get_field('layer_thickness', traj%delz)
+
+if (state%has_field('initial_mass_fraction_of_large_scale_cloud_condensate')) &
+  call state%get_field('initial_mass_fraction_of_large_scale_cloud_condensate', traj%qls)
+
+if (state%has_field('initial_mass_fraction_of_convective_cloud_condensate')) &
+  call state%get_field('initial_mass_fraction_of_convective_cloud_condensate', traj%qcn)
+
+if (state%has_field('convective_cloud_area_fraction')) &
+  call state%get_field('convective_cloud_area_fraction', traj%cfcn)
 
 ! Copy optional parts of the trajecotry (Rank 2)
-if (state%has_field('phis')) then
-  call state%get_field('phis', phis)
+if (state%has_field('geopotential_height_times_gravity_at_surface')) then
+  call state%get_field('geopotential_height_times_gravity_at_surface', phis)
   traj%phis = phis(:,:,1)
 endif
-if (state%has_field('frocean')) then
-  call state%get_field('frocean', frocean)
+if (state%has_field('fraction_of_ocean')) then
+  call state%get_field('fraction_of_ocean', frocean)
   traj%frocean = frocean(:,:,1)
 endif
-if (state%has_field('frland')) then
-  call state%get_field('frland', frland)
+if (state%has_field('fraction_of_land')) then
+  call state%get_field('fraction_of_land', frland)
   traj%frland = frland(:,:,1)
 endif
-if (state%has_field('varflt')) then
-  call state%get_field('varflt', varflt)
+if (state%has_field('isotropic_variance_of_filtered_topography')) then
+  call state%get_field('isotropic_variance_of_filtered_topography', varflt)
   traj%varflt = varflt(:,:,1)
 endif
-if (state%has_field('ustar')) then
-  call state%get_field('ustar', ustar)
+if (state%has_field('surface_velocity_scale')) then
+  call state%get_field('surface_velocity_scale', ustar)
   traj%ustar = ustar(:,:,1)
 endif
-if (state%has_field('bstar')) then
-  call state%get_field('bstar', bstar)
+if (state%has_field('surface_buoyancy_scale')) then
+  call state%get_field('surface_buoyancy_scale', bstar)
   traj%bstar = bstar(:,:,1)
 endif
-if (state%has_field('zpbl')) then
-  call state%get_field('zpbl', zpbl)
+if (state%has_field('planetary_boundary_layer_height')) then
+  call state%get_field('planetary_boundary_layer_height', zpbl)
   traj%zpbl = zpbl(:,:,1)
 endif
-if (state%has_field('cm')) then
-  call state%get_field('cm', cm)
+if (state%has_field('surface_exchange_coefficient_for_momentum')) then
+  call state%get_field('surface_exchange_coefficient_for_momentum', cm)
   traj%cm = cm(:,:,1)
 endif
-if (state%has_field('ct')) then
-  call state%get_field('ct', ct)
+if (state%has_field('surface_exchange_coefficient_for_heat')) then
+  call state%get_field('surface_exchange_coefficient_for_heat', ct)
   traj%ct = ct(:,:,1)
 endif
-if (state%has_field('cq')) then
-  call state%get_field('cq', cq)
+if (state%has_field('surface_exchange_coefficient_for_moisture')) then
+  call state%get_field('surface_exchange_coefficient_for_moisture', cq)
   traj%cq = cq(:,:,1)
 endif
-if (state%has_field('kcbl')) then
-  call state%get_field('kcbl', kcbl)
+if (state%has_field('KCBL_before_moist')) then
+  call state%get_field('KCBL_before_moist', kcbl)
   traj%kcbl = kcbl(:,:,1)
 endif
-if (state%has_field('tsm')) then
-  call state%get_field('tsm', tsm)
+if (state%has_field('surface_temp_before_moist')) then
+  call state%get_field('surface_temp_before_moist', tsm)
   traj%ts = tsm(:,:,1)
 endif
-if (state%has_field('khl')) then
-  call state%get_field('khl', khl)
+if (state%has_field('lower_index_where_Kh_greater_than_2')) then
+  call state%get_field('lower_index_where_Kh_greater_than_2', khl)
   traj%khl = khl(:,:,1)
 endif
-if (state%has_field('khu')) then
-  call state%get_field('khu', khu)
+if (state%has_field('upper_index_where_Kh_greater_than_2')) then
+  call state%get_field('upper_index_where_Kh_greater_than_2', khu)
   traj%khu = khu(:,:,1)
 endif
 

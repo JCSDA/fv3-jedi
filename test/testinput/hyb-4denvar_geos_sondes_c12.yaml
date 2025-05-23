@@ -1,17 +1,17 @@
 cost function:
   cost type: 4D-Ens-Var
   analysis variables: &avars
-  - ua
-  - va
-  - t
-  - ps
-  - q
-  - o3ppmv
-  - phis
-  - frocean
-  - frlake
-  - frseaice
-  - ts
+  - eastward_wind
+  - northward_wind
+  - air_temperature
+  - air_pressure_at_surface
+  - water_vapor_mixing_ratio_wrt_moist_air
+  - mole_fraction_of_ozone_in_air
+  - geopotential_height_times_gravity_at_surface
+  - fraction_of_ocean
+  - fraction_of_lake
+  - fraction_of_ice
+  - skin_temperature_at_surface
   time window:
     begin: 2020-12-14T21:00:00Z
     length: PT6H
@@ -25,7 +25,6 @@ cost function:
     npx: 13
     npy: 13
     npz: 72
-    field metadata override: Data/fieldmetadata/geos.yaml
   background:
     states:
     - datetime: 2020-12-14T21:00:00Z
@@ -34,25 +33,39 @@ cost function:
       datapath: Data/inputs/geos_c12
       filename: geos.bkg.20201214_210000z.nc4
       state variables: &statevars
-      - ua
-      - va
-      - t
-      - delp
-      - ps
-      - q
-      - o3ppmv
-      - phis
+      - eastward_wind
+      - northward_wind
+      - air_temperature
+      - air_pressure_thickness
+      - air_pressure_at_surface
+      - water_vapor_mixing_ratio_wrt_moist_air
+      - mole_fraction_of_ozone_in_air
+      - geopotential_height_times_gravity_at_surface
       - sheleg
-      - ts
-      - frocean
-      - frlake
-      - frseaice
+      - skin_temperature_at_surface
+      - fraction_of_ocean
+      - fraction_of_lake
+      - fraction_of_ice
+      field io names: &field_io_names
+        eastward_wind: ua
+        northward_wind: va
+        air_temperature: t
+        air_pressure_at_surface: ps
+        water_vapor_mixing_ratio_wrt_moist_air: q
+        mole_fraction_of_ozone_in_air: o3ppmv
+        geopotential_height_times_gravity_at_surface: phis
+        fraction_of_ocean: frocean
+        fraction_of_lake: frlake
+        fraction_of_ice: frseaice
+        skin_temperature_at_surface: ts
+        air_pressure_thickness: delp
     - datetime: 2020-12-15T03:00:00Z
       filetype: cube sphere history
       provider: geos
       datapath: Data/inputs/geos_c12
       filename: geos.bkg.20201215_030000z.nc4
       state variables: *statevars
+      field io names: *field_io_names
   background error:
     covariance model: hybrid
     components:
@@ -111,12 +124,14 @@ cost function:
               state variables: *bvars
               datapath: Data/inputs/geos_c12/
               filename: geos.mem%mem%.20201214_210000z.nc4
+              field io names: *field_io_names
             - datetime: 2020-12-15T03:00:00Z
               filetype: cube sphere history
               provider: geos
               state variables: *bvars
               datapath: Data/inputs/geos_c12/
               filename: geos.mem%mem%.20201215_030000z.nc4
+              field io names: *field_io_names
           pattern: '%mem%'
           nmembers: 10
           zero padding: 3
@@ -294,6 +309,7 @@ output:
   datapath: Data/analysis
   filename: hyb-4denvar-sondes-geos.ana.%yyyy%mm%dd_%hh%MM%ssz.nc4
   frequency: PT3H
+  field io names: *field_io_names
 variational:
   minimizer:
     algorithm: DRPCG
@@ -305,7 +321,6 @@ variational:
       npx: 13
       npy: 13
       npz: 72
-      field metadata override: Data/fieldmetadata/geos.yaml
 test:
   reference filename: testoutput/hyb-4denvar_geos_sondes_c12.ref
   float relative tolerance: 1.0e-1

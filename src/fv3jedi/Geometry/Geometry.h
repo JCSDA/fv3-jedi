@@ -16,6 +16,7 @@
 #include "atlas/functionspace.h"
 
 #include "eckit/config/Configuration.h"
+#include "eckit/config/LocalConfiguration.h"
 #include "eckit/mpi/Comm.h"
 
 #include "oops/mpi/mpi.h"
@@ -89,6 +90,7 @@ class Geometry : public util::Printable,
   // temporary hack: FunctionSpace without halos for calling BUMP interpolation from within fv3jedi
   atlas::FunctionSpace functionSpaceForBump_;
   atlas::FieldSet fields_;
+  eckit::LocalConfiguration fieldMasks_;
   std::shared_ptr<FieldsMetadata> fieldsMeta_;
   std::vector<double> ak_;
   std::vector<double> bk_;

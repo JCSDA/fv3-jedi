@@ -10,38 +10,54 @@ geometry:
   npx: 13
   npy: 13
   npz: 72
-  field metadata override: Data/fieldmetadata/geos.yaml
 initial condition:
   datetime: 2020-12-14T21:00:00Z
   filetype: cube sphere history
   provider: geos
   state variables:
-  - ua
-  - va
-  - t
-  - delp
-  - q
-  - qi
-  - ql
-  - o3ppmv
-  - phis
-  - frocean
-  - frlake
-  - frseaice
+  - eastward_wind
+  - northward_wind
+  - air_temperature
+  - air_pressure_thickness
+  - water_vapor_mixing_ratio_wrt_moist_air
+  - cloud_liquid_ice
+  - cloud_liquid_water
+  - mole_fraction_of_ozone_in_air
+  - geopotential_height_times_gravity_at_surface
+  - fraction_of_ocean
+  - fraction_of_lake
+  - fraction_of_ice
   - vtype
   - stype
   - vfrac
   - sheleg
-  - ts
+  - skin_temperature_at_surface
   - soilt
   - soilm
-  - u10m
-  - v10m
-  - co2
+  - eastward_wind_at_surface
+  - northward_wind_at_surface
+  - mole_fraction_of_carbon_dioxide_in_air
   datapath: Data/inputs/geos_c12
   filenames:
   - geos.bkg.20201214_210000z.nc4
   - geos.bkg.crtmsrf.20201214_210000z.nc4
+  field io names: &field_io_names
+    eastward_wind: ua
+    northward_wind: va
+    air_temperature: t
+    air_pressure_thickness: delp
+    water_vapor_mixing_ratio_wrt_moist_air: q
+    cloud_liquid_ice: qi
+    cloud_liquid_water: ql
+    mole_fraction_of_ozone_in_air: o3ppmv
+    geopotential_height_times_gravity_at_surface: phis
+    fraction_of_ocean: frocean
+    fraction_of_lake: frlake
+    fraction_of_ice: frseaice
+    skin_temperature_at_surface: ts
+    eastward_wind_at_surface: u10m
+    northward_wind_at_surface: v10m
+    mole_fraction_of_carbon_dioxide_in_air: co2
 model:
   name: FV3LM
   use internal namelist: true
@@ -50,27 +66,27 @@ model:
   lm_do_trb: 0
   lm_do_mst: 0
   model variables:
-  - ua
-  - va
-  - t
-  - delp
-  - q
-  - qi
-  - ql
-  - o3ppmv
-  - phis
-  - frocean
-  - frlake
-  - frseaice
+  - eastward_wind
+  - northward_wind
+  - air_temperature
+  - air_pressure_thickness
+  - water_vapor_mixing_ratio_wrt_moist_air
+  - cloud_liquid_ice
+  - cloud_liquid_water
+  - mole_fraction_of_ozone_in_air
+  - geopotential_height_times_gravity_at_surface
+  - fraction_of_ocean
+  - fraction_of_lake
+  - fraction_of_ice
   - vtype
   - stype
   - vfrac
   - sheleg
-  - ts
+  - skin_temperature_at_surface
   - soilt
   - soilm
-  - u10m
-  - v10m
+  - eastward_wind_at_surface
+  - northward_wind_at_surface
   datapath: Data/inputs/geos_c12
   filename_core: 20201214_210000.geos.fv_core.res.nc
   filename_core_out: checkpoint.enshofx_fv3lm_1.fv_core.res.nc

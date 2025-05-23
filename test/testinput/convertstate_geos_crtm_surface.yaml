@@ -6,13 +6,11 @@ input geometry:
   npx: 13
   npy: 13
   npz: 127
-  field metadata override: Data/fieldmetadata/geos.yaml
 output geometry:
   akbk: Data/fv3files/akbk72.nc4
   npx: 13
   npy: 13
   npz: 72
-  field metadata override: Data/fieldmetadata/geos.yaml
 states:
 - input:
     filetype: fms restart

@@ -209,8 +209,8 @@ type(fv3jedi_field), pointer :: state1p, state2p
 do f = 1, self%nf
 
   !Get pointers to states
-  call get_field(state1_fields, self%fields(f)%short_name, state1p)
-  call get_field(state2_fields, self%fields(f)%short_name, state2p)
+  call get_field(state1_fields, self%fields(f)%long_name, state1p)
+  call get_field(state2_fields, self%fields(f)%long_name, state2p)
 
   !inc = state - state
   self%fields(f)%array = state1p%array - state2p%array

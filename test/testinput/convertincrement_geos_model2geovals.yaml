@@ -6,21 +6,19 @@ input geometry:
   npx: 13
   npy: 13
   npz: 72
-  field metadata override: Data/fieldmetadata/geos.yaml
 output geometry:
   akbk: Data/fv3files/akbk72.nc4
   npx: 13
   npy: 13
   npz: 72
-  field metadata override: Data/fieldmetadata/geos.yaml
 linear variable change:
   variable change name: Model2GeoVaLs
   input variables: &inputvars
-  - t
-  - ps
-  - q
+  - air_temperature
+  - air_pressure_at_surface
+  - water_vapor_mixing_ratio_wrt_moist_air
   output variables:
-  - tv
+  - virtual_temperature
 increments:
 - date: "2020-12-14T21:00:00Z"
   input variables: *inputvars
@@ -33,6 +31,11 @@ increments:
     filenames:
     - geos.bkg.20201214_210000z.nc4
     - geos.bkg.crtmsrf.20201214_210000z.nc4
+    field io names: &field_io_names
+      air_temperature: t
+      air_pressure_at_surface: ps
+      water_vapor_mixing_ratio_wrt_moist_air: q
+      virtual_temperature: tv
   input:
     datetime: "2020-12-14T21:00:00Z"
     filetype: cube sphere history
@@ -41,11 +44,13 @@ increments:
     filenames:
     - geos.bkg.20201214_210000z.nc4
     - geos.bkg.crtmsrf.20201214_210000z.nc4
+    field io names: *field_io_names
   output:
    filetype: cube sphere history
    provider: geos
    datapath: Data/
    filename: geovals.geos.%yyyy%mm%dd_%hh%MM%ssz.nc4
+   field io names: *field_io_names
 test:
   reference filename: testoutput/convertincrement_geos_model2geovals.ref
   test output filename: testoutput/convertincrement_geos_model2geovals.test.out

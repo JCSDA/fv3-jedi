@@ -4,7 +4,6 @@ geometry:
     field table filename: Data/fv3files/field_table_gfdl
   namelist filename: Data/fv3files/input_lam_cmaq.nml
   akbk: Data/fv3files/akbk64.nc4
-  field metadata override: Data/fieldmetadata/gfs-restart.yaml
 state test:
   statefile :
     filetype: fms restart
@@ -16,15 +15,25 @@ state test:
     filename_sfcw: 20200903.180000.fv_srf_wnd.res.tile1.nc
     filename_cplr: 20200903.180000.coupler.res
     state variables:
-    - ua
-    - va
-    - T
-    - delp
-    - ps
-    - sphum
-    - ice_wat
-    - liq_wat
-    - o3mr
+    - eastward_wind
+    - northward_wind
+    - air_temperature
+    - air_pressure_thickness
+    - air_pressure_at_surface
+    - water_vapor_mixing_ratio_wrt_moist_air
+    - cloud_liquid_ice
+    - cloud_liquid_water
+    - ozone_mass_mixing_ratio
+    field io names:
+      eastward_wind: ua
+      northward_wind: va
+      air_temperature: T
+      air_pressure_thickness: delp
+      air_pressure_at_surface: ps
+      water_vapor_mixing_ratio_wrt_moist_air: sphum
+      cloud_liquid_ice: ice_wat
+      cloud_liquid_water: liq_wat
+      ozone_mass_mixing_ratio: o3mr
   date: 2020-09-03T18:00:00Z
   norm file: 4897929.0372456973
   norm generated state: 698.89279361001775

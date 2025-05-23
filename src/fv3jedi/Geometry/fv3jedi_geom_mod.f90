@@ -99,6 +99,10 @@ type :: fv3jedi_geom
   ! more generic
   type(atlas_functionspace) :: afunctionspace_for_bump
 
+  ! Configuration that holds the masks to be applied to each field
+  type(fckit_configuration) :: field_masks
+  type(fckit_configuration) :: field_interp_methods
+
   contains
     procedure, public :: create
     procedure, public :: clone
@@ -191,8 +195,19 @@ type(fv3jedi_fmsnamelist) :: fmsnamelist
 ! ------------------------------------
 self%f_comm = comm
 
+! Initialize field_masks config
+! -----------------------------
+self%field_masks = fckit_configuration()
+
+! User specified interpolation methods for fields
+! -----------------------------------------------
+self%field_interp_methods = fckit_configuration()
+if (conf%has("field interpolation methods")) then
+  call conf%get_or_die("field interpolation methods", self%field_interp_methods)
+endif
+
 ! Stretch factor, target_lon, and target_lat
-! --------------
+! ------------------------------------------
 sf = 0
 t_lon = 0.0
 t_lat = 0.0
@@ -559,6 +574,10 @@ self%bounded_domain = other%bounded_domain
 
 self%vertcoord_type = other%vertcoord_type
 
+self%field_masks = other%field_masks
+
+self%field_interp_methods = other%field_interp_methods
+
 end subroutine clone
 
 ! --------------------------------------------------------------------------------------------------
@@ -668,11 +687,12 @@ end subroutine fill_bump_lonlat
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine set_and_fill_geometry_fields(self, afieldset)
+subroutine set_and_fill_geometry_fields(self, afieldset, field_masks)
 
 !Arguments
-class(fv3jedi_geom),  intent(inout) :: self
-type(atlas_fieldset), intent(inout) :: afieldset
+class(fv3jedi_geom),       intent(inout) :: self
+type(atlas_fieldset),      intent(inout) :: afieldset
+type(fckit_configuration), intent(in)    :: field_masks
 
 !Locals
 type(atlas_field) :: afield, afield2
@@ -684,6 +704,9 @@ real(kind=kind_real) :: logp(self%npz)
 
 ! Assign geometry_fields variable
 self%geometry_fields = afieldset
+
+! Save the config containing choice of field masks
+self%field_masks = field_masks
 
 ! Add owned vs halo/BC field
 afield = self%afunctionspace%create_field(name='owned', kind=atlas_integer(kind_int), levels=1)

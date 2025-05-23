@@ -6,7 +6,6 @@ geometry:
   npx: 13
   npy: 13
   npz: 72
-  field metadata override: Data/fieldmetadata/geos.yaml
 background:
   datetime: 2020-12-14T21:00:00Z
   filetype: cube sphere history
@@ -14,14 +13,23 @@ background:
   datapath: Data/inputs/geos_c12
   filename: geos.bkg.20201214_210000z.nc4
   state variables: &vars
-  - ua
-  - va
-  - t
-  - ps
-  - q
-  - qi
-  - ql
-  - o3ppmv
+  - eastward_wind
+  - northward_wind
+  - air_temperature
+  - air_pressure_at_surface
+  - water_vapor_mixing_ratio_wrt_moist_air
+  - cloud_liquid_ice
+  - cloud_liquid_water
+  - mole_fraction_of_ozone_in_air
+  field io names: &field_io_names
+    eastward_wind: ua
+    northward_wind: va
+    air_temperature: t
+    air_pressure_at_surface: ps
+    water_vapor_mixing_ratio_wrt_moist_air: q
+    cloud_liquid_ice: qi
+    cloud_liquid_water: ql
+    mole_fraction_of_ozone_in_air: o3ppmv
 background error:
   covariance model: ensemble
   localization:
@@ -45,6 +53,7 @@ background error:
       state variables: *vars
       datapath: Data/inputs/geos_c12
       filename: geos.mem%mem%.20201214_210000z.nc4
+      field io names: *field_io_names
     pattern: '%mem%'
     nmembers: 5
     zero padding: 3
@@ -53,6 +62,7 @@ output dirac:
   provider: geos
   datapath: Data/bump/
   filename: dirac.%id%.%yyyy%mm%dd_%hh%MM%ssz.nc4
+  field io names: *field_io_names
 dirac:
   ndir: 1
   ixdir:

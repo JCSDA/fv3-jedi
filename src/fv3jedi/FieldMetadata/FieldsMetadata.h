@@ -14,21 +14,8 @@
 #include <string>
 #include <vector>
 
-#include "eckit/config/Configuration.h"
-#include "eckit/config/LocalConfiguration.h"
-#include "eckit/config/YAMLConfiguration.h"
-#include "eckit/exception/Exceptions.h"
-#include "eckit/filesystem/PathName.h"
-
-#include "oops/base/Variables.h"
 #include "oops/util/abor1_cpp.h"
 #include "oops/util/Printable.h"
-
-#include "fv3jedi/FieldMetadata/FieldsMetadataParameters.h"
-
-namespace eckit {
-  class Configuration;
-}
 
 namespace fv3jedi {
 
@@ -46,25 +33,15 @@ namespace fv3jedi {
     bool getIsTracer() const {return isTracer_;}
     int getNumLevls() const {return numLevls_;}
     std::string getLongName() const {return longName_;}
-    std::string getShrtName() const {return shrtName_;}
     std::string getDataKind() const {return dataKind_;}
     std::string getMathSpac() const {return mathSpac_;}
     std::string getVarUnits() const {return varUnits_;}
-    std::string getInOuName() const {return inOuName_;}
-    std::string getInOuFile() const {return inOuFile_;}
-    std::string getIntrpTyp() const {return intrpTyp_;}
-    std::string getIntrpMsk() const {return intrpMsk_;}
 
     // Set functions (strings)
     // -----------------------
-    void setShrtName(std::string shrtName) {shrtName_ = shrtName;}
     void setDataKind(std::string dataKind) {dataKind_ = dataKind;}
     void setMathSpac(std::string mathSpac) {mathSpac_ = mathSpac;}
     void setVarUnits(std::string varUnits) {varUnits_ = varUnits;}
-    void setInOuName(std::string inOuName) {inOuName_ = inOuName;}
-    void setInOuFile(std::string inOuFile) {inOuFile_ = inOuFile;}
-    void setIntrpTyp(std::string intrpTyp) {intrpTyp_ = intrpTyp;}
-    void setIntrpMsk(std::string intrpMsk) {intrpMsk_ = intrpMsk;}
 
     // Set number of levels
     // --------------------
@@ -109,14 +86,12 @@ namespace fv3jedi {
     // Check validity of choices
     void validate() const {
       this->validateVariable(ValidDataKind_, dataKind_);
-      this->validateVariable(ValidIntrpTyp_, intrpTyp_);
       this->validateVariable(ValidMathSpac_, mathSpac_);
     }
 
    private:
     // Picked up from default file
     std::string longName_;
-    std::string shrtName_;
     std::string dataKind_;
     int numLevls_;
     std::string mathSpac_;
@@ -125,33 +100,21 @@ namespace fv3jedi {
     // Picked up from both default and override file
     std::string varUnits_;
 
-    // Only picked up from override file
-    std::string inOuName_;
-    std::string inOuFile_;
-    std::string intrpTyp_;
-    std::string intrpMsk_;
-
     // Number of levels for the model
     int nlev_;
 
     // Valid choices
     const std::vector<std::string> ValidDataKind_ = {"double", "integer"};
-    const std::vector<std::string> ValidIntrpTyp_ = {"integer", "nearest", "default"};
     const std::vector<std::string> ValidMathSpac_ = {"vector", "magnitude", "direction"};
 
     // Print method
     void print(std::ostream & os) const {
       os << std::endl << "   Long name: " << longName_;
-      os << std::endl << "   Short name: " << shrtName_;
       os << std::endl << "   Units: " << varUnits_;
       os << std::endl << "   Kind: " << dataKind_;
       os << std::endl << "   Levels: " << numLevls_;
       os << std::endl << "   Space: " << mathSpac_;
       os << std::endl << "   Tracer: " << isTracer_;
-      os << std::endl << "   IO name: " << inOuName_;
-      os << std::endl << "   IO file: " << inOuFile_;
-      os << std::endl << "   Interpolation type: " << intrpTyp_;
-      os << std::endl << "   Interpolation source-point mask: " << intrpMsk_;
     }
   };
 
@@ -159,8 +122,7 @@ namespace fv3jedi {
 
   class FieldsMetadata : public util::Printable {
    public:
-    typedef FieldsMetadataParameters Parameters_;
-    FieldsMetadata(const Parameters_ &, int &);
+    explicit FieldsMetadata(const int);
 
     // Get FieldMetadata from any of the potential field names
     FieldMetadata getFieldMetadata(const std::string &) const;
@@ -168,12 +130,12 @@ namespace fv3jedi {
     // Get levels from any of the potential field names
     size_t getLevels(const std::string &) const;
 
-    // Get long name from any of the potential field names
-    oops::Variables getLongNameFromAnyName(const oops::Variables &) const;
-    std::string getLongNameFromAnyName(const std::string &) const;
+    // Function to return all the long names
+    const std::vector<std::string> & getLongNames() const {return longNames_;}
 
    private:
     std::map<std::string, FieldMetadata> fieldsMetadata_;
+    std::vector<std::string> longNames_;
 
     // Print method
     void print(std::ostream & os) const {

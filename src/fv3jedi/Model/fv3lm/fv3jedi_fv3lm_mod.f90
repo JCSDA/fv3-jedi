@@ -264,13 +264,14 @@ real(kind=kind_real), pointer, dimension(:,:,:) :: phis => null()
 
 ! Assert that the state only has one flavor of pressure and temperature
 ! ---------------------------------------------------------------------
-if (state%has_field('ps') .or. state%has_field('p') .or. state%has_field('pe')) then
+if (state%has_field('air_pressure_at_surface') .or. state%has_field('air_pressure') .or. &
+    state%has_field('air_pressure_levels')) then
   call abor1_ftn("state_to_lm: When working in-core delp must be in the state and " // &
                  "other types of pressure must not be present. Otherwise it leads to " // &
                  "ambiguity in how increments are applied back to the model.")
 end if
 
-if (state%has_field('tv') .or. state%has_field('pt')) then
+if (state%has_field('virtual_temperature') .or. state%has_field('pt')) then
   call abor1_ftn("state_to_lm: When working in-core temperature (t) must be in the state and " // &
                  "other types of temperature must not be present. Otherwise it leads to " // &
                  "ambiguity in how increments are applied back to the model.")
@@ -278,11 +279,11 @@ end if
 
 ! Required variables
 ! ------------------
-call state%get_field('ua',   ua  )
-call state%get_field('va',   va  )
-call state%get_field('t',    t   )
-call state%get_field('delp', delp)
-call state%get_field('phis', phis)
+call state%get_field('eastward_wind', ua)
+call state%get_field('northward_wind', va)
+call state%get_field('air_temperature', t)
+call state%get_field('air_pressure_thickness', delp)
+call state%get_field('geopotential_height_times_gravity_at_surface', phis)
 
 lm%traj%ua   = ua
 lm%traj%va   = va
@@ -295,7 +296,7 @@ lm%traj%phis = phis(:,:,1)
 ft = 1
 do f = 1, state%nf
   if (state%fields(f)%tracer) then
-    if (trim(state%fields(f)%short_name) == 'sphum') then
+    if (trim(state%fields(f)%long_name) == 'water_vapor_mixing_ratio_wrt_moist_air') then
       index = 1
       sphum_found = .true.
     else
@@ -308,14 +309,14 @@ do f = 1, state%nf
 end do
 
 if(.not.sphum_found) then
-  call abor1_ftn("state_to_lm: sphum is not on the tracer list")
+  call abor1_ftn("state_to_lm: water_vapor_mixing_ratio_wrt_moist_air (sphum) not in tracer list")
 end if
 
 ! Variables when non-hydrostatic
 ! ------------------------------
 if (.not. lm%conf%hydrostatic) then
-  call state%get_field('w   ', w   )
-  call state%get_field('delz', delz)
+  call state%get_field('upward_air_velocity', w   )
+  call state%get_field('layer_thickness', delz)
   lm%traj%w       = w
   lm%traj%delz    = delz
 endif
@@ -344,11 +345,11 @@ real(kind=kind_real), pointer, dimension(:,:,:) :: phis => null()
 
 ! Required variables
 ! ------------------
-call state%get_field('ua',   ua  )
-call state%get_field('va',   va  )
-call state%get_field('t',    t   )
-call state%get_field('delp', delp)
-call state%get_field('phis', phis)
+call state%get_field('eastward_wind', ua  )
+call state%get_field('northward_wind', va  )
+call state%get_field('air_temperature', t   )
+call state%get_field('air_pressure_thickness', delp)
+call state%get_field('geopotential_height_times_gravity_at_surface', phis)
 ua          = lm%traj%ua
 va          = lm%traj%va
 t           = lm%traj%t
@@ -360,7 +361,7 @@ phis(:,:,1) = lm%traj%phis
 ft = 1
 do f = 1, state%nf
   if (state%fields(f)%tracer) then
-    if (trim(state%fields(f)%short_name) == 'sphum') then
+    if (trim(state%fields(f)%long_name) == 'water_vapor_mixing_ratio_wrt_moist_air') then
       index = 1
       sphum_found = .true.
     else
@@ -372,14 +373,14 @@ do f = 1, state%nf
 end do
 
 if(.not.sphum_found) then
-  call abor1_ftn("lm_to_state: sphum is not on the tracer list")
+  call abor1_ftn("lm_to_state: water_vapor_mixing_ratio_wrt_moist_air (sphum) not in tracer list")
 end if
 
 ! Non-hydrostatic variables
 ! -------------------------
 if (.not. lm%conf%hydrostatic) then
-  call state%get_field('w   ', w   )
-  call state%get_field('delz', delz)
+  call state%get_field('upward_air_velocity', w)
+  call state%get_field('layer_thickness', delz)
   w       = lm%traj%w
   delz    = lm%traj%delz
 endif

@@ -1,21 +1,21 @@
 cost function:
   cost type: 4D-Ens-Var
   analysis variables: &avars
-  - ua
-  - va
-  - t
-  - ps
-  - q
-  - qi
-  - ql
-  - qr
-  - qs
-  - o3ppmv
-  - phis
-  - frocean
-  - frlake
-  - frseaice
-  - ts
+  - eastward_wind
+  - northward_wind
+  - air_temperature
+  - air_pressure_at_surface
+  - water_vapor_mixing_ratio_wrt_moist_air
+  - cloud_liquid_ice
+  - cloud_liquid_water
+  - rain_water
+  - snow_water
+  - mole_fraction_of_ozone_in_air
+  - geopotential_height_times_gravity_at_surface
+  - fraction_of_ocean
+  - fraction_of_lake
+  - fraction_of_ice
+  - skin_temperature_at_surface
   time window:
     begin: 2020-12-14T21:00:00Z
     length: PT6H
@@ -30,7 +30,6 @@ cost function:
     npx: 13
     npy: 13
     npz: 72
-    field metadata override: Data/fieldmetadata/geos.yaml
   background:
     states:
     - datetime: 2020-12-14T21:00:00Z
@@ -39,42 +38,63 @@ cost function:
       datapath: Data/inputs/geos_c12
       filename: geos.bkg.20201214_210000z.nc4
       state variables: &statevars
-      - ua
-      - va
-      - t
-      - delp
-      - ps
-      - q
-      - qi
-      - ql
-      - qr
-      - qs
-      - o3ppmv
-      - phis
-      - frocean
-      - frlake
-      - frseaice
+      - eastward_wind
+      - northward_wind
+      - air_temperature
+      - air_pressure_thickness
+      - air_pressure_at_surface
+      - water_vapor_mixing_ratio_wrt_moist_air
+      - cloud_liquid_ice
+      - cloud_liquid_water
+      - rain_water
+      - snow_water
+      - mole_fraction_of_ozone_in_air
+      - geopotential_height_times_gravity_at_surface
+      - fraction_of_ocean
+      - fraction_of_lake
+      - fraction_of_ice
+      - sheleg
+      - skin_temperature_at_surface
 #     - vtype
 #     - stype
 #     - vfrac
-      - sheleg
-      - ts
       - soilt
       - soilm
-      - u10m
-      - v10m
+      - eastward_wind_at_surface
+      - northward_wind_at_surface
+      field io names: &field_io_names
+        eastward_wind: ua
+        northward_wind: va
+        air_temperature: t
+        air_pressure_at_surface: ps
+        water_vapor_mixing_ratio_wrt_moist_air: q
+        mole_fraction_of_ozone_in_air: o3ppmv
+        cloud_liquid_ice: qi
+        cloud_liquid_water: ql
+        rain_water: qr
+        snow_water: qs
+        geopotential_height_times_gravity_at_surface: phis
+        fraction_of_ocean: frocean
+        fraction_of_lake: frlake
+        fraction_of_ice: frseaice
+        skin_temperature_at_surface: ts
+        air_pressure_thickness: delp
+        eastward_wind_at_surface: u10m
+        northward_wind_at_surface: v10m
     - datetime: 2020-12-15T00:00:00Z
       filetype: cube sphere history
       provider: geos
       datapath: Data/inputs/geos_c12
       filename: geos.bkg.20201215_000000z.nc4
       state variables: *statevars
+      field io names: *field_io_names
     - datetime: 2020-12-15T03:00:00Z
       filetype: cube sphere history
       provider: geos
       datapath: Data/inputs/geos_c12
       filename: geos.bkg.20201215_030000z.nc4
       state variables: *statevars
+      field io names: *field_io_names
 #----------------------------------------------------------
   background error:
     covariance model: SABER
@@ -88,13 +108,20 @@ cost function:
         processor layout y direction: 2
         debugging mode: false
     saber outer blocks:
-    - saber block name: gsi interpolation to model grid
-      gsi akbk: Data/fv3files/akbk72.nc4
-      gsi error covariance file: Data/inputs/nmcbalance/gsi-coeffs-geos-global-l72x72y46.nc4
-      gsi berror namelist file: Data/gsibec/geos_hyb4dgsi_global_72x46x72.nml
-      processor layout x direction: 3
-      processor layout y direction: 2
-      debugging mode: false
+    - saber block name: interpolation
+      inner geometry:
+        function space: StructuredColumns
+        custom grid matching gsi:
+          type: latlon
+          lats: 46
+          lons: 72
+        custom partitioner matching gsi:
+          bands: 2
+        halo: 1
+      forward interpolator:
+        local interpolator type: oops unstructured grid interpolator
+      inverse interpolator:
+        local interpolator type: oops unstructured grid interpolator
       state variables to inverse: &bvars
       - eastward_wind
       - northward_wind
@@ -206,7 +233,6 @@ variational:
       npx: 13
       npy: 13
       npz: 72
-      field metadata override: Data/fieldmetadata/geos.yaml
     diagnostics:
       departures: ombg
 #   online diagnostics:

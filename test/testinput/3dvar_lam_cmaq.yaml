@@ -11,7 +11,6 @@ cost function:
       field table filename: Data/fv3files/field_table_lam_cmaq
     namelist filename: Data/fv3files/input_lam_cmaq.nml
     akbk: Data/fv3files/akbk64.nc4
-    field metadata override: Data/fieldmetadata/lam_cmaq.yaml
   background:
     datetime: 2020-09-03T18:00:00Z
     filetype: fms restart
@@ -22,14 +21,23 @@ cost function:
     filename_sfcw: 20200903.180000.fv_srf_wnd.res.tile1.nc
     filename_cplr: 20200903.180000.coupler.res
     state variables:
-    - ua
-    - va
-    - T
-    - delp
-    - ps
-    - sphum
-    - phis
+    - eastward_wind
+    - northward_wind
+    - air_temperature
+    - air_pressure_thickness
+    - air_pressure_at_surface
+    - water_vapor_mixing_ratio_wrt_moist_air
+    - geopotential_height_times_gravity_at_surface
     - volume_mixing_ratio_of_no2
+    field io names: &field_io_names
+      eastward_wind: ua
+      northward_wind: va
+      air_temperature: T
+      air_pressure_thickness: delp
+      air_pressure_at_surface: ps
+      water_vapor_mixing_ratio_wrt_moist_air: sphum
+      geopotential_height_times_gravity_at_surface: phis
+      volume_mixing_ratio_of_no2: no2
   background error:
     covariance model: SABER
     saber central block:
@@ -101,12 +109,12 @@ variational:
     geometry:
       namelist filename: Data/fv3files/input_lam_cmaq.nml
       akbk: Data/fv3files/akbk64.nc4
-      field metadata override: Data/fieldmetadata/gfs-aerosol.yaml
 output:
   filetype: fms restart
   datapath: Data/analysis/
   prefix: 20200903.180000.3dvar_lam_cmaq_no2
   frequency: PT1H
+  field io names: *field_io_names
 test:
   reference filename: testoutput/3dvar_lam_cmaq.ref
   test output filename: testoutput/3dvar_lam_cmaq.test.out

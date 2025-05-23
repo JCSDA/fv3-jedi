@@ -9,7 +9,6 @@ geometry:
   npx: 13
   npy: 13
   npz: 127
-  field metadata override: Data/fieldmetadata/gfs-restart.yaml
 background:
   datetime: 2020-12-14T21:00:00Z
   filetype: fms restart
@@ -22,6 +21,9 @@ background:
   state variables:
   - air_temperature
   - air_pressure_at_surface
+  field io names: &field_io_names
+    air_temperature: T
+    air_pressure_at_surface: ps
 background error:
   covariance model: SABER
   saber central block:
@@ -74,6 +76,7 @@ background error:
           filename_sfcd: bumpparameters_nicas_gfs_p12.cor_rh.sfc_data.nc
           filename_sfcw: bumpparameters_nicas_gfs_p12.cor_rh.fv_srf_wnd.res.nc
           filename_cplr: bumpparameters_nicas_gfs_p12.cor_rh.coupler.res
+          field io names: *field_io_names
       - parameter: cor_rv
         file:
           filetype: fms restart
@@ -83,6 +86,7 @@ background error:
           filename_sfcd: bumpparameters_nicas_gfs_p12.cor_rv.sfc_data.nc
           filename_sfcw: bumpparameters_nicas_gfs_p12.cor_rv.fv_srf_wnd.res.nc
           filename_cplr: bumpparameters_nicas_gfs_p12.cor_rv.coupler.res
+          field io names: *field_io_names
 test:
   reference filename: testoutput/bumpparameters_nicas_gfs.ref
   test output filename: testoutput/bumpparameters_nicas_gfs_p12.test.out

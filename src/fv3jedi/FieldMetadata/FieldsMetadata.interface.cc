@@ -6,7 +6,11 @@
  */
 
 #include <algorithm>
+#include <cstring>
+#include <iostream>
 #include <string>
+
+#include "eckit/exception/Exceptions.h"
 
 #include "oops/util/abor1_cpp.h"
 
@@ -15,6 +19,8 @@
 
 namespace fv3jedi {
 
+  // -----------------------------------------------------------------------------------------------
+
   void checkStringLength(const std::string strCheck) {
     unsigned fortranStrLen = 2048;
     if (strCheck.size() >= fortranStrLen) {
@@ -22,53 +28,35 @@ namespace fv3jedi {
     }
   }
 
+  // -----------------------------------------------------------------------------------------------
+
   void get_field_metadata_f(const FieldsMetadata* fieldsMetadata,
-                            const char longshortioNameC[], char longNameC[],
-                            char shrtNameC[], char varUnitsC[], char dataKindC[],
-                            bool& tracer,
-                            int & levels, char mathSpacC[],
-                            char inOuNameC[], char inOuFileC[], char intrpTypC[],
-                            char intrpMskC[]) {
+                            const char longNameC[], char varUnitsC[], char dataKindC[],
+                            bool& tracer, int & levels, char mathSpacC[]) {
     // Get meta data for requested field
-    const std::string longshortioName(longshortioNameC);
-    FieldMetadata fieldMetadata = fieldsMetadata->getFieldMetadata(longshortioName);
+    const std::string longName(longNameC);
+    FieldMetadata fieldMetadata = fieldsMetadata->getFieldMetadata(longName);
 
     // Bool, int outputs
     levels = fieldMetadata.getNumLevls();
     tracer = fieldMetadata.getIsTracer();
 
     // Prepare char outputs
-    std::string longName = fieldMetadata.getLongName();
-    std::string shrtName = fieldMetadata.getShrtName();
     std::string varUnits = fieldMetadata.getVarUnits();
     std::string dataKind = fieldMetadata.getDataKind();
     std::string mathSpac = fieldMetadata.getMathSpac();
-    std::string inOuName = fieldMetadata.getInOuName();
-    std::string inOuFile = fieldMetadata.getInOuFile();
-    std::string intrpTyp = fieldMetadata.getIntrpTyp();
-    std::string intrpMsk = fieldMetadata.getIntrpMsk();
 
     // Check string lengths
-    checkStringLength(longName);
-    checkStringLength(shrtName);
     checkStringLength(varUnits);
     checkStringLength(dataKind);
     checkStringLength(mathSpac);
-    checkStringLength(inOuName);
-    checkStringLength(inOuFile);
-    checkStringLength(intrpTyp);
-    checkStringLength(intrpMsk);
 
     // Fill char outputs
-    std::copy(longName.begin(), longName.end(), longNameC);
-    std::copy(shrtName.begin(), shrtName.end(), shrtNameC);
     std::copy(varUnits.begin(), varUnits.end(), varUnitsC);
     std::copy(dataKind.begin(), dataKind.end(), dataKindC);
     std::copy(mathSpac.begin(), mathSpac.end(), mathSpacC);
-    std::copy(inOuName.begin(), inOuName.end(), inOuNameC);
-    std::copy(inOuFile.begin(), inOuFile.end(), inOuFileC);
-    std::copy(intrpTyp.begin(), intrpTyp.end(), intrpTypC);
-    std::copy(intrpMsk.begin(), intrpMsk.end(), intrpMskC);
   }
+
+  // -----------------------------------------------------------------------------------------------
 
 }  // namespace fv3jedi

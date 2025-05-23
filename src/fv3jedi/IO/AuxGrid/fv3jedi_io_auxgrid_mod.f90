@@ -25,7 +25,7 @@ use interpolatorbump_mod,       only: bump_interpolator
 use fv3jedi_field_mod,          only: fv3jedi_field
 use fv3jedi_geom_mod,           only: fv3jedi_geom
 use fv3jedi_kinds_mod,          only: kind_int, kind_real
-use fv3jedi_io_utils_mod,       only: add_iteration
+use fv3jedi_io_utils_mod,       only: add_iteration, ioname, iounscale
 use fv3jedi_netcdf_utils_mod,   only: nccheck
 
 implicit none
@@ -140,12 +140,14 @@ end subroutine delete
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine write(self, vdate, fields)
+subroutine write(self, vdate, fields, field_io_names, field_io_scaling)
 
 ! Arguments
-class(fv3jedi_io_auxgrid),  intent(inout) :: self
+class(fv3jedi_io_auxgrid), intent(inout) :: self
 type(datetime),            intent(in)    :: vdate
 type(fv3jedi_field),       intent(in)    :: fields(:)
+type(fckit_configuration), intent(in)    :: field_io_names
+type(fckit_configuration), intent(in)    :: field_io_scaling
 
 ! Write metadata
 ! --------------
@@ -153,7 +155,7 @@ call write_auxgrid_metadata(self, vdate)
 
 ! Write fields
 ! ------------
-call write_auxgrid_fields(self, fields)
+call write_auxgrid_fields(self, fields, field_io_names, field_io_scaling)
 
 end subroutine write
 
@@ -394,11 +396,13 @@ end subroutine write_auxgrid_metadata
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine write_auxgrid_fields(self, fields)
+subroutine write_auxgrid_fields(self, fields, field_io_names, field_io_scaling)
 
 !Arguments
-type(fv3jedi_io_auxgrid), target, intent(inout)   :: self
-type(fv3jedi_field),             intent(in)      :: fields(:)
+type(fv3jedi_io_auxgrid), target, intent(inout) :: self
+type(fv3jedi_field),              intent(in)    :: fields(:)
+type(fckit_configuration),        intent(in)    :: field_io_names
+type(fckit_configuration),        intent(in)    :: field_io_scaling
 
 integer :: var, ji, jj, jk, llngrid, ii, i, j, k, n
 real(kind=kind_real), allocatable :: llfield(:,:,:)
@@ -408,6 +412,7 @@ integer :: x_dimid, y_dimid, z_dimid, e_dimid, t_dimid
 integer, target  :: dimids3(4), dimids2(3), dimidse(4)
 integer, pointer :: dimids(:), istart(:), icount(:)
 real(kind_real),allocatable :: array_without_halo(:,:,:)
+real(kind_real) :: io_unscaling_factor
 
 ! Loop over fields
 ! ----------------
@@ -424,9 +429,13 @@ do var = 1, size(fields)
     llfield = 0.0_kind_real
     llngrid = self%nx*self%ny
 
+    ! Get any unsclaing factor for the field
+    io_unscaling_factor = iounscale(fields(var), field_io_scaling)
+
     ! Copy field in array without halo points
     allocate(array_without_halo(self%isc:self%iec,self%jsc:self%jec,1:fields(var)%npz))
-    array_without_halo = fields(var)%array(self%isc:self%iec,self%jsc:self%jec,1:fields(var)%npz)
+    array_without_halo = io_unscaling_factor * &
+                         fields(var)%array(self%isc:self%iec,self%jsc:self%jec,1:fields(var)%npz)
 
     ! Interpolate
     call self%bumpinterp%apply(array_without_halo, llfield(:,:,1:fields(var)%npz))
@@ -467,15 +476,15 @@ do var = 1, size(fields)
     if (associated(dimids)) then
 
       ! Write field to the file
-      call nccheck( nf90_def_var( ncid, trim(fields(var)%io_name), self%float_type, dimids, varid), &
-                    "nf90_def_var"//trim(fields(var)%io_name) )
+      call nccheck( nf90_def_var( ncid, trim(ioname(fields(var)%long_name, field_io_names)), &
+                    self%float_type, dimids, varid), "nf90_def_var"//trim(fields(var)%long_name) )
       call nccheck( nf90_put_att(ncid, varid, "long_name", trim(fields(var)%long_name) ), "nf90_put_att" )
       call nccheck( nf90_put_att(ncid, varid, "units"    , trim(fields(var)%units)     ), "nf90_put_att" )
       call nccheck( nf90_enddef(ncid), "nf90_enddef" )
 
       if (self%thispe) then
        call nccheck( nf90_put_var( ncid, varid, llfield, start = istart, count = icount), &
-                     "nf90_put_var"//trim(fields(var)%io_name) )
+                     "nf90_put_var"//trim(fields(var)%long_name) )
       endif
 
     endif

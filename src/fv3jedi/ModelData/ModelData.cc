@@ -10,6 +10,7 @@
 
 #include "atlas/util/Config.h"
 
+#include "oops/base/Variables.h"
 #include "oops/util/Logger.h"
 
 #include "fv3jedi/Geometry/Geometry.h"

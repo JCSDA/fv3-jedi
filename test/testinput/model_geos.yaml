@@ -6,7 +6,6 @@ geometry:
   npx: 13
   npy: 13
   npz: 72
-  field metadata override: Data/fieldmetadata/geos.yaml
 model:
   name: GEOS
   tstep: PT30M
@@ -33,13 +32,24 @@ initial condition:
   - false
   - false
   state variables:
-  - UA
-  - VA
-  - PT
-  - PKZ
-  - PE
-  - Q
-  - QILS
-  - QLLS
-  - QICN
-  - QLCN
+    - eastward_wind
+    - northward_wind
+    - air_potential_temperature
+    - air_pressure_to_kappa
+    - air_pressure_levels
+    - water_vapor_mixing_ratio_wrt_moist_air
+    - mass_fraction_of_large_scale_cloud_ice_water
+    - mass_fraction_of_large_scale_cloud_liquid_water
+    - mass_fraction_of_convective_cloud_ice_water
+    - mass_fraction_of_convective_cloud_liquid_water
+  field io names: &field_io_names
+    eastward_wind: UA
+    northward_wind: VA
+    air_potential_temperature: PT
+    air_pressure_to_kappa: PKZ
+    air_pressure_levels: PE
+    water_vapor_mixing_ratio_wrt_moist_air: Q
+    mass_fraction_of_large_scale_cloud_ice_water: QILS
+    mass_fraction_of_large_scale_cloud_liquid_water: QLLS
+    mass_fraction_of_convective_cloud_ice_water: QICN
+    mass_fraction_of_convective_cloud_liquid_water: QLCN

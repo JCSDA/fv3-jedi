@@ -21,7 +21,7 @@ namespace fv3jedi {
 static IOMaker<IOCubeSphereHistory> makerIOCubeSphereHistory_("cube sphere history");
 // -------------------------------------------------------------------------------------------------
 IOCubeSphereHistory::IOCubeSphereHistory(const Geometry & geom, const Parameters_ & params)
-  : IOBase(geom) {
+  : IOBase(geom, params.toConfiguration()) {
   util::Timer timer(classname(), "IOCubeSphereHistory");
   oops::Log::trace() << classname() << " constructor starting" << std::endl;
   fv3jedi_io_cube_sphere_history_create_f90(objectKeyForFortran_, params.toConfiguration(),
@@ -36,31 +36,39 @@ IOCubeSphereHistory::~IOCubeSphereHistory() {
   oops::Log::trace() << classname() << " destructor done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
-void IOCubeSphereHistory::read(State & x) const {
+void IOCubeSphereHistory::read(State & x, const eckit::LocalConfiguration & fileionames,
+                               const eckit::LocalConfiguration & fileioscaling) const {
   util::Timer timer(classname(), "read state");
   oops::Log::trace() << classname() << " read state starting" << std::endl;
-  fv3jedi_io_cube_sphere_history_read_state_f90(objectKeyForFortran_, x.toFortran());
+  fv3jedi_io_cube_sphere_history_read_state_f90(objectKeyForFortran_, x.toFortran(), fileionames,
+                                                fileioscaling);
   oops::Log::trace() << classname() << " read state done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
-void IOCubeSphereHistory::read(Increment & dx) const {
+void IOCubeSphereHistory::read(Increment & dx, const eckit::LocalConfiguration & fileionames,
+                               const eckit::LocalConfiguration & fileioscaling) const {
   util::Timer timer(classname(), "read increment");
   oops::Log::trace() << classname() << " read increment starting" << std::endl;
-  fv3jedi_io_cube_sphere_history_read_increment_f90(objectKeyForFortran_, dx.toFortran());
+  fv3jedi_io_cube_sphere_history_read_increment_f90(objectKeyForFortran_, dx.toFortran(),
+                                                    fileionames, fileioscaling);
   oops::Log::trace() << classname() << " read increment done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
-void IOCubeSphereHistory::write(const State & x) const {
+void IOCubeSphereHistory::write(const State & x, const eckit::LocalConfiguration & fileionames,
+                                const eckit::LocalConfiguration & fileioscaling) const {
   util::Timer timer(classname(), "write state");
   oops::Log::trace() << classname() << " write state starting" << std::endl;
-  fv3jedi_io_cube_sphere_history_write_state_f90(objectKeyForFortran_, x.toFortran());
+  fv3jedi_io_cube_sphere_history_write_state_f90(objectKeyForFortran_, x.toFortran(), fileionames,
+                                                fileioscaling);
   oops::Log::trace() << classname() << " write state done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
-void IOCubeSphereHistory::write(const Increment & dx) const {
+void IOCubeSphereHistory::write(const Increment & dx, const eckit::LocalConfiguration & fileionames,
+                                const eckit::LocalConfiguration & fileioscaling) const {
   util::Timer timer(classname(), "write increment");
   oops::Log::trace() << classname() << " write increment starting" << std::endl;
-  fv3jedi_io_cube_sphere_history_write_increment_f90(objectKeyForFortran_, dx.toFortran());
+  fv3jedi_io_cube_sphere_history_write_increment_f90(objectKeyForFortran_, dx.toFortran(),
+                                                     fileionames, fileioscaling);
   oops::Log::trace() << classname() << " write increment done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------

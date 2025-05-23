@@ -9,7 +9,6 @@ geometry:
   npx: 13
   npy: 13
   npz: 72
-  field metadata override: Data/fieldmetadata/geos.yaml
 background:
   datetime: 2020-12-15T00:00:00Z
   filetype: cube sphere history
@@ -22,6 +21,12 @@ background:
   - water_vapor_mixing_ratio_wrt_moist_air
   datapath: Data/staticb/unbalanced/mem001
   filename: geos.20201215.000000z.nc4
+  field io names: &field_io_names
+    air_horizontal_streamfunction: psi
+    air_horizontal_velocity_potential: chi
+    air_temperature: t
+    air_pressure_at_surface: ps
+    water_vapor_mixing_ratio_wrt_moist_air: q
 background error:
   covariance model: SABER
   saber central block:
@@ -64,6 +69,7 @@ background error:
           provider: geos
           datapath: Data/staticb/
           filename: geos.20201215.000000.cor_a_1.nc4
+          field io names: *field_io_names
       - parameter: a
         component: 2
         file:
@@ -73,6 +79,7 @@ background error:
           provider: geos
           datapath: Data/staticb/
           filename: geos.20201215.000000.cor_a_2.nc4
+          field io names: *field_io_names
       - parameter: rh
         component: 1
         file:
@@ -82,6 +89,7 @@ background error:
           provider: geos
           datapath: Data/staticb/
           filename: geos.20201215.000000.cor_rh_1.nc4
+          field io names: *field_io_names
       - parameter: rh
         component: 2
         file:
@@ -91,6 +99,7 @@ background error:
           provider: geos
           datapath: Data/staticb/
           filename: geos.20201215.000000.cor_rh_2.nc4
+          field io names: *field_io_names
       - parameter: rv
         component: 1
         file:
@@ -100,6 +109,7 @@ background error:
           provider: geos
           datapath: Data/staticb/
           filename: geos.20201215.000000.cor_rv_1.nc4
+          field io names: *field_io_names
       - parameter: rv
         component: 2
         file:
@@ -109,6 +119,7 @@ background error:
           provider: geos
           datapath: Data/staticb/
           filename: geos.20201215.000000.cor_rv_2.nc4
+          field io names: *field_io_names
       output model files:
       - parameter: nicas_norm
         component: 1
@@ -117,6 +128,7 @@ background error:
           provider: geos
           datapath: Data/staticb/
           filename: geos.nicas_norm_1.nc4
+          field io names: *field_io_names
       - parameter: nicas_norm
         component: 2
         file:
@@ -124,6 +136,7 @@ background error:
           provider: geos
           datapath: Data/staticb/
           filename: geos.nicas_norm_2.nc4
+          field io names: *field_io_names
 test:
   reference filename: testoutput/staticb_nicas_geos.ref
   test output filename: testoutput/staticb_nicas_geos.test.out

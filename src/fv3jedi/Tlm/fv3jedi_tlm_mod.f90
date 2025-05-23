@@ -251,8 +251,8 @@ real(kind=kind_real), pointer, dimension(:,:,:) :: va => null()
 ! --------------------------------------------------------
 
 ! Get pointers to A-Grid winds
-call inc%get_field('ua', ua)
-call inc%get_field('va', va)
+call inc%get_field('eastward_wind', ua)
+call inc%get_field('northward_wind', va)
 
 ! Allocate some temporary D-Grid winds with edges
 allocate(ud(geom%isc:geom%iec  ,geom%jsc:geom%jec+1,1:geom%npz))
@@ -268,8 +268,8 @@ lm%pert%v(geom%isc:geom%iec, geom%jsc:geom%jec, 1:geom%npz) = vd(geom%isc:geom%i
 
 ! Temperature / pressure
 ! ----------------------
-call inc%get_field('t'   , lm%pert%t   )
-call inc%get_field('delp', lm%pert%delp)
+call inc%get_field('air_temperature', lm%pert%t)
+call inc%get_field('air_pressure_thickness', lm%pert%delp)
 
 
 ! Tracers
@@ -277,7 +277,7 @@ call inc%get_field('delp', lm%pert%delp)
 ft = 1
 do f = 1, inc%nf
   if (inc%fields(f)%tracer) then
-    if (trim(inc%fields(f)%short_name) == 'sphum') then
+    if (trim(inc%fields(f)%long_name) == 'water_vapor_mixing_ratio_wrt_moist_air') then
       index = 1
       sphum_found = .true.
     else
@@ -295,8 +295,8 @@ end if
 
 ! Optional fields
 ! ---------------
-if (inc%has_field('w'   )) call inc%get_field('w'      , lm%pert%w   )
-if (inc%has_field('delz')) call inc%get_field('delz'   , lm%pert%delz)
+if (inc%has_field('upward_air_velocity')) call inc%get_field('upward_air_velocity', lm%pert%w)
+if (inc%has_field('layer_thickness')) call inc%get_field('layer_thickness', lm%pert%delz)
 
 end subroutine inc_to_lm
 
@@ -327,8 +327,8 @@ vd = 0.0_kind_real
 vd(geom%isc:geom%iec, geom%jsc:geom%jec, 1:geom%npz) = lm%pert%v(geom%isc:geom%iec, geom%jsc:geom%jec, 1:geom%npz)
 
 ! Pointer to increment A-Grid winds
-call inc%get_field('ua', ua  )
-call inc%get_field('va', va  )
+call inc%get_field('eastward_wind', ua)
+call inc%get_field('northward_wind', va)
 
 ! Convert to A-Grid
 call d_to_a(geom, ud, vd, ua, va)
@@ -336,8 +336,8 @@ call d_to_a(geom, ud, vd, ua, va)
 
 ! Temperature / pressure
 ! ----------------------
-call inc%put_field('t',    lm%pert%t   )
-call inc%put_field('delp', lm%pert%delp)
+call inc%put_field('air_temperature', lm%pert%t)
+call inc%put_field('air_pressure_thickness', lm%pert%delp)
 
 
 ! Tracers
@@ -345,7 +345,7 @@ call inc%put_field('delp', lm%pert%delp)
 ft = 1
 do f = 1, inc%nf
   if (inc%fields(f)%tracer) then
-    if (trim(inc%fields(f)%short_name) == 'sphum') then
+    if (trim(inc%fields(f)%long_name) == 'water_vapor_mixing_ratio_wrt_moist_air') then
       index = 1
       sphum_found = .true.
     else
@@ -366,8 +366,8 @@ end if
 
 ! Optional fields
 ! ---------------
-if (inc%has_field('w'   )) call inc%put_field('w'   , lm%pert%w   )
-if (inc%has_field('delz')) call inc%put_field('delz', lm%pert%delz)
+if (inc%has_field('upward_air_velocity')) call inc%put_field('upward_air_velocity', lm%pert%w)
+if (inc%has_field('layer_thickness')) call inc%put_field('layer_thickness', lm%pert%delz)
 
 
 end subroutine lm_to_inc
@@ -391,12 +391,12 @@ real(kind=kind_real), pointer, dimension(:,:,:) :: tmp => null()
 
 ! Optional fields
 ! ---------------
-if (inc%has_field('w')) then
-  call inc%get_field('w', tmp)
+if (inc%has_field('upward_air_velocity')) then
+  call inc%get_field('upward_air_velocity', tmp)
   tmp = tmp + lm%pert%w
 end if
-if (inc%has_field('delz')) then
-  call inc%get_field('delz', tmp)
+if (inc%has_field('layer_thickness')) then
+  call inc%get_field('layer_thickness', tmp)
   tmp = tmp + lm%pert%delz
 end if
 
@@ -405,7 +405,7 @@ end if
 ft = 1
 do f = 1, inc%nf
   if (inc%fields(f)%tracer) then
-    if (trim(inc%fields(f)%short_name) == 'sphum') then
+    if (trim(inc%fields(f)%long_name) == 'water_vapor_mixing_ratio_wrt_moist_air') then
       index = 1
       sphum_found = .true.
     else
@@ -426,9 +426,9 @@ end if
 
 ! Temperature / pressure
 ! ----------------------
-call inc%get_field('t', tmp)
+call inc%get_field('air_temperature', tmp)
 tmp = tmp + lm%pert%t
-call inc%get_field('delp', tmp)
+call inc%get_field('air_pressure_thickness', tmp)
 tmp = tmp + lm%pert%delp
 
 
@@ -447,8 +447,8 @@ vd(geom%isc:geom%iec, geom%jsc:geom%jec, 1:geom%npz) = &
                                          lm%pert%v(geom%isc:geom%iec, geom%jsc:geom%jec, 1:geom%npz)
 
 ! Get pointers to A-Grid winds
-call inc%get_field('ua', ua)
-call inc%get_field('va', va)
+call inc%get_field('eastward_wind', ua)
+call inc%get_field('northward_wind', va)
 
 ! Convert (accumulation is internal)
 call a_to_d_ad(geom, ua, va, ud, vd)
@@ -460,8 +460,8 @@ lm%pert%v = 0.0_kind_real
 lm%pert%t = 0.0_kind_real
 lm%pert%delp = 0.0_kind_real
 if (allocated(lm%pert%tracers)) lm%pert%tracers(:,:,:,:) = 0.0_kind_real
-if (inc%has_field('w')) lm%pert%w = 0.0_kind_real
-if (inc%has_field('delz')) lm%pert%delz = 0.0_kind_real
+if (inc%has_field('upward_air_velocity')) lm%pert%w = 0.0_kind_real
+if (inc%has_field('layer_thickness')) lm%pert%delz = 0.0_kind_real
 
 end subroutine inc_to_lm_ad
 
@@ -487,12 +487,12 @@ real(kind=kind_real), pointer, dimension(:,:,:) :: delz => null()
 
 ! Optional fields
 ! ---------------
-if (inc%has_field('w')) then
-  call inc%get_field('w', w)
+if (inc%has_field('upward_air_velocity')) then
+  call inc%get_field('upward_air_velocity', w)
   lm%pert%w = lm%pert%w + w
 end if
-if (inc%has_field('delz')) then
-  call inc%get_field('delz', delz)
+if (inc%has_field('layer_thickness')) then
+  call inc%get_field('layer_thickness', delz)
   lm%pert%delz = lm%pert%delz + delz
 end if
 
@@ -502,7 +502,7 @@ end if
 ft = 1
 do f = 1, inc%nf
   if (inc%fields(f)%tracer) then
-    if (trim(inc%fields(f)%short_name) == 'sphum') then
+    if (trim(inc%fields(f)%long_name) == 'water_vapor_mixing_ratio_wrt_moist_air') then
       index = 1
       sphum_found = .true.
     else
@@ -521,9 +521,9 @@ end if
 
 ! Temperature / pressure
 ! ----------------------
-call inc%get_field('t', t)
+call inc%get_field('air_temperature', t)
 lm%pert%t = lm%pert%t + t
-call inc%get_field('delp', delp)
+call inc%get_field('air_pressure_thickness', delp)
 lm%pert%delp = lm%pert%delp + delp
 
 
@@ -537,8 +537,8 @@ ud = 0.0_kind_real  ! Set to zero because of internal accumulation
 vd = 0.0_kind_real  ! Set to zero because of internal accumulation
 
 ! Pointer to increment A-Grid winds
-call inc%get_field('ua', ua  )
-call inc%get_field('va', va  )
+call inc%get_field('eastward_wind', ua)
+call inc%get_field('northward_wind', va)
 
 ! Convert to A-Grid
 call d_to_a_ad(geom, ud, vd, ua, va)
@@ -573,7 +573,7 @@ end subroutine lm_to_inc_ad
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine traj_to_traj( geom, traj, lm )
+subroutine traj_to_traj(geom, traj, lm)
 
 type(fv3jedi_geom),    intent(in)    :: geom
 type(fv3jedi_traj),    intent(in)    :: traj

@@ -1,12 +1,12 @@
 cost function:
   cost type: 3D-Var
   analysis variables: &3dvars
-  - ua
-  - va
-  - t
-  - ps
-  - sphum
-  - o3mr
+  - eastward_wind
+  - northward_wind
+  - air_temperature
+  - air_pressure_at_surface
+  - water_vapor_mixing_ratio_wrt_moist_air
+  - ozone_mass_mixing_ratio
   time window:
     begin: 2020-12-14T21:00:00Z
     length: PT6H
@@ -21,7 +21,6 @@ cost function:
     npx: 13
     npy: 13
     npz: 127
-    field metadata override: Data/fieldmetadata/gfs-restart.yaml
   background:
     datetime: 2020-12-15T00:00:00Z
     filetype: fms restart
@@ -32,14 +31,24 @@ cost function:
     filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
     filename_cplr: 20201215.000000.coupler.res
     state variables:
-    - ua
-    - va
-    - t
-    - delp
-    - ps
-    - sphum
-    - phis
-    - o3mr
+    - eastward_wind
+    - northward_wind
+    - air_temperature
+    - air_pressure_thickness
+    - air_pressure_at_surface
+    - water_vapor_mixing_ratio_wrt_moist_air
+    - geopotential_height_times_gravity_at_surface
+    - ozone_mass_mixing_ratio
+    field io names: &field_io_names
+      eastward_wind: ua
+      northward_wind: va
+      air_temperature: T
+      air_pressure_at_surface: ps
+      water_vapor_mixing_ratio_wrt_moist_air: sphum
+      ozone_mass_mixing_ratio: o3mr
+      air_pressure_thickness: delp
+      geopotential_height_times_gravity_at_surface: phis
+      mole_fraction_of_ozone_in_air: o3ppmv
   background error:
     covariance model: SABER
     saber central block:
@@ -238,6 +247,7 @@ output:
   prefix: 3dvar-gfs.ana.c12
   first: PT0H
   frequency: PT1H
+  field io names: *field_io_names
 variational:
   minimizer:
     algorithm: DRPCG
@@ -252,7 +262,6 @@ variational:
       npx: 13
       npy: 13
       npz: 127
-      field metadata override: Data/fieldmetadata/gfs-restart.yaml
 test:
   reference filename: testoutput/3dvar_gfs_sondes.ref
   float relative tolerance: 1.0e-1

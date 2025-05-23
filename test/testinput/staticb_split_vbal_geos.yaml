@@ -9,7 +9,6 @@ geometry:
   npx: 13
   npy: 13
   npz: 72
-  field metadata override: Data/fieldmetadata/geos.yaml
 background:
   datetime: 2020-12-15T00:00:00Z
   filetype: cube sphere history
@@ -22,6 +21,11 @@ background:
   psinfile: true
   datapath: Data/staticb/balanced/mem001/
   filename: geos.20201215.000000z.nc4
+  field io names: &field_io_names
+    air_horizontal_streamfunction: psi
+    air_horizontal_velocity_potential: chi
+    air_temperature: t
+    air_pressure_at_surface: ps
 background error:
   covariance model: SABER
   saber central block:

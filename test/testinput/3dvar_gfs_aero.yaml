@@ -29,7 +29,6 @@ cost function:
     npx: 13
     npy: 13
     npz: 64
-    field metadata override: Data/fieldmetadata/gfs-aerosol.yaml
   background:
     datetime: 2018-04-15T00:00:00Z
     filetype: fms restart
@@ -38,23 +37,41 @@ cost function:
     filename_trcr: 20180415.000000.fv_tracer.res.nc
     filename_cplr: 20180415.000000.coupler.res
     state variables: &state_vars
-    - t
-    - delp
-    - sphum
-    - sulf
-    - bc1
-    - bc2
-    - oc1
-    - oc2
-    - dust1
-    - dust2
-    - dust3
-    - dust4
-    - dust5
-    - seas1
-    - seas2
-    - seas3
-    - seas4
+    - air_temperature
+    - air_pressure_thickness
+    - water_vapor_mixing_ratio_wrt_moist_air
+    - mass_fraction_of_sulfate_in_air
+    - mass_fraction_of_hydrophobic_black_carbon_in_air
+    - mass_fraction_of_hydrophilic_black_carbon_in_air
+    - mass_fraction_of_hydrophobic_organic_carbon_in_air
+    - mass_fraction_of_hydrophilic_organic_carbon_in_air
+    - mass_fraction_of_dust001_in_air
+    - mass_fraction_of_dust002_in_air
+    - mass_fraction_of_dust003_in_air
+    - mass_fraction_of_dust004_in_air
+    - mass_fraction_of_dust005_in_air
+    - mass_fraction_of_sea_salt001_in_air
+    - mass_fraction_of_sea_salt002_in_air
+    - mass_fraction_of_sea_salt003_in_air
+    - mass_fraction_of_sea_salt004_in_air
+    field io names: &field_io_names
+      mass_fraction_of_sulfate_in_air: sulf
+      mass_fraction_of_hydrophobic_black_carbon_in_air: bc1
+      mass_fraction_of_hydrophilic_black_carbon_in_air: bc2
+      mass_fraction_of_hydrophobic_organic_carbon_in_air: oc1
+      mass_fraction_of_hydrophilic_organic_carbon_in_air: oc2
+      mass_fraction_of_dust001_in_air: dust1
+      mass_fraction_of_dust002_in_air: dust2
+      mass_fraction_of_dust003_in_air: dust3
+      mass_fraction_of_dust004_in_air: dust4
+      mass_fraction_of_dust005_in_air: dust5
+      mass_fraction_of_sea_salt001_in_air: seas1
+      mass_fraction_of_sea_salt002_in_air: seas2
+      mass_fraction_of_sea_salt003_in_air: seas3
+      mass_fraction_of_sea_salt004_in_air: seas4
+      air_temperature: T
+      air_pressure_thickness: DELP
+      water_vapor_mixing_ratio_wrt_moist_air: sphum
   background error:
     covariance model: SABER
     saber central block:
@@ -82,6 +99,7 @@ cost function:
           filename_sfcd: 20180415.000000.stddev.sfc_data.nc
           filename_sfcw: 20180415.000000.stddev.fv_srf_wnd.res.nc
           filename_cplr: 20180415.000000.stddev.coupler.res
+          field io names: *field_io_names
   observations:
     observers:
     - obs space:
@@ -171,7 +189,6 @@ variational:
       npx: 13
       npy: 13
       npz: 64
-      field metadata override: Data/fieldmetadata/gfs-aerosol.yaml
   - ninner: 5
     gradient norm reduction: 1e-10
     test: on
@@ -183,12 +200,12 @@ variational:
       npx: 13
       npy: 13
       npz: 64
-      field metadata override: Data/fieldmetadata/gfs-aerosol.yaml
 output:
   filetype: fms restart
   datapath: Data/analysis/
   prefix: 3dvar-1-gfs
   frequency: PT1H
+  field io names: *field_io_names
 test:
   reference filename: testoutput/3dvar_gfs_aero.ref
   float absolute tolerance: 1.0e-8

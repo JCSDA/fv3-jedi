@@ -21,4 +21,3 @@ geometry:
   stretch_fac: 0.0
   target_lat: 0.0
   target_lon: 0.0
-  field metadata override: Data/fieldmetadata/geos.yaml

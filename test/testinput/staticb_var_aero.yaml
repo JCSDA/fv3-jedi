@@ -9,7 +9,6 @@ geometry:
   npx: 13
   npy: 13
   npz: 64
-  field metadata override: Data/fieldmetadata/gfs-aerosol.yaml
 background:
   datetime: 2018-04-15T00:00:00Z
   filetype: fms restart
@@ -34,6 +33,21 @@ background:
   filename_sfcd: 20180415.000000.sfc_data.nc
   filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
   filename_cplr: 20180415.000000.coupler.res
+  field io names: &field_io_names
+    mass_fraction_of_sulfate_in_air: sulf
+    mass_fraction_of_hydrophobic_black_carbon_in_air: bc1
+    mass_fraction_of_hydrophilic_black_carbon_in_air: bc2
+    mass_fraction_of_hydrophobic_organic_carbon_in_air: oc1
+    mass_fraction_of_hydrophilic_organic_carbon_in_air: oc2
+    mass_fraction_of_dust001_in_air: dust1
+    mass_fraction_of_dust002_in_air: dust2
+    mass_fraction_of_dust003_in_air: dust3
+    mass_fraction_of_dust004_in_air: dust4
+    mass_fraction_of_dust005_in_air: dust5
+    mass_fraction_of_sea_salt001_in_air: seas1
+    mass_fraction_of_sea_salt002_in_air: seas2
+    mass_fraction_of_sea_salt003_in_air: seas3
+    mass_fraction_of_sea_salt004_in_air: seas4
 background error:
   covariance model: SABER
   saber central block:
@@ -86,6 +100,7 @@ background error:
           filename_sfcd: 20180414.210000.var.sfc_data.nc
           filename_sfcw: 20180414.210000.var.fv_srf_wnd.res.nc
           filename_cplr: 20180414.210000.var.coupler.res
+          field io names: *field_io_names
       - parameter: m4
         component: 1
         file:
@@ -98,6 +113,7 @@ background error:
           filename_sfcd: 20180414.210000.m4.sfc_data.nc
           filename_sfcw: 20180414.210000.m4.fv_srf_wnd.res.nc
           filename_cplr: 20180414.210000.m4.coupler.res
+          field io names: *field_io_names
       - parameter: var
         component: 2
         file:
@@ -110,6 +126,7 @@ background error:
           filename_sfcd: 20180415.000000.var.sfc_data.nc
           filename_sfcw: 20180415.000000.var.fv_srf_wnd.res.nc
           filename_cplr: 20180415.000000.var.coupler.res
+          field io names: *field_io_names
       - parameter: m4
         component: 2
         file:
@@ -121,6 +138,7 @@ background error:
           filename_sfcd: 20180415.000000.m4.sfc_data.nc
           filename_sfcw: 20180415.000000.m4.fv_srf_wnd.res.nc
           filename_cplr: 20180415.000000.m4.coupler.res
+          field io names: *field_io_names
       - parameter: var
         component: 3
         file:
@@ -133,6 +151,7 @@ background error:
           filename_sfcd: 20180415.030000.var.sfc_data.nc
           filename_sfcw: 20180415.030000.var.fv_srf_wnd.res.nc
           filename_cplr: 20180415.030000.var.coupler.res
+          field io names: *field_io_names
       - parameter: m4
         component: 3
         file:
@@ -145,6 +164,7 @@ background error:
           filename_sfcd: 20180415.030000.m4.sfc_data.nc
           filename_sfcw: 20180415.030000.m4.fv_srf_wnd.res.nc
           filename_cplr: 20180415.030000.m4.coupler.res
+          field io names: *field_io_names
       output model files:
       - parameter: stddev
         file:
@@ -155,5 +175,6 @@ background error:
           filename_sfcd: stddev.sfc_data.nc
           filename_sfcw: stddev.fv_srf_wnd.res.nc
           filename_cplr: stddev.coupler.res
+          field io names: *field_io_names
 test:
   reference filename: testoutput/staticb_var_aero.ref

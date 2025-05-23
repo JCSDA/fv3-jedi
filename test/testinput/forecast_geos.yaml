@@ -10,7 +10,6 @@ geometry:
   npx: 91
   npy: 91
   npz: 72
-  field metadata override: Data/fieldmetadata/geos.yaml
 model:
   name: GEOS
   tstep: PT15M
@@ -40,3 +39,4 @@ output:
   prefix: forecast.jediex.
   first: PT0H
   frequency: PT15H
+  field io names: *field_io_names

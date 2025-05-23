@@ -4,4 +4,3 @@ geometry:
     field table filename: Data/fv3files/field_table_lam_cmaq
   namelist filename: Data/fv3files/input_lam_cmaq.nml
   akbk: Data/fv3files/akbk64.nc4
-  field metadata override: Data/fieldmetadata/gfs-aerosol.yaml

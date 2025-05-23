@@ -21,7 +21,6 @@ assimilation:
       npx: 13
       npy: 13
       npz: 127
-      field metadata override: Data/fieldmetadata/gfs-restart.yaml
     background:
       datetime: 2020-12-15T00:00:00Z
       filetype: fms restart
@@ -32,27 +31,42 @@ assimilation:
       filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
       filename_cplr: 20201215.000000.coupler.res
       state variables:
-      - ua
-      - va
-      - t
-      - delp
-      - sphum
-      - ice_wat
-      - liq_wat
-      - o3mr
-      - phis
+      - eastward_wind
+      - northward_wind
+      - air_temperature
+      - air_pressure_thickness
+      - water_vapor_mixing_ratio_wrt_moist_air
+      - cloud_liquid_ice
+      - cloud_liquid_water
+      - ozone_mass_mixing_ratio
+      - geopotential_height_times_gravity_at_surface
       - slmsk
       - sheleg
-      - tsea
+      - skin_temperature_at_surface
       - vtype
       - stype
       - vfrac
       - stc
-      - smc
-      - snwdph
-      - u_srf
-      - v_srf
+      - soilMoistureVolumetric
+      - totalSnowDepth
+      - eastward_wind_at_surface
+      - northward_wind_at_surface
       - f10m
+      field io names: &field_io_names
+        eastward_wind: ua
+        northward_wind: va
+        air_temperature: T
+        air_pressure_thickness: delp
+        water_vapor_mixing_ratio_wrt_moist_air: sphum
+        cloud_liquid_ice: ice_wat
+        cloud_liquid_water: liq_wat
+        ozone_mass_mixing_ratio: o3mr
+        geopotential_height_times_gravity_at_surface: phis
+        skin_temperature_at_surface: tsea
+        soilMoistureVolumetric: smc
+        totalSnowDepth: snwdph
+        eastward_wind_at_surface: u_srf
+        northward_wind_at_surface: v_srf
     background error:
       covariance model: SABER
       saber central block:
@@ -134,7 +148,6 @@ assimilation:
         npx: 13
         npy: 13
         npz: 127
-        field metadata override: Data/fieldmetadata/gfs-restart.yaml
   final:
     increment to structured grid:
       grid type: latlon
@@ -167,6 +180,7 @@ assimilation:
     datapath: Data/analysis/eda/gfs/controlpert/mem%mem_pad%
     prefix: eda-3dvar-gfs
     frequency: PT1H
+    field io names: *field_io_names
 template:
   pattern with zero padding: "%mem_pad%"
   pattern without zero padding: "%mem%"

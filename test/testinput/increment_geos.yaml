@@ -21,15 +21,13 @@ geometry:
   npx: 13
   npy: 13
   npz: 72
-  field metadata override: Data/fieldmetadata/geos.yaml
 other geometry:
   akbk: Data/fv3files/akbk72.nc4
   npx: 25
   npy: 25
   npz: 72
-  field metadata override: Data/fieldmetadata/geos.yaml
 inc variables:
-- ua
-- va
-- t
-- delp
+- eastward_wind
+- northward_wind
+- air_temperature
+- air_pressure_thickness

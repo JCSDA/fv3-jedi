@@ -24,6 +24,8 @@ cost function:
     datapath: Data/inputs/gfs_land_c48/mem001/
     filename_sfcd: 20230501.120000.sfc_data.nc
     filename_cplr: 20230501.120000.coupler.res
+    field io names:
+      totalSnowDepth: snwdph
   background error:
     covariance model: SABER
     saber central block:
@@ -93,6 +95,8 @@ output:
   filetype: auxgrid
   gridtype: latlon
   filename: Data/analysis/gfs_land/3dvar.snow
+  field io names:
+    totalSnowDepth: snwdph
 final:
   increment:
     geometry: *geom
@@ -101,6 +105,8 @@ final:
         filetype: fms restart
         datapath: Data/analysis/gfs_land
         prefix: 3dvar.snow.inc
+        field io names:
+          totalSnowDepth: snwdph
 variational:
   minimizer:
     algorithm: DRPCG
@@ -112,18 +118,21 @@ variational:
       npx: 49
       npy: 49
       npz: 127
-      field metadata override: Data/fieldmetadata/gfs_v17-land.yaml
       time invariant fields:
         state fields:
           datetime: 2023-05-01T12:00:00Z
           filetype: fms restart
           skip coupler file: true
           state variables:
-          - orog_filt
+          - filtered_orography
           datapath: Data/inputs/gfs_land_c48/grid/
           filename_orog: C48_oro_data.nc
           filename_sfcd: C48_oro_data.nc
+          field io names:
+            filtered_orography: orog_filt
       vert coordinate: orography
+      field interpolation methods:
+        totalSnowDepth: 'nearest'
 test:
   reference filename: testoutput/3dvar_snow.ref
   test output filename: testoutput/3dvar_snow.test.out

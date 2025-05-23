@@ -89,31 +89,31 @@ self%jsc = geom%jsc
 self%jec = geom%jec
 self%npz = geom%npz
 
-! Trajectory fields
-if (bg%has_field('t'     )) call bg%get_field('t'     , self%t )
-if (bg%has_field('sphum' )) call bg%get_field('sphum' , self%q )
-if (bg%has_field('o3mr'  )) call bg%get_field('o3mr'  , self%o3)
-if (bg%has_field('o3ppmv')) call bg%get_field('o3ppmv', self%o3)
-if (bg%has_field('delp'  )) call bg%get_field('delp'  , self%delp)
-if (bg%has_field('cloud_liquid_water')) call bg%get_field('cloud_liquid_water', self%ql)
-if (bg%has_field('cloud_liquid_ice'))   call bg%get_field('cloud_liquid_ice'  , self%qi)
-if (bg%has_field('rain_water'))         call bg%get_field('rain_water'        , self%qr)
-if (bg%has_field('snow_water'))         call bg%get_field('snow_water'        , self%qs)
-if (bg%has_field('graupel'))            call bg%get_field('graupel'           , self%qg)
-if (bg%has_field('fraction_of_ice'))    call bg%get_field('fraction_of_ice'   , self%frseaice)
-if (bg%has_field('fraction_of_snow'))   call bg%get_field('fraction_of_snow'  , self%frsnow)
-if (bg%has_field('fraction_of_land'))   call bg%get_field('fraction_of_land'  , self%frland)
-if (bg%has_field('fraction_of_lake'))   call bg%get_field('fraction_of_lake'  , self%frlake)
-if (bg%has_field('fraction_of_ocean'))  call bg%get_field('fraction_of_ocean' , self%frocean)
-if (bg%has_field('slmsk'))              call bg%get_field('slmsk'             , self%slmsk)
-if (bg%has_field('sheleg'))             call bg%get_field('sheleg'            , self%sheleg)
+! Trajectory fields (OK if they do not exist as later checks will assert)
+call bg%get_field('air_temperature', self%t, .true.)
+call bg%get_field('water_vapor_mixing_ratio_wrt_moist_air', self%q, .true.)
+call bg%get_field('ozone_mass_mixing_ratio', self%o3, .true.)
+call bg%get_field('mole_fraction_of_ozone_in_air', self%o3, .true.)
+call bg%get_field('air_pressure_thickness', self%delp, .true.)
+call bg%get_field('cloud_liquid_water', self%ql, .true.)
+call bg%get_field('cloud_liquid_ice', self%qi, .true.)
+call bg%get_field('rain_water', self%qr, .true.)
+call bg%get_field('snow_water', self%qs, .true.)
+call bg%get_field('graupel', self%qg, .true.)
+call bg%get_field('fraction_of_ice', self%frseaice, .true.)
+call bg%get_field('fraction_of_snow', self%frsnow, .true.)
+call bg%get_field('fraction_of_land', self%frland, .true.)
+call bg%get_field('fraction_of_lake', self%frlake, .true.)
+call bg%get_field('fraction_of_ocean', self%frocean, .true.)
+call bg%get_field('slmsk', self%slmsk, .true.)
+call bg%get_field('sheleg', self%sheleg, .true.)
 
 have_ts=.false.
 if (bg%has_field('ts')) then
    call bg%get_field('ts', self%ts)
    have_ts=.true.
 else if (bg%has_field('tsea')) then
-   call bg%get_field('tsea'              , self%ts)
+   call bg%get_field('tsea', self%ts)
    have_ts=.true.
 endif
 
@@ -156,7 +156,7 @@ if (have_slmsk) then
   allocate(local_swe(geom%isc:geom%iec,geom%jsc:geom%jec,1))
 
   ! Potential for missing values in snow water equivalent (if missing set to 0.0)
-  local_swe = self%sheleg  ! SWE is named "sheleg" in backgrounds
+  local_swe = self%sheleg  ! SWE is named 'sheleg' in backgrounds
   where (abs(local_swe) > 10.0e10_kind_real) local_swe = 0.0_kind_real
 
   ! Note: The GFS slmsk has values {0,1,2} denoting {sea,land,ice}.
@@ -272,11 +272,11 @@ call copy_subset(dxm%fields, dxg%fields, fields_to_do_)
 nf2do = 0
 if (allocated(fields_to_do_)) nf2do = size(fields_to_do_)
 
-if (dxg%has_field('ua')) then
+if (dxg%has_field('eastward_wind')) then
   allocate(fields_to_do(nf2do+2))
   if (allocated(fields_to_do_)) fields_to_do(1:nf2do) = fields_to_do_
-  fields_to_do(nf2do+1) = 'ua'
-  fields_to_do(nf2do+2) = 'va'
+  fields_to_do(nf2do+1) = 'eastward_wind'
+  fields_to_do(nf2do+2) = 'northward_wind'
 else
   if (allocated(fields_to_do_)) then
     allocate(fields_to_do(nf2do))
@@ -293,9 +293,9 @@ if (.not.allocated(fields_to_do)) return
 ! Winds
 ! -----
 have_winds = .false.
-if (dxm%has_field('ua') .and. dxm%has_field('va')) then
-    call dxm%get_field('ua', ua)
-    call dxm%get_field('va', va)
+if (dxm%has_field('eastward_wind') .and. dxm%has_field('northward_wind')) then
+    call dxm%get_field('eastward_wind', ua)
+    call dxm%get_field('northward_wind', va)
     have_winds = .true.
 endif
 
@@ -308,8 +308,8 @@ endif
 ! Humidity mixing ratio
 ! ---------------------
 have_qmr = .false.
-if (allocated(self%q) .and. dxm%has_field('sphum')) then
-  call dxm%get_field('sphum', q)
+if (allocated(self%q) .and. dxm%has_field('water_vapor_mixing_ratio_wrt_moist_air')) then
+  call dxm%get_field('water_vapor_mixing_ratio_wrt_moist_air', q)
   allocate(qmr(self%isc:self%iec,self%jsc:self%jec,self%npz))
   call crtm_mixratio_tl(geom, self%q, q, qmr)
   have_qmr = .true.
@@ -318,9 +318,9 @@ endif
 ! Cloud liquid water
 ! ------------------
 have_ql = .false.
-if (allocated(self%ql).and.allocated(self%delp).and.dxm%has_field('liq_wat').and.&
+if (allocated(self%ql).and.allocated(self%delp).and.dxm%has_field('cloud_liquid_water').and.&
    dxg%has_field('mass_content_of_cloud_liquid_water_in_atmosphere_layer')) then
-  call dxm%get_field('liq_wat', cmxr)
+  call dxm%get_field('cloud_liquid_water', cmxr)
   allocate(clwpath(self%isc:self%iec,self%jsc:self%jec,self%npz))
   call hydro_mixr_to_wpath_tl (geom, self%delp, self%ql, cmxr, clwpath)
   have_ql = .true.
@@ -329,9 +329,9 @@ endif
 ! Cloud ice water
 ! ---------------
 have_qi = .false.
-if (allocated(self%qi).and.allocated(self%delp).and.dxm%has_field('ice_wat').and.&
+if (allocated(self%qi).and.allocated(self%delp).and.dxm%has_field('cloud_liquid_ice').and.&
    dxg%has_field('mass_content_of_cloud_ice_in_atmosphere_layer')) then
-  call dxm%get_field('ice_wat', cmxr)
+  call dxm%get_field('cloud_liquid_ice', cmxr)
   allocate(ciwpath(self%isc:self%iec,self%jsc:self%jec,self%npz))
   call hydro_mixr_to_wpath_tl (geom, self%delp, self%qi, cmxr, ciwpath)
   have_qi = .true.
@@ -373,19 +373,19 @@ endif
 ! Ozone
 ! -----
 have_o3   = .false.
-if (dxm%has_field( 'o3mr')) then
-  call dxm%get_field('o3mr', o3mr)
+if (dxm%has_field( 'ozone_mass_mixing_ratio')) then
+  call dxm%get_field('ozone_mass_mixing_ratio', o3mr)
   allocate(o3ppmv(self%isc:self%iec,self%jsc:self%jec,self%npz))
   o3ppmv = o3mr * constant('constoz')
   have_o3 = .true.
-elseif (dxm%has_field('o3ppmv')) then
-  call dxm%get_field('o3ppmv', o3ppmv)
+elseif (dxm%has_field('mole_fraction_of_ozone_in_air')) then
+  call dxm%get_field('mole_fraction_of_ozone_in_air', o3ppmv)
   have_o3 = .true.
 endif
 
 if (have_o3) then
-  if (.not.allocated(self%o3)) call abor1_ftn("fv3jedi_lvc_model2geovals_mod.multiply no ozone" // &
-                                              "found in trajectory")
+  if (.not.allocated(self%o3)) call abor1_ftn('fv3jedi_lvc_model2geovals_mod.multiply no ozone' // &
+                                              'found in trajectory')
   do k = 1, self%npz
     do j = self%jsc, self%jec
       do i = self%isc, self%iec
@@ -400,11 +400,11 @@ endif
 ! Surface pressure
 ! ----------------
 have_ps = .false.
-if (dxm%has_field( 'ps')) then
-  call dxm%get_field('ps', ps)
+if (dxm%has_field( 'air_pressure_at_surface')) then
+  call dxm%get_field('air_pressure_at_surface', ps)
   have_ps = .true.
-elseif (dxm%has_field('delp')) then
-  call dxm%get_field('delp', delp)
+elseif (dxm%has_field('air_pressure_thickness')) then
+  call dxm%get_field('air_pressure_thickness', delp)
   allocate(ps(self%isc:self%iec,self%jsc:self%jec,1))
   ps(:,:,1) = sum(delp,3)
   have_ps = .true.
@@ -426,53 +426,53 @@ do f = 1, size(fields_to_do)
 
   select case (trim(fields_to_do(f)))
 
-  case ("ua")
+  case ('eastward_wind')
 
     if (.not. have_winds) call field_fail(fields_to_do(f))
     field_ptr = ua
 
-  case ("va")
+  case ('northward_wind')
 
     if (.not. have_winds) call field_fail(fields_to_do(f))
     field_ptr = va
 
 ! Virtual temperature needed but now done in VADER
-!   case ("tv")
+!   case ('tv')
 
-  case ("ps")
+  case ('air_pressure_at_surface')
 
     if (.not. have_ps) call field_fail(fields_to_do(f))
     field_ptr = ps
 
-  case ("skin_temperature_at_surface")
+  case ('skin_temperature_at_surface')
 
     if (.not. have_tskin) call field_fail(fields_to_do(f))
     field_ptr = tskin
 
-  case ("water_vapor_mixing_ratio_wrt_dry_air")
+  case ('water_vapor_mixing_ratio_wrt_dry_air')
 
     if (.not. have_qmr) call field_fail(fields_to_do(f))
     field_ptr = qmr
 
-  case ("o3ppmv", "mole_fraction_of_ozone_in_air")
+  case ('mole_fraction_of_ozone_in_air')
 
     if (.not. have_o3) call field_fail(fields_to_do(f))
     field_ptr = o3ppmv
 
-  case ("mass_content_of_cloud_liquid_water_in_atmosphere_layer")
+  case ('mass_content_of_cloud_liquid_water_in_atmosphere_layer')
 
     if (have_ql) field_ptr = clwpath
 
-  case ("mass_content_of_cloud_ice_in_atmosphere_layer")
+  case ('mass_content_of_cloud_ice_in_atmosphere_layer')
     if (have_qi) field_ptr = ciwpath
 
-  case ("mass_content_of_rain_in_atmosphere_layer")
+  case ('mass_content_of_rain_in_atmosphere_layer')
     if (have_qr) field_ptr = crwpath
 
-  case ("mass_content_of_snow_in_atmosphere_layer")
+  case ('mass_content_of_snow_in_atmosphere_layer')
     if (have_qs) field_ptr = cswpath
 
-  case ("mass_content_of_graupel_in_atmosphere_layer")
+  case ('mass_content_of_graupel_in_atmosphere_layer')
 
     if (have_qg) field_ptr = cgwpath
 
@@ -486,13 +486,13 @@ do f = 1, size(fields_to_do)
   case ("mass_content_of_rain_in_atmosphere_column")
   case ("mass_content_of_snow_in_atmosphere_column")
   case ("mass_content_of_graupel_in_atmosphere_column")
-  case ("pe")
-  case ("p")
+  case ('air_pressure_levels')
+  case ('air_pressure')
 
   case default
 
-    call abor1_ftn("fv3jedi_lvc_model2geovals_mod.multiply unknown field: "//trim(fields_to_do(f)) &
-                   //". Not in input field and no transform case specified.")
+    call abor1_ftn('fv3jedi_lvc_model2geovals_mod.multiply unknown field: '//trim(fields_to_do(f)) &
+                   //'. Not in input field and no transform case specified.')
 
   end select
 
@@ -575,7 +575,7 @@ real(kind=kind_real), pointer     :: ps   (:,:,:)         !Surface pressure
 real(kind=kind_real), allocatable :: delp (:,:,:)         !Pressure thickness
 
 !Skin temperature
-logical :: have_tsea,have,have_tland,have_tice,have_tsnow,have_tskin
+logical :: have_tsea,have,have_tland,have_tice,have_tsnow
 integer :: tskin_index
 real(kind=kind_real), pointer     :: dtsea   (:,:,:)       !Sea surface temperature
 real(kind=kind_real), pointer     :: dtland  (:,:,:)       !Land surface temperature
@@ -593,11 +593,11 @@ qg_index=0
 ! Print information
 !if (geom%f_comm%rank()==0) then
 !  do fg = 1, size(dxg%fields)
-!    print*, "Model2GeoVaLs.multiplyAD, GeoVaLs fields IN: ", trim(dxg%fields(fg)%short_name), &
+!    print*, 'Model2GeoVaLs.multiplyAD, GeoVaLs fields IN: ', trim(dxg%fields(fg)%long_name), &
 !            minval(dxg%fields(fg)%array), maxval(dxg%fields(fg)%array)
 !  enddo
 !  do fm = 1, size(dxm%fields)
-!    print*, "Model2GeoVaLs.multiplyAD, Model fields IN:   ", trim(dxm%fields(fm)%short_name), &
+!    print*, 'Model2GeoVaLs.multiplyAD, Model fields IN:   ', trim(dxm%fields(fm)%long_name), &
 !            minval(dxm%fields(fm)%array), maxval(dxm%fields(fm)%array)
 !  enddo
 !endif
@@ -610,15 +610,15 @@ field_passed = .false.
 num_not_copied = 0
 do fm = 1, size(dxm%fields)
   ! Identity if found and not winds
-  if (.not.trim(dxm%fields(fm)%short_name) == 'ua' .and. &
-      .not.trim(dxm%fields(fm)%short_name) == 'va' .and. &
-      dxg%has_field( dxm%fields(fm)%short_name, dxg_index)) then
-    call dxg%get_field(dxm%fields(fm)%short_name, field_ptr)
+  if (.not.trim(dxm%fields(fm)%long_name) == 'eastward_wind' .and. &
+      .not.trim(dxm%fields(fm)%long_name) == 'northward_wind' .and. &
+      dxg%has_field( dxm%fields(fm)%long_name, dxg_index)) then
+    call dxg%get_field(dxm%fields(fm)%long_name, field_ptr)
     dxm%fields(fm)%array = dxm%fields(fm)%array + field_ptr
     field_passed(dxg_index) = .true.
   else
     num_not_copied = num_not_copied + 1
-    not_copied_(num_not_copied) = dxm%fields(fm)%short_name
+    not_copied_(num_not_copied) = dxm%fields(fm)%long_name
   endif
 enddo
 
@@ -629,14 +629,14 @@ fields_to_do(1:num_not_copied) = not_copied_(1:num_not_copied)
 ! Winds
 ! -----
 have_awinds = .false.
-if (dxg%has_field( "ua", ua_index) .and. dxg%has_field( "va", va_index)) then
-  call dxg%get_field('ua', ua)
-  call dxg%get_field('va', va)
-  if (dxm%has_field('ua') .and. dxm%has_field('va')) then
+if (dxg%has_field( 'eastward_wind', ua_index) .and. dxg%has_field( 'northward_wind', va_index)) then
+  call dxg%get_field('eastward_wind', ua)
+  call dxg%get_field('northward_wind', va)
+  if (dxm%has_field('eastward_wind') .and. dxm%has_field('northward_wind')) then
     have_awinds = .true.
   else
-    call abor1_ftn("fv3jedi_lvc_model2geovals_mod.multiplyadjoint: Winds found in GeoVaLs but"// &
-                   " not in the model.")
+    call abor1_ftn('fv3jedi_lvc_model2geovals_mod.multiplyadjoint: Winds found in GeoVaLs but'// &
+                   ' not in the model.')
   endif
 endif
 
@@ -658,8 +658,8 @@ endif
 ! Pressure
 ! --------
 have_ps = .false.
-if (dxg%has_field( "ps", ps_index)) then
-  call dxg%get_field('ps', ps)
+if (dxg%has_field( 'air_pressure_at_surface', ps_index)) then
+  call dxg%get_field('air_pressure_at_surface', ps)
   allocate(delp(self%isc:self%iec,self%jsc:self%jec,self%npz))
   delp = 0.0_kind_real
   do k = 1, self%npz
@@ -672,7 +672,7 @@ endif
 ! Cloud liquid water
 ! ------------------
 have_ql = .false.
-if (allocated(self%ql).and.allocated(self%delp).and.dxm%has_field('liq_wat').and.&
+if (allocated(self%ql).and.allocated(self%delp).and.dxm%has_field('cloud_liquid_water').and.&
     dxg%has_field('mass_content_of_cloud_liquid_water_in_atmosphere_layer',ql_index)) then
   call dxg%get_field('mass_content_of_cloud_liquid_water_in_atmosphere_layer', wpath)
   allocate(dql(self%isc:self%iec,self%jsc:self%jec,self%npz))
@@ -684,7 +684,7 @@ endif
 ! Cloud ice water
 ! ---------------
 have_qi = .false.
-if (allocated(self%qi).and.allocated(self%delp).and.dxm%has_field('ice_wat').and.&
+if (allocated(self%qi).and.allocated(self%delp).and.dxm%has_field('cloud_liquid_ice').and.&
     dxg%has_field('mass_content_of_cloud_ice_in_atmosphere_layer',qi_index)) then
   call dxg%get_field('mass_content_of_cloud_ice_in_atmosphere_layer', wpath)
   allocate(dqi(self%isc:self%iec,self%jsc:self%jec,self%npz))
@@ -735,14 +735,6 @@ have_tland = .false.
 have_tsea  = .false.
 have_tice  = .false.
 have_tsnow = .false.
-have_tskin = .false.
-if (dxm%has_field('skin_temperature_at_surface',tskin_index)) then
-  have_tskin = .true.
-else if (dxm%has_field('tsea',tskin_index)) then
-  have_tskin = .true.
-else if (dxm%has_field('ts',tskin_index)) then
-  have_tskin = .true.
-endif
 if (dxm%has_field('skin_temperature_at_surface',tskin_index)) then
    if ( allocated(self%frland).and.dxg%has_field('skin_temperature_at_surface_where_land') ) then
      call dxg%get_field('skin_temperature_at_surface_where_land',dtland)
@@ -765,8 +757,8 @@ endif
 ! Ozone
 ! -----
 have_o3ppmv = .false.
-if (dxg%has_field('o3ppmv', o3_index)) then
-  call dxg%get_field('o3ppmv', o3ppmv)
+if (dxg%has_field('mole_fraction_of_ozone_in_air', o3_index)) then
+  call dxg%get_field('mole_fraction_of_ozone_in_air', o3ppmv)
   have_o3ppmv = .true.
 elseif (dxg%has_field('mole_fraction_of_ozone_in_air', o3_index)) then
   call dxg%get_field('mole_fraction_of_ozone_in_air', o3ppmv)
@@ -775,8 +767,8 @@ endif
 
 have_o3mr = .false.
 if (have_o3ppmv) then
-  if (.not.allocated(self%o3)) call abor1_ftn("fv3jedi_lvc_model2geovals_mod.multiply no ozone" // &
-                                              "found in trajectory")
+  if (.not.allocated(self%o3)) call abor1_ftn('fv3jedi_lvc_model2geovals_mod.multiply no ozone' // &
+                                              'found in trajectory')
   do k = 1, self%npz
     do j = self%jsc, self%jec
       do i = self%isc, self%iec
@@ -795,15 +787,15 @@ if (have_o3ppmv) then
 endif
 
 ! Simulated but not assimilated
-if (dxg%has_field( "mass_content_of_cloud_liquid_water_in_atmosphere_layer", noassim_index)) &
+if (dxg%has_field( 'mass_content_of_cloud_liquid_water_in_atmosphere_layer', noassim_index)) &
   field_passed(noassim_index) = .true.
-if (dxg%has_field( "mass_content_of_cloud_ice_in_atmosphere_layer", noassim_index)) &
+if (dxg%has_field( 'mass_content_of_cloud_ice_in_atmosphere_layer', noassim_index)) &
   field_passed(noassim_index) = .true.
-if (dxg%has_field( "mass_content_of_rain_in_atmosphere_layer", noassim_index)) &
+if (dxg%has_field( 'mass_content_of_rain_in_atmosphere_layer', noassim_index)) &
   field_passed(noassim_index) = .true.
-if (dxg%has_field( "mass_content_of_snow_in_atmosphere_layer", noassim_index)) &
+if (dxg%has_field( 'mass_content_of_snow_in_atmosphere_layer', noassim_index)) &
   field_passed(noassim_index) = .true.
-if (dxg%has_field( "mass_content_of_graupel_in_atmosphere_layer", noassim_index)) &
+if (dxg%has_field( 'mass_content_of_graupel_in_atmosphere_layer', noassim_index)) &
   field_passed(noassim_index) = .true.
 if (dxg%has_field( "mass_content_of_cloud_liquid_water_in_atmosphere_column", noassim_index)) &
   field_passed(noassim_index) = .true.
@@ -817,23 +809,23 @@ if (dxg%has_field( "mass_content_of_graupel_in_atmosphere_column", noassim_index
   field_passed(noassim_index) = .true.
 if (dxg%has_field( "skin_temperature_at_surface_where_sea", noassim_index)) &
   field_passed(noassim_index) = .true.
-if (dxg%has_field( "skin_temperature_at_surface_where_land", noassim_index)) &
+if (dxg%has_field( 'skin_temperature_at_surface_where_land', noassim_index)) &
   field_passed(noassim_index) = .true.
-if (dxg%has_field( "skin_temperature_at_surface_where_ice", noassim_index)) &
+if (dxg%has_field( 'skin_temperature_at_surface_where_ice', noassim_index)) &
   field_passed(noassim_index) = .true.
-if (dxg%has_field( "skin_temperature_at_surface_where_snow", noassim_index)) &
+if (dxg%has_field( 'skin_temperature_at_surface_where_snow', noassim_index)) &
   field_passed(noassim_index) = .true.
-if (dxg%has_field( "p", noassim_index)) &
+if (dxg%has_field( 'air_pressure', noassim_index)) &
   field_passed(noassim_index) = .true.
-if (dxg%has_field( "pe", noassim_index)) &
+if (dxg%has_field( 'air_pressure_levels', noassim_index)) &
   field_passed(noassim_index) = .true.
 
 
 ! Print information
 !if (geom%f_comm%rank()==0) then
 ! do fg = 1, size(dxg%fields)
-!   print*, "Model2GeoVaLs.multiplyAD, GeoVaLs fields: ", trim(dxg%fields(fg)%short_name), &
-!           ", passed: ", field_passed(fg)
+!   print*, 'Model2GeoVaLs.multiplyAD, GeoVaLs fields: ', trim(dxg%fields(fg)%long_name), &
+!           ', passed: ', field_passed(fg)
 ! enddo
 !endif
 
@@ -846,77 +838,77 @@ do fm = 1, size(fields_to_do)
 
   select case(trim(fields_to_do(fm)))
 
-  case ("ua")
+  case ('eastward_wind')
 
     if (have_awinds) then
       field_passed(ua_index) = .true.
       field_ptr = field_ptr + ua
     endif
 
-  case ("va")
+  case ('northward_wind')
 
     if (have_awinds) then
       field_passed(va_index) = .true.
       field_ptr = field_ptr + va
     endif
 
-  case ("delp")
+  case ('air_pressure_thickness')
 
     if (have_ps) then
       field_passed(ps_index) = .true.
       field_ptr = field_ptr + delp
     endif
 
-  case ("o3mr")
+  case ('ozone_mass_mixing_ratio')
 
     if (have_o3mr) then
       field_passed(o3_index) = .true.
       field_ptr = field_ptr + o3mr
     endif
 
-  case ("o3ppmv")
+  case ('mole_fraction_of_ozone_in_air')
 
     if (have_o3ppmv) then
       field_passed(o3_index) = .true.
       field_ptr = field_ptr + o3ppmv
     endif
 
-  case ("liq_wat")
+  case ('cloud_liquid_water')
 
     if (have_ql) then
       field_passed(ql_index) = .true.
       field_ptr = field_ptr + dql
     endif
 
-  case ("ice_wat")
+  case ('cloud_liquid_ice')
 
     if (have_qi) then
       field_passed(qi_index) = .true.
       field_ptr = field_ptr + dqi
     endif
 
-  case ("rainwat")
+  case ('rainwat')
 
     if (have_qr) then
       field_passed(qr_index) = .true.
       field_ptr = field_ptr + dqr
     endif
 
-  case ("snowwat")
+  case ('snowwat')
 
     if (have_qs) then
       field_passed(qs_index) = .true.
       field_ptr = field_ptr + dqs
     endif
 
-  case ("graupel")
+  case ('graupel')
 
     if (have_qg) then
       field_passed(qg_index) = .true.
       field_ptr = field_ptr + dqg
     endif
 
-  case ("ts","skin_temperature_at_surface", "tsea")
+  case ('skin_temperature_at_surface')
 
     if (have_tsea) then
       field_passed(tskin_index) = .true.
@@ -953,8 +945,8 @@ enddo
 ! Print information
 !if (geom%f_comm%rank()==0) then
 ! do fg = 1, size(dxg%fields)
-!   print*, "Model2GeoVaLs.multiplyAD, GeoVaLs fields: ", trim(dxg%fields(fg)%short_name), &
-!           "Passed: ", field_passed(fg)
+!   print*, 'Model2GeoVaLs.multiplyAD, GeoVaLs fields: ', trim(dxg%fields(fg)%long_name), &
+!           'Passed: ', field_passed(fg)
 ! enddo
 !endif
 
@@ -964,19 +956,19 @@ do fg = 1, size(dxg%fields)
 
   if (.not. field_passed(fg)) then
 
-    select case(trim(dxg%fields(fg)%short_name))
+    select case(trim(dxg%fields(fg)%long_name))
 
-    case ("water_vapor_mixing_ratio_wrt_dry_air")
+    case ('water_vapor_mixing_ratio_wrt_dry_air')
 
-      if (.not. have_qmr) call field_fail(trim(dxg%fields(fg)%short_name))
+      if (.not. have_qmr) call field_fail(trim(dxg%fields(fg)%long_name))
       field_passed(qmr_index) = .true.
-      call dxm%get_field("sphum", qptr)
+      call dxm%get_field('water_vapor_mixing_ratio_wrt_moist_air', qptr)
       qptr = qptr + q_qmr
 
     case default
 
-      call abor1_ftn("GeoVaLs field "//trim(dxg%fields(fg)%short_name)//" has no known link "// &
-                      "to fields in model state")
+      call abor1_ftn('GeoVaLs field '//trim(dxg%fields(fg)%long_name)//' has no known link '// &
+                      'to fields in model state')
 
     end select
 
@@ -988,18 +980,18 @@ enddo
 ! Check all fields have been linked to an output field
 do fg = 1, size(dxg%fields)
   if (.not. field_passed(fg)) then
-    call abor1_ftn("fv3jedi_lvc_model2geovals_mod.multiplyadjoint failed to send all geoval "// &
-                   "fields to a model field")
+    call abor1_ftn('fv3jedi_lvc_model2geovals_mod.multiplyadjoint failed to send all geoval '// &
+                   'fields to a model field')
   endif
 enddo
 
 ! ! Print information
 ! if (geom%f_comm%rank()==0) then
 !   do fg = 1, size(dxg%fields)
-!     print*, "Model2GeoVaLs.multiplyAD, GeoVaLs fields OUT: ", trim(dxg%fields(fg)%short_name), minval(dxg%fields(fg)%array), maxval(dxg%fields(fg)%array)
+!     print*, 'Model2GeoVaLs.multiplyAD, GeoVaLs fields OUT: ', trim(dxg%fields(fg)%long_name), minval(dxg%fields(fg)%array), maxval(dxg%fields(fg)%array)
 !   enddo
 !   do fm = 1, size(dxm%fields)
-!     print*, "Model2GeoVaLs.multiplyAD, Model fields OUT:   ", trim(dxm%fields(fm)%short_name), minval(dxm%fields(fg)%array), maxval(dxm%fields(fg)%array)
+!     print*, 'Model2GeoVaLs.multiplyAD, Model fields OUT:   ', trim(dxm%fields(fm)%long_name), minval(dxm%fields(fg)%array), maxval(dxm%fields(fg)%array)
 !   enddo
 ! endif
 

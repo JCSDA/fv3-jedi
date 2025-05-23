@@ -6,7 +6,6 @@ geometry:
   npx: 13
   npy: 13
   npz: 127
-  field metadata override: Data/fieldmetadata/ufs-aerosol.yaml
 background:
   datetime: 2020-12-14T21:00:00Z
   filetype: fms restart
@@ -16,6 +15,8 @@ background:
   filename_cplr: 20201214.210000.coupler.res
   state variables:
   - mass_fraction_of_sulfate_in_air
+  field io names: &field_io_names
+    mass_fraction_of_sulfate_in_air: so4
 background error:
   covariance model: SABER
   saber central block:
@@ -50,12 +51,14 @@ background error:
           datapath: Data/bump/
           filename_core: bumpparameters_nicas_gfs_aero.cor_rh.fv_core.res.nc
           filename_trcr: bumpparameters_nicas_gfs_aero.cor_rh.fv_tracer.res.nc
+          field io names: *field_io_names
       - parameter: cor_rv
         file:
           filetype: fms restart
           datapath: Data/bump/
           filename_core: bumpparameters_nicas_gfs_aero.cor_rv.fv_core.res.nc
           filename_trcr: bumpparameters_nicas_gfs_aero.cor_rv.fv_tracer.res.nc
+          field io names: *field_io_names
 test:
   reference filename: testoutput/bumpparameters_nicas_gfs_aero.ref
   test output filename: testoutput/bumpparameters_nicas_gfs_aero.test.out

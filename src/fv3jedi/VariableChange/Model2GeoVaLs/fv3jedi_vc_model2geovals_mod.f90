@@ -58,15 +58,15 @@ type(fckit_configuration),       intent(in)    :: conf
 character(len=:), allocatable :: str
 
 ! Method to use for tropopause pressure ([gsi] or thompson)
-if (.not. conf%get("tropopause pressure method", str)) str = 'gsi'
+if (.not. conf%get('tropopause pressure method', str)) str = 'gsi'
 self%tropprs_method = trim(str)
 
 ! Method to use for calculating effective radii (thompson, [gfdl], or gsi)
-if (.not. conf%get("hydrometeor effective radii method", str)) str = 'gfdl'
+if (.not. conf%get('hydrometeor effective radii method', str)) str = 'gfdl'
 self%radii_method = trim(str)
 
 ! We can mask either the land or the sea, default is neither.
-if (.not. conf%get("mask over", str)) str = 'none'
+if (.not. conf%get('mask over', str)) str = 'none'
 self%use_mask = trim(str)
 
 ! Grid convenience
@@ -300,13 +300,13 @@ call copy_subset(xm%fields, xg%fields, fields_to_do)
 
 ! if (geom%f_comm%rank()==0) then
 !   do f = 1, size(xm%fields)
-!     print*, "Model2GeoVaLs.changeVar, Model fields:   ", trim(xm%fields(f)%short_name)
+!     print*, 'Model2GeoVaLs.changeVar, Model fields:   ', trim(xm%fields(f)%long_name)
 !   enddo
 !   do f = 1, size(xg%fields)
-!     print*, "Model2GeoVaLs.changeVar, GeoVaLs fields: ", trim(xg%fields(f)%short_name)
+!     print*, 'Model2GeoVaLs.changeVar, GeoVaLs fields: ', trim(xg%fields(f)%long_name)
 !   enddo
 !   do f = 1, size(fields_to_do)
-!     print*, "Model2GeoVaLs.changeVar, GeoVaLs needed by transform: ", trim(fields_to_do(f))
+!     print*, 'Model2GeoVaLs.changeVar, GeoVaLs needed by transform: ', trim(fields_to_do(f))
 !   enddo
 ! endif
 
@@ -320,20 +320,20 @@ if (.not.allocated(fields_to_do)) return
 ! ------------------------------------------
 have_pressures = .false.
 
-if (xm%has_field('delp')) then
-  call xm%get_field('delp', delp)
+if (xm%has_field('air_pressure_thickness')) then
+  call xm%get_field('air_pressure_thickness', delp)
   allocate(ps(self%isc:self%iec, self%jsc:self%jec, 1))
   ps(:,:,1) = geom%ptop + sum(delp,3)
   have_pressures = .true.
-elseif (xm%has_field('ps')) then
-  call xm%get_field('ps', ps)
+elseif (xm%has_field('air_pressure_at_surface')) then
+  call xm%get_field('air_pressure_at_surface', ps)
   allocate(delp(self%isc:self%iec, self%jsc:self%jec, self%npz))
   do jlev = 1,self%npz
     delp(:,:,jlev) = (geom%ak(jlev+1)-geom%ak(jlev))+(geom%bk(jlev+1)-geom%bk(jlev))*ps(:,:,1)
   enddo
   have_pressures = .true.
-elseif (xm%has_field('pe')) then
-  call xm%get_field('pe', prsi)
+elseif (xm%has_field('air_pressure_levels')) then
+  call xm%get_field('air_pressure_levels', prsi)
   allocate(ps(self%isc:self%iec, self%jsc:self%jec, 1))
   ps(:,:,1) = prsi(:,:,self%npz+1)
   allocate(delp(self%isc:self%iec, self%jsc:self%jec, self%npz))
@@ -353,24 +353,24 @@ endif
 ! Temperature
 ! -----------
 have_t = .false.
-if (xm%has_field( 't')) then
-  call xm%get_field('t', t)
+if (xm%has_field( 'air_temperature')) then
+  call xm%get_field('air_temperature', t)
   have_t = .true.
 endif
 
 ! Specific humidity
 ! -----------------
 have_q = .false.
-if (xm%has_field( 'sphum')) then
-  call xm%get_field('sphum',  q)
+if (xm%has_field('water_vapor_mixing_ratio_wrt_moist_air')) then
+  call xm%get_field('water_vapor_mixing_ratio_wrt_moist_air',  q)
   have_q = .true.
 endif
 
 ! Saturation specific humidity
 ! ----------------------------
 have_qsat = .false.
-if (xm%has_field('qsat')) then
-  call xm%get_field('qsat', qsat)
+if (xm%has_field('saturation_water_vapor_mixing_ratio_wrt_moist_air')) then
+  call xm%get_field('saturation_water_vapor_mixing_ratio_wrt_moist_air', qsat)
   have_qsat = .true.
 elseif (have_t .and. have_pressures .and. have_q) then
   allocate(qsat(self%isc:self%iec,self%jsc:self%jec,self%npz))
@@ -381,8 +381,8 @@ endif
 ! Relative humidity
 ! -----------------
 have_rh = .false.
-if (xm%has_field('rh')) then
-  call xm%get_field('rh', rh)
+if (xm%has_field('relative_humidity')) then
+  call xm%get_field('relative_humidity', rh)
   have_rh = .true.
 elseif (have_qsat .and. have_q) then
   allocate(rh  (self%isc:self%iec,self%jsc:self%jec,self%npz))
@@ -393,12 +393,13 @@ endif
 ! Geopotential height
 ! -------------------
 have_geoph = .false.
-if (have_t .and. have_pressures .and. have_q .and. ( xm%has_field('phis') .or. &
-  xm%has_field('geopotential_height_at_surface') )) then
+if (have_t .and. have_pressures .and. have_q .and. &
+    (xm%has_field('geopotential_height_times_gravity_at_surface') .or. &
+    xm%has_field('geopotential_height_at_surface') )) then
   if (.not.allocated(phis)) allocate(phis(self%isc:self%iec,self%jsc:self%jec,1))
   if (.not.allocated(suralt)) allocate(suralt(self%isc:self%iec,self%jsc:self%jec,1))
-  if ( xm%has_field( 'phis') ) then
-     call xm%get_field('phis',  phis)
+  if ( xm%has_field( 'geopotential_height_times_gravity_at_surface') ) then
+     call xm%get_field('geopotential_height_times_gravity_at_surface',  phis)
      suralt = phis / constant('grav')
   else
      call xm%get_field('geopotential_height_at_surface', suralt)
@@ -426,8 +427,8 @@ endif
 ! Virtual temperature
 ! -------------------
 have_tv = .false.
-if (xm%has_field( 'tv')) then
-    call xm%get_field('tv', tv)
+if (xm%has_field( 'virtual_temperature')) then
+    call xm%get_field('virtual_temperature', tv)
     have_tv = .true.
 elseif (have_t .and. have_q) then
   allocate(tv(self%isc:self%iec,self%jsc:self%jec,self%npz))
@@ -439,13 +440,13 @@ endif
 ! Ozone
 ! -----
 have_o3   = .false.
-if (xm%has_field( 'o3mr')) then
-  call xm%get_field('o3mr', o3mr)
+if (xm%has_field( 'ozone_mass_mixing_ratio')) then
+  call xm%get_field('ozone_mass_mixing_ratio', o3mr)
   allocate(o3ppmv(self%isc:self%iec,self%jsc:self%jec,self%npz))
   o3ppmv = o3mr * constant('constoz')
   have_o3 = .true.
-elseif (xm%has_field('o3ppmv')) then
-  call xm%get_field('o3ppmv', o3ppmv)
+elseif (xm%has_field('mole_fraction_of_ozone_in_air')) then
+  call xm%get_field('mole_fraction_of_ozone_in_air', o3ppmv)
   allocate(o3mr(self%isc:self%iec,self%jsc:self%jec,self%npz))
   o3mr = o3ppmv / constant('constoz')
   have_o3 = .true.
@@ -467,9 +468,9 @@ endif
 ! Wind transforms
 ! ---------------
 have_winds = .false.
-if (xm%has_field('ua')) then
-  call xm%get_field('ua', ua)
-  call xm%get_field('va', va)
+if (xm%has_field('eastward_wind') .and. xm%has_field('northward_wind')) then
+  call xm%get_field('eastward_wind', ua)
+  call xm%get_field('northward_wind', va)
   have_winds = .true.
 endif
 
@@ -479,12 +480,12 @@ have_slmsk = .false.
 if (xm%has_field( 'slmsk')) then
   call xm%get_field('slmsk', slmsk)
   have_slmsk = .true.
-elseif ( xm%has_field('frocean' ) .and. xm%has_field('frlake'  ) .and. &
-         xm%has_field('frseaice') .and. xm%has_field('ts'    ) ) then
-  call xm%get_field('frocean' , frocean )
-  call xm%get_field('frlake'  , frlake  )
-  call xm%get_field('frseaice', frseaice)
-  call xm%get_field('ts'      , tskin   )
+elseif ( xm%has_field('fraction_of_ocean' ) .and. xm%has_field('fraction_of_lake'  ) .and. &
+         xm%has_field('fraction_of_ice') .and. xm%has_field('skin_temperature_at_surface') ) then
+  call xm%get_field('fraction_of_ocean' , frocean )
+  call xm%get_field('fraction_of_lake'  , frlake  )
+  call xm%get_field('fraction_of_ice', frseaice)
+  call xm%get_field('skin_temperature_at_surface', tskin   )
 
   allocate(slmsk(self%isc:self%iec,self%jsc:self%jec,1))
   slmsk = 1.0_kind_real !Land
@@ -524,9 +525,10 @@ have_f10m = .false.
 if (xm%has_field('f10m')) then
   call xm%get_field('f10m', f10m)
   have_f10m = .true.
-elseif ( xm%has_field( 'u_srf') .and. xm%has_field( 'v_srf') .and. have_winds ) then
-  call xm%get_field('u_srf' , u_srf)
-  call xm%get_field('v_srf' , v_srf)
+elseif ( xm%has_field( 'eastward_wind_at_surface') .and. &
+         xm%has_field( 'northward_wind_at_surface') .and. have_winds ) then
+  call xm%get_field('eastward_wind_at_surface' , u_srf)
+  call xm%get_field('northward_wind_at_surface' , v_srf)
 
   allocate(f10m(self%isc:self%iec,self%jsc:self%jec,1))
   f10m = sqrt(u_srf**2 + v_srf**2)
@@ -574,16 +576,18 @@ have_co2 = .true.
 ! Clouds
 ! ------
 have_qiql = .false.
-if (xm%has_field( 'ice_wat') .and. xm%has_field( 'liq_wat')) then
-  call xm%get_field('ice_wat', qi)
-  call xm%get_field('liq_wat', ql)
+if (xm%has_field( 'cloud_liquid_ice') .and. xm%has_field( 'cloud_liquid_water')) then
+  call xm%get_field('cloud_liquid_ice', qi)
+  call xm%get_field('cloud_liquid_water', ql)
   have_qiql = .true.
-elseif (xm%has_field( 'qils') .and. xm%has_field( 'qicn') .and. &
-        xm%has_field( 'qlls') .and. xm%has_field( 'qlcn')) then
-  call xm%get_field('qils', qils)
-  call xm%get_field('qicn', qicn)
-  call xm%get_field('qlls', qlls)
-  call xm%get_field('qlcn', qlcn)
+elseif (xm%has_field( 'mass_fraction_of_large_scale_cloud_ice_water') .and. &
+        xm%has_field( 'mass_fraction_of_convective_cloud_ice_water') .and. &
+        xm%has_field( 'mass_fraction_of_large_scale_cloud_liquid_water') .and. &
+        xm%has_field( 'mass_fraction_of_convective_cloud_liquid_water')) then
+  call xm%get_field('mass_fraction_of_large_scale_cloud_ice_water', qils)
+  call xm%get_field('mass_fraction_of_convective_cloud_ice_water', qicn)
+  call xm%get_field('mass_fraction_of_large_scale_cloud_liquid_water', qlls)
+  call xm%get_field('mass_fraction_of_convective_cloud_liquid_water', qlcn)
   allocate(qi(self%isc:self%iec,self%jsc:self%jec,self%npz))
   allocate(ql(self%isc:self%iec,self%jsc:self%jec,self%npz))
   qi = qils + qicn
@@ -592,26 +596,14 @@ elseif (xm%has_field( 'qils') .and. xm%has_field( 'qicn') .and. &
 endif
 ! ------ Rain, snow, and graupel
 have_qr = .false.
-if (xm%has_field( 'rainwat')) then
-  call xm%get_field('rainwat', qr)
-  have_qr = .true.
-elseif (xm%has_field( 'qrls') .and. xm%has_field( 'qrcn')) then
-  call xm%get_field('qrls', qrls)
-  call xm%get_field('qrcn', qrcn)
-  allocate(qr(self%isc:self%iec,self%jsc:self%jec,self%npz))
-  qr = qrls + qrcn
+if (xm%has_field( 'rain_water')) then
+  call xm%get_field('rain_water', qr)
   have_qr = .true.
 endif
 ! ------
 have_qs = .false.
-if (xm%has_field( 'snowwat')) then
-  call xm%get_field('snowwat', qs)
-  have_qs = .true.
-elseif (xm%has_field( 'qsls') .and. xm%has_field( 'qscn')) then
-  call xm%get_field('qsls', qsls)
-  call xm%get_field('qscn', qscn)
-  allocate(qs(self%isc:self%iec,self%jsc:self%jec,self%npz))
-  qs = qsls + qscn
+if (xm%has_field( 'snow_water')) then
+  call xm%get_field('snow_water', qs)
   have_qs = .true.
 endif
 ! ------
@@ -623,18 +615,18 @@ endif
 
 ! 2-moment microphysics number mixing ratios (concentrations)
 have_nc = .false.
-if (xm%has_field('water_nc')) then
-  call xm%get_field('water_nc', nc)
+if (xm%has_field('cloud_droplet_number_concentration')) then
+  call xm%get_field('cloud_droplet_number_concentration', nc)
   have_nc = .true.
 endif
 have_ni = .false.
-if (xm%has_field('ice_nc')) then
-  call xm%get_field('ice_nc', ni)
+if (xm%has_field('cloud_ice_number_concentration')) then
+  call xm%get_field('cloud_ice_number_concentration', ni)
   have_ni = .true.
 endif
 have_nr = .false.
-if (xm%has_field('rain_nc')) then
-  call xm%get_field('rain_nc', nr)
+if (xm%has_field('rain_number_concentration')) then
+  call xm%get_field('rain_number_concentration', nr)
   have_nr = .true.
 endif
 
@@ -801,8 +793,8 @@ have_soilm = .false.
 if (xm%has_field( 'soilm' )) then
   call xm%get_field('soilm' , soilm )
   have_soilm = .true.
-elseif (xm%has_field( 'smc' )) then
-  call xm%get_field('smc' , soil_tmp )
+elseif (xm%has_field( 'soilMoistureVolumetric' )) then
+  call xm%get_field('soilMoistureVolumetric' , soil_tmp )
   allocate(soilm(self%isc:self%iec,self%jsc:self%jec,1))
   soilm(:,:,1) = soil_tmp(:,:,1) ! Which of the 4 levels should we use?
   have_soilm = .true.
@@ -811,27 +803,27 @@ endif
 ! Skin temperature
 ! ----------------
 have_tskin = .false.
-if ( xm%has_field( 'ts') ) then
+if ( xm%has_field( 'skin_temperature_at_surface') ) then
    allocate(skin_temperature_at_surface(self%isc:self%iec,self%jsc:self%jec,1))
-   call xm%get_field('ts', skin_temperature_at_surface)
+   call xm%get_field('skin_temperature_at_surface', skin_temperature_at_surface)
    have_tskin = .true.
 endif
 
 have_crtm_surface = .false.
 have_sss = .false.
 if ( have_slmsk .and. have_f10m .and. xm%has_field( 'sheleg') .and. &
-     xm%has_field( 'ts')     .and. xm%has_field( 'vtype' ) .and. &
+     xm%has_field( 'skin_temperature_at_surface')     .and. xm%has_field( 'vtype' ) .and. &
      xm%has_field( 'stype' ) .and. xm%has_field( 'vfrac' ) .and. &
      have_soilt .and. have_soilm .and. &
-     xm%has_field( 'u_srf' ) .and. xm%has_field( 'v_srf' ) ) then
+     xm%has_field( 'eastward_wind_at_surface' ) .and. xm%has_field( 'northward_wind_at_surface' ) ) then
 
   call xm%get_field('sheleg', sheleg)
-  call xm%get_field('ts'    , tskin )
+  call xm%get_field('skin_temperature_at_surface'    , tskin )
   call xm%get_field('vtype' , vtype )
   call xm%get_field('stype' , stype )
   call xm%get_field('vfrac' , vfrac )
-  call xm%get_field('u_srf' , u_srf )
-  call xm%get_field('v_srf' , v_srf )
+  call xm%get_field('eastward_wind_at_surface' , u_srf )
+  call xm%get_field('northward_wind_at_surface' , v_srf )
 
   allocate(land_type_index_npoess                    (self%isc:self%iec,self%jsc:self%jec,1))
   allocate(land_type_index_igbp                      (self%isc:self%iec,self%jsc:self%jec,1))
@@ -926,13 +918,13 @@ endif
 ! Tropopause pressure
 ! -------------------
 have_tropprs = .false.
-if (trim(self%tropprs_method) == "gsi") then
+if (trim(self%tropprs_method) == 'gsi') then
   if (have_vort .and. have_tv .and. have_pressures .and. have_o3) then
     allocate(tprs(self%isc:self%iec,self%jsc:self%jec,1))
     call tropprs(geom, ps, prs, tv, o3ppmv, vort, tprs)
     have_tropprs = .true.
   endif
-elseif (trim(self%tropprs_method) == "thompson") then
+elseif (trim(self%tropprs_method) == 'thompson') then
   if (have_pressures .and. have_geoph .and. have_t) then
     allocate(tprs(self%isc:self%iec,self%jsc:self%jec,1))
     call tropprs_th(geom, prs, geoph, t, tprs)
@@ -948,22 +940,22 @@ do f = 1, size(fields_to_do)
 
   select case (trim(fields_to_do(f)))
 
-  case ("ua")
+  case ('eastward_wind')
 
     if (.not. have_winds) call field_fail(fields_to_do(f))
     field_ptr = ua
 
-  case ("va")
+  case ('northward_wind')
 
     if (.not. have_winds) call field_fail(fields_to_do(f))
     field_ptr = va
 
-  case ("q", "water_vapor_mixing_ratio_wrt_moist_air")
+  case ('water_vapor_mixing_ratio_wrt_moist_air')
 
     if (.not. have_q) call field_fail(fields_to_do(f))
     field_ptr = q
 
-  case ("qsat", "saturation_water_vapor_mixing_ratio_wrt_moist_air")
+  case ('saturation_water_vapor_mixing_ratio_wrt_moist_air')
 
     if (.not. have_qsat) call field_fail(fields_to_do(f))
     field_ptr = qsat
@@ -973,86 +965,86 @@ do f = 1, size(fields_to_do)
     if (.not. have_airdens) call field_fail(fields_to_do(f))
     field_ptr = rho_air
 
-  case ("rh")
+  case ("relative_humidity")
 
     if (.not. have_rh) call field_fail(fields_to_do(f))
     field_ptr = rh
 
-  case ("mole_fraction_of_ozone_in_air", "o3ppmv")
+  case ('mole_fraction_of_ozone_in_air')
 
     if (.not. have_o3) call field_fail(fields_to_do(f))
     field_ptr = o3ppmv
 
-  case ("geopotential_height_times_gravity_at_surface", "phis")
+  case ('geopotential_height_times_gravity_at_surface')
 
     if (.not. have_geoph) call field_fail(fields_to_do(f))
     field_ptr = phis
 
-  case ("geopotential_height_at_surface")
+  case ('geopotential_height_at_surface')
 
     if (.not. have_geoph) call field_fail(fields_to_do(f))
     field_ptr = suralt
 
-  case ("geopotential_height")
+  case ('geopotential_height')
 
     if (.not. have_geoph) call field_fail(fields_to_do(f))
     field_ptr = geoph
 
-  case ("geopotential_height_levels")
+  case ('geopotential_height_levels')
 
     if (.not. have_geoph) call field_fail(fields_to_do(f))
     field_ptr = geophi
 
-  case ("height_above_mean_sea_level_at_surface")
+  case ('height_above_mean_sea_level_at_surface')
 
     if (.not. have_geoph) call field_fail(fields_to_do(f))
     field_ptr = suralt
 
-  case ("height_above_mean_sea_level")
+  case ('height_above_mean_sea_level')
 
     if (.not. have_geoph) call field_fail(fields_to_do(f))
     field_ptr = geoph
 
-  case ("layer_thickness", "delz")
+  case ('layer_thickness')
 
     if (.not. have_delz) call field_fail(fields_to_do(f))
     field_ptr = delz
 
-  case ("mole_fraction_of_carbon_dioxide_in_air", "co2")
+  case ('mole_fraction_of_carbon_dioxide_in_air')
 
     if (.not. have_co2) call field_fail(fields_to_do(f))
     field_ptr = co2
 
-  case ("totalSnowDepth_background_error")
+  case ('totalSnowDepth_background_error')
 
     field_ptr = 30.0_kind_real
 
-  case ("water_vapor_mixing_ratio_wrt_dry_air")
+  case ('water_vapor_mixing_ratio_wrt_dry_air')
 
     if (.not. have_qmr) call field_fail(fields_to_do(f))
     field_ptr = qmr
 
-  case ("mass_content_of_cloud_liquid_water_in_atmosphere_layer")
+  case ('mass_content_of_cloud_liquid_water_in_atmosphere_layer')
 
     if (.not. have_crtm_cld) call field_fail(fields_to_do(f))
     field_ptr = ql_ade
 
-  case ("mass_content_of_cloud_ice_in_atmosphere_layer")
+  case ('mass_content_of_cloud_ice_in_atmosphere_layer')
 
     if (.not. have_crtm_cld) call field_fail(fields_to_do(f))
     field_ptr = qi_ade
 
-  case ("mass_content_of_rain_in_atmosphere_layer")
+  case ('mass_content_of_rain_in_atmosphere_layer')
 
     if (.not. have_crtm_cld) call field_fail(fields_to_do(f))
     field_ptr = qr_ade
 
-  case ("mass_content_of_snow_in_atmosphere_layer")
+  case ('mass_content_of_snow_in_atmosphere_layer')
 
     if (.not. have_crtm_cld) call field_fail(fields_to_do(f))
     field_ptr = qs_ade
 
-  case ("mass_content_of_graupel_in_atmosphere_layer")
+  case ('mass_content_of_graupel_in_atmosphere_layer')
 
     if (.not. have_crtm_cld) call field_fail(fields_to_do(f))
     field_ptr = qg_ade
@@ -1087,181 +1079,181 @@ do f = 1, size(fields_to_do)
     if (.not. have_crtm_cld) call field_fail(fields_to_do(f))
     field_ptr = ql_efr
 
-  case ("effective_radius_of_cloud_ice_particle")
+  case ('effective_radius_of_cloud_ice_particle')
 
     if (.not. have_crtm_cld) call field_fail(fields_to_do(f))
     field_ptr = qi_efr
 
-  case ("effective_radius_of_rain_particle")
+  case ('effective_radius_of_rain_particle')
 
     if (.not. have_crtm_cld) call field_fail(fields_to_do(f))
     field_ptr = qr_efr
 
-  case ("effective_radius_of_snow_particle")
+  case ('effective_radius_of_snow_particle')
 
     if (.not. have_crtm_cld) call field_fail(fields_to_do(f))
     field_ptr = qs_efr
 
-  case ("effective_radius_of_graupel_particle")
+  case ('effective_radius_of_graupel_particle')
 
     if (.not. have_crtm_cld) call field_fail(fields_to_do(f))
     field_ptr = qg_efr
 
-  case ("water_area_fraction")
+  case ('water_area_fraction')
 
     if (.not. have_crtm_surface) call field_fail(fields_to_do(f))
     field_ptr = water_area_fraction
 
-  case ("land_area_fraction")
+  case ('land_area_fraction')
 
     if (.not. have_crtm_surface) call field_fail(fields_to_do(f))
     field_ptr = land_area_fraction
 
-  case ("ice_area_fraction")
+  case ('ice_area_fraction')
 
     if (.not. have_crtm_surface) call field_fail(fields_to_do(f))
     field_ptr = ice_area_fraction
 
-  case ("surface_snow_area_fraction")
+  case ('surface_snow_area_fraction')
 
     if (.not. have_crtm_surface) call field_fail(fields_to_do(f))
     field_ptr = surface_snow_area_fraction
 
-  case ("sea_surface_salinity")
+  case ('sea_surface_salinity')
 
     if (.not. have_sss) call field_fail(fields_to_do(f))
     field_ptr = sea_surface_salinity
 
-  case ("skin_temperature_at_surface")
+  case ('skin_temperature_at_surface')
 
     if (.not. have_tskin) call field_fail(fields_to_do(f))
     field_ptr = skin_temperature_at_surface
 
-  case ("skin_temperature_at_surface_where_sea")
+  case ('skin_temperature_at_surface_where_sea')
 
     if (.not. have_crtm_surface) call field_fail(fields_to_do(f))
     field_ptr = skin_temperature_at_surface_where_sea
 
-  case ("skin_temperature_at_surface_where_land")
+  case ('skin_temperature_at_surface_where_land')
 
     if (.not. have_crtm_surface) call field_fail(fields_to_do(f))
     field_ptr = skin_temperature_at_surface_where_land
 
-  case ("skin_temperature_at_surface_where_ice")
+  case ('skin_temperature_at_surface_where_ice')
 
     if (.not. have_crtm_surface) call field_fail(fields_to_do(f))
     field_ptr = skin_temperature_at_surface_where_ice
 
-  case ("skin_temperature_at_surface_where_snow")
+  case ('skin_temperature_at_surface_where_snow')
 
     if (.not. have_crtm_surface) call field_fail(fields_to_do(f))
     field_ptr = skin_temperature_at_surface_where_snow
 
-  case ("surface_snow_thickness")
+  case ('surface_snow_thickness')
 
     if (.not. have_crtm_surface) call field_fail(fields_to_do(f))
     field_ptr = surface_snow_thickness
 
-  case ("vegetation_area_fraction")
+  case ('vegetation_area_fraction')
 
     if (.not. have_crtm_surface) call field_fail(fields_to_do(f))
     field_ptr = vegetation_area_fraction
 
-  case ("wind_speed_at_surface")
+  case ('wind_speed_at_surface')
 
     if (.not. have_crtm_surface) call field_fail(fields_to_do(f))
     field_ptr = wind_speed_at_surface
 
-  case ("wind_from_direction_at_surface")
+  case ('wind_from_direction_at_surface')
 
     if (.not. have_crtm_surface) call field_fail(fields_to_do(f))
     field_ptr = wind_from_direction_at_surface
 
-  case ("wind_reduction_factor_at_10m")
+  case ('wind_reduction_factor_at_10m')
 
     if (.not. have_f10m) call field_fail(fields_to_do(f))
     field_ptr = f10m
 
-  case ("observable_domain_mask")
+  case ('observable_domain_mask')
 
     if (.not. have_domain_mask) call field_fail(fields_to_do(f))
     field_ptr = observable_domain_mask
 
-  case ("leaf_area_index")
+  case ('leaf_area_index')
 
     if (.not. have_crtm_surface) call field_fail(fields_to_do(f))
     field_ptr = leaf_area_index
 
-  case ("volume_fraction_of_condensed_water_in_soil")
+  case ('volume_fraction_of_condensed_water_in_soil')
 
     if (.not. have_crtm_surface) call field_fail(fields_to_do(f))
     field_ptr = volume_fraction_of_condensed_water_in_soil
 
-  case ("soil_temperature")
+  case ('soil_temperature')
 
     if (.not. have_crtm_surface) call field_fail(fields_to_do(f))
     field_ptr = soil_temperature
 
-  case ("land_type_index_NPOESS")
+  case ('land_type_index_NPOESS')
 
     if (.not. have_crtm_surface) call field_fail(fields_to_do(f))
     field_ptr = land_type_index_npoess
 
-  case ("land_type_index_IGBP")
+  case ('land_type_index_IGBP')
 
     if (.not. have_crtm_surface) call field_fail(fields_to_do(f))
     field_ptr = land_type_index_igbp
 
-  case ("land_type_index_USGS")
+  case ('land_type_index_USGS')
 
-    call abor1_ftn("fv3jedi_vc_model2geovals_mod.changevar does not currently implement " &
-                   //"the variable change to the USGS land type classification. " &
-                   //"This variable change should be added to surface_variables_mod.")
+    call abor1_ftn('fv3jedi_vc_model2geovals_mod.changevar does not currently implement ' &
+                   //'the variable change to the USGS land type classification. ' &
+                   //'This variable change should be added to surface_variables_mod.')
 
-  case ("surface_roughness_length")
+  case ('surface_roughness_length')
 
     if (.not. have_zorl) call field_fail(fields_to_do(f))
     field_ptr = sfc_rough
 
-  case ("vegetation_type_index")
+  case ('vegetation_type_index')
 
     if (.not. have_crtm_surface) call field_fail(fields_to_do(f))
     field_ptr = vegetation_type_index
 
-  case ("soil_type")
+  case ('soil_type')
 
     if (.not. have_crtm_surface) call field_fail(fields_to_do(f))
     field_ptr = soil_type
 
-  case ("totalSnowDepth", "snwdph")
+  case ('totalSnowDepth')
 
     if (.not. have_snwdph) call field_fail(fields_to_do(f))
     field_ptr = snwdph
 
-  case ("totalSnowDepthMeters", "snwdphMeters")
+  case ('totalSnowDepthMeters')
 
     if (.not. have_snwdph) call field_fail(fields_to_do(f))
     field_ptr = snwdph_meters
 
-  case ("air_upward_absolute_vorticity", "vort")
+  case ('air_upward_absolute_vorticity')
 
     if (.not. have_vort) call field_fail(fields_to_do(f))
     field_ptr = vort
 
-  case ("tropopause_pressure")
+  case ('tropopause_pressure')
 
     if (.not. have_tropprs) call field_fail(fields_to_do(f))
     field_ptr = tprs
 
-  case ("average_surface_temperature_within_field_of_view")
+  case ('average_surface_temperature_within_field_of_view')
 
     if (.not. have_crtm_surface) call field_fail(fields_to_do(f))
     field_ptr = skin_temperature_at_surface_where_sea
 
   case default
 
-    call abor1_ftn("fv3jedi_vc_model2geovals_mod.changevar unknown field: "//trim(fields_to_do(f)) &
-                   //". Not in input field and no transform case specified.")
+    call abor1_ftn('fv3jedi_vc_model2geovals_mod.changevar unknown field: '//trim(fields_to_do(f)) &
+                   //'. Not in input field and no transform case specified.')
 
   end select
 

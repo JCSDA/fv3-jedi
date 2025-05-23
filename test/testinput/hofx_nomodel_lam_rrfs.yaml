@@ -7,7 +7,6 @@ geometry:
     field table filename: Data/fv3files/field_table_lam_rrfs
   akbk: Data/inputs/lam_rrfs/INPUT/akbk65.nc
   namelist filename: Data/fv3files/input_lam_rrfs.nml
-  field metadata override: Data/fieldmetadata/gfs-restart-DELP.yaml
 state:
   datetime: 2020-12-15T00:00:00Z
   filetype: fms restart
@@ -18,11 +17,17 @@ state:
   filename_sfcd: 20201215.000000.rrfs_C403.sfc_data.nc
   filename_cplr: 20201215.000000.rrfs_C403.coupler.res
   state variables:
-  - ua
-  - va
-  - T
-  - delp
-  - sphum
+  - eastward_wind
+  - northward_wind
+  - air_temperature
+  - air_pressure_thickness
+  - water_vapor_mixing_ratio_wrt_moist_air
+  field io names: &field_io_names
+    eastward_wind: ua
+    northward_wind: va
+    air_temperature: T
+    air_pressure_thickness: DELP
+    water_vapor_mixing_ratio_wrt_moist_air: sphum
 observations:
   observers:
   - obs space:

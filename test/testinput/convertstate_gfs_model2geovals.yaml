@@ -6,43 +6,41 @@ input geometry:
   npx: 13
   npy: 13
   npz: 127
-  field metadata override: Data/fieldmetadata/gfs-restart.yaml
 output geometry:
   akbk: Data/fv3files/akbk127.nc4
   npx: 13
   npy: 13
   npz: 127
-  field metadata override: Data/fieldmetadata/gfs-restart.yaml
 variable change:
   variable change name: Model2GeoVaLs
   hydrometeor effective radii method: gsi
   mask over: land
   input variables: &inputvars
-  - ua
-  - va
-  - T
-  - delp
-  - sphum
-  - ice_wat
-  - liq_wat
-  - o3mr
-  - phis
+  - eastward_wind
+  - northward_wind
+  - air_temperature
+  - air_pressure_thickness
+  - water_vapor_mixing_ratio_wrt_moist_air
+  - cloud_liquid_ice
+  - cloud_liquid_water
+  - ozone_mass_mixing_ratio
+  - geopotential_height_times_gravity_at_surface
   - slmsk
   - sheleg
-  - tsea
+  - skin_temperature_at_surface
   - vtype
   - stype
   - vfrac
   - stc
-  - smc
-  - snwdph
-  - u_srf
-  - v_srf
+  - soilMoistureVolumetric
+  - totalSnowDepth
+  - eastward_wind_at_surface
+  - northward_wind_at_surface
   - f10m
   output variables:
-  - rh
-  - ps
-  - tv
+  - relative_humidity
+  - air_pressure_at_surface
+  - virtual_temperature
   - mole_fraction_of_ozone_in_air
   - geopotential_height
   - height_above_mean_sea_level_at_surface
@@ -70,7 +68,7 @@ variable change:
   - land_type_index_NPOESS
   - vegetation_type_index
   - soil_type
-  - vort
+  - air_upward_absolute_vorticity
   - tropopause_pressure
 states:
 - input:
@@ -83,11 +81,33 @@ states:
     filename_sfcd: 20201215.000000.sfc_data.nc
     filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
     filename_cplr: 20201215.000000.coupler.res
+    field io names: &field_io_names
+      eastward_wind: ua
+      northward_wind: va
+      air_temperature: T
+      air_pressure_thickness: delp
+      water_vapor_mixing_ratio_wrt_moist_air: sphum
+      cloud_liquid_ice: ice_wat
+      cloud_liquid_water: liq_wat
+      ozone_mass_mixing_ratio: o3mr
+      geopotential_height_times_gravity_at_surface: phis
+      skin_temperature_at_surface: tsea
+      soilMoistureVolumetric: smc
+      totalSnowDepth: snwdph
+      eastward_wind_at_surface: u_srf
+      northward_wind_at_surface: v_srf
+      relative_humidity: rh
+      air_pressure_at_surface: ps
+      virtual_temperature: tv
+      mole_fraction_of_ozone_in_air: o3ppmv
+      mole_fraction_of_carbon_dioxide_in_air: co2
+      air_upward_absolute_vorticity: vort
   output:
    filetype: cube sphere history
    provider: geos
    datapath: Data/
    filename: geovals.gfs.%yyyy%mm%dd_%hh%MM%ssz.nc4
+   field io names: *field_io_names
 test:
   reference filename: testoutput/convertstate_gfs_model2geovals.ref
   test output filename: testoutput/convertstate_gfs_model2geovals.test.out

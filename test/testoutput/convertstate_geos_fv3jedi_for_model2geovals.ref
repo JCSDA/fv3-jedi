@@ -7,7 +7,7 @@ air_pressure_at_surface                      | Min:+5.3775458927445892e+04 Max:+
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaModel2GeoVaLs variable change
 Variable change from: 3 variables: air_temperature, water_vapor_mixing_ratio_wrt_moist_air, air_pressure_at_surface
-Variable change to: 1 variables: rh
+Variable change to: 1 variables: relative_humidity
 State after variable transform: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 1 | cube sphere face size: C12

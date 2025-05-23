@@ -3,23 +3,23 @@ linear variable change tests:
     linear variable change name: Control2Analysis
     testinverse: 1
     input variables:
-    - psi
-    - chi
-    - t
-    - ps
-    - sphum
-    - ice_wat
-    - liq_wat
-    - o3mr
+    - air_horizontal_streamfunction
+    - air_horizontal_velocity_potential
+    - air_temperature
+    - air_pressure_at_surface
+    - water_vapor_mixing_ratio_wrt_moist_air
+    - cloud_liquid_ice
+    - cloud_liquid_water
+    - ozone_mass_mixing_ratio
     output variables:
-    - ua
-    - va
-    - T
-    - ps
-    - sphum
-    - ice_wat
-    - liq_wat
-    - o3mr
+    - eastward_wind
+    - northward_wind
+    - air_temperature
+    - air_pressure_at_surface
+    - water_vapor_mixing_ratio_wrt_moist_air
+    - cloud_liquid_ice
+    - cloud_liquid_water
+    - ozone_mass_mixing_ratio
   tolerance inverse: 1000
 geometry:
   fms initialization:
@@ -29,7 +29,6 @@ geometry:
   npx: 13
   npy: 13
   npz: 127
-  field metadata override: Data/fieldmetadata/gfs-restart.yaml
 background:
   datetime: 2020-12-15T00:00:00Z
   filetype: fms restart
@@ -40,12 +39,25 @@ background:
   filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
   filename_cplr: 20201215.000000.coupler.res
   state variables:
-  - ua
-  - va
-  - T
-  - delp
-  - sphum
-  - ice_wat
-  - liq_wat
-  - o3mr
-  - phis
+  - eastward_wind
+  - northward_wind
+  - air_temperature
+  - air_pressure_thickness
+  - water_vapor_mixing_ratio_wrt_moist_air
+  - cloud_liquid_ice
+  - cloud_liquid_water
+  - ozone_mass_mixing_ratio
+  - geopotential_height_times_gravity_at_surface
+  field io names: &field_io_names
+    air_horizontal_streamfunction: psi
+    air_horizontal_velocity_potential: chi
+    air_temperature: T
+    air_pressure_at_surface: ps
+    water_vapor_mixing_ratio_wrt_moist_air: sphum
+    cloud_liquid_ice: ice_wat
+    cloud_liquid_water: liq_wat
+    ozone_mass_mixing_ratio: o3mr
+    eastward_wind: ua
+    northward_wind: va
+    air_pressure_thickness: delp
+    geopotential_height_times_gravity_at_surface: phis

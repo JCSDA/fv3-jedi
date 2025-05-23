@@ -7,7 +7,7 @@ water_vapor_mixing_ratio_wrt_moist_air       | Min:+7.6032568348887588e-08 Max:+
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaModel2GeoVaLs variable change
 Variable change from: 3 variables: air_pressure_at_surface, air_temperature, water_vapor_mixing_ratio_wrt_moist_air
-Variable change to: 7 variables: delp, pe, lnpe, pkz, p, pt, tv
+Variable change to: 7 variables: air_pressure_thickness, air_pressure_levels, ln_air_pressure_at_interface, air_pressure_to_kappa, air_pressure, air_potential_temperature, virtual_temperature
 State after variable transform: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 7 | cube sphere face size: C12

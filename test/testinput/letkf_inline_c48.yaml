@@ -7,8 +7,9 @@ geometry:
   npy: 49
   npz: 127
   member_number: 0
-  layout: [1,2]
-  field metadata override: Data/fieldmetadata/ufs.yaml
+  layout:
+  - 1
+  - 2
 time window:
   begin: &date 2021-03-23T12:00:00Z
   length: PT6H
@@ -16,8 +17,8 @@ time window:
 Run Inline: True
 inline parameters:
   Forecast configuration:
-  - testinput/forecast_c48_001.yaml 
-  - testinput/forecast_c48_002.yaml 
+  - testinput/forecast_c48_001.yaml
+  - testinput/forecast_c48_002.yaml
   Compute HofX Only: false
   forecast batch size: 1
   zero padding: 2
@@ -28,9 +29,43 @@ background:
      template:
        datetime: 2021-03-23T12:00:00Z
        filetype: fms restart
-       state variables: [ua,va,t,delp,sphum,ice_wat,liq_wat,o3mr,phis,
-                         slmsk,sheleg,tsea,vtype,stype,vfrac,stc,smc,snwdph,
-                         u_srf,v_srf,f10m]
+       state variables:
+       - eastward_wind
+       - northward_wind
+       - air_temperature
+       - air_pressure_thickness
+       - water_vapor_mixing_ratio_wrt_moist_air
+       - cloud_liquid_ice
+       - cloud_liquid_water
+       - ozone_mass_mixing_ratio
+       - geopotential_height_times_gravity_at_surface
+       - slmsk
+       - sheleg
+       - sea_surface_temperature
+       - vtype
+       - stype
+       - vfrac
+       - stc
+       - soilMoistureVolumetric
+       - totalSnowDepth
+       - eastward_wind_at_surface
+       - northward_wind_at_surface
+       - f10m
+       field io names: &field_io_names
+         eastward_wind: ua
+         northward_wind: va
+         air_temperature: T
+         air_pressure_thickness: delp
+         water_vapor_mixing_ratio_wrt_moist_air: sphum
+         cloud_liquid_ice: ice_wat
+         cloud_liquid_water: liq_wat
+         ozone_mass_mixing_ratio: o3mr
+         geopotential_height_times_gravity_at_surface: phis
+         sea_surface_temperature: tsea
+         soilMoistureVolumetric: smc
+         totalSnowDepth: snwdph
+         eastward_wind_at_surface: u_srf
+         northward_wind_at_surface: v_srf
        datapath: Data/ModelRunDirs/UFS_warmstart_%mem%/RESTART
        filename_core: 20210323.120000.fv_core.res.nc
        filename_trcr: 20210323.120000.fv_tracer.res.nc
@@ -61,7 +96,9 @@ observations:
       io pool:
         max pool size: 1
         write multiple files: false
-      simulated variables: [windEastward, windNorthward]
+      simulated variables:
+      - windEastward
+      - windNorthward
     obs operator:
       name: VertInterp
       vertical coordinate: air_pressure
@@ -92,13 +129,14 @@ observations:
       io pool:
         max pool size: 1
         write multiple files: false
-      simulated variables: [brightnessTemperature]
+      simulated variables:
+      - brightnessTemperature
       channels: 4-6,9-14
     obs operator:
       name: CRTM
-      Absorbers: [H2O,O3]
-#       Clouds: [Water, Ice]
-#       Cloud_Fraction: 1.0
+      Absorbers:
+      - H2O
+      - O3
       obs options:
         Sensor_ID: amsua_n19
         EndianType: little_endian
@@ -136,7 +174,8 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/sfc_letkf-member%ensmem%-gfs_2021032312.nc4
-      simulated variables: [stationPressure]
+      simulated variables:
+      - stationPressure
       io pool:
         max pool size: 1
         write multiple files: false
@@ -189,7 +228,7 @@ output increment:
   gridtype: latlon
   filename: Data/analysis/letkf/gfs/mem%{member}%/xainc.
 
-output ensemble increments: 
+output ensemble increments:
   filetype: auxgrid
   gridtype: latlon
   filename: Data/analysis/letkf/gfs/mem%{member}%/ensinc.

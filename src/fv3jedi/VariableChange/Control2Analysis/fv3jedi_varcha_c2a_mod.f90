@@ -73,16 +73,16 @@ logical :: tmp
 ! Grid and operators for the femps Poisson solver
 ! -----------------------------------------------
 self%skip_femps_init = .false.
-if (conf%has("skip femps initialization")) then
-   call conf%get_or_die("skip femps initialization",self%skip_femps_init)
+if (conf%has('skip femps initialization')) then
+   call conf%get_or_die('skip femps initialization',self%skip_femps_init)
 end if
 
 if (.not. self%skip_femps_init) then
 
   ! Configuration
-  call conf%get_or_die("femps_iterations",niter)
-  call conf%get_or_die("femps_ngrids",ngrids)
-  call conf%get_or_die("femps_path2fv3gridfiles",str); path2fv3gridfiles = str
+  call conf%get_or_die('femps_iterations',niter)
+  call conf%get_or_die('femps_ngrids',ngrids)
+  call conf%get_or_die('femps_path2fv3gridfiles',str); path2fv3gridfiles = str
   if( .not. conf%get('femps_levelprocs',lprocs) ) then
     lprocs = -1
   endif
@@ -101,7 +101,7 @@ if (.not. self%skip_femps_init) then
     self%lprocs = lprocs
   endif
 
-  if (geom%f_comm%rank() == 0 ) print*, "Running femps with ", self%lprocs, " processors."
+  if (geom%f_comm%rank() == 0 ) print*, 'Running femps with ', self%lprocs, ' processors.'
 
   allocate(self%lev_start(self%lprocs))
   allocate(self%lev_final(self%lprocs))
@@ -123,7 +123,7 @@ if (.not. self%skip_femps_init) then
   endif
 
   if (self%lev_final(self%lprocs) .ne. geom%npz) &
-    call abor1_ftn("fv3jedi_varcha_c2a_mod.create: last level not equal to number of levels.")
+    call abor1_ftn('fv3jedi_varcha_c2a_mod.create: last level not equal to number of levels.')
 
   ! Processors doing the work need grid and operators
   if (geom%f_comm%rank() < self%lprocs ) then
@@ -225,17 +225,18 @@ if (.not.allocated(fields_to_do)) return
 ! --------------
 have_uava = .false.
 have_vodi = .false.
-if (xctl%has_field('psi') .and. xctl%has_field('chi')) then
-  call xctl%get_field('psi', psi)
-  call xctl%get_field('chi', chi)
+if (xctl%has_field('air_horizontal_streamfunction') .and. &
+    xctl%has_field('air_horizontal_velocity_potential')) then
+  call xctl%get_field('air_horizontal_streamfunction', psi)
+  call xctl%get_field('air_horizontal_velocity_potential', chi)
   allocate(ud(geom%isc:geom%iec  ,geom%jsc:geom%jec+1,1:geom%npz))
   allocate(vd(geom%isc:geom%iec+1,geom%jsc:geom%jec  ,1:geom%npz))
   call psichi_to_udvd(geom, psi, chi, ud, vd)
   if (.not. self%skip_femps_init) then
     allocate(vort(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
     allocate(divg(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
-    call psichi_to_vortdivg(geom, self%grid, self%oprs, psi, chi, vort, divg, self%lprocs, self%lev_start, &
-                            self%lev_final)
+    call psichi_to_vortdivg(geom, self%grid, self%oprs, psi, chi, vort, divg, self%lprocs, &
+                            self%lev_start, self%lev_final)
     have_vodi = .true.
   endif
   allocate(ua(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
@@ -247,8 +248,8 @@ endif
 ! Pressure
 ! --------
 have_delp = .false.
-if (xctl%has_field('ps')) then
-  call xctl%get_field('ps', ps)
+if (xctl%has_field('air_pressure_at_surface')) then
+  call xctl%get_field('air_pressure_at_surface', ps)
   allocate(delp(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
   call ps_to_delp(geom, ps, delp)
   have_delp = .true.
@@ -257,12 +258,14 @@ endif
 ! Clouds
 ! ------
 have_cld4 = .false.
-if ( xctl%has_field('ice_wat') .and. xctl%has_field('liq_wat') .and. &
-     xctl%has_field('qilsf') .and. xctl%has_field('qicnf')) then
-  call xctl%get_field('ice_wat', qi)
-  call xctl%get_field('liq_wat', ql)
-  call xctl%get_field('qilsf', qilsf)
-  call xctl%get_field('qicnf', qicnf)
+if ( xctl%has_field('cloud_liquid_ice') .and. &
+     xctl%has_field('cloud_liquid_water') .and. &
+     xctl%has_field('fraction_of_large_scale_cloud_that_is_ice') .and. &
+     xctl%has_field('fraction_of_convective_cloud_that_is_ice')) then
+  call xctl%get_field('cloud_liquid_ice', qi)
+  call xctl%get_field('cloud_liquid_water', ql)
+  call xctl%get_field('fraction_of_large_scale_cloud_that_is_ice', qilsf)
+  call xctl%get_field('fraction_of_convective_cloud_that_is_ice', qicnf)
   allocate(qils(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
   allocate(qicn(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
   allocate(qlls(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
@@ -279,47 +282,47 @@ do f = 1, size(fields_to_do)
 
   select case (trim(fields_to_do(f)))
 
-  case ("ua")
+  case ('eastward_wind')
 
     if (.not. have_uava) call field_fail(fields_to_do(f))
     field_ptr = ua
 
-  case ("va")
+  case ('northward_wind')
 
     if (.not. have_uava) call field_fail(fields_to_do(f))
     field_ptr = va
 
-  case ("vort")
+  case ('air_upward_absolute_vorticity')
 
     if (.not. have_vodi) call field_fail(fields_to_do(f))
     field_ptr = vort
 
-  case ("divg")
+  case ('air_horizontal_divergence')
 
     if (.not. have_vodi) call field_fail(fields_to_do(f))
     field_ptr = divg
 
-  case ("qils")
+  case ('mass_fraction_of_large_scale_cloud_ice_water')
 
     if (.not. have_cld4) call field_fail(fields_to_do(f))
     field_ptr = qils
 
-  case ("qicn")
+  case ('mass_fraction_of_convective_cloud_ice_water')
 
     if (.not. have_cld4) call field_fail(fields_to_do(f))
     field_ptr = qicn
 
-  case ("qlls")
+  case ('mass_fraction_of_large_scale_cloud_liquid_water')
 
     if (.not. have_cld4) call field_fail(fields_to_do(f))
     field_ptr = qlls
 
-  case ("qlcn")
+  case ('mass_fraction_of_convective_cloud_liquid_water')
 
     if (.not. have_cld4) call field_fail(fields_to_do(f))
     field_ptr = qlcn
 
-  case ("delp")
+  case ('air_pressure_thickness')
 
     if (.not. have_delp) call field_fail(fields_to_do(f))
     field_ptr = delp
@@ -365,7 +368,7 @@ logical :: have_rhum
 real(kind=kind_real), pointer     ::     t(:,:,:)     ! Temperature
 real(kind=kind_real), pointer     ::     q(:,:,:)     ! Specific humidity
 real(kind=kind_real), allocatable ::  qsat(:,:,:)     ! Saturation specific humidity
-real(kind=kind_real), allocatable ::    rh(:,:,:)     ! Relative humidity
+real(kind=kind_real), allocatable ::    rh(:,:,:)     ! 'relative_humidity' humidity
 
 ! Clouds
 logical :: have_qiql, have_cfrc
@@ -390,9 +393,9 @@ if (.not.allocated(fields_to_do)) return
 ! Wind variables
 ! --------------
 have_pcvd = .false.
-if (xana%has_field('ua') .and. xana%has_field('va')) then
-  call xana%get_field('ua', ua)
-  call xana%get_field('va', va)
+if (xana%has_field('eastward_wind') .and. xana%has_field('northward_wind')) then
+  call xana%get_field('eastward_wind', ua)
+  call xana%get_field('northward_wind', va)
   allocate(ud(geom%isc:geom%iec  ,geom%jsc:geom%jec+1,1:geom%npz))
   allocate(vd(geom%isc:geom%iec+1,geom%jsc:geom%jec  ,1:geom%npz))
   call a_to_d(geom, ua, va, ud, vd)
@@ -409,8 +412,8 @@ endif
 ! Surface pressure
 ! ----------------
 have_ps = .false.
-if (xana%has_field('delp')) then
-  call xana%get_field('delp', delp)
+if (xana%has_field('air_pressure_thickness')) then
+  call xana%get_field('air_pressure_thickness', delp)
   allocate(ps(geom%isc:geom%iec,geom%jsc:geom%jec,1))
   ps(:,:,1) = sum(delp, dim=3) + geom%ptop
   have_ps = .true.
@@ -419,12 +422,13 @@ endif
 ! Humidity
 ! --------
 have_rhum = .false.
-if (xana%has_field('sphum') .and. xana%has_field('t') .and. xana%has_field('delp')) then
-  call xana%get_field('delp', delp)
-  call xana%get_field('t', t)
+if (xana%has_field('water_vapor_mixing_ratio_wrt_moist_air') &
+    .and. xana%has_field('air_temperature') .and. xana%has_field('air_pressure_thickness')) then
+  call xana%get_field('air_pressure_thickness', delp)
+  call xana%get_field('air_temperature', t)
   allocate(qsat(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
   allocate(  rh(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
-  call xana%get_field('sphum', q)
+  call xana%get_field('water_vapor_mixing_ratio_wrt_moist_air', q)
   call get_qsat(geom, delp, t, q, qsat)
   call q_to_rh(geom, qsat, q, rh)
   have_rhum = .true.
@@ -434,16 +438,18 @@ endif
 ! ------
 have_qiql = .false.
 have_cfrc = .false.
-if (xana%has_field('ice_wat') .and. xana%has_field('liq_wat')) then
-  call xana%get_field('ice_wat', qi)
-  call xana%get_field('liq_wat', ql)
+if (xana%has_field('cloud_liquid_ice') .and. xana%has_field('cloud_liquid_water')) then
+  call xana%get_field('cloud_liquid_ice', qi)
+  call xana%get_field('cloud_liquid_water', ql)
   have_qiql = .true.
-elseif (xana%has_field('qils') .and. xana%has_field('qicn') .and. &
-        xana%has_field('qlls') .and. xana%has_field('qlcn')) then
-  call xana%get_field('qils', qils)
-  call xana%get_field('qicn', qicn)
-  call xana%get_field('qlls', qlls)
-  call xana%get_field('qlcn', qlcn)
+elseif (xana%has_field('mass_fraction_of_large_scale_cloud_ice_water') .and. &
+        xana%has_field('mass_fraction_of_convective_cloud_ice_water') .and. &
+        xana%has_field('mass_fraction_of_large_scale_cloud_liquid_water') .and. &
+        xana%has_field('mass_fraction_of_convective_cloud_liquid_water')) then
+  call xana%get_field('mass_fraction_of_large_scale_cloud_ice_water', qils)
+  call xana%get_field('mass_fraction_of_convective_cloud_ice_water', qicn)
+  call xana%get_field('mass_fraction_of_large_scale_cloud_liquid_water', qlls)
+  call xana%get_field('mass_fraction_of_convective_cloud_liquid_water', qlcn)
   allocate(qi(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
   allocate(ql(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
   allocate(qilsf(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz))
@@ -462,52 +468,52 @@ do f = 1, size(fields_to_do)
 
   select case (trim(fields_to_do(f)))
 
-  case ("psi")
+  case ('air_horizontal_streamfunction')
 
     if (.not. have_pcvd) call field_fail(fields_to_do(f))
     field_ptr = psi
 
-  case ("chi")
+  case ('air_horizontal_velocity_potential')
 
     if (.not. have_pcvd) call field_fail(fields_to_do(f))
     field_ptr = chi
 
-  case ("vort")
+  case ('air_upward_absolute_vorticity')
 
     if (.not. have_pcvd) call field_fail(fields_to_do(f))
     field_ptr = vort
 
-  case ("divg")
+  case ('air_horizontal_divergence')
 
     if (.not. have_pcvd) call field_fail(fields_to_do(f))
     field_ptr = divg
 
-  case ("rh")
+  case ('relative_humidity')
 
     if (.not. have_rhum) call field_fail(fields_to_do(f))
     field_ptr = rh
 
-  case ("ice_wat")
+  case ('cloud_liquid_ice')
 
     if (.not. have_qiql) call field_fail(fields_to_do(f))
     field_ptr = qi
 
-  case ("liq_wat")
+  case ('cloud_liquid_water')
 
     if (.not. have_qiql) call field_fail(fields_to_do(f))
     field_ptr = ql
 
-  case ("qilsf")
+  case ('fraction_of_large_scale_cloud_that_is_ice')
 
     if (.not. have_cfrc) call field_fail(fields_to_do(f))
     field_ptr = qilsf
 
-  case ("qicnf")
+  case ('fraction_of_convective_cloud_that_is_ice')
 
     if (.not. have_cfrc) call field_fail(fields_to_do(f))
     field_ptr = qicnf
 
-  case ("ps")
+  case ('air_pressure_at_surface')
 
     if (.not. have_ps) call field_fail(fields_to_do(f))
     field_ptr = ps

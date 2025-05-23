@@ -301,7 +301,7 @@ type(ESMF_Field) :: field
 character(len=ESMF_MAXSTR), allocatable :: item_names(:)
 real(kind=ESMF_KIND_R4), pointer :: farrayPtr2(:,:)
 real(kind=ESMF_KIND_R4), pointer :: farrayPtr3(:,:,:)
-character(len=field_clen) :: short_name
+character(len=field_clen) :: long_name
 type(fv3jedi_field), pointer :: field_ptr
 real(kind=kind_real), allocatable, dimension(:,:,:) :: field_geos
 
@@ -340,105 +340,105 @@ do i = 1, num_items
 
     ! DYN
     case ("UA")
-      short_name = 'ua'
+      long_name = 'eastward_wind'
     case ("VA")
-      short_name = 'va'
+      long_name = 'northward_wind'
     case ("PT")
-      short_name = 'pt'
+      long_name = 'air_potential_temperature'
     case ("PE")
-      short_name = 'pe'
+      long_name = 'air_pressure_levels'
     case ("T")
-      short_name = 't'
+      long_name = 'air_temperature'
     case ("DELP")
-      short_name = 'delp'
+      long_name = 'air_pressure_thickness'
     case ("PS")
-      short_name = 'ps'
+      long_name = 'air_pressure_at_surface'
     case ("TA")
-      short_name = 'ts'
+      long_name = 'skin_temperature_at_surface'
     case ("DZ")
-      short_name = 'delz'
+      long_name = 'layer_thickness'
     case ("W")
-      short_name = 'w'
+      long_name = 'upward_air_velocity'
 
     ! AGCM
     case ("PHIS")
-      short_name = 'phis'
+      long_name = 'geopotential_height_times_gravity_at_surface'
     case ("QITOT")
-      short_name = 'ice_wat'
+      long_name = 'cloud_ice_water'
     case ("QLTOT")
-      short_name = 'liq_wat'
+      long_name = 'cloud_liquid_water'
     case ("VARFLT")
-      short_name = 'varflt'
+      long_name = 'isotropic_variance_of_filtered_topography'
 
     ! MOIST
     case ("Q")
-      short_name = 'sphum'
+      long_name = 'water_vapor_mixing_ratio_wrt_moist_air'
     case ("QICN")
-      short_name = "qicn"
+      long_name = 'mass_fraction_of_convective_cloud_ice_water'
     case ("QLCN")
-      short_name = "qlcn"
+      long_name = 'mass_fraction_of_convective_cloud_liquid_water'
     case ("QILS")
-      short_name = "qils"
+      long_name = 'mass_fraction_of_large_scale_cloud_ice_water'
     case ("QLLS")
-      short_name = "qlls"
+      long_name = 'mass_fraction_of_large_scale_cloud_liquid_water'
     case ("QSTOT")
-      short_name = "qs"
+      long_name = 'snow_water'
     case ("QRTOT")
-      short_name = "qr"
+      long_name = 'rain_water'
     case ("QCLSX0")
-      short_name = 'qls'
+      long_name = 'initial_mass_fraction_of_large_scale_cloud_condensate'
     case ("QCCNX0")
-      short_name = 'qcn'
+      long_name = 'initial_mass_fraction_of_convective_cloud_condensate'
     case ("CLCNX0")
-      short_name = 'cfcn'
+      long_name = 'convective_cloud_area_fraction'
     case ("KCBL_moist")
-      short_name = 'kcbl'
+      long_name = 'KCBL_before_moist'
     case ("TS_moist")
-      short_name = 'tsm'
+      long_name = 'surface_temp_before_moist'
     case ("KHl_moist")
-      short_name = 'khl'
+      long_name = 'lower_index_where_Kh_greater_than_2'
     case ("KHu_moist")
-      short_name = 'khu'
+      long_name = 'upper_index_where_Kh_greater_than_2'
 
     ! CHEMISTRY
     case ("O3")
-      short_name = 'o3ppmv'
+      long_name = 'mole_fraction_of_ozone_in_air'
 
     ! SURFACE
     case ("FRLAND")
-      short_name = 'frland'
+      long_name = 'fraction_of_land'
     case ("FRLANDICE")
-      short_name = 'frlandice'
+      long_name = 'fraction_of_landice'
     case ("FRLAKE")
-      short_name = 'frlake'
+      long_name = 'fraction_of_lake'
     case ("FROCEAN")
-      short_name = 'frocean'
+      long_name = 'fraction_of_ocean'
     case ("FRACI")
-      short_name = 'frseaice'
+      long_name = 'fraction_of_ice'
     case ("USTAR")
-      short_name = 'ustar'
+      long_name = 'surface_velocity_scale'
     case ("BSTAR")
-      short_name = 'bstar'
+      long_name = 'surface_buoyancy_scale'
     case ("CM")
-      short_name = 'cm'
+      long_name = 'surface_exchange_coefficient_for_momentum'
     case ("CT")
-      short_name = 'ct'
+      long_name = 'surface_exchange_coefficient_for_heat'
     case ("CQ")
-      short_name = 'cq'
+      long_name = 'surface_exchange_coefficient_for_moisture'
     case ("U10N")
-      short_name = 'u_srf'
+      long_name = 'eastward_wind_at_surface'
     case ("V10N")
-      short_name = 'v_srf'
+      long_name = 'northward_wind_at_surface'
     case ('SNOMAS')
-      short_name = 'sheleg'
+      long_name = 'sheleg'
     case ('TSOIL1')
-      short_name = 'soilt'
+      long_name = 'soilt'
     case ('WET1')
-      short_name = 'soilm'
+      long_name = 'soilm'
 
     !TURBULENCE
     case ('ZPBL')
-      short_name = 'zpbl'
+      long_name = 'planetary_boundary_layer_height'
 
     ! NO MAP
     case default
@@ -449,7 +449,7 @@ do i = 1, num_items
 
   ! Only need to extract field from GEOS if fv3-jedi needs it
   ! ---------------------------------------------------------
-  if (state%has_field(trim(short_name))) then
+  if (state%has_field(trim(long_name))) then
 
     !Get field from the state
     call ESMF_StateGet(self%cap%cap_gc%export_state, item_names(i), field, rc = rc)
@@ -495,7 +495,7 @@ do i = 1, num_items
     endif
 
     ! Get pointer to fv3-jedi side field
-    call state%get_field(trim(short_name), field_ptr)
+    call state%get_field(trim(long_name), field_ptr)
 
     if (field_ptr%npz .ne. fnpz) &
       call abor1_ftn("geos_to_state: dimension mismatch between JEDI and GEOS vertical grid")

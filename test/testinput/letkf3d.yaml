@@ -6,7 +6,6 @@ geometry:
   npx: 13
   npy: 13
   npz: 127
-  field metadata override: Data/fieldmetadata/gfs-restart.yaml
   iterator dimension: 3
   time invariant fields:
     state fields:
@@ -14,9 +13,24 @@ geometry:
       filetype: fms restart
       skip coupler file: true
       state variables:
-      - orog_filt
+      - filtered_orography
       datapath: Data/inputs/gfs_c12/oro/
       filename_orog: C12_oro_data.nc
+      field io names: &field_io_names
+        filtered_orography: orog_filt
+        eastward_wind: ua
+        northward_wind: va
+        air_temperature: T
+        air_pressure_at_surface: ps
+        air_pressure_thickness: delp
+        water_vapor_mixing_ratio_wrt_moist_air: sphum
+        cloud_liquid_ice: ice_wat
+        cloud_liquid_water: liq_wat
+        ozone_mass_mixing_ratio: o3mr
+        geopotential_height_times_gravity_at_surface: phis
+        skin_temperature_at_surface: tsea
+        eastward_wind_at_surface: u_srf
+        northward_wind_at_surface: v_srf
     derived fields:
     - nominal_surface_pressure
 time window:
@@ -28,24 +42,24 @@ background:
        datetime: 2020-12-15T00:00:00Z
        filetype: fms restart
        state variables:
-       - ua
-       - va
-       - t
-       - ps
-       - delp
-       - sphum
-       - ice_wat
-       - liq_wat
-       - o3mr
-       - phis
+       - eastward_wind
+       - northward_wind
+       - air_temperature
+       - air_pressure_at_surface
+       - air_pressure_thickness
+       - water_vapor_mixing_ratio_wrt_moist_air
+       - cloud_liquid_ice
+       - cloud_liquid_water
+       - ozone_mass_mixing_ratio
+       - geopotential_height_times_gravity_at_surface
        - slmsk
        - sheleg
-       - tsea
+       - skin_temperature_at_surface
        - vtype
        - stype
        - vfrac
-       - u_srf
-       - v_srf
+       - eastward_wind_at_surface
+       - northward_wind_at_surface
        - f10m
        datapath: Data/inputs/gfs_c12/mem%mem%/
        filename_core: 20201215.000000.fv_core.res.nc
@@ -53,6 +67,7 @@ background:
        filename_sfcd: 20201215.000000.sfc_data.nc
        filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
        filename_cplr: 20201215.000000.coupler.res
+       field io names: *field_io_names
      pattern: '%mem%'
      nmembers: 3
      zero padding: 3
@@ -144,10 +159,12 @@ output:
   filetype: auxgrid
   gridtype: latlon
   filename: Data/analysis/letkf/gfs/mem%{member}%/letkf.
+  field io names: *field_io_names
 output increment:
   filetype: auxgrid
   gridtype: latlon
   filename: Data/analysis/letkf/gfs/mem%{member}%/xainc.
+  field io names: *field_io_names
 test:
   reference filename: testoutput/letkf3d.ref
   test output filename: testoutput/letkf3d.test.out

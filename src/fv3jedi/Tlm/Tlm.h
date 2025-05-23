@@ -27,25 +27,6 @@ namespace eckit {
 
 namespace fv3jedi {
 
-/// Options taken by ModelTLM
-//  class ModelTLMParameters : public oops::LinearModelParametersBase {
-//    OOPS_CONCRETE_PARAMETERS(ModelTLMParameters, LinearModelParametersBase)
-//
-//   public:
-//    oops::RequiredParameter<oops::Variables> tlmVariables{ "tlm variables", this};
-//    oops::RequiredParameter<util::Duration> tstep{ "tstep", this};
-//    oops::RequiredParameter<eckit::LocalConfiguration> traj{ "trajectory", this};
-//    oops::OptionalParameter<std::string> varChange{"variable change", this};
-//
-//    oops::RequiredParameter<int> lm_do_dyn{ "lm_do_dyn", this};
-//    oops::RequiredParameter<int> lm_do_trb{ "lm_do_trb", this};
-//    oops::RequiredParameter<int> lm_do_mst{ "lm_do_mst", this};
-//
-//    oops::Parameter<std::string> lmnamelistFilename{ "linear model namelist filename",
-//            "inputpert.nml", this};
-//    oops::OptionalParameter<std::string> namelistFilename{"namelist filename", this};
-//  };
-
 // -------------------------------------------------------------------------------------------------
 
 // Linear model definition.
@@ -85,7 +66,6 @@ class Tlm: public oops::interface::LinearModelBase<Traits>,
   F90model keySelf_;
   util::Duration tstep_;
   std::map<util::DateTime, F90traj> trajmap_;
-  oops::Variables linvars_;
 };
 // -------------------------------------------------------------------------------------------------
 

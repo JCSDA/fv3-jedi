@@ -6,7 +6,6 @@ linear model geometry:
   npx: 13
   npy: 13
   npz: 127
-  field metadata override: Data/fieldmetadata/gfs-restart.yaml
 linear model:
   name: HTLM
   simple linear model:
@@ -18,38 +17,17 @@ linear model:
       lm_do_dyn: 1
       lm_do_trb: 0
       lm_do_mst: 0
-      tlm variables: &linvars
-      - ua
-      - va
-      - T
-      - delp
-      - sphum
-      - liq_wat
-      - ice_wat
-      - o3mr
-      - phis
-      trajectory:
-        model variables: &modelvars
-        - ua
-        - va
-        - T
-        - delp
-        - sphum
-        - liq_wat
-        - ice_wat
-        - o3mr
-        - phis
   update tstep: PT3H
   variables: &vars
-  - ua
-  - va
-  - T
-  - delp
-  - sphum
-  - liq_wat
-  - ice_wat
-  - o3mr
-  - phis
+  - eastward_wind
+  - northward_wind
+  - air_temperature
+  - air_pressure_thickness
+  - water_vapor_mixing_ratio_wrt_moist_air
+  - cloud_liquid_water
+  - cloud_liquid_ice
+  - ozone_mass_mixing_ratio
+  - geopotential_height_times_gravity_at_surface
   coefficients:
     update variables:
     - eastward_wind
@@ -67,7 +45,6 @@ linear model:
         lm_do_dyn: 1
         lm_do_trb: 0
         lm_do_mst: 0
-        model variables: *modelvars
         datapath: Data/inputs/gfs_c12/bkg/
         filename_core: 20201214.210000.fv_core.res.nc
         filename_core_out: checkpoint.linearization_error_ens.fv_core.res.nc
@@ -80,7 +57,6 @@ linear model:
         npx: 13
         npy: 13
         npz: 127
-        field metadata override: Data/fieldmetadata/gfs-restart.yaml
       nonlinear control:
         datetime: 2020-12-14T21:00:00Z
         filetype: fms restart
@@ -91,15 +67,25 @@ linear model:
         filename_sfcw: 20201214.210000.fv_srf_wnd.res.nc
         filename_cplr: 20201214.210000.coupler.res
         state variables: &bgvars
-        - ua
-        - va
-        - T
-        - delp
-        - sphum
-        - liq_wat
-        - ice_wat
-        - o3mr
-        - phis
+        - eastward_wind
+        - northward_wind
+        - air_temperature
+        - air_pressure_thickness
+        - water_vapor_mixing_ratio_wrt_moist_air
+        - cloud_liquid_water
+        - cloud_liquid_ice
+        - ozone_mass_mixing_ratio
+        - geopotential_height_times_gravity_at_surface
+        field io names: &field_io_names
+          eastward_wind: ua
+          northward_wind: va
+          air_temperature: T
+          air_pressure_thickness: delp
+          water_vapor_mixing_ratio_wrt_moist_air: sphum
+          cloud_liquid_water: liq_wat
+          cloud_liquid_ice: ice_wat
+          ozone_mass_mixing_ratio: o3mr
+          geopotential_height_times_gravity_at_surface: phis
       nonlinear ensemble:
         read:
           members from template:
@@ -113,6 +99,7 @@ linear model:
               filename_sfcd: 20201214.210000.sfc_data.nc
               filename_sfcw: 20201214.210000.fv_srf_wnd.res.nc
               filename_cplr: 20201214.210000.coupler.res
+              field io names: *field_io_names
             pattern: '%mem%'
             nmembers: 5
             zero padding: 3
@@ -125,7 +112,6 @@ model geometry:
   npx: 13
   npy: 13
   npz: 127
-  field metadata override: Data/fieldmetadata/gfs-restart.yaml
 model:
   name: FV3LM
   use internal namelist: true
@@ -133,7 +119,6 @@ model:
   lm_do_dyn: 1
   lm_do_trb: 0
   lm_do_mst: 0
-  model variables: *bgvars
   datapath: Data/inputs/gfs_c12/bkg/
   filename_core: 20201214.210000.fv_core.res.nc
   filename_core_out: checkpoint.linearization_error.fv_core.res.nc
@@ -151,6 +136,7 @@ x1:
   filename_sfcw: 20201214.210000.fv_srf_wnd.res.nc
   filename_cplr: 20201214.210000.coupler.res
   state variables: *bgvars
+  field io names: *field_io_names
 x2:
   datetime: 2020-12-14T21:00:00Z
   filetype: fms restart
@@ -161,6 +147,7 @@ x2:
   filename_sfcw: 20201214.210000.fv_srf_wnd.res.nc
   filename_cplr: 20201214.210000.coupler.res
   state variables: *bgvars
+  field io names: *field_io_names
 output on structured grid:
   local interpolator type: oops unstructured grid interpolator
   grid type: latlon

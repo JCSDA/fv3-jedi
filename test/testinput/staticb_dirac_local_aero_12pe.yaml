@@ -9,31 +9,45 @@ geometry:
   npx: 13
   npy: 13
   npz: 64
-  field metadata override: Data/fieldmetadata/gfs-aerosol.yaml
 background:
   datetime: 2018-04-15T00:00:00Z
   filetype: fms restart
   state variables: &state_vars
-  - sulf
-  - bc1
-  - bc2
-  - oc1
-  - oc2
-  - dust1
-  - dust2
-  - dust3
-  - dust4
-  - dust5
-  - seas1
-  - seas2
-  - seas3
-  - seas4
+  - mass_fraction_of_sulfate_in_air
+  - mass_fraction_of_hydrophobic_black_carbon_in_air
+  - mass_fraction_of_hydrophilic_black_carbon_in_air
+  - mass_fraction_of_hydrophobic_organic_carbon_in_air
+  - mass_fraction_of_hydrophilic_organic_carbon_in_air
+  - mass_fraction_of_dust001_in_air
+  - mass_fraction_of_dust002_in_air
+  - mass_fraction_of_dust003_in_air
+  - mass_fraction_of_dust004_in_air
+  - mass_fraction_of_dust005_in_air
+  - mass_fraction_of_sea_salt001_in_air
+  - mass_fraction_of_sea_salt002_in_air
+  - mass_fraction_of_sea_salt003_in_air
+  - mass_fraction_of_sea_salt004_in_air
   datapath: Data/inputs/gfs_aero_c12/bkg
   filename_core: 20180415.000000.fv_core.res.nc
   filename_trcr: 20180415.000000.fv_tracer.res.nc
   filename_sfcd: 20180415.000000.sfc_data.nc
   filename_sfcw: 20180415.000000.fv_srf_wnd.res.nc
   filename_cplr: 20180415.000000.coupler.res
+  field io names: &field_io_names
+    mass_fraction_of_sulfate_in_air: sulf
+    mass_fraction_of_hydrophobic_black_carbon_in_air: bc1
+    mass_fraction_of_hydrophilic_black_carbon_in_air: bc2
+    mass_fraction_of_hydrophobic_organic_carbon_in_air: oc1
+    mass_fraction_of_hydrophilic_organic_carbon_in_air: oc2
+    mass_fraction_of_dust001_in_air: dust1
+    mass_fraction_of_dust002_in_air: dust2
+    mass_fraction_of_dust003_in_air: dust3
+    mass_fraction_of_dust004_in_air: dust4
+    mass_fraction_of_dust005_in_air: dust5
+    mass_fraction_of_sea_salt001_in_air: seas1
+    mass_fraction_of_sea_salt002_in_air: seas2
+    mass_fraction_of_sea_salt003_in_air: seas3
+    mass_fraction_of_sea_salt004_in_air: seas4
 background error:
   covariance model: SABER
   saber central block:
@@ -61,6 +75,7 @@ background error:
         filename_sfcd: 20180415.000000.stddev.sfc_data.nc
         filename_sfcw: 20180415.000000.stddev.fv_srf_wnd.res.nc
         filename_cplr: 20180415.000000.stddev.coupler.res
+        field io names: *field_io_names
 output dirac:
   filetype: fms restart
   datapath: Data/staticb_aero/
@@ -69,6 +84,7 @@ output dirac:
   filename_sfcd: dirac_local_%id%_aero_12pe.sfc_data.nc
   filename_sfcw: dirac_local_%id%_aero_12pe.fv_srf_wnd.res.nc
   filename_cplr: dirac_local_%id%_aero_12pe.coupler.res
+  field io names: *field_io_names
 dirac:
   ndir: 1
   ixdir:

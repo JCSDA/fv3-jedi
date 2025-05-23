@@ -7,7 +7,6 @@ geometry:
     field table filename: Data/fv3files/field_table_lam_cmaq
   namelist filename: Data/fv3files/input_lam_cmaq.nml
   akbk: Data/fv3files/akbk64.nc4
-  field metadata override: Data/fieldmetadata/lam_cmaq.yaml
 state:
   datetime: 2020-09-03T18:00:00Z
   filetype: fms restart
@@ -18,16 +17,27 @@ state:
   filename_sfcw: 20200903.180000.fv_srf_wnd.res.tile1.nc
   filename_cplr: 20200903.180000.coupler.res
   state variables:
-  - ua
-  - va
-  - T
-  - delp
-  - ps
-  - o3mr
+  - eastward_wind
+  - northward_wind
+  - air_temperature
+  - air_pressure_thickness
+  - air_pressure_at_surface
+  - ozone_mass_mixing_ratio
   - volume_mixing_ratio_of_no2
   - volume_mixing_ratio_of_no
   - volume_mixing_ratio_of_o3
   - volume_mixing_ratio_of_co
+  field io names: &field_io_names
+    eastward_wind: ua
+    northward_wind: va
+    air_temperature: T
+    air_pressure_thickness: delp
+    air_pressure_at_surface: ps
+    ozone_mass_mixing_ratio: o3mr
+    volume_mixing_ratio_of_no2: no2
+    volume_mixing_ratio_of_no: 'no'
+    volume_mixing_ratio_of_o3: o3
+    volume_mixing_ratio_of_co: co
 observations:
   observers:
   - obs space:

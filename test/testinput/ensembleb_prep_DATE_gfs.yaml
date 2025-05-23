@@ -9,7 +9,6 @@ geometry:
   npx: 13
   npy: 13
   npz: 127
-  field metadata override: Data/fieldmetadata/gfs-restart.yaml
 background:
   datetime: _YYYY_-_MM_-_DD_T_HH_:00:00Z
   filetype: fms restart
@@ -28,6 +27,15 @@ background:
   filename_sfcd: _YYYY__MM__DD_._HH_0000.sfc_data.nc
   filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
   filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
+  field io names: &field_io_names
+    eastward_wind: ua
+    northward_wind: va
+    air_temperature: T
+    air_pressure_at_surface: ps
+    water_vapor_mixing_ratio_wrt_moist_air: sphum
+    cloud_liquid_water: liq_wat
+    cloud_liquid_ice: ice_wat
+    ozone_mass_mixing_ratio: o3mr
 background error:
   covariance model: SABER
   iterative ensemble loading: true
@@ -43,6 +51,7 @@ background error:
         filename_sfcd: _YYYY__MM__DD_._HH_0000.sfc_data.nc
         filename_sfcw: _YYYY__MM__DD_._HH_0000.fv_srf_wnd.res.nc
         filename_cplr: _YYYY__MM__DD_._HH_0000.coupler.res
+        field io names: *field_io_names
       pattern: '%mem%'
       nmembers: 10
       zero padding: 3

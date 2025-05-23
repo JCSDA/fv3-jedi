@@ -21,7 +21,7 @@ use string_utils, only: swap_name_member, replace_string
 use fv3jedi_constants_mod,    only: constant
 use fv3jedi_geom_mod,         only: fv3jedi_geom
 use fv3jedi_field_mod,        only: fv3jedi_field, field_clen, get_field, hasfield
-use fv3jedi_io_utils_mod
+use fv3jedi_io_utils_mod,     only: vdate_to_datestring, replace_text, ioname, ioscale, iounscale
 use fv3jedi_kinds_mod,        only: kind_real
 use fv3jedi_netcdf_utils_mod, only: nccheck
 use fv3jedi_tile_comms_mod,   only: fv3jedi_tile_comms
@@ -534,12 +534,14 @@ end subroutine delete
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine read(self, vdate, fields)
+subroutine read(self, vdate, fields, field_io_names, field_io_scaling)
 
 ! Arguments
 class(fv3jedi_io_cube_sphere_history), intent(inout) :: self
 type(datetime),                        intent(in)    :: vdate
 type(fv3jedi_field),                   intent(inout) :: fields(:)
+type(fckit_configuration),             intent(in)    :: field_io_names
+type(fckit_configuration),             intent(in)    :: field_io_scaling
 
 ! Overwrite any datetime templates in the file names
 ! --------------------------------------------------
@@ -555,7 +557,7 @@ call check_datetime(self, vdate)
 
 ! Read fields
 ! -----------
-call read_fields(self, fields)
+call read_fields(self, fields, field_io_names, field_io_scaling)
 
 ! Close files
 ! -----------
@@ -565,12 +567,14 @@ end subroutine read
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine write(self, vdate, fields)
+subroutine write(self, vdate, fields, field_io_names, field_io_scaling)
 
 ! Arguments
 class(fv3jedi_io_cube_sphere_history), intent(inout) :: self
 type(datetime),                        intent(in)    :: vdate
 type(fv3jedi_field),                   intent(in)    :: fields(:)
+type(fckit_configuration),             intent(in)    :: field_io_names
+type(fckit_configuration),             intent(in)    :: field_io_scaling
 
 ! Assert that there is only one file for writing
 ! ----------------------------------------------
@@ -591,7 +595,7 @@ if (any(self%conf%clobber)) call write_meta(self, fields, vdate)
 
 ! Write fields
 ! ------------
-call write_fields(self, fields, vdate)
+call write_fields(self, fields, vdate, field_io_names, field_io_scaling)
 
 ! Close files
 ! -----------
@@ -708,11 +712,13 @@ end subroutine check_datetime
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine read_fields(self, fields)
+subroutine read_fields(self, fields, field_io_names, field_io_scaling)
 
 ! Arguments
 type(fv3jedi_io_cube_sphere_history), target, intent(inout) :: self
 type(fv3jedi_field),                          intent(inout) :: fields(:)
+type(fckit_configuration),                    intent(in)    :: field_io_names
+type(fckit_configuration),                    intent(in)    :: field_io_scaling
 
 ! Locals
 integer, allocatable :: file_index(:), varid(:)
@@ -731,7 +737,7 @@ allocate(file_index(size(fields)))
 allocate(varid(size(fields)))
 
 ! Get variable IDs
-call get_field_ncid_varid(self, fields, file_index, varid)
+call get_field_ncid_varid(self, fields, file_index, varid, field_io_names)
 
 ! Get max levels
 ! --------------
@@ -788,7 +794,7 @@ do var = 1,size(fields)
     ! If not a concatenated field, read all levels
     call nccheck ( nf90_get_var( self%ncid(file_index(var)), varid(var), &
                    arrayg(1:self%npx-1,1:self%npy-1,1:fields(var)%npz), istart, icount), &
-                   "nf90_get_var "//trim(fields(var)%io_name) )
+                   "nf90_get_var "//trim(fields(var)%long_name) )
 
   endif
 
@@ -801,6 +807,9 @@ do var = 1,size(fields)
     fields(var)%array(self%isc:self%iec,self%jsc:self%jec,1:fields(var)%npz) = &
                                        arrayg(self%isc:self%iec,self%jsc:self%jec,1:fields(var)%npz)
   endif
+
+  ! Scale the field if necessary
+  call ioscale(fields(var), field_io_scaling)
 
 enddo
 
@@ -848,26 +857,21 @@ end subroutine get_max_levels
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine get_field_ncid_varid(self, fields, file_index, varid)
+subroutine get_field_ncid_varid(self, fields, file_index, varid, field_io_names)
 
 ! Arguments
 type(fv3jedi_io_cube_sphere_history), intent(in)    :: self
 type(fv3jedi_field),                  intent(in)    :: fields(:)
 integer,                              intent(inout) :: file_index(size(fields(:)))
 integer,                              intent(inout) :: varid(size(fields(:)))
+type(fckit_configuration),            intent(in)    :: field_io_names
 
 ! Locals
 integer :: f, ff, n
 integer :: status, varid_local
-integer, allocatable :: found(:)
-logical :: matches_io_file
 
-! Array to keep track of all the files the variable was found in
-allocate(found(self%nfiles))
-
-do f = 1, size(fields)
-
-  found = 0
+! Loop over fields
+field: do f = 1, size(fields)
 
   ! Skip if the field name is air_pressure_levels and compute_pressure is true
   if (self%conf%compute_pressure .and. trim(fields(f)%long_name) == 'air_pressure_levels') then
@@ -876,49 +880,30 @@ do f = 1, size(fields)
     cycle
   endif
 
+  ! Loop over all the possible input files
   do n = 1, self%nfiles
 
-     ! Check if filename matches IO file specified in fields metadata
-     matches_io_file = .true. ! Default to true for unknown or unspecified provider
-     if ( trim(self%conf%provider) == 'ufs' ) then
-        select case ( trim(fields(f)%io_file) )
-        case ( 'default' ) ! No IO file specified in metadata for this field
-           matches_io_file = .true.
-        case ( 'surface' )
-           matches_io_file = ( index(trim(self%filenames(n)),'sfc') /= 0 )
-        case ( 'atmosphere' )
-           matches_io_file = ( index(trim(self%filenames(n)),'atm') /= 0 )
-        case default ! Unknown IO file
-           call abor1_ftn( "fv3jedi_io_cube_sphere_history_mod error: Unknown IO file for field, " // trim(fields(f)%long_name) )
-        end select
-     end if
+    ! Look for a varid in the file. May not be found.
+    status = nf90_inq_varid(self%ncid(n), trim(ioname(fields(f)%long_name, field_io_names)), &
+                            varid_local)
 
-     if ( matches_io_file ) then
-        ! Get the varid
-        status = nf90_inq_varid(self%ncid(n), fields(f)%io_name, varid_local)
+    ! If found then fill the array
+    if (status == nf90_noerr) then
+        file_index(f) = n
+        varid(f) = varid_local
+        ! Stop on the first file where the field was identified
+        cycle field
+    endif
 
-        ! If found then fill the array
-        if (status == nf90_noerr) then
-           found(n) = 1
-           file_index(f) = n
-           varid(f) = varid_local
-        endif
-     end if
   enddo
 
-  ! Check that the field was not found more than once
-  if (sum(found) > 1) &
-       call abor1_ftn("fv3jedi_io_cube_sphere_history_mod.read_fields.get_field_ncid_varid: "// &
-                      "Field "//trim(fields(f)%io_name)//" was found in multiple input files. "// &
-                      "Should only be present in one file that is read.")
+  ! If the code reached this point then the field was not located in any of the files and an
+  ! abort is necessary.
+  call abor1_ftn("fv3jedi_io_cube_sphere_history_mod.read_fields.get_field_ncid_varid: "// &
+                 "Field "//trim(fields(f)%long_name)//" was not found in any files. "// &
+                 "Should only be present in at least one file that is read.")
 
-  ! Check that the field was found
-  if (sum(found) == 0) then
-     call abor1_ftn("fv3jedi_io_cube_sphere_history_mod.read_fields.get_field_ncid_varid: "// &
-                    "Field "//trim(fields(f)%io_name)//" was not found in any files. "// &
-                    "Should only be present in one file that is read.")
-  end if
-enddo
+enddo field
 
 end subroutine get_field_ncid_varid
 
@@ -1278,12 +1263,14 @@ end subroutine write_meta
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine write_fields(self, fields, vdate)
+subroutine write_fields(self, fields, vdate, field_io_names, field_io_scaling)
 
 ! Arguments
 type(fv3jedi_io_cube_sphere_history), target, intent(inout) :: self
 type(fv3jedi_field),                          intent(in)    :: fields(:)
 type(datetime),                               intent(in)    :: vdate
+type(fckit_configuration),                    intent(in)    :: field_io_names
+type(fckit_configuration),                    intent(in)    :: field_io_scaling
 
 ! Locals
 integer :: var, n, ncid, maxlev
@@ -1295,7 +1282,7 @@ integer, pointer :: istart(:), icount(:)
 integer :: varid
 character(10) :: coordstr
 logical :: write_field
-
+real(kind=kind_real) :: io_unscale_fact
 
 ! Get max levels
 ! --------------
@@ -1337,7 +1324,7 @@ do var = 1,size(fields)
     write_field = .true.
   else
     do n = 1,size(self%conf%fields_to_write)
-      if (trim(self%conf%fields_to_write(n)) == trim(fields(var)%io_name)) then
+      if (trim(self%conf%fields_to_write(n)) == trim(fields(var)%long_name)) then
         write_field = .true.
       end if
     end do
@@ -1390,8 +1377,9 @@ do var = 1,size(fields)
         endif
 
         ! Define field
-        call nccheck( nf90_def_var(ncid, trim(fields(var)%io_name), self%conf%float_type, dimids, varid), &
-                       "nf90_def_var "//trim(fields(var)%io_name))
+        call nccheck( nf90_def_var(ncid, trim(ioname(fields(var)%long_name, field_io_names)), &
+                      self%conf%float_type, dimids, varid), &
+                      "nf90_def_var "//trim(fields(var)%long_name))
 
         ! Long name and units
         call nccheck( nf90_put_att(ncid, varid, "long_name"    , trim(fields(var)%long_name) ), "nf90_put_att" )
@@ -1408,8 +1396,8 @@ do var = 1,size(fields)
       else  ! No clobber
 
         ! Get existing variable id to write to
-        call nccheck ( nf90_inq_varid (ncid, trim(fields(var)%io_name), varid), &
-                       "nf90_inq_varid "//trim(fields(var)%io_name) )
+        call nccheck ( nf90_inq_varid (ncid, trim(fields(var)%long_name), varid), &
+                       "nf90_inq_varid "//trim(fields(var)%long_name) )
 
       endif  ! Clobber
 
@@ -1459,8 +1447,12 @@ do var = 1,size(fields)
 
     ! Write the field to file
     if (self%iam_io_proc) then
-        call nccheck( nf90_put_var( ncid, varid, arrayg(1:self%npx-1,1:self%npy-1,1:fields(var)%npz), start = istart, &
-                                    count = icount ), "nf90_put_var "//trim(fields(var)%io_name) )
+        ! Get any scaling factor that is needed
+        io_unscale_fact = iounscale(fields(var)%long_name, field_io_scaling)
+        call nccheck( nf90_put_var( ncid, varid, &
+                      io_unscale_fact*arrayg(1:self%npx-1,1:self%npy-1,1:fields(var)%npz), &
+                      start = istart, count = icount ), &
+                      "nf90_put_var "//trim(fields(var)%long_name) )
     endif
 
   endif  ! write_field

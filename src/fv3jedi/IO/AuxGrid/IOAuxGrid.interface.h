@@ -12,7 +12,11 @@ namespace fv3jedi {
   extern "C" {
   void fv3jedi_io_auxgrid_create_f90(F90ioauxgrid &, const eckit::Configuration &, const F90geom &);
   void fv3jedi_io_auxgrid_delete_f90(F90ioauxgrid &);
-  void fv3jedi_io_auxgrid_write_state_f90(const F90ioauxgrid &, const F90state &);
-  void fv3jedi_io_auxgrid_write_increment_f90(const F90ioauxgrid &, const F90inc &);
+  void fv3jedi_io_auxgrid_write_state_f90(const F90ioauxgrid &, const F90state &,
+                                          const eckit::Configuration &,
+                                          const eckit::Configuration &);
+  void fv3jedi_io_auxgrid_write_increment_f90(const F90ioauxgrid &, const F90inc &,
+                                              const eckit::Configuration &,
+                                              const eckit::Configuration &);
   }  // extern "C"
 }  // namespace fv3jedi

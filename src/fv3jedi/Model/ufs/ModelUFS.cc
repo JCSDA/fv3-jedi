@@ -27,9 +27,7 @@ static oops::interface::ModelMaker<Traits, ModelUFS> makermodel_("UFS");
 // -------------------------------------------------------------------------------------------------
 ModelUFS::ModelUFS(const Geometry & resol, const eckit::Configuration & modelConf)
   : keyConfig_(0), tstep_(modelConf.getString("tstep")),
-    fclength_(modelConf.getString("forecast length")), geom_(resol),
-    vars_(geom_.fieldsMetaData().getLongNameFromAnyName(oops::Variables(modelConf,
-                                                                        "model variables")))
+    fclength_(modelConf.getString("forecast length")), geom_(resol)
 {
   const eckit::LocalConfiguration confcopy(modelConf);
   oops::Log::trace() << "ModelUFS::ModelUFS starting" << std::endl;
@@ -58,9 +56,7 @@ void ModelUFS::initialize(State & xx) const {
   util::DateTime * dtp2 = &stop;
   oops::Log::trace() << "initialize Forecast start time is " << start << std::endl;
   oops::Log::trace() << "initialize Forecast stop time is " << stop << std::endl;
-
-  // stdvariables is the list of "standard names" needed by NUOPC_Advertise
-  fv3jedi_ufs_initialize_f90(keyConfig_, xx.toFortran(), xx.stdvariables(), &dtp1, &dtp2);
+  fv3jedi_ufs_initialize_f90(keyConfig_, xx.toFortran(), xx.variables(), &dtp1, &dtp2);
   oops::Log::trace() << "ModelUFS::initialize done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------

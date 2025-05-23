@@ -20,4 +20,3 @@ geometry:
   stretch_fac: 2.0
   hydrostatic: false
   nwat: 6
-  field metadata override: Data/fieldmetadata/gfs-restart.yaml

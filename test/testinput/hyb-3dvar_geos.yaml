@@ -20,7 +20,6 @@ cost function:
     npx: 13
     npy: 13
     npz: 72
-    field metadata override: Data/fieldmetadata/geos.yaml
   background:
     datetime: 2020-12-15T00:00:00Z
     filetype: cube sphere history
@@ -30,29 +29,47 @@ cost function:
     - geos.bkg.20201215_000000z.nc4
     - geos.bkg.crtmsrf.20201215_000000z.nc4
     state variables:
-    - ua
-    - va
-    - t
-    - ps
-    - q
-    - qi
-    - ql
-    - qr
-    - qs
-    - o3ppmv
-    - phis
-    - frocean
-    - frlake
-    - frseaice
+    - eastward_wind
+    - northward_wind
+    - air_temperature
+    - air_pressure_at_surface
+    - water_vapor_mixing_ratio_wrt_moist_air
+    - cloud_liquid_ice
+    - cloud_liquid_water
+    - rain_water
+    - snow_water
+    - mole_fraction_of_ozone_in_air
+    - geopotential_height_times_gravity_at_surface
+    - fraction_of_ocean
+    - fraction_of_lake
+    - fraction_of_ice
     - vtype
     - stype
     - vfrac
     - sheleg
-    - ts
+    - skin_temperature_at_surface
     - soilt
     - soilm
-    - u10m
-    - v10m
+    - eastward_wind_at_surface
+    - northward_wind_at_surface
+    field io names: &field_io_names
+      eastward_wind: ua
+      northward_wind: va
+      air_temperature: t
+      air_pressure_at_surface: ps
+      water_vapor_mixing_ratio_wrt_moist_air: q
+      cloud_liquid_ice: qi
+      cloud_liquid_water: ql
+      mole_fraction_of_ozone_in_air: o3ppmv
+      rain_water: qr
+      snow_water: qs
+      geopotential_height_times_gravity_at_surface: phis
+      fraction_of_ocean: frocean
+      fraction_of_lake: frlake
+      fraction_of_ice: frseaice
+      skin_temperature_at_surface: ts
+      eastward_wind_at_surface: u10m
+      northward_wind_at_surface: v10m
   background error:
     covariance model: hybrid
     components:
@@ -71,6 +88,7 @@ cost function:
             state variables: *3dvars
             datapath: Data/inputs/geos_c12
             filename: geos.mem%mem%.20201215_000000z.nc4
+            field io names: *field_io_names
           pattern: '%mem%'
           nmembers: 10
           zero padding: 3
@@ -1430,6 +1448,7 @@ output:
   filename: hyb-3dvar-geos.ana.%yyyy%mm%dd_%hh%MM%ssz.nc4
   first: PT0H
   frequency: PT1H
+  field io names: *field_io_names
 variational:
   minimizer:
     algorithm: DRPCG
@@ -1442,7 +1461,6 @@ variational:
       npx: 13
       npy: 13
       npz: 72
-      field metadata override: Data/fieldmetadata/geos.yaml
   - ninner: 5
     gradient norm reduction: 1e-10
     test: on
@@ -1451,7 +1469,6 @@ variational:
       npx: 13
       npy: 13
       npz: 72
-      field metadata override: Data/fieldmetadata/geos.yaml
 test:
   reference filename: testoutput/hyb-3dvar_geos.ref
   integer tolerance: 3

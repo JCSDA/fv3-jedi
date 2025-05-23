@@ -21,7 +21,8 @@ namespace fv3jedi {
 // -------------------------------------------------------------------------------------------------
 static IOMaker<IOAuxGrid> makerIOAuxGrid_("auxgrid");
 // -------------------------------------------------------------------------------------------------
-IOAuxGrid::IOAuxGrid(const Geometry & geom, const Parameters_ & params) : IOBase(geom) {
+IOAuxGrid::IOAuxGrid(const Geometry & geom, const Parameters_ & params)
+: IOBase(geom, params.toConfiguration()) {
   util::Timer timer(classname(), "IOAuxGrid");
   oops::Log::trace() << classname() << " constructor starting" << std::endl;
   fv3jedi_io_auxgrid_create_f90(objectKeyForFortran_, params.toConfiguration(), geom.toFortran());
@@ -35,25 +36,31 @@ IOAuxGrid::~IOAuxGrid() {
   oops::Log::trace() << classname() << " destructor done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
-void IOAuxGrid::read(State & x) const {
+void IOAuxGrid::read(State & x, const eckit::LocalConfiguration & fileionames,
+                     const eckit::LocalConfiguration & fileioscaling) const {
   ABORT("IOAuxGrid::read state not implemented and should not be needed");
 }
 // -------------------------------------------------------------------------------------------------
-void IOAuxGrid::read(Increment & dx) const {
+void IOAuxGrid::read(Increment & dx, const eckit::LocalConfiguration & fileionames,
+                     const eckit::LocalConfiguration & fileioscaling) const {
   ABORT("IOAuxGrid::read increment not implemented and should not be needed");
 }
 // -------------------------------------------------------------------------------------------------
-void IOAuxGrid::write(const State & x) const {
+void IOAuxGrid::write(const State & x, const eckit::LocalConfiguration & fileionames,
+                      const eckit::LocalConfiguration & fileioscaling) const {
   util::Timer timer(classname(), "write state");
   oops::Log::trace() << classname() << " write state starting" << std::endl;
-  fv3jedi_io_auxgrid_write_state_f90(objectKeyForFortran_, x.toFortran());
+  fv3jedi_io_auxgrid_write_state_f90(objectKeyForFortran_, x.toFortran(), fileionames,
+                                     fileioscaling);
   oops::Log::trace() << classname() << " write state done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
-void IOAuxGrid::write(const Increment & dx) const {
+void IOAuxGrid::write(const Increment & dx, const eckit::LocalConfiguration & fileionames,
+                      const eckit::LocalConfiguration & fileioscaling) const {
   util::Timer timer(classname(), "write increment");
   oops::Log::trace() << classname() << " write increment starting" << std::endl;
-  fv3jedi_io_auxgrid_write_increment_f90(objectKeyForFortran_, dx.toFortran());
+  fv3jedi_io_auxgrid_write_increment_f90(objectKeyForFortran_, dx.toFortran(), fileionames,
+                                         fileioscaling);
   oops::Log::trace() << classname() << " write increment done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------

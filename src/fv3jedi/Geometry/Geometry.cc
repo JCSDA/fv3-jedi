@@ -6,6 +6,7 @@
  */
 
 #include <algorithm>
+#include <unordered_set>
 
 #include "atlas/field.h"
 #include "atlas/functionspace.h"
@@ -45,7 +46,7 @@ Geometry::Geometry(const eckit::Configuration & config, const eckit::mpi::Comm &
   fv3jedi_geom_setup_f90(keyGeom_, params.toConfiguration(), &comm_, nLevels_, tileNum_);
 
   // Construct the field sets and add to Geometry
-  fieldsMeta_.reset(new FieldsMetadata(params.fieldsMetadataParameters, nLevels_));
+  fieldsMeta_.reset(new FieldsMetadata(nLevels_));
   fv3jedi_geom_addfmd_f90(keyGeom_, fieldsMeta_.get());
 
   {
@@ -158,6 +159,7 @@ Geometry::Geometry(const eckit::Configuration & config, const eckit::mpi::Comm &
   // Fill geometry fields. This contains both SABER-related fields and any fields requested to be
   // read from state files in the yamls.
   fields_ = atlas::FieldSet();
+  fieldMasks_ = eckit::LocalConfiguration();
   // Add SABER fields
   if (params.timeInvariantFields.value() != boost::none) {
     const auto & timeInvFieldsParams = params.timeInvariantFields.value().value();
@@ -177,13 +179,41 @@ Geometry::Geometry(const eckit::Configuration & config, const eckit::mpi::Comm &
       const oops::Variables derivedFields = timeInvFieldsParams.derivedFields.value().value();
       insertDerivedTimeInvariantFields(fields_, derivedFields);
     }
+    // Add any mask configuration that the user wants
+    if (timeInvFieldsParams.fieldMasks.value() != boost::none) {
+      fieldMasks_ = timeInvFieldsParams.fieldMasks.value().value();
+    }
+
+    // Loop over the required fieldMasks and make sure that field is available
+    for (auto& key : fieldMasks_.keys()) {
+      const std::string mask = fieldMasks_.getString(key);
+      ASSERT_MSG(fields_.has(mask), "Mask " + mask + " requested but not created.");
+    }
   }
-  fv3jedi_geom_set_and_fill_geometry_fields_f90(keyGeom_, fields_.get());
+  fv3jedi_geom_set_and_fill_geometry_fields_f90(keyGeom_, fields_.get(), fieldMasks_);
 
   // Copy some Fortran data to C++
   ak_.resize(nLevels_+1);
   bk_.resize(nLevels_+1);
   fv3jedi_geom_get_data_f90(keyGeom_, nLevels_, ak_.data(), bk_.data(), pTop_);
+
+  // If the parameters contains the fieldMasks then check that the fields are available
+  if (params.fieldInterpMethods.value() != boost::none) {
+    // Get the long names from the metadata
+    const std::vector<std::string> & fmdLongNames = fieldsMeta_->getLongNames();
+
+    // Turn the keys of fieldInterpMethods into a vector of string
+    const eckit::LocalConfiguration fieldInterpMethods = params.fieldInterpMethods.value().value();
+    const std::vector<std::string> keys = fieldInterpMethods.keys();
+
+    // Assert that keys is a subset of fmdLongNames
+    std::unordered_set<std::string> fmdSet(fmdLongNames.begin(), fmdLongNames.end());
+    for (const std::string& key : keys) {
+      const std::string msg = "The \"field interpolation methods\" configuration contains \"" +
+                              key + "\", which is not part of the field metadata.";
+      ASSERT_MSG(fmdSet.find(key) != fmdSet.end(), msg);
+    }
+  }
 }
 
 // -------------------------------------------------------------------------------------------------

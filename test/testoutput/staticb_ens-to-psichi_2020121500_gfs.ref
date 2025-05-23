@@ -12,7 +12,7 @@ ozone_mass_mixing_ratio                      | Min:+2.9744141544568681e-09 Max:+
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaC2A variable change
 Variable change from: 8 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, water_vapor_mixing_ratio_wrt_moist_air, cloud_liquid_water, cloud_liquid_ice, ozone_mass_mixing_ratio
-Variable change to: 8 variables: psi, chi, t, ps, sphum, liq_wat, ice_wat, o3mr
+Variable change to: 8 variables: air_horizontal_streamfunction, air_horizontal_velocity_potential, air_temperature, air_pressure_at_surface, water_vapor_mixing_ratio_wrt_moist_air, cloud_liquid_water, cloud_liquid_ice, ozone_mass_mixing_ratio
 State after variable transform: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 8 | cube sphere face size: C12
@@ -51,7 +51,7 @@ ozone_mass_mixing_ratio                      | Min:+7.8621485615378954e-09 Max:+
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaC2A variable change
 Variable change from: 8 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, water_vapor_mixing_ratio_wrt_moist_air, cloud_liquid_water, cloud_liquid_ice, ozone_mass_mixing_ratio
-Variable change to: 8 variables: psi, chi, t, ps, sphum, liq_wat, ice_wat, o3mr
+Variable change to: 8 variables: air_horizontal_streamfunction, air_horizontal_velocity_potential, air_temperature, air_pressure_at_surface, water_vapor_mixing_ratio_wrt_moist_air, cloud_liquid_water, cloud_liquid_ice, ozone_mass_mixing_ratio
 State after variable transform: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 8 | cube sphere face size: C12
@@ -90,7 +90,7 @@ ozone_mass_mixing_ratio                      | Min:-2.0401767509703437e-09 Max:+
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaC2A variable change
 Variable change from: 8 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, water_vapor_mixing_ratio_wrt_moist_air, cloud_liquid_water, cloud_liquid_ice, ozone_mass_mixing_ratio
-Variable change to: 8 variables: psi, chi, t, ps, sphum, liq_wat, ice_wat, o3mr
+Variable change to: 8 variables: air_horizontal_streamfunction, air_horizontal_velocity_potential, air_temperature, air_pressure_at_surface, water_vapor_mixing_ratio_wrt_moist_air, cloud_liquid_water, cloud_liquid_ice, ozone_mass_mixing_ratio
 State after variable transform: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 8 | cube sphere face size: C12
@@ -129,7 +129,7 @@ ozone_mass_mixing_ratio                      | Min:+7.2504230998195822e-10 Max:+
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaC2A variable change
 Variable change from: 8 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, water_vapor_mixing_ratio_wrt_moist_air, cloud_liquid_water, cloud_liquid_ice, ozone_mass_mixing_ratio
-Variable change to: 8 variables: psi, chi, t, ps, sphum, liq_wat, ice_wat, o3mr
+Variable change to: 8 variables: air_horizontal_streamfunction, air_horizontal_velocity_potential, air_temperature, air_pressure_at_surface, water_vapor_mixing_ratio_wrt_moist_air, cloud_liquid_water, cloud_liquid_ice, ozone_mass_mixing_ratio
 State after variable transform: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 8 | cube sphere face size: C12
@@ -168,7 +168,7 @@ ozone_mass_mixing_ratio                      | Min:-1.6855544686263505e-09 Max:+
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaC2A variable change
 Variable change from: 8 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, water_vapor_mixing_ratio_wrt_moist_air, cloud_liquid_water, cloud_liquid_ice, ozone_mass_mixing_ratio
-Variable change to: 8 variables: psi, chi, t, ps, sphum, liq_wat, ice_wat, o3mr
+Variable change to: 8 variables: air_horizontal_streamfunction, air_horizontal_velocity_potential, air_temperature, air_pressure_at_surface, water_vapor_mixing_ratio_wrt_moist_air, cloud_liquid_water, cloud_liquid_ice, ozone_mass_mixing_ratio
 State after variable transform: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 8 | cube sphere face size: C12
@@ -207,7 +207,7 @@ ozone_mass_mixing_ratio                      | Min:-2.0404785466194633e-09 Max:+
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaC2A variable change
 Variable change from: 8 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, water_vapor_mixing_ratio_wrt_moist_air, cloud_liquid_water, cloud_liquid_ice, ozone_mass_mixing_ratio
-Variable change to: 8 variables: psi, chi, t, ps, sphum, liq_wat, ice_wat, o3mr
+Variable change to: 8 variables: air_horizontal_streamfunction, air_horizontal_velocity_potential, air_temperature, air_pressure_at_surface, water_vapor_mixing_ratio_wrt_moist_air, cloud_liquid_water, cloud_liquid_ice, ozone_mass_mixing_ratio
 State after variable transform: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 8 | cube sphere face size: C12
@@ -246,7 +246,7 @@ ozone_mass_mixing_ratio                      | Min:+4.7507334303703184e-09 Max:+
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaC2A variable change
 Variable change from: 8 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, water_vapor_mixing_ratio_wrt_moist_air, cloud_liquid_water, cloud_liquid_ice, ozone_mass_mixing_ratio
-Variable change to: 8 variables: psi, chi, t, ps, sphum, liq_wat, ice_wat, o3mr
+Variable change to: 8 variables: air_horizontal_streamfunction, air_horizontal_velocity_potential, air_temperature, air_pressure_at_surface, water_vapor_mixing_ratio_wrt_moist_air, cloud_liquid_water, cloud_liquid_ice, ozone_mass_mixing_ratio
 State after variable transform: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 8 | cube sphere face size: C12
@@ -285,7 +285,7 @@ ozone_mass_mixing_ratio                      | Min:-1.8101120797711535e-09 Max:+
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaC2A variable change
 Variable change from: 8 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, water_vapor_mixing_ratio_wrt_moist_air, cloud_liquid_water, cloud_liquid_ice, ozone_mass_mixing_ratio
-Variable change to: 8 variables: psi, chi, t, ps, sphum, liq_wat, ice_wat, o3mr
+Variable change to: 8 variables: air_horizontal_streamfunction, air_horizontal_velocity_potential, air_temperature, air_pressure_at_surface, water_vapor_mixing_ratio_wrt_moist_air, cloud_liquid_water, cloud_liquid_ice, ozone_mass_mixing_ratio
 State after variable transform: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 8 | cube sphere face size: C12
@@ -324,7 +324,7 @@ ozone_mass_mixing_ratio                      | Min:+4.0941952381139940e-09 Max:+
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaC2A variable change
 Variable change from: 8 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, water_vapor_mixing_ratio_wrt_moist_air, cloud_liquid_water, cloud_liquid_ice, ozone_mass_mixing_ratio
-Variable change to: 8 variables: psi, chi, t, ps, sphum, liq_wat, ice_wat, o3mr
+Variable change to: 8 variables: air_horizontal_streamfunction, air_horizontal_velocity_potential, air_temperature, air_pressure_at_surface, water_vapor_mixing_ratio_wrt_moist_air, cloud_liquid_water, cloud_liquid_ice, ozone_mass_mixing_ratio
 State after variable transform: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 8 | cube sphere face size: C12
@@ -363,7 +363,7 @@ ozone_mass_mixing_ratio                      | Min:+1.0512694261624498e-09 Max:+
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaC2A variable change
 Variable change from: 8 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, water_vapor_mixing_ratio_wrt_moist_air, cloud_liquid_water, cloud_liquid_ice, ozone_mass_mixing_ratio
-Variable change to: 8 variables: psi, chi, t, ps, sphum, liq_wat, ice_wat, o3mr
+Variable change to: 8 variables: air_horizontal_streamfunction, air_horizontal_velocity_potential, air_temperature, air_pressure_at_surface, water_vapor_mixing_ratio_wrt_moist_air, cloud_liquid_water, cloud_liquid_ice, ozone_mass_mixing_ratio
 State after variable transform: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 8 | cube sphere face size: C12

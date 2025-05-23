@@ -23,7 +23,7 @@ use fv3jedi_field_mod,         only: fv3jedi_field, field_clen, checksame, get_f
                                      hasfield, create_field
 use fv3jedi_geom_mod,          only: fv3jedi_geom
 use fv3jedi_kinds_mod,         only: kind_real
-use fields_metadata_mod,       only: field_metadata
+use fields_metadata_mod,       only: field_metadata, clen
 use wind_vt_mod,               only: a_to_d
 
 use mpp_domains_mod, only: mpp_update_domains, mpp_update_domains_ad
@@ -85,7 +85,7 @@ subroutine create(self, geom, vars)
   type(fv3jedi_geom),    intent(in)    :: geom
   type(oops_variables),  intent(in)    :: vars
 
-  integer :: var, fc
+  integer :: var, fc, nfmd
   type(field_metadata) :: fmd
   logical :: field_fail
 
@@ -136,16 +136,6 @@ subroutine create(self, geom, vars)
 
   ! Pointer to fv3jedi communicator
   self%f_comm = geom%f_comm
-
-  ! Check winds
-  field_fail = self%has_field('ua') .and. .not.self%has_field('va')
-  if (field_fail) call abor1_ftn("fv3jedi_fields.create: found A-Grid u but not v")
-  field_fail = .not.self%has_field('ua') .and. self%has_field('va')
-  if (field_fail) call abor1_ftn("fv3jedi_fields.create: found A-Grid v but not u")
-
-  !Check User's choice of ozone variables.
-  field_fail = self%has_field('o3mr') .and. self%has_field('o3ppmv')
-  if (field_fail) call abor1_ftn("fv3jedi_fields.create: o3mr and o3ppmv created")
 
 end subroutine create
 
@@ -371,6 +361,7 @@ type(fv3jedi_field), pointer :: field
 real(kind=kind_real), pointer :: ptr(:,:)
 type(atlas_field) :: afield
 type(atlas_metadata) :: meta
+character(len=:), allocatable :: conf_str
 
 ! Variables needed to handle boundary-condition grid points in a regional grid
 integer :: max_npz, ngrid, dummy_ntris, dummy_nquads
@@ -467,13 +458,26 @@ do jvar = 1, vars%nvars()
   ! Mark halos as being out-of-date
   call afield%set_dirty(.true.)
 
+  ! Set the interpolation strategy based on field properties
   meta = afield%metadata()
-  call meta%set('interp_type', trim(field%interpolation_type))
+  call meta%set('interp_type', 'default')
+  if ( trim(field%kind)=='integer' ) then
+    call meta%set('interp_type', 'integer')
+  elseif ( trim(field%space) == 'direction' ) then
+    call meta%set('interp_type', 'nearest')
+  endif
 
-  ! Set atlas::Field metadata for interp mask IFF the user specifically requested a non-default mask
-  if (trim(field%interpolation_source_point_mask) .ne. 'default') then
-    call meta%set('mask', trim(field%interpolation_source_point_mask))
-  end if
+  ! Further set the interpolation strategy based on user specification
+  if (geom%field_interp_methods%has(trim(field%long_name))) then
+    call geom%field_interp_methods%get_or_die(trim(field%long_name), conf_str)
+    call meta%set('interp_type', conf_str)
+  endif
+
+  ! Set interpolation masks based on user specification
+  if (geom%field_masks%has(trim(field%long_name))) then
+    call geom%field_masks%get_or_die(trim(field%long_name), conf_str)
+    call meta%set('mask', trim(conf_str))
+  endif
 
   ! Release pointer
   call afield%final()
@@ -559,7 +563,7 @@ do f = 1, new_vars%nvars()
 
   fmd = geom%fmd%get_field_metadata(trim(new_vars%variable(f)))
 
-  if (self%has_field(trim(fmd%short_name), findex)) then
+  if (self%has_field(trim(fmd%long_name), findex)) then
 
     ! If already allocated then move to temporary
     call move_alloc(self%fields(findex)%array, fields_tmp(f)%array)
@@ -596,42 +600,102 @@ end function has_field_
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine get_field_return_type_pointer(self, field_name, field)
+subroutine get_field_return_type_pointer(self, field_name, field, ok_to_fail_in)
 
 class(fv3jedi_fields), target, intent(in)    :: self
 character(len=*),              intent(in)    :: field_name
 type(fv3jedi_field), pointer,  intent(inout) :: field
+logical, optional,             intent(in)    :: ok_to_fail_in
 
 integer :: field_index
+logical :: ok_to_fail, have_field
 
+! Set whether the get can fail
+ok_to_fail = .false.
+if (present(ok_to_fail_in)) ok_to_fail = ok_to_fail_in
+
+! Check field exists
+have_field = hasfield(self%fields, field_name)
+
+! Fail conditions
+if (.not.have_field) then
+  if (.not.ok_to_fail) then
+    call abor1_ftn("fv3jedi_fields_mod.get_field: field " // trim(field_name) &
+                   // " not found")
+  else
+    return
+  endif
+endif
+
+! Get the actual field
 call get_field(self%fields, field_name, field)
 
 endsubroutine get_field_return_type_pointer
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine get_field_return_array_pointer(self, field_name, field)
+subroutine get_field_return_array_pointer(self, field_name, field, ok_to_fail_in)
 
 class(fv3jedi_fields), target, intent(in)    :: self
 character(len=*),              intent(in)    :: field_name
 real(kind=kind_real), pointer, intent(inout) :: field(:,:,:)
+logical, optional,             intent(in)    :: ok_to_fail_in
 
 integer :: field_index
+logical :: ok_to_fail, have_field
 
+! Set whether the get can fail
+ok_to_fail = .false.
+if (present(ok_to_fail_in)) ok_to_fail = ok_to_fail_in
+
+! Check field exists
+have_field = hasfield(self%fields, field_name)
+
+! Fail conditions
+if (.not.have_field) then
+  if (.not.ok_to_fail) then
+    call abor1_ftn("fv3jedi_fields_mod.get_field: field " // trim(field_name) &
+                   // " not found")
+  else
+    return
+  endif
+endif
+
+! Get the actual field
 call get_field(self%fields, field_name, field)
 
 endsubroutine get_field_return_array_pointer
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine get_field_return_array_allocatable(self, field_name, field)
+subroutine get_field_return_array_allocatable(self, field_name, field, ok_to_fail_in)
 
 class(fv3jedi_fields), target,     intent(in)    :: self
 character(len=*),                  intent(in)    :: field_name
 real(kind=kind_real), allocatable, intent(inout) :: field(:,:,:)
+logical, optional,                 intent(in)    :: ok_to_fail_in
 
 integer :: field_index
+logical :: ok_to_fail, have_field
 
+! Set whether the get can fail
+ok_to_fail = .false.
+if (present(ok_to_fail_in)) ok_to_fail = ok_to_fail_in
+
+! Check field exists
+have_field = hasfield(self%fields, field_name)
+
+! Fail conditions
+if (.not.have_field) then
+  if (.not.ok_to_fail) then
+    call abor1_ftn("fv3jedi_fields_mod.get_field: field " // trim(field_name) &
+                   // " not found")
+  else
+    return
+  endif
+endif
+
+! Get the actual field
 call get_field(self%fields, field_name, field)
 
 endsubroutine get_field_return_array_allocatable

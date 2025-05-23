@@ -1,4 +1,4 @@
-! (C) Copyright 2020-2021 UCAR
+! (C) Copyright 2020-2024 UCAR
 !
 ! This software is licensed under the terms of the Apache Licence Version 2.0
 ! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -13,12 +13,26 @@ use fckit_configuration_module,   only: fckit_configuration
 
 ! oops
 use datetime_mod
-use string_utils, only: swap_name_member
+use string_utils,                 only: swap_name_member
+
+! fv3jedi
+use fv3jedi_field_mod,            only: fv3jedi_field, field_clen
+use fv3jedi_kinds_mod,            only: kind_real
 
 implicit none
 public
 
 integer, parameter :: maxstring = 2048
+
+! Io name interface
+interface ioname
+  module procedure ioname_field, ioname_long_name
+end interface ioname
+
+! Io name interface
+interface iounscale
+  module procedure iounscale_field, iounscale_long_name
+end interface iounscale
 
 ! --------------------------------------------------------------------------------------------------
 
@@ -28,7 +42,6 @@ contains
 
 subroutine str_check(str,maxlen)
 
-implicit none
 character(len=*), intent(in) :: str
 integer,          intent(in) :: maxlen
 
@@ -46,7 +59,6 @@ end subroutine str_check
 
 subroutine vdate_to_datestring(vdate,datest,isodate,ufsdate,date,yyyy,mm,dd,hh,min,ss)
 
-implicit none
 type(datetime),              intent(in)  :: vdate
 character(len=*), optional,  intent(out) :: datest
 character(len=*), optional,  intent(out) :: isodate
@@ -99,7 +111,6 @@ end subroutine vdate_to_datestring
 
 function replace_text (inputstr,search,replace) result(outputstr)
 
-implicit none
 character(len=*), intent(in) :: inputstr
 character(len=*), intent(in) :: search
 character(len=*), intent(in) :: replace
@@ -123,7 +134,6 @@ end function replace_text
 
 subroutine string_from_conf(f_conf,varstring,var,default,memberswap)
 
-implicit none
 type(fckit_configuration),  intent(in)  :: f_conf
 character(len=*),           intent(in)  :: varstring
 character(len=*),           intent(out) :: var
@@ -157,7 +167,6 @@ end subroutine string_from_conf
 
 subroutine add_iteration(f_conf,str)
 
-implicit none
 type(fckit_configuration),  intent(in)  :: f_conf
 character(len=:), allocatable, intent(inout) :: str
 
@@ -176,6 +185,106 @@ if (f_conf%has("iteration")) then
 endif
 
 end subroutine add_iteration
+
+! --------------------------------------------------------------------------------------------------
+
+function ioname_field(field, field_io_names) result(io_name)
+
+! Arguments
+type(fv3jedi_field),         intent(in) :: field
+type(fckit_configuration),   intent(in) :: field_io_names
+character(field_clen)                   :: io_name
+
+! Get the io name for the field
+io_name = ioname_long_name(trim(field%long_name), field_io_names)
+
+end function ioname_field
+
+! --------------------------------------------------------------------------------------------------
+
+function ioname_long_name(long_name, field_io_names) result(io_name)
+
+! Arguments
+character(len=*),          intent(in) :: long_name
+type(fckit_configuration), intent(in) :: field_io_names
+character(field_clen)                 :: io_name
+
+! Locals
+character(len=:), allocatable :: str
+
+! If the config has an alias, return the alias; otherwise, return the long name
+! -----------------------------------------------------------------------------
+if (field_io_names%has(trim(long_name))) then
+  call field_io_names%get_or_die(trim(long_name), str)
+  io_name = str
+  deallocate(str)
+else
+  io_name = trim(long_name)
+endif
+
+end function ioname_long_name
+
+
+! --------------------------------------------------------------------------------------------------
+
+subroutine ioscale(field, field_io_scaling)
+
+! Arguments
+type(fv3jedi_field),         intent(inout) :: field
+type(fckit_configuration),   intent(in)    :: field_io_scaling
+
+! Locals
+real(kind=kind_real) :: io_scale
+
+! If the config has a scaling factor, apply it to the field
+if (field_io_scaling%has(trim(field%long_name))) then
+
+  ! Get the scaling factor for the field
+  call field_io_scaling%get_or_die(trim(field%long_name), io_scale)
+
+  ! Scale the field
+  field%array = field%array * io_scale
+
+endif
+
+end subroutine ioscale
+
+! --------------------------------------------------------------------------------------------------
+
+function iounscale_field(field, field_io_scaling) result(io_unscale)
+
+! Arguments
+type(fv3jedi_field),         intent(in) :: field
+type(fckit_configuration),   intent(in) :: field_io_scaling
+real(kind=kind_real)                    :: io_unscale
+
+! Get the io scaling for the field
+io_unscale = iounscale_long_name(trim(field%long_name), field_io_scaling)
+
+end function iounscale_field
+
+! --------------------------------------------------------------------------------------------------
+
+function iounscale_long_name(long_name, field_io_scaling) result(io_unscale)
+
+! Arguments
+character(len=*),          intent(in) :: long_name
+type(fckit_configuration), intent(in) :: field_io_scaling
+real(kind=kind_real)                  :: io_unscale
+
+! Locals
+real(kind=kind_real) :: scaling_factor
+
+! If the config has a scaling factor, return the scaling factor; otherwise, return 1.0
+! ------------------------------------------------------------------------------------
+if (field_io_scaling%has(trim(long_name))) then
+  call field_io_scaling%get_or_die(trim(long_name), scaling_factor)
+  io_unscale = 1.0_kind_real / scaling_factor
+else
+  io_unscale = 1.0_kind_real
+endif
+
+end function iounscale_long_name
 
 ! --------------------------------------------------------------------------------------------------
 

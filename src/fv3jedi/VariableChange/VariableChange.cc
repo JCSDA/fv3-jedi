@@ -54,13 +54,9 @@ VariableChange::~VariableChange() {}
 
 // -------------------------------------------------------------------------------------------------
 
-void VariableChange::changeVar(State & x, const oops::Variables & vars_out) const {
+void VariableChange::changeVar(State & x, const oops::Variables & vars) const {
   // Trace
   oops::Log::trace() << "VariableChange::changeVar starting" << std::endl;
-
-  // Make sure vars are longname
-  // ---------------------------
-  const oops::Variables vars = fieldsMetadata_.getLongNameFromAnyName(vars_out);
 
   // Return if output vars already in input
   // --------------------------------------
@@ -117,13 +113,9 @@ void VariableChange::changeVar(State & x, const oops::Variables & vars_out) cons
 
 // -------------------------------------------------------------------------------------------------
 
-void VariableChange::changeVarInverse(State & x, const oops::Variables & vars_out) const {
+void VariableChange::changeVarInverse(State & x, const oops::Variables & vars) const {
   // Trace
   oops::Log::trace() << "VariableChange::changeVarInverse starting" << std::endl;
-
-  // Make sure vars are longname
-  // ---------------------------
-  const oops::Variables vars = fieldsMetadata_.getLongNameFromAnyName(vars_out);
 
   // Return if output vars already in input
   // --------------------------------------

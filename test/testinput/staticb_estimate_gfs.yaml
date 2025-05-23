@@ -9,7 +9,6 @@ geometry:
   npx: 13
   npy: 13
   npz: 127
-  field metadata override: Data/fieldmetadata/gfs-restart.yaml
 background:
   datetime: 2020-12-15T00:00:00Z
   filetype: fms restart
@@ -28,6 +27,14 @@ background:
   filename_sfcd: 20201215.000000.sfc_data.nc
   filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
   filename_cplr: 20201215.000000.coupler.res
+  field io names: &field_io_names
+    air_horizontal_streamfunction: psi
+    air_horizontal_velocity_potential: chi
+    air_temperature: T
+    air_pressure_at_surface: ps
+    water_vapor_mixing_ratio_wrt_moist_air: sphum
+    cloud_liquid_water: liq_wat
+    ozone_mass_mixing_ratio: o3mr
 background error:
   covariance model: SABER
   saber central block:
@@ -95,6 +102,7 @@ background error:
           filename_sfcd: cor_a_1.sfc_data.nc
           filename_sfcw: cor_a_1.fv_srf_wnd.res.nc
           filename_cplr: cor_a_1.coupler.res
+          field io names: *field_io_names
       - parameter: cor_a
         component: 2
         file:
@@ -105,6 +113,7 @@ background error:
           filename_sfcd: cor_a_2.sfc_data.nc
           filename_sfcw: cor_a_2.fv_srf_wnd.res.nc
           filename_cplr: cor_a_2.coupler.res
+          field io names: *field_io_names
       - parameter: cor_rh
         component: 1
         file:
@@ -115,6 +124,7 @@ background error:
           filename_sfcd: cor_rh_1.sfc_data.nc
           filename_sfcw: cor_rh_1.fv_srf_wnd.res.nc
           filename_cplr: cor_rh_1.coupler.res
+          field io names: *field_io_names
       - parameter: cor_rh
         component: 2
         file:
@@ -125,6 +135,7 @@ background error:
           filename_sfcd: cor_rh_2.sfc_data.nc
           filename_sfcw: cor_rh_2.fv_srf_wnd.res.nc
           filename_cplr: cor_rh_2.coupler.res
+          field io names: *field_io_names
       - parameter: cor_rv
         component: 1
         file:
@@ -135,6 +146,7 @@ background error:
           filename_sfcd: cor_rv_1.sfc_data.nc
           filename_sfcw: cor_rv_1.fv_srf_wnd.res.nc
           filename_cplr: cor_rv_1.coupler.res
+          field io names: *field_io_names
       - parameter: cor_rv
         component: 2
         file:
@@ -145,6 +157,7 @@ background error:
           filename_sfcd: cor_rv_2.sfc_data.nc
           filename_sfcw: cor_rv_2.fv_srf_wnd.res.nc
           filename_cplr: cor_rv_2.coupler.res
+          field io names: *field_io_names
   saber outer blocks:
   - saber block name: BUMP_StdDev
     calibration:
@@ -204,6 +217,7 @@ background error:
           filename_sfcd: 20201214.210000.var.sfc_data.nc
           filename_sfcw: 20201214.210000.var.fv_srf_wnd.res.nc
           filename_cplr: 20201214.210000.var.coupler.res
+          field io names: *field_io_names
       - parameter: m4
         component: 1
         file:
@@ -217,6 +231,7 @@ background error:
           filename_sfcd: 20201214.210000.m4.sfc_data.nc
           filename_sfcw: 20201214.210000.m4.fv_srf_wnd.res.nc
           filename_cplr: 20201214.210000.m4.coupler.res
+          field io names: *field_io_names
       - parameter: var
         component: 2
         file:
@@ -230,6 +245,7 @@ background error:
           filename_sfcd: 20201215.000000.var.sfc_data.nc
           filename_sfcw: 20201215.000000.var.fv_srf_wnd.res.nc
           filename_cplr: 20201215.000000.var.coupler.res
+          field io names: *field_io_names
       - parameter: m4
         component: 2
         file:
@@ -243,6 +259,7 @@ background error:
           filename_sfcd: 20201215.000000.m4.sfc_data.nc
           filename_sfcw: 20201215.000000.m4.fv_srf_wnd.res.nc
           filename_cplr: 20201215.000000.m4.coupler.res
+          field io names: *field_io_names
       - parameter: var
         component: 3
         file:
@@ -256,6 +273,7 @@ background error:
           filename_sfcd: 20201215.030000.var.sfc_data.nc
           filename_sfcw: 20201215.030000.var.fv_srf_wnd.res.nc
           filename_cplr: 20201215.030000.var.coupler.res
+          field io names: *field_io_names
       - parameter: m4
         component: 3
         file:
@@ -269,6 +287,7 @@ background error:
           filename_sfcd: 20201215.030000.m4.sfc_data.nc
           filename_sfcw: 20201215.030000.m4.fv_srf_wnd.res.nc
           filename_cplr: 20201215.030000.m4.coupler.res
+          field io names: *field_io_names
       output model files:
       - parameter: stddev
         file:
@@ -279,6 +298,7 @@ background error:
           filename_sfcd: stddev.sfc_data.nc
           filename_sfcw: stddev.fv_srf_wnd.res.nc
           filename_cplr: stddev.coupler.res
+          field io names: *field_io_names
   - saber block name: BUMP_VerticalBalance
     active variables:
     - air_horizontal_streamfunction

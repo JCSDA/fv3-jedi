@@ -102,17 +102,22 @@ end subroutine c_fv3jedi_io_fms_delete
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_io_fms_read_state(c_key_self, c_key_geom, c_key_state) &
+subroutine c_fv3jedi_io_fms_read_state(c_key_self, c_key_geom, c_key_state, c_fileionamesconf, &
+                                       c_fileioscalingconf) &
            bind (c,name='fv3jedi_io_fms_read_state_f90')
 
 implicit none
 integer(c_int),     intent(in) :: c_key_self
 integer(c_int),     intent(in) :: c_key_geom
 integer(c_int),     intent(in) :: c_key_state
+type(c_ptr), value, intent(in) :: c_fileionamesconf
+type(c_ptr), value, intent(in) :: c_fileioscalingconf
 
 type(fv3jedi_io_fms), pointer :: f_self
 type(fv3jedi_geom),   pointer :: f_geom
 type(fv3jedi_state),  pointer :: f_state
+type(fckit_configuration)     :: f_fileionamesconf
+type(fckit_configuration)     :: f_fileioscalingconf
 
 ! Linked list
 ! -----------
@@ -120,25 +125,35 @@ call fv3jedi_io_fms_registry%get(c_key_self, f_self)
 call fv3jedi_geom_registry%get(c_key_geom, f_geom)
 call fv3jedi_state_registry%get(c_key_state, f_state)
 
+! APIS
+! ----
+f_fileionamesconf = fckit_configuration(c_fileionamesconf)
+f_fileioscalingconf = fckit_configuration(c_fileioscalingconf)
+
 ! Call implementation
 ! -------------------
-call f_self%read(f_state%time, f_geom, f_state%fields)
+call f_self%read(f_state%time, f_geom, f_state%fields, f_fileionamesconf, f_fileioscalingconf)
 
 end subroutine c_fv3jedi_io_fms_read_state
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_io_fms_read_increment(c_key_self, c_key_geom, c_key_increment) &
+subroutine c_fv3jedi_io_fms_read_increment(c_key_self, c_key_geom, c_key_increment, &
+                                           c_fileionamesconf, c_fileioscalingconf) &
            bind (c,name='fv3jedi_io_fms_read_increment_f90')
 
 implicit none
 integer(c_int),     intent(in) :: c_key_self
 integer(c_int),     intent(in) :: c_key_geom
 integer(c_int),     intent(in) :: c_key_increment
+type(c_ptr), value, intent(in) :: c_fileionamesconf
+type(c_ptr), value, intent(in) :: c_fileioscalingconf
 
 type(fv3jedi_io_fms),    pointer :: f_self
 type(fv3jedi_geom),      pointer :: f_geom
 type(fv3jedi_increment), pointer :: f_increment
+type(fckit_configuration)        :: f_fileionamesconf
+type(fckit_configuration)        :: f_fileioscalingconf
 
 ! Linked list
 ! -----------
@@ -146,55 +161,81 @@ call fv3jedi_io_fms_registry%get(c_key_self, f_self)
 call fv3jedi_geom_registry%get(c_key_geom, f_geom)
 call fv3jedi_increment_registry%get(c_key_increment, f_increment)
 
+! APIS
+! ----
+f_fileionamesconf = fckit_configuration(c_fileionamesconf)
+f_fileioscalingconf = fckit_configuration(c_fileioscalingconf)
+
 ! Call implementation
 ! -------------------
-call f_self%read(f_increment%time, f_geom, f_increment%fields)
+call f_self%read(f_increment%time, f_geom, f_increment%fields, f_fileionamesconf, &
+                 f_fileioscalingconf)
 
 end subroutine c_fv3jedi_io_fms_read_increment
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_io_fms_write_state(c_key_self, c_key_state) &
+subroutine c_fv3jedi_io_fms_write_state(c_key_self, c_key_state, c_fileionamesconf, &
+                                        c_fileioscalingconf) &
            bind (c,name='fv3jedi_io_fms_write_state_f90')
 
 implicit none
 integer(c_int),     intent(in) :: c_key_self
 integer(c_int),     intent(in) :: c_key_state
+type(c_ptr), value, intent(in) :: c_fileionamesconf
+type(c_ptr), value, intent(in) :: c_fileioscalingconf
 
-type(fv3jedi_io_fms),  pointer :: f_self
-type(fv3jedi_state),   pointer :: f_state
+type(fv3jedi_io_fms),     pointer :: f_self
+type(fv3jedi_state),      pointer :: f_state
+type(fckit_configuration)         :: f_fileionamesconf
+type(fckit_configuration)         :: f_fileioscalingconf
 
 ! Linked list
 ! -----------
 call fv3jedi_io_fms_registry%get(c_key_self, f_self)
 call fv3jedi_state_registry%get(c_key_state, f_state)
 
+! APIS
+! ----
+f_fileionamesconf = fckit_configuration(c_fileionamesconf)
+f_fileioscalingconf = fckit_configuration(c_fileioscalingconf)
+
 ! Call implementation
 ! -------------------
-call f_self%write(f_state%time, f_state%fields)
+call f_self%write(f_state%time, f_state%fields, f_fileionamesconf, f_fileioscalingconf)
 
 end subroutine c_fv3jedi_io_fms_write_state
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_io_fms_write_increment(c_key_self, c_key_increment) &
+subroutine c_fv3jedi_io_fms_write_increment(c_key_self, c_key_increment, c_fileionamesconf, &
+                                            c_fileioscalingconf) &
            bind (c,name='fv3jedi_io_fms_write_increment_f90')
 
 implicit none
 integer(c_int),     intent(in) :: c_key_self
 integer(c_int),     intent(in) :: c_key_increment
+type(c_ptr), value, intent(in) :: c_fileionamesconf
+type(c_ptr), value, intent(in) :: c_fileioscalingconf
 
-type(fv3jedi_io_fms),    pointer :: f_self
-type(fv3jedi_increment), pointer :: f_increment
+type(fv3jedi_io_fms),     pointer :: f_self
+type(fv3jedi_increment),  pointer :: f_increment
+type(fckit_configuration)         :: f_fileionamesconf
+type(fckit_configuration)         :: f_fileioscalingconf
 
 ! Linked list
 ! -----------
 call fv3jedi_io_fms_registry%get(c_key_self, f_self)
 call fv3jedi_increment_registry%get(c_key_increment, f_increment)
 
+! APIS
+! ----
+f_fileionamesconf = fckit_configuration(c_fileionamesconf)
+f_fileioscalingconf = fckit_configuration(c_fileioscalingconf)
+
 ! Call implementation
 ! -------------------
-call f_self%write(f_increment%time, f_increment%fields)
+call f_self%write(f_increment%time, f_increment%fields, f_fileionamesconf, f_fileioscalingconf)
 
 end subroutine c_fv3jedi_io_fms_write_increment
 

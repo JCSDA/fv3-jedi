@@ -5,7 +5,6 @@ fms:
 geometry:
   akbk: Data/inputs/lam_rrfs/INPUT/akbk65.nc
   namelist filename: Data/fv3files/input_lam_rrfs.nml
-  field metadata override: Data/fieldmetadata/gfs-restart.yaml
 input:
   datapath: Data/inputs/lam_rrfs/bkg
   filename_core: 20201215.000000.rrfs_C403.fv_core.res.tile1.nc

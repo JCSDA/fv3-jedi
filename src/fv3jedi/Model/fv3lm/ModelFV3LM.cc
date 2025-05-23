@@ -31,7 +31,6 @@ class ModelFV3LMParameters : public oops::Parameters {
   OOPS_CONCRETE_PARAMETERS(ModelFV3LMParameters, Parameters)
 
  public:
-  oops::RequiredParameter<oops::Variables> modelVariables{ "model variables", this};
   oops::RequiredParameter<util::Duration> tstep{ "tstep", this};
 
   oops::Parameter<bool> atod{ "initialize model from A-Grid winds", false, this};
@@ -54,12 +53,11 @@ class ModelFV3LMParameters : public oops::Parameters {
 static oops::interface::ModelMaker<Traits, ModelFV3LM> makermodel_("FV3LM");
 // -------------------------------------------------------------------------------------------------
 ModelFV3LM::ModelFV3LM(const Geometry & resol, const eckit::Configuration & config)
-  : keyConfig_(0), tstep_(0), geom_(resol), vars_()
+  : keyConfig_(0), tstep_(0), geom_(resol)
 {
   oops::Log::trace() << "ModelFV3LM::ModelFV3LM starting" << std::endl;
   ModelFV3LMParameters params;
   params.deserialize(config);
-  vars_ = oops::Variables(geom_.fieldsMetaData().getLongNameFromAnyName(params.modelVariables));
   tstep_ = util::Duration(config.getString("tstep"));
   fv3jedi_fv3lm_create_f90(params.toConfiguration(), geom_.toFortran(), keyConfig_);
   oops::Log::trace() << "ModelFV3LM::ModelFV3LM done" << std::endl;

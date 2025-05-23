@@ -25,7 +25,8 @@ use mpp_mod,                      only: mpp_pe, mpp_root_pe
 
 ! fv3jedi
 use fv3jedi_field_mod,            only: fv3jedi_field, hasfield, field_clen
-use fv3jedi_io_utils_mod,         only: vdate_to_datestring, replace_text, add_iteration
+use fv3jedi_io_utils_mod,         only: vdate_to_datestring, replace_text, add_iteration, ioname, &
+                                        ioscale, iounscale
 use fv3jedi_kinds_mod,            only: kind_real
 use fv3jedi_geom_mod,             only: fv3jedi_geom
 use fields_metadata_mod,          only: field_metadata
@@ -254,12 +255,14 @@ end subroutine delete
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine read(self, vdate, geom, fields)
+subroutine read(self, vdate, geom, fields, field_io_names, field_io_scaling)
 
-class(fv3jedi_io_fms), intent(inout) :: self
-type(datetime),        intent(inout) :: vdate
-type(fv3jedi_geom),    intent(in)    :: geom
-type(fv3jedi_field),   intent(inout) :: fields(:)
+class(fv3jedi_io_fms),     intent(inout)  :: self
+type(datetime),            intent(inout)  :: vdate
+type(fv3jedi_geom),        intent(in)     :: geom
+type(fv3jedi_field),       intent(inout)  :: fields(:)
+type(fckit_configuration), intent(in)     :: field_io_names
+type(fckit_configuration), intent(in)     :: field_io_scaling
 
 integer :: n
 
@@ -282,22 +285,24 @@ if ( self%is_restart ) then
 
    ! Read fields
    ! -----------
-   call read_restart_fields(self, geom, fields)
+   call read_restart_fields(self, geom, fields, field_io_names, field_io_scaling)
 else
    ! Read fields
    ! -----------
-   call read_nonrestart_fields(self, fields)
+   call read_nonrestart_fields(self, fields, field_io_names, field_io_scaling)
 end if
 
 end subroutine read
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine write(self, vdate, fields)
+subroutine write(self, vdate, fields, field_io_names, field_io_scaling)
 
-class(fv3jedi_io_fms), intent(inout) :: self
-type(datetime),        intent(in)    :: vdate
-type(fv3jedi_field),   intent(in)    :: fields(:)
+class(fv3jedi_io_fms),     intent(inout) :: self
+type(datetime),            intent(in)    :: vdate
+type(fv3jedi_field),       intent(in)    :: fields(:)
+type(fckit_configuration), intent(in)    :: field_io_names
+type(fckit_configuration), intent(in)    :: field_io_scaling
 
 ! Overwrite any datetime templates in the file names
 ! --------------------------------------------------
@@ -306,11 +311,11 @@ call setup_date(self, vdate)
 if ( self%is_restart ) then
    ! Write metadata and fields
    ! -------------------------
-   call write_restart_all(self, fields, vdate)
+   call write_restart_all(self, fields, vdate, field_io_names, field_io_scaling)
 else
    ! Write fields
    ! ------------
-   call write_nonrestart_all(self, fields)
+   call write_nonrestart_all(self, fields, field_io_names, field_io_scaling)
 end if
 
 end subroutine write
@@ -418,11 +423,13 @@ end subroutine read_meta
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine read_restart_fields(self, geom, fields)
+subroutine read_restart_fields(self, geom, fields, field_io_names, field_io_scaling)
 
-type(fv3jedi_io_fms), intent(inout) :: self
-type(fv3jedi_geom),   intent(in)    :: geom
-type(fv3jedi_field),  intent(inout) :: fields(:)
+type(fv3jedi_io_fms),      intent(inout) :: self
+type(fv3jedi_geom),        intent(in)    :: geom
+type(fv3jedi_field),       intent(inout) :: fields(:)
+type(fckit_configuration), intent(in)    :: field_io_names
+type(fckit_configuration), intent(in)    :: field_io_scaling
 
 type(FmsNetcdfDomainFile_t) :: fileobj(numfiles)
 logical :: rstflag(numfiles)
@@ -431,7 +438,7 @@ integer :: n, indexrst, var, idrst
 logical :: havedelp
 integer :: indexof_ps, indexof_delp
 real(kind=kind_real), allocatable :: delp(:,:,:)
-type(field_metadata) :: fmd
+type(fckit_configuration) :: field_io_names_local
 
 ! Register and read fields
 ! ------------------------
@@ -441,21 +448,27 @@ rstflag(:) = .false.
 ! ----------------------------
 indexof_ps = -1
 indexof_delp = -1
-havedelp = hasfield(fields, 'delp', indexof_delp)
+havedelp = hasfield(fields, 'air_pressure_thickness', indexof_delp)
+
+! Copy config
+! -----------
+field_io_names_local = field_io_names
 
 ! Loop over fields and register their restart file
 ! ------------------------------------------------
 do var = 1,size(fields)
 
   ! If need ps and not in file will compute from delp so read delp in place of ps
-  if (trim(fields(var)%short_name) == 'ps' .and. .not.self%ps_in_file) then
+  if (trim(fields(var)%long_name) == 'air_pressure_at_surface' .and. .not.self%ps_in_file) then
     indexof_ps = var
     if (havedelp) cycle ! Do not register delp twice
     deallocate(fields(indexof_ps)%array)
     allocate(fields(indexof_ps)%array(fields(indexof_ps)%isc:fields(indexof_ps)%iec, &
                 fields(indexof_ps)%jsc:fields(indexof_ps)%jec,1:self%npz))
-    fmd = geom%fmd%get_field_metadata('air_pressure_thickness')
-    fields(indexof_ps)%io_name = trim(fmd%io_name)
+    fields(indexof_ps)%long_name = 'air_pressure_thickness'
+    fields(indexof_ps)%npz = self%npz
+    ! Create io name lookup
+    call field_io_names_local%set("air_pressure_thickness", "delp")
   endif
 
   ! Get file to use
@@ -475,8 +488,11 @@ do var = 1,size(fields)
   end if
 
   ! Register restart field
-  call fv3jedi_register_field(fileobj(indexrst), trim(fields(var)%io_name), fields(var)%array, &
-                              center, trim(fields(var)%long_name), trim(fields(var)%units), .true.)
+  call fv3jedi_register_field(fileobj(indexrst), trim(fields(var)%long_name), fields(var)%array, &
+                              center, trim(fields(var)%units), .true., field_io_names_local)
+
+  ! Scale field if necessary
+  call ioscale(fields(var), field_io_scaling)
 enddo
 
 ! Loop over files and read fields
@@ -502,17 +518,20 @@ if (indexof_ps > 0) then
     delp = fields(indexof_delp)%array
   endif
   fields(indexof_ps)%array(:,:,1) = geom%ptop + sum(delp,3)
-  fields(indexof_ps)%io_name = 'ps'
+  fields(indexof_ps)%long_name = 'air_pressure_at_surface'
+  fields(indexof_ps)%npz = 1
 endif
 
 end subroutine read_restart_fields
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine read_nonrestart_fields(self, fields)
+subroutine read_nonrestart_fields(self, fields, field_io_names, field_io_scaling)
 
-type(fv3jedi_io_fms), intent(inout) :: self
-type(fv3jedi_field),  intent(inout) :: fields(:)
+type(fv3jedi_io_fms),      intent(inout) :: self
+type(fv3jedi_field),       intent(inout) :: fields(:)
+type(fckit_configuration), intent(in)    :: field_io_names
+type(fckit_configuration), intent(in)    :: field_io_scaling
 
 integer                     :: var
 type(FmsNetcdfDomainFile_t) :: fileobj
@@ -522,11 +541,15 @@ if ( open_file(fileobj, trim(self%datapath)//'/'//trim(self%filename_nonrestart)
    ! Loop through fields
    do var = 1,size(fields)
       ! Register field
-      call fv3jedi_register_field(fileobj, trim(fields(var)%io_name), fields(var)%array, &
-                                  center, trim(fields(var)%long_name), trim(fields(var)%units), .false.)
+      call fv3jedi_register_field(fileobj, trim(fields(var)%long_name), fields(var)%array, &
+                                  center, trim(fields(var)%units), .false., field_io_names)
 
       ! Read field
-      call read_data(fileobj, trim(fields(var)%io_name), fields(var)%array)
+      call read_data(fileobj, ioname(trim(fields(var)%long_name), field_io_names), &
+                     fields(var)%array)
+
+      ! Scale field if necessary
+      call ioscale(fields(var), field_io_scaling)
    end do
 
    ! Close file
@@ -541,11 +564,13 @@ end subroutine read_nonrestart_fields
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine write_restart_all(self, fields, vdate)
+subroutine write_restart_all(self, fields, vdate, field_io_names, field_io_scaling)
 
-type(fv3jedi_io_fms), intent(inout) :: self
-type(fv3jedi_field),  intent(in)    :: fields(:)     !< Fields to be written
-type(datetime),       intent(in)    :: vdate         !< DateTime
+type(fv3jedi_io_fms),      intent(inout) :: self
+type(fv3jedi_field),       intent(in)    :: fields(:)     !< Fields to be written
+type(datetime),            intent(in)    :: vdate         !< DateTime
+type(fckit_configuration), intent(in)    :: field_io_names
+type(fckit_configuration), intent(in)    :: field_io_scaling
 
 logical :: rstflag(numfiles)
 integer :: n, indexrst, var, idrst, date(6)
@@ -553,6 +578,7 @@ integer :: idate, isecs
 type(FmsNetcdfDomainFile_t) :: fileobj(numfiles)
 character(len=64)  :: datefile
 character(len=8), allocatable :: dim_names(:)
+real(kind=kind_real) :: io_unscaling_factor
 
 
 ! Get datetime
@@ -606,9 +632,13 @@ do var = 1,size(fields)
      end if
   end if
 
+  ! Get the scaling factor
+  io_unscaling_factor = iounscale(fields(var)%long_name, field_io_scaling)
+
   ! Register restart field
-  call fv3jedi_register_field(fileobj(indexrst), trim(fields(var)%io_name), fields(var)%array, &
-                              center, trim(fields(var)%long_name), trim(fields(var)%units), .true.)
+  call fv3jedi_register_field(fileobj(indexrst), trim(fields(var)%long_name), &
+                              fields(var)%array, &
+                              center, trim(fields(var)%units), .true., field_io_names)
 enddo
 
 ! Loop over files and write fields
@@ -636,14 +666,17 @@ end subroutine write_restart_all
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine write_nonrestart_all(self, fields)
+subroutine write_nonrestart_all(self, fields, field_io_names, field_io_scaling)
 
-type(fv3jedi_io_fms), intent(inout) :: self
-type(fv3jedi_field),  intent(in)    :: fields(:)
+type(fv3jedi_io_fms),      intent(inout) :: self
+type(fv3jedi_field),       intent(in)    :: fields(:)
+type(fckit_configuration), intent(in)    :: field_io_names
+type(fckit_configuration), intent(in)    :: field_io_scaling
 
 integer                     :: var, n
 type(FmsNetcdfDomainFile_t) :: fileobj
 logical                     :: write_field
+real(kind=kind_real)        :: io_unscaling_factor
 
 ! Open file for overwriting
 if ( open_file(fileobj, trim(self%datapath)//'/'//trim(self%filename_nonrestart), 'overwrite', self%domain) ) then
@@ -655,9 +688,7 @@ if ( open_file(fileobj, trim(self%datapath)//'/'//trim(self%filename_nonrestart)
          write_field = .true.
       else
          do n = 1,size(self%fields_to_write)
-            if (      trim(self%fields_to_write(n)) == trim(fields(var)%long_name) &
-                 .or. trim(self%fields_to_write(n)) == trim(fields(var)%short_name) &
-                 .or. trim(self%fields_to_write(n)) == trim(fields(var)%io_name)) then
+            if (trim(self%fields_to_write(n)) == trim(fields(var)%long_name)) then
                write_field = .true.
             end if
          end do
@@ -665,11 +696,13 @@ if ( open_file(fileobj, trim(self%datapath)//'/'//trim(self%filename_nonrestart)
 
       if ( write_field ) then
          ! Register field
-         call fv3jedi_register_field(fileobj, trim(fields(var)%io_name), fields(var)%array, &
-                                     center, trim(fields(var)%long_name), trim(fields(var)%units), .false.)
+         call fv3jedi_register_field(fileobj, trim(fields(var)%long_name), fields(var)%array, &
+                                     center, trim(fields(var)%units), .false., field_io_names)
 
          ! Write field
-         call write_data(fileobj, trim(fields(var)%io_name), fields(var)%array)
+         io_unscaling_factor = iounscale(fields(var)%long_name, field_io_scaling)
+         call write_data(fileobj, ioname(trim(fields(var)%long_name), field_io_names), &
+                         io_unscaling_factor*fields(var)%array)
       end if
    end do
 
@@ -685,19 +718,26 @@ end subroutine write_nonrestart_all
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine fv3jedi_register_field(fileobj, io_name, array, position, long_name, units, is_restart)
+subroutine fv3jedi_register_field(fileobj, long_name, array, position, units, is_restart, &
+                                  field_io_names)
+
   type(FmsNetcdfDomainFile_t), intent(inout) :: fileobj
-  character(len=*), intent(in)               :: io_name
+  character(len=*), intent(in)               :: long_name
   real(kind=kind_real), intent(in)           :: array(:,:,:)
   integer, intent(in)                        :: position
-  character(len=*), optional, intent(in)     :: long_name
   character(len=*), optional, intent(in)     :: units
   logical, intent(in)                        :: is_restart
+  type(fckit_configuration), intent(in)      :: field_io_names
 
   logical :: is_open, is_registered
   integer :: ndims, idim, num_zaxes, nz_dim, nz_field, array_shape(3)
   character(len=8) :: xdim_name, ydim_name, zdim_name
   character(len=8), dimension(:), allocatable :: dim_names
+  character(len=field_clen) :: io_name
+
+  ! Get the potential io_name from the field_io_names
+  ! ------------------------------------------------
+  io_name = ioname(long_name, field_io_names)
 
   if ( fileobj%is_readonly ) then ! For read
      ! Get variable dimensions
@@ -743,13 +783,13 @@ subroutine fv3jedi_register_field(fileobj, io_name, array, position, long_name, 
 
      if ( .not. is_registered ) then
         write (xdim_name,'(A,I0)') 'xaxis_', fileobj%nx+1
-        
+
         if ( position /= north ) then
            call register_axis(fileobj, trim(xdim_name), 'x', domain_position=position)
         else
            call register_axis(fileobj, trim(xdim_name), 'x', domain_position=center)
         end if
-        
+
         call register_field(fileobj, trim(xdim_name), 'double', (/ trim(xdim_name) /))
         call register_variable_attribute(fileobj, trim(xdim_name), 'long_name', trim(xdim_name), str_len=len(trim(xdim_name)))
         call register_variable_attribute(fileobj, trim(xdim_name), 'units', 'none', str_len=len('none'))
@@ -770,7 +810,7 @@ subroutine fv3jedi_register_field(fileobj, io_name, array, position, long_name, 
 
      if ( .not. is_registered ) then
         write (ydim_name,'(A,I0)') 'yaxis_', fileobj%ny+1
-        
+
         if ( position /= east ) then
            call register_axis(fileobj, trim(ydim_name), 'y', domain_position=position)
         else
@@ -815,7 +855,7 @@ subroutine fv3jedi_register_field(fileobj, io_name, array, position, long_name, 
               call abor1_ftn('fv3jedi_io_fms_mod.fv3jedi_register_field: only 99 z-axes permitted for write.')
            end if
            write (zdim_name,'(A,I0)') 'zaxis_', num_zaxes+1
-           
+
            call register_axis(fileobj, trim(zdim_name), nz_field)
 
            call register_field(fileobj, trim(zdim_name), 'double', (/ trim(zdim_name) /))
@@ -851,9 +891,7 @@ subroutine fv3jedi_register_field(fileobj, io_name, array, position, long_name, 
      end if
 
      ! Set field attributes
-     if ( present(long_name) ) then
-        call register_variable_attribute(fileobj, trim(io_name), 'long_name', trim(long_name), str_len=len(trim(long_name)))
-     end if
+     call register_variable_attribute(fileobj, trim(io_name), 'long_name', trim(long_name), str_len=len(trim(long_name)))
      if ( present(units) ) then
         call register_variable_attribute(fileobj, trim(io_name), 'units', trim(units), str_len=len(trim(units)))
      end if
@@ -867,47 +905,39 @@ end subroutine fv3jedi_register_field
 subroutine get_io_file(self, field, indexrst)
 
 ! Arguments
-type(fv3jedi_io_fms), intent(in)  :: self
-type(fv3jedi_field),  intent(in)  :: field
-integer,              intent(out) :: indexrst
+type(fv3jedi_io_fms),      intent(in)  :: self
+type(fv3jedi_field),       intent(in)  :: field
+integer,                   intent(out) :: indexrst
 
 ! Locals
 character(len=field_clen) :: io_file
 
-! Get the io_file from the field
-! ------------------------------
-io_file = field%io_file
+! Start by setting to core
+io_file = 'core'
 
-! Try to make sensible choice on the file name to be used if not set in the metadata
-! ----------------------------------------------------------------------------------
-if (trim(io_file) == 'default') then
+! Tracers go in tracer file
+if (field%tracer) io_file = 'tracer'
 
-  ! Start by setting to core
-  io_file = 'core'
+! Fields with 1 level go in surface file
+if (field%npz == 1) io_file = 'surface'
 
-  ! Tracers go in tracer file
-  if (field%tracer) io_file = 'tracer'
+! Surface fields in core
+if (trim(field%long_name) == 'air_pressure_at_surface') io_file = 'surface'
+if (trim(field%long_name) == 'geopotential_height_times_gravity_at_surface') io_file = 'core'
 
-  ! Fields with 1 level go in surface file
-  if (field%npz == 1) io_file = 'surface'
+! Surface winds go in surface wind file
+if (trim(field%long_name) == 'eastward_wind_at_surface') io_file = 'surface_wind'
+if (trim(field%long_name) == 'northward_wind_at_surface') io_file = 'surface_wind'
 
-  ! Except ps
-  if (field%short_name == 'ps') io_file = 'core'
+! Orog variables if name contains orog
+if (index(trim(field%long_name), 'orog') /= 0) io_file = 'orography'
 
-  ! Except phis
-  if (field%short_name == 'phis') io_file = 'core'
+! Cold start variables if name contains cold
+if (index(trim(field%long_name), 'cold') /= 0) io_file = 'cold'
 
-  ! And except surface winds
-  if (field%short_name == 'u_srf' .or. field%short_name == 'v_srf') &
-    io_file = 'surface_wind'
-
-  ! Orog variables if short name contains orog
-  if (index(trim(field%short_name), 'orog') /= 0) io_file = 'orography'
-
-  ! Cold start variables if short name contains cold
-  if (index(trim(field%short_name), 'cold') /= 0) io_file = 'cold'
-
-endif
+! 4 level soils go in surface
+if (trim(field%long_name) == 'stc') io_file = 'surface'
+if (trim(field%long_name) == 'soilMoistureVolumetric') io_file = 'surface'
 
 ! Set the filename index
 ! ----------------------

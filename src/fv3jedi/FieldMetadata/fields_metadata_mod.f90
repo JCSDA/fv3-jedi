@@ -17,7 +17,8 @@ implicit none
 private
 public fields_metadata, field_metadata
 
-integer, parameter :: clen = 2048 ! If this changes, change below and in FieldsMetadata.interface.cc
+integer, public, parameter :: clen = 2048 ! If this changes, change below and in
+                                          ! FieldsMetadata.interface.cc
 
 type fields_metadata
  private
@@ -28,16 +29,11 @@ end type fields_metadata
 
 type field_metadata
  character(len=clen) :: long_name
- character(len=clen) :: short_name
  character(len=clen) :: units
  character(len=clen) :: kind
  logical :: tracer
  integer :: levels
  character(len=clen) :: space
- character(len=clen) :: io_name
- character(len=clen) :: io_file
- character(len=clen) :: interpolation_type
- character(len=clen) :: interpolation_source_point_mask
 end type field_metadata
 
 interface fields_metadata
@@ -47,26 +43,17 @@ end interface
 ! --------------------------------------------------------------------------------------------------
 
 interface
-  subroutine c_get_field_metadata(ptr, longshortio_name, long_name, short_name, units, &
-                                  kindd, tracer, &
-                                  levels, space, io_name, io_file, interpolation_type, &
-                                  interpolation_source_point_mask) &
+  subroutine c_get_field_metadata(ptr, long_name, units, kindd, tracer, levels, space) &
                                   bind(c, name='get_field_metadata_f')
     use iso_c_binding
     integer, parameter :: clen = 2048
     type(c_ptr), value :: ptr
-    character(len=1, kind=c_char), intent(in) :: longshortio_name(clen)
-    character(len=1, kind=c_char) :: long_name(clen)
-    character(len=1, kind=c_char) :: short_name(clen)
+    character(len=1, kind=c_char), intent(in) :: long_name(clen)
     character(len=1, kind=c_char) :: units(clen)
     character(len=1, kind=c_char) :: kindd(clen)
     logical(c_bool) :: tracer
     integer(kind=c_int) :: levels
     character(len=1, kind=c_char) :: space(clen)
-    character(len=1, kind=c_char) :: io_name(clen)
-    character(len=1, kind=c_char) :: io_file(clen)
-    character(len=1, kind=c_char) :: interpolation_type(clen)
-    character(len=1, kind=c_char) :: interpolation_source_point_mask(clen)
   end subroutine c_get_field_metadata
 end interface
 
@@ -87,78 +74,54 @@ end function create
 
 ! --------------------------------------------------------------------------------------------------
 
-function get_field_metadata(self, longshortio_name_in) result(fmd)
+function get_field_metadata(self, long_name_in) result(fmd)
 
 class(fields_metadata), intent(in) :: self
-character(len=*),       intent(in) :: longshortio_name_in
+character(len=*),       intent(in) :: long_name_in
 type(field_metadata) :: fmd
 
-character(len=1, kind=c_char), allocatable :: longshortio_name(:)
+! Long name that is sent to c++
+character(len=1, kind=c_char), allocatable :: long_name(:)
 
 ! Returned from c++
-character(len=1, kind=c_char), allocatable :: long_name(:)
-character(len=1, kind=c_char), allocatable :: short_name(:)
 character(len=1, kind=c_char), allocatable :: units(:)
 character(len=1, kind=c_char), allocatable :: kindd(:)
 logical(c_bool) :: tracer
 integer(kind=c_int) :: levels
 character(len=1, kind=c_char), allocatable :: space(:)
-character(len=1, kind=c_char), allocatable :: io_name(:)
-character(len=1, kind=c_char), allocatable :: io_file(:)
-character(len=1, kind=c_char), allocatable :: interpolation_type(:)
-character(len=1, kind=c_char), allocatable :: interpolation_source_point_mask(:)
 
-integer :: n, longshortiolen
+integer :: n, longlen
 
-! longshortio_name that can be passed to c++
-longshortiolen = len(trim(longshortio_name_in))
-allocate(longshortio_name(clen))
-longshortio_name = ''
-do n = 1,longshortiolen
-  longshortio_name(n) = longshortio_name_in(n:n)
+! long_name that can be passed to c++
+longlen = len(trim(long_name_in))
+allocate(long_name(clen))
+long_name = ''
+do n = 1,longlen
+  long_name(n) = long_name_in(n:n)
 enddo
-longshortio_name(longshortiolen+1) = c_null_char
+long_name(longlen+1) = c_null_char
 
 ! Allocate string outputs
-allocate(long_name(clen))
-allocate(short_name(clen))
 allocate(units(clen))
 allocate(kindd(clen))
 allocate(space(clen))
-allocate(io_name(clen))
-allocate(io_file(clen))
-allocate(interpolation_type(clen))
-allocate(interpolation_source_point_mask(clen))
 
-long_name = c_null_char
-short_name = c_null_char
 units = c_null_char
 kindd = c_null_char
 space = c_null_char
-io_name = c_null_char
-io_file = c_null_char
-interpolation_type = c_null_char
-interpolation_source_point_mask = c_null_char
 
 ! Get information from C++ object
-call c_get_field_metadata(self%ptr, longshortio_name, long_name, short_name, units, kindd, &
-                          tracer, levels, space, &
-                          io_name, io_file, interpolation_type, interpolation_source_point_mask)
+call c_get_field_metadata(self%ptr, long_name, units, kindd, tracer, levels, space)
 
 ! Copy non string
 fmd%tracer = tracer
 fmd%levels = levels
 
 ! Copy string
-call c_f_string(long_name, fmd%long_name)
-call c_f_string(short_name, fmd%short_name)
+fmd%long_name = long_name_in
 call c_f_string(units, fmd%units)
 call c_f_string(kindd, fmd%kind)
 call c_f_string(space, fmd%space)
-call c_f_string(io_name, fmd%io_name)
-call c_f_string(io_file, fmd%io_file)
-call c_f_string(interpolation_type, fmd%interpolation_type)
-call c_f_string(interpolation_source_point_mask, fmd%interpolation_source_point_mask)
 
 end function get_field_metadata
 

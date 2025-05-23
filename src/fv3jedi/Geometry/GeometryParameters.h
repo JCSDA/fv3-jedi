@@ -17,12 +17,14 @@
 #include "oops/util/parameters/Parameters.h"
 #include "oops/util/parameters/RequiredParameter.h"
 
-#include "fv3jedi/FieldMetadata/FieldsMetadataParameters.h"
+#include "eckit/config/LocalConfiguration.h"
+
 #include "fv3jedi/IO/Utils/IOBase.h"
 #include "fv3jedi/State/State.h"
 
 namespace eckit {
   class Configuration;
+  class LocalConfiguration;
 }
 
 namespace fv3jedi {
@@ -46,6 +48,7 @@ class TimeInvariantFieldsParameters : public oops::Parameters {
  public:
   oops::RequiredParameter<StateParameters> stateFields{ "state fields", this };
   oops::OptionalParameter<oops::Variables> derivedFields{ "derived fields", this };
+  oops::OptionalParameter<eckit::LocalConfiguration> fieldMasks{ "field masks", this };
 };
 
 // -------------------------------------------------------------------------------------------------
@@ -81,9 +84,8 @@ class GeometryParameters : public oops::Parameters {
   oops::Parameter<bool> writeGeom{ "write geom", false, this};
   oops::Parameter<bool> writeGmsh{ "write to gmsh", false, this};
   oops::Parameter<std::string> writeGmshFilename{ "gmsh filename", "out.msh", this};
-
-  // Include FieldsMetadataParameters
-  FieldsMetadataParameters fieldsMetadataParameters{this};
+  oops::OptionalParameter<eckit::LocalConfiguration> fieldInterpMethods{
+    "field interpolation methods", this };
 };
 
 // -------------------------------------------------------------------------------------------------

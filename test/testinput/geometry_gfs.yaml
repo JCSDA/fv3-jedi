@@ -22,4 +22,3 @@ geometry:
   target_lat: 0.0
   target_lon: 0.0
   write geom: true
-  field metadata override: Data/fieldmetadata/gfs-restart.yaml

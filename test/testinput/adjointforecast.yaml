@@ -7,7 +7,6 @@ linear forecast:
     npx: 13
     npy: 13
     npz: 127
-    field metadata override: Data/fieldmetadata/gfs-restart.yaml
   linear model:
     name: FV3JEDITLM
     namelist filename: Data/fv3files/input_gfs_c12.nml
@@ -16,27 +15,6 @@ linear forecast:
     lm_do_dyn: 1
     lm_do_trb: 0
     lm_do_mst: 0
-    tlm variables:
-    - ua
-    - va
-    - T
-    - delp
-    - sphum
-    - ice_wat
-    - liq_wat
-    - o3mr
-    - phis
-    trajectory:
-      model variables:
-      - ua
-      - va
-      - T
-      - delp
-      - sphum
-      - ice_wat
-      - liq_wat
-      - o3mr
-      - phis
 forecast:
   forecast length: PT1H
   geometry:
@@ -47,7 +25,6 @@ forecast:
     npx: 13
     npy: 13
     npz: 127
-    field metadata override: Data/fieldmetadata/gfs-restart.yaml
   model:
     name: FV3LM
     use internal namelist: true
@@ -56,15 +33,15 @@ forecast:
     lm_do_trb: 0
     lm_do_mst: 0
     model variables:
-    - ua
-    - va
-    - T
-    - delp
-    - sphum
-    - ice_wat
-    - liq_wat
-    - o3mr
-    - phis
+    - eastward_wind
+    - northward_wind
+    - air_temperature
+    - air_pressure_thickness
+    - water_vapor_mixing_ratio_wrt_moist_air
+    - cloud_liquid_ice
+    - cloud_liquid_water
+    - ozone_mass_mixing_ratio
+    - geopotential_height_times_gravity_at_surface
     datapath: Data/inputs/gfs_c12/bkg/
     filename_core: 20201214.210000.fv_core.res.nc
     filename_core_out: checkpoint.adjointforecast.fv_core.res.nc
@@ -79,15 +56,25 @@ forecast:
     filename_sfcw: 20201214.210000.fv_srf_wnd.res.nc
     filename_cplr: 20201214.210000.coupler.res
     state variables:
-    - ua
-    - va
-    - T
-    - delp
-    - sphum
-    - ice_wat
-    - liq_wat
-    - o3mr
-    - phis
+    - eastward_wind
+    - northward_wind
+    - air_temperature
+    - air_pressure_thickness
+    - water_vapor_mixing_ratio_wrt_moist_air
+    - cloud_liquid_ice
+    - cloud_liquid_water
+    - ozone_mass_mixing_ratio
+    - geopotential_height_times_gravity_at_surface
+    field io names: &field_io_names
+      eastward_wind: ua
+      northward_wind: va
+      air_temperature: T
+      air_pressure_thickness: delp
+      water_vapor_mixing_ratio_wrt_moist_air: sphum
+      cloud_liquid_ice: ice_wat
+      cloud_liquid_water: liq_wat
+      ozone_mass_mixing_ratio: o3mr
+      geopotential_height_times_gravity_at_surface: phis
   output:
     filetype: fms restart
     datapath: Data/adjointforecast
@@ -96,6 +83,7 @@ forecast:
     filename_sfcd: nlmforecast.sfc_data.nc
     filename_sfcw: nlmforecast.fv_srf_wnd.res.nc
     filename_cplr: nlmforecast.coupler.res
+    field io names: *field_io_names
 forecast aspect:
   verification resolution:
     fms initialization:
@@ -105,7 +93,6 @@ forecast aspect:
     npx: 13
     npy: 13
     npz: 127
-    field metadata override: Data/fieldmetadata/gfs-restart.yaml
   verification state:
     filetype: fms restart
     datetime: 2020-12-14T22:00:00Z
@@ -116,15 +103,16 @@ forecast aspect:
     filename_sfcw: 20201214.220000.fv_srf_wnd.res.nc
     filename_cplr: 20201214.220000.coupler.res
     state variables:
-    - ua
-    - va
-    - T
-    - delp
-    - sphum
-    - ice_wat
-    - liq_wat
-    - o3mr
-    - phis
+    - eastward_wind
+    - northward_wind
+    - air_temperature
+    - air_pressure_thickness
+    - water_vapor_mixing_ratio_wrt_moist_air
+    - cloud_liquid_ice
+    - cloud_liquid_water
+    - ozone_mass_mixing_ratio
+    - geopotential_height_times_gravity_at_surface
+    field io names: *field_io_names
   norm:
     kind: l2
 adjoint forecast:
@@ -136,6 +124,7 @@ adjoint forecast:
     filename_sfcd: adjointforecast_initial.sfc_data.nc
     filename_sfcw: adjointforecast_initial.fv_srf_wnd.res.nc
     filename_cplr: adjointforecast_initial.coupler.res
+    field io names: *field_io_names
   adjoint forecast output:
     filetype: fms restart
     datapath: Data/adjointforecast
@@ -144,6 +133,7 @@ adjoint forecast:
     filename_sfcd: adjointforecast_final.sfc_data.nc
     filename_sfcw: adjointforecast_final.fv_srf_wnd.res.nc
     filename_cplr: adjointforecast_final.coupler.res
+    field io names: *field_io_names
 test:
   reference filename: testoutput/adjointforecast.ref
   test output filename: testoutput/adjointforecast.test.out

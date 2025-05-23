@@ -67,7 +67,7 @@ void ModelPseudo::step(State & xx, const ModelBias &) const {
   xx.validTime() += tstep_;
   if (runstage_) {
     // Read model state at valid time from files
-    io_->read(xx);
+    io_->readBase(xx);
   } else {
     // Do nothing and print message
     if (oops::mpi::world().rank() == 0) {

@@ -25,7 +25,7 @@ f10m                                         | Min:+9.4200706481933594e-01 Max:+
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaModel2GeoVaLs variable change
 Variable change from: 21 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, water_vapor_mixing_ratio_wrt_moist_air, cloud_liquid_ice, cloud_liquid_water, ozone_mass_mixing_ratio, geopotential_height_at_surface, slmsk, sheleg, skin_temperature_at_surface, vtype, stype, vfrac, stc, soilMoistureVolumetric, totalSnowDepthMeters, eastward_wind_at_surface, northward_wind_at_surface, f10m
-Variable change to: 21 variables: ua, va, t, delp, sphum, ice_wat, liq_wat, o3mr, phis, slmsk, sheleg, tsea, vtype, stype, vfrac, stc, smc, snwdph, u_srf, v_srf, f10m
+Variable change to: 21 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, water_vapor_mixing_ratio_wrt_moist_air, cloud_liquid_ice, cloud_liquid_water, ozone_mass_mixing_ratio, geopotential_height_times_gravity_at_surface, slmsk, sheleg, skin_temperature_at_surface, vtype, stype, vfrac, stc, soilMoistureVolumetric, totalSnowDepth, eastward_wind_at_surface, northward_wind_at_surface, f10m
 State after variable transform: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 21 | cube sphere face size: C12

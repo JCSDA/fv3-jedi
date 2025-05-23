@@ -14,11 +14,19 @@ namespace fv3jedi {
                                                  const eckit::Configuration &,
                                                  const F90geom &);
   void fv3jedi_io_cube_sphere_history_delete_f90(F90IOCubeSphereHistory &);
-  void fv3jedi_io_cube_sphere_history_read_state_f90(const F90IOCubeSphereHistory &, F90state &);
-  void fv3jedi_io_cube_sphere_history_read_increment_f90(const F90IOCubeSphereHistory &, F90inc &);
+  void fv3jedi_io_cube_sphere_history_read_state_f90(const F90IOCubeSphereHistory &, F90state &,
+                                                     const eckit::Configuration &,
+                                                     const eckit::Configuration &);
+  void fv3jedi_io_cube_sphere_history_read_increment_f90(const F90IOCubeSphereHistory &, F90inc &,
+                                                         const eckit::Configuration &,
+                                                         const eckit::Configuration &);
   void fv3jedi_io_cube_sphere_history_write_state_f90(const F90IOCubeSphereHistory &,
-                                                      const F90state &);
+                                                      const F90state &,
+                                                      const eckit::Configuration &,
+                                                      const eckit::Configuration &);
   void fv3jedi_io_cube_sphere_history_write_increment_f90(const F90IOCubeSphereHistory &,
-                                                          const F90inc &);
+                                                          const F90inc &,
+                                                          const eckit::Configuration &,
+                                                          const eckit::Configuration &);
   }  // extern "C"
 }  // namespace fv3jedi

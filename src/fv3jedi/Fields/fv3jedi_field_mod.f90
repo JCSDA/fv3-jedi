@@ -43,15 +43,10 @@ integer, parameter, public :: field_clen = 2048
 type :: fv3jedi_field
  logical :: lalloc = .false.
  character(len=field_clen) :: long_name                       ! Field long name
- character(len=field_clen) :: short_name                      ! Field short name
  character(len=field_clen) :: units                           ! Field units
  character(len=field_clen) :: kind                            ! Data kind, real, integer etc (always allocate real data)
  logical                   :: tracer                          ! Whether field is tracer or not
  character(len=field_clen) :: space                           ! Vector, magnitude, direction
- character(len=field_clen) :: io_name                         ! Name used for IO
- character(len=field_clen) :: io_file                         ! File used for IO
- character(len=field_clen) :: interpolation_type              ! Type of interpolation to use
- character(len=field_clen) :: interpolation_source_point_mask ! Source-point mask to use when interpolating this field
  integer :: isc, iec, jsc, jec, npz
  real(kind=kind_real), allocatable :: array(:,:,:)
  type(fckit_mpi_comm) :: comm                       ! Communicator
@@ -73,24 +68,15 @@ type(fckit_mpi_comm), intent(in)    :: comm
 ! ------------------------------------------------------------------------
 if (len(trim(fmd%long_name)) > field_clen) &
   call abor1_ftn("fv3jedi_field.create: " //trim(fmd%long_name)// " too long")
-if (len(trim(fmd%short_name)) > field_clen) &
-  call abor1_ftn("fv3jedi_field.create: " //trim(fmd%short_name)// " too long")
-if (len(trim(fmd%io_name)) > field_clen) &
-  call abor1_ftn("fv3jedi_field.create: " //trim(fmd%io_name)// " too long")
 
 ! Copy metadata
 ! -------------
 self%long_name = fmd%long_name
-self%short_name = fmd%short_name
 self%units = fmd%units
 self%kind = fmd%kind
 self%tracer = fmd%tracer
 self%npz = fmd%levels
 self%space = fmd%space
-self%io_name = fmd%io_name
-self%io_file = fmd%io_file
-self%interpolation_type = fmd%interpolation_type
-self%interpolation_source_point_mask = fmd%interpolation_source_point_mask
 
 ! Allocate the field array data
 ! -----------------------------
@@ -102,16 +88,6 @@ if(.not.self%lalloc) then
   self%array = 0.0_kind_real
   self%lalloc = .true.
 
-endif
-
-! Ensure the interpolation type is consistent with other metadata
-! ---------------------------------------------------------------
-if (self%interpolation_type == 'default') then
-  if ( trim(self%kind)=='integer' ) then
-    self%interpolation_type  = 'integer'
-  elseif ( trim(self%space) == 'direction' ) then
-    self%interpolation_type  = 'nearest'
-  endif
 endif
 
 ! Communicator
@@ -132,8 +108,7 @@ integer :: var
 
 hasfield = .false.
 do var = 1, size(fields)
-  if ( trim(fields(var)%short_name) == trim(field_name) .or. &
-       trim(fields(var)%long_name) == trim(field_name) ) then
+  if ( trim(fields(var)%long_name) == trim(field_name) ) then
     hasfield = .true.
     if (present(field_index)) field_index = var
     exit
@@ -157,8 +132,7 @@ if(associated(field)) nullify(field)
 
 found = .false.
 do var = 1,size(fields)
-  if ( trim(fields(var)%short_name) == trim(field_name) .or. &
-       trim(fields(var)%long_name) == trim(field_name) ) then
+  if ( trim(fields(var)%long_name) == trim(field_name) ) then
     field => fields(var)
     found = .true.
     exit
@@ -185,8 +159,7 @@ if(associated(field)) nullify(field)
 
 found = .false.
 do var = 1,size(fields)
-  if ( trim(fields(var)%short_name) == trim(field_name) .or. &
-       trim(fields(var)%long_name) == trim(field_name) ) then
+  if ( trim(fields(var)%long_name) == trim(field_name) ) then
     field => fields(var)%array
     found = .true.
     exit
@@ -211,8 +184,7 @@ logical :: found, boundsmatch
 
 found = .false.
 do var = 1, size(fields)
-  if ( trim(fields(var)%short_name) == trim(field_name) .or. &
-       trim(fields(var)%long_name) == trim(field_name) ) then
+  if ( trim(fields(var)%long_name) == trim(field_name) ) then
 
     if (.not. allocated(field)) then
       ! If not allocated allocate
@@ -256,8 +228,7 @@ if (.not. allocated(field)) call abor1_ftn("put_field: field "//trim(field_name)
 
 found = .false.
 do var = 1, size(fields)
-  if ( trim(fields(var)%short_name) == trim(field_name) .or. &
-       trim(fields(var)%long_name) == trim(field_name) ) then
+  if ( trim(fields(var)%long_name) == trim(field_name) ) then
 
     ! Check for matching bounds
     boundsmatch = lbound(field,1) == fields(var)%isc .and. ubound(field,1) == fields(var)%iec .and. &
@@ -296,13 +267,13 @@ if (fields1(1)%comm%rank() == 0) then
   ! Print list of fields in fields1
   print*, "List of fields in fields1:"
   do var = 1,size(fields1)
-    print*, trim(fields1(var)%short_name)
+    print*, trim(fields1(var)%long_name)
   enddo
 
   ! Print list of fields in fields2
   print*, "List of fields in fields2:"
   do var = 1,size(fields2)
-    print*, 'fields2:', var, trim(fields2(var)%short_name)
+    print*, 'fields2:', var, trim(fields2(var)%long_name)
   enddo
 
 endif
@@ -327,10 +298,10 @@ if (size(fields1) .ne. size(fields2)) then
 endif
 
 do var = 1,size(fields1)
-  if (fields1(var)%short_name .ne. fields2(var)%short_name) then
+  if (fields1(var)%long_name .ne. fields2(var)%long_name) then
     if (fields1(1)%comm%rank() == 0) print*, 'fv3jedi.fields checksame positional differences'
     call print_fields_debug(fields1, fields2)
-    call abor1_ftn(trim(calling_method)//"(checksame): field "//trim(fields1(var)%short_name)//&
+    call abor1_ftn(trim(calling_method)//"(checksame): field "//trim(fields1(var)%long_name)//&
                                            " not in the equivalent position in the right hand side")
   endif
 enddo
@@ -359,12 +330,12 @@ endif
 
 do var = 1,size(fields1)
   ! check generic field is in fields2
-  if (.not.hasfield(fields2, fields1(var)%short_name)) then
+  if (.not.hasfield(fields2, fields1(var)%long_name)) then
     if (fields1(1)%comm%rank() == 0) then
       print*, 'fv3jedi.fields checkvalidsubset missing an expected field in RHS'
     end if
     call print_fields_debug(fields1, fields2)
-    call abor1_ftn(trim(calling_method)//"(checkvalidsubset): field "//trim(fields1(var)%short_name)//&
+    call abor1_ftn(trim(calling_method)//"(checkvalidsubset): field "//trim(fields1(var)%long_name)//&
                                             " not in RHS")
   end if
 enddo
@@ -387,11 +358,11 @@ integer :: num_not_copied
 ! Loop over fields and copy if existing in both
 num_not_copied = 0
 do var = 1, size(field_ou)
-  if (hasfield(field_in, field_ou(var)%short_name )) then
-    call get_field(field_in, field_ou(var)%short_name, field_ou(var)%array)
+  if (hasfield(field_in, field_ou(var)%long_name )) then
+    call get_field(field_in, field_ou(var)%long_name, field_ou(var)%array)
   else
     num_not_copied = num_not_copied + 1
-    not_copied_(num_not_copied) = field_ou(var)%short_name
+    not_copied_(num_not_copied) = field_ou(var)%long_name
   endif
 enddo
 

@@ -22,7 +22,6 @@ cost function:
     npx: 25
     npy: 25
     npz: 127
-    field metadata override: Data/fieldmetadata/gfs-restart.yaml
   background:
     datetime: 2020-12-15T00:00:00Z
     filetype: fms restart
@@ -33,28 +32,46 @@ cost function:
     filename_sfcw: 20201215.000000.c24.fv_srf_wnd.res.nc
     filename_cplr: 20201215.000000.c24.coupler.res
     state variables:
-    - ua
-    - va
-    - t
-    - delp
-    - ps
-    - sphum
-    - ice_wat
-    - liq_wat
-    - o3mr
-    - phis
+    - eastward_wind
+    - northward_wind
+    - air_temperature
+    - air_pressure_thickness
+    - air_pressure_at_surface
+    - water_vapor_mixing_ratio_wrt_moist_air
+    - cloud_liquid_ice
+    - cloud_liquid_water
+    - ozone_mass_mixing_ratio
+    - geopotential_height_times_gravity_at_surface
     - slmsk
     - sheleg
-    - tsea
+    - skin_temperature_at_surface
     - vtype
     - stype
     - vfrac
     - stc
-    - smc
-    - snwdph
-    - u_srf
-    - v_srf
+    - soilMoistureVolumetric
+    - totalSnowDepth
+    - eastward_wind_at_surface
+    - northward_wind_at_surface
     - f10m
+    field io names: &field_io_names
+      eastward_wind: ua
+      northward_wind: va
+      air_temperature: T
+      air_pressure_at_surface: ps
+      water_vapor_mixing_ratio_wrt_moist_air: sphum
+      cloud_liquid_water: liq_wat
+      ozone_mass_mixing_ratio: o3mr
+      air_pressure_thickness: delp
+      cloud_liquid_ice: ice_wat
+      geopotential_height_times_gravity_at_surface: phis
+      skin_temperature_at_surface: tsea
+      soilMoistureVolumetric: smc
+      totalSnowDepth: snwdph
+      eastward_wind_at_surface: u_srf
+      northward_wind_at_surface: v_srf
+      air_horizontal_streamfunction: psi
+      air_horizontal_velocity_potential: chi
   background error:
     covariance model: hybrid
     components:
@@ -109,6 +126,7 @@ cost function:
               filename_sfcd: 20201215.000000.stddev.sfc_data.nc
               filename_sfcw: 20201215.000000.stddev.fv_srf_wnd.res.nc
               filename_cplr: 20201215.000000.stddev.coupler.res
+              field io names: *field_io_names
         - saber block name: BUMP_VerticalBalance
           active variables:
           - air_horizontal_streamfunction
@@ -159,6 +177,7 @@ cost function:
             filename_sfcd: 20201215.000000.sfc_data.nc
             filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
             filename_cplr: 20201215.000000.coupler.res
+            field io names: *field_io_names
           pattern: '%mem%'
           nmembers: 10
           zero padding: 3
@@ -185,7 +204,8 @@ cost function:
             type: H5File
             obsfile: Data/obs/testinput_tier_1/aircraft_obs_2020121500_m.nc4
           obsgrouping:
-            group variables: [stationIdentification]
+            group variables:
+            - stationIdentification
             sort variable: pressure
             sort order: descending
         obsdataout:
@@ -205,7 +225,9 @@ cost function:
       obs error:
         covariance model: diagonal
       obs bias:
-        variables without bc: [windEastward, windNorthward]
+        variables without bc:
+        - windEastward
+        - windNorthward
         input file: Data/obs/testinput_tier_1/acftbias_aircraft_2020121418.nc4
         output file: Data/analysis/hyb-3dvar_gfs-acftbias_aircraft_2020121500_out.nc4
         bc by record: true
@@ -219,7 +241,9 @@ cost function:
             order: 2
         covariance:
           minimal required obs number: 20
-          variance range: [1.0e-6, 10.0]
+          variance range:
+          - 1.0e-6
+          - 10.0
           step size: 1.0e-4
           largest analysis variance: 10000.0
           prior:
@@ -378,7 +402,6 @@ variational:
       npx: 13
       npy: 13
       npz: 127
-      field metadata override: Data/fieldmetadata/gfs-restart.yaml
   - ninner: 5
     gradient norm reduction: 1e-10
     test: on
@@ -390,12 +413,12 @@ variational:
       npx: 13
       npy: 13
       npz: 127
-      field metadata override: Data/fieldmetadata/gfs-restart.yaml
 output:
   filetype: fms restart
   datapath: Data/analysis/
   prefix: hyb-3dvar-1-gfs.c24
   frequency: PT1H
+  field io names: *field_io_names
 test:
   reference filename: testoutput/hyb-3dvar_gfs.ref
   test output filename: testoutput/hyb-3dvar_gfs.test.out

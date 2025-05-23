@@ -48,11 +48,8 @@ LinearVariableChange::~LinearVariableChange() {}
 
 // -------------------------------------------------------------------------------------------------
 
-void LinearVariableChange::changeVarTraj(const State & xfg, const oops::Variables & vars_out) {
+void LinearVariableChange::changeVarTraj(const State & xfg, const oops::Variables & vars) {
   oops::Log::trace() << "LinearVariableChange::changeVarTraj starting" << std::endl;
-
-  // Make sure vars are longname
-  const oops::Variables vars = fieldsMetadata_.getLongNameFromAnyName(vars_out);
 
   // Call Vader's changeVarTraj to populate its initial trajectory FieldSet
   oops::Variables varsVader = vars;
@@ -69,9 +66,9 @@ void LinearVariableChange::changeVarTraj(const State & xfg, const oops::Variable
       lvc_params.outputVariables.value() != boost::none) {
     oops::Variables inputVars = *lvc_params.inputVariables.value();
     oops::Variables outputVars = *lvc_params.outputVariables.value();
-    ASSERT_MSG(outputVars == vars_out, "outputVariables in config file must match output "
+    ASSERT_MSG(outputVars == vars, "outputVariables in config file must match output "
           "variables passed to changeVarTraj");
-    oops::Variables ingredientVars = fieldsMetadata_.getLongNameFromAnyName(inputVars);
+    oops::Variables ingredientVars = inputVars;
     initVaderTLAD(ingredientVars);
   }
 
@@ -94,10 +91,8 @@ void LinearVariableChange::initVaderTLAD(oops::Variables & ingredientVars) const
 
 // -------------------------------------------------------------------------------------------------
 
-void LinearVariableChange::changeVarTL(Increment & dx, const oops::Variables & vars_out) const {
+void LinearVariableChange::changeVarTL(Increment & dx, const oops::Variables & vars) const {
   oops::Log::trace() << "LinearVariableChange::changeVarTL starting" << std::endl;
-  // Make sure vars are longname
-  const oops::Variables vars = fieldsMetadata_.getLongNameFromAnyName(vars_out);
 
   // If all variables already in incoming state just remove the no longer needed fields
   if (vars <= dx.variables()) {
@@ -143,11 +138,8 @@ void LinearVariableChange::changeVarTL(Increment & dx, const oops::Variables & v
 // -------------------------------------------------------------------------------------------------
 
 void LinearVariableChange::changeVarInverseTL(Increment & dx,
-                                              const oops::Variables & vars_out) const {
+                                              const oops::Variables & vars) const {
   oops::Log::trace() << "LinearVariableChange::changeVarInverseTL starting" << std::endl;
-
-  // Make sure vars are longname
-  const oops::Variables vars = fieldsMetadata_.getLongNameFromAnyName(vars_out);
 
   // If all variables already in incoming state just remove the no longer needed fields
   if ((vars <= dx.variables())) {
@@ -173,10 +165,8 @@ void LinearVariableChange::changeVarInverseTL(Increment & dx,
 
 // -------------------------------------------------------------------------------------------------
 
-void LinearVariableChange::changeVarAD(Increment & dx, const oops::Variables & vars_out) const {
+void LinearVariableChange::changeVarAD(Increment & dx, const oops::Variables & vars) const {
   oops::Log::trace() << "LinearVariableChange::changeVarAD starting" << std::endl;
-  // Make sure vars are longname
-  const oops::Variables vars = fieldsMetadata_.getLongNameFromAnyName(vars_out);
 
   // If all variables already in incoming state just remove the no longer needed fields
   if ((vars <= dx.variables())) {
@@ -232,12 +222,8 @@ void LinearVariableChange::changeVarAD(Increment & dx, const oops::Variables & v
 
 // -------------------------------------------------------------------------------------------------
 
-void LinearVariableChange::changeVarInverseAD(Increment & dx,
-                                              const oops::Variables & vars_out) const {
+void LinearVariableChange::changeVarInverseAD(Increment & dx, const oops::Variables & vars) const {
   oops::Log::trace() << "LinearVariableChange::changeVarInverseAD starting" << std::endl;
-
-  // Make sure vars are longname
-  const oops::Variables vars = fieldsMetadata_.getLongNameFromAnyName(vars_out);
 
   // If all variables already in incoming state just remove the no longer needed fields
   if (vars <= dx.variables()) {

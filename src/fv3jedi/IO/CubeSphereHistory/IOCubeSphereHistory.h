@@ -104,10 +104,14 @@ class IOCubeSphereHistory : public IOBase, private util::ObjectCounter<IOCubeSph
 
   IOCubeSphereHistory(const Geometry &, const Parameters_ &);
   ~IOCubeSphereHistory();
-  void read(State &) const override;
-  void read(Increment &) const override;
-  void write(const State &) const override;
-  void write(const Increment &) const override;
+  void read(State &, const eckit::LocalConfiguration &,
+            const eckit::LocalConfiguration &) const override;
+  void read(Increment &, const eckit::LocalConfiguration &,
+            const eckit::LocalConfiguration &) const override;
+  void write(const State &, const eckit::LocalConfiguration &,
+             const eckit::LocalConfiguration &) const override;
+  void write(const Increment &, const eckit::LocalConfiguration &,
+             const eckit::LocalConfiguration &) const override;
 
  private:
   F90IOCubeSphereHistory objectKeyForFortran_;

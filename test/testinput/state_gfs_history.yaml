@@ -6,7 +6,6 @@ geometry:
   npx: 13
   npy: 13
   npz: 127
-  field metadata override: Data/fieldmetadata/gfs-history.yaml
 state test:
   statefile:
     filetype: cube sphere history
@@ -15,15 +14,25 @@ state test:
     datapath: Data/inputs/gfs_c12/bkg_hist/
     filename: atmf006.nc
     state variables:
-    - ugrd
-    - vgrd
-    - tmp
-    - spfh
-    - delz
-    - dpres
-    - pressfc
-    - hgtsfc
-    - o3mr
+    - eastward_wind
+    - northward_wind
+    - air_temperature
+    - water_vapor_mixing_ratio_wrt_moist_air
+    - layer_thickness
+    - air_pressure_thickness
+    - air_pressure_at_surface
+    - geopotential_height_times_gravity_at_surface
+    - ozone_mass_mixing_ratio
+    field io names:
+      eastward_wind: ugrd
+      northward_wind: vgrd
+      air_temperature: tmp
+      water_vapor_mixing_ratio_wrt_moist_air: spfh
+      layer_thickness: delz
+      air_pressure_thickness: dpres
+      air_pressure_at_surface: pressfc
+      geopotential_height_times_gravity_at_surface: hgtsfc
+      ozone_mass_mixing_ratio: o3mr
   date: 2021-03-22T12:00:00Z
   norm file: 3357.1428615656268
   tolerance: 1.0e-08

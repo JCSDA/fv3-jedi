@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2021 UCAR
+ * (C) Copyright 2021-2024 UCAR
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -14,6 +14,7 @@
 
 #include <boost/noncopyable.hpp>
 
+#include "oops/base/Variables.h"
 #include "oops/util/AssociativeContainers.h"
 #include "oops/util/parameters/OptionalParameter.h"
 #include "oops/util/parameters/OptionalPolymorphicParameter.h"
@@ -30,16 +31,33 @@ namespace fv3jedi {
 
 class IOBase : public util::Printable, private boost::noncopyable {
  public:
-  explicit IOBase(const Geometry & geom) {}
+  explicit IOBase(const Geometry &, const eckit::LocalConfiguration);
   virtual ~IOBase() {}
 
-  virtual void read(State &) const = 0;
-  virtual void read(Increment &) const = 0;
-  virtual void write(const State &) const = 0;
-  virtual void write(const Increment &) const = 0;
+  void readBase(State &) const;
+  void readBase(Increment &) const;
+  void writeBase(const State &) const;
+  void writeBase(const Increment &) const;
 
  private:
+  // Child read/write methods
+  virtual void read(State &, const eckit::LocalConfiguration &,
+                    const eckit::LocalConfiguration &) const = 0;
+  virtual void read(Increment &, const eckit::LocalConfiguration &,
+                    const eckit::LocalConfiguration &) const = 0;
+  virtual void write(const State &, const eckit::LocalConfiguration &,
+                     const eckit::LocalConfiguration &) const = 0;
+  virtual void write(const Increment &, const eckit::LocalConfiguration &,
+                     const eckit::LocalConfiguration &) const = 0;
+
+  // Child print method
   virtual void print(std::ostream &) const = 0;
+
+  // Configuration holding the field names as used in the files
+  eckit::LocalConfiguration fieldIoNames_;
+  // Configuration holding scaling factors used to transition units between forecast model
+  // and JEDI
+  eckit::LocalConfiguration fieldIoScaling_;
 };
 
 // -------------------------------------------------------------------------------------------------
@@ -56,6 +74,7 @@ class IOParametersBase : public oops::Parameters {
   oops::OptionalParameter<std::string> prefix{"prefix", this};
   oops::Parameter<bool> dateCols{"date colons", true, this};
   oops::OptionalParameter<std::string> filetype{"filetype", this};
+  oops::OptionalParameter<eckit::LocalConfiguration> fieldIoNames{"field io names", this};
 };
 
 // -------------------------------------------------------------------------------------------------

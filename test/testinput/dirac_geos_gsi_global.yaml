@@ -12,7 +12,6 @@ geometry:
   npx: 13
   npy: 13
   npz: 72
-  field metadata override: Data/fieldmetadata/geos.yaml
 background:
   datetime: 2020-12-14T21:00:00Z
   filetype: cube sphere history
@@ -20,13 +19,21 @@ background:
   datapath: Data/inputs/geos_c12
   filename: geos.bkg.20201214_210000z.nc4
   state variables: &vars
-  - ua
-  - va
-  - t
-  - ps
-  - q
-  - o3ppmv
-  - phis
+  - eastward_wind
+  - northward_wind
+  - air_temperature
+  - air_pressure_at_surface
+  - water_vapor_mixing_ratio_wrt_moist_air
+  - mole_fraction_of_ozone_in_air
+  - geopotential_height_times_gravity_at_surface
+  field io names: &field_io_names
+    eastward_wind: ua
+    northward_wind: va
+    air_temperature: t
+    air_pressure_at_surface: ps
+    water_vapor_mixing_ratio_wrt_moist_air: q
+    mole_fraction_of_ozone_in_air: o3ppmv
+    geopotential_height_times_gravity_at_surface: phis
 background error:
   covariance model: SABER
   saber central block:
@@ -76,12 +83,13 @@ dirac:
   ildir:
   - 72
   ifdir:
-  - t
+  - air_temperature
 output dirac:
   filetype: cube sphere history
   provider: geos
   datapath: Data/
   filename: gsi_dirac_%id%_.%yyyy%mm%dd_%hh%MM%ssz.nc4
+  field io names: *field_io_names
 test:
   reference filename: testoutput/dirac_geos_gsi_global.ref
   test output filename: testoutput/dirac_geos_gsi_global.test.out

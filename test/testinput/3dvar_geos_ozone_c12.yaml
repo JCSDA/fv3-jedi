@@ -1,8 +1,8 @@
 cost function:
   cost type: 3D-Var
   analysis variables: &avars
-  - ps
-  - o3ppmv
+  - air_pressure_at_surface
+  - mole_fraction_of_ozone_in_air
   time window:
     begin: 2020-12-14T21:00:00Z
     length: PT6H
@@ -14,7 +14,6 @@ cost function:
     npx: 13
     npy: 13
     npz: 72
-    field metadata override: Data/fieldmetadata/geos.yaml
   background:
     datetime: 2020-12-15T00:00:00Z
     filetype: cube sphere history
@@ -22,10 +21,15 @@ cost function:
     datapath: Data/inputs/geos_c12
     filename: geos.bkg.20201215_000000z.nc4
     state variables:
-    - ps
-    - delp
-    - phis
-    - o3ppmv
+    - air_pressure_at_surface
+    - air_pressure_thickness
+    - geopotential_height_times_gravity_at_surface
+    - mole_fraction_of_ozone_in_air
+    field io names: &field_io_names
+      air_pressure_at_surface: ps
+      mole_fraction_of_ozone_in_air: o3ppmv
+      air_pressure_thickness: delp
+      geopotential_height_times_gravity_at_surface: phis
   background error:
     covariance model: SABER
     saber central block:
@@ -176,6 +180,7 @@ output:
   filename: 3dvar-sondes-geos.ana.%yyyy%mm%dd_%hh%MM%ssz.nc4
   first: PT0H
   frequency: PT1H
+  field io names: *field_io_names
 variational:
   minimizer:
     algorithm: DRPCG
@@ -187,7 +192,6 @@ variational:
       npx: 13
       npy: 13
       npz: 72
-      field metadata override: Data/fieldmetadata/geos.yaml
 test:
   reference filename: testoutput/3dvar_geos_ozone.ref
   float relative tolerance: 1.0e-2
