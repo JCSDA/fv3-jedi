@@ -232,6 +232,18 @@ void State::write(const eckit::Configuration & config) const {
   params.deserialize(config);
   IOBase_ io(IOFactory::create(geom_, *params.ioParametersWrapper.ioParameters.value()));
   io->writeBase(*this);
+
+  // Optionally states can be output in other formats, in addition to the main choice
+  const boost::optional<std::vector<IOParametersWrapper>> additionalIO = params.additionalIO;
+  if (additionalIO != boost::none) {
+    for (const IOParametersWrapper & additionalIoParams : *additionalIO) {
+      // Get parameters for this linear variable change
+      const IOParametersBase & ioParam = *additionalIoParams.ioParameters.value();
+      // Create another IO object through the factory and use it to write
+      IOBase_ io(IOFactory::create(geom_, ioParam));
+      io->writeBase(*this);
+    }
+  }
 }
 
 // -------------------------------------------------------------------------------------------------

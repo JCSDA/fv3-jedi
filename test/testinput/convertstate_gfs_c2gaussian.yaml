@@ -59,10 +59,30 @@ states:
       eastward_wind_at_surface: u_srf
       northward_wind_at_surface: v_srf
   output:
-    filetype: auxgrid
+    filetype: structured grid
     gridtype: gaussian
     filename: Data/gfs.bkg.gaussian.
     field io names: *field_io_names
+    latitude dim name: grid_yt
+    longitude dim name: grid_xt
+    level dim name: pfull
+    edge dim name: phalf
+    time dim name: time
+    additional output formats:
+    - filetype: structured grid
+      gridtype: latlon
+      filename: Data/gfs.bkg.latlon.
+      field io names: *field_io_names
+      latitude dim name: grid_yt
+      longitude dim name: grid_xt
+      level dim name: pfull
+      edge dim name: phalf
+      time dim name: time
+    - filetype: cube sphere history
+      provider: ufs
+      datapath: Data/
+      filename: gfs.bkg.cube.%yyyy%mm%dd_%hh%MM%ssz.nc4
+      field io names: *field_io_names
 test:
   reference filename: testoutput/convertstate_gfs_c2gaussian.ref
   test output filename: testoutput/convertstate_gfs_c2gaussian.test.out

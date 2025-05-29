@@ -94,11 +94,6 @@ type :: fv3jedi_geom
   logical :: dord4 = .true.
   type(atlas_functionspace) :: afunctionspace
 
-  ! As a temporary hack to enable using the BUMP interpolator from fv3-jedi, make an additional
-  ! FunctionSpace without halos. This should be removed as soon as the interpolations can be made
-  ! more generic
-  type(atlas_functionspace) :: afunctionspace_for_bump
-
   ! Configuration that holds the masks to be applied to each field
   type(fckit_configuration) :: field_masks
   type(fckit_configuration) :: field_interp_methods
@@ -108,7 +103,6 @@ type :: fv3jedi_geom
     procedure, public :: clone
     procedure, public :: delete
     procedure, public :: is_equal
-    procedure, public :: fill_bump_lonlat
     procedure, public :: set_and_fill_geometry_fields
     procedure, public :: get_data
     procedure, public :: get_num_nodes_and_elements
@@ -167,13 +161,15 @@ end subroutine initialize
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine create(self, conf, comm, nlevs)
+subroutine create(self, conf, comm, npx, npy, npz)
 
 !Arguments
 class(fv3jedi_geom), target, intent(inout) :: self
 type(fckit_configuration),   intent(in)    :: conf
 type(fckit_mpi_comm),        intent(in)    :: comm
-integer,                     intent(out)   :: nlevs
+integer,                     intent(out)   :: npx
+integer,                     intent(out)   :: npy
+integer,                     intent(out)   :: npz
 
 !Locals
 character(len=256)                    :: file_akbk
@@ -250,7 +246,9 @@ self%npx = Atm(1)%npx
 self%npy = Atm(1)%npy
 self%npz = Atm(1)%npz
 
-nlevs = self%npz
+npx = self%npx
+npy = self%npy
+npz = self%npz
 
 self%layout(1) = Atm(1)%layout(1)
 self%layout(2) = Atm(1)%layout(2)
@@ -560,7 +558,6 @@ self%nw_corner = other%nw_corner
 self%domain => other%domain
 
 self%afunctionspace = atlas_functionspace(other%afunctionspace%c_ptr())
-self%afunctionspace_for_bump = atlas_functionspace(other%afunctionspace_for_bump%c_ptr())
 
 self%geometry_fields = atlas_fieldset(other%geometry_fields%c_ptr())
 
@@ -630,7 +627,6 @@ deallocate(self%lon_us)
 !call mpp_deallocate_domain(self%domain_fix)
 
 call self%afunctionspace%final()
-call self%afunctionspace_for_bump%final()
 
 end subroutine delete
 
@@ -660,30 +656,6 @@ if (self%npx == other%npx .and. self%npy == other%npy .and. self%npz == other%np
 end if
 
 end subroutine is_equal
-
-! --------------------------------------------------------------------------------------------------
-
-subroutine fill_bump_lonlat(self, afieldset)
-
-!Arguments
-class(fv3jedi_geom),  intent(inout) :: self
-type(atlas_fieldset), intent(inout) :: afieldset
-
-!Locals
-real(kind_real), pointer :: real_ptr(:,:)
-type(atlas_field) :: afield
-integer :: ngrid
-
-ngrid = self%ngrid
-
-! Create lonlat field, without halo, for bump
-afield = atlas_field(name="bump_lonlat", kind=atlas_real(kind_real), shape=(/2,ngrid/))
-call afield%data(real_ptr)
-real_ptr(1,:) = constant('rad2deg')*reshape(self%grid_lon(self%isc:self%iec, self%jsc:self%jec),(/ngrid/))
-real_ptr(2,:) = constant('rad2deg')*reshape(self%grid_lat(self%isc:self%iec, self%jsc:self%jec),(/ngrid/))
-call afieldset%add(afield)
-
-end subroutine fill_bump_lonlat
 
 ! --------------------------------------------------------------------------------------------------
 

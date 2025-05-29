@@ -21,7 +21,7 @@ implicit none
 ! Local variables
 type(fv3jedi_geom) :: geom
 type(fckit_mpi_comm) :: comm
-integer :: nlevs
+integer :: npx, npy, npz
 character(len=256) :: yaml_file
 type(fckit_configuration) :: config, config_fms, config_geom, config_input, config_output, &
                              config_test
@@ -61,7 +61,7 @@ call initialize_fms(config_fms, comm)
 ! Intialize fv3 geometry
 ! ---------------------
 call fmsnamelist%replace_namelist(config_geom)
-call geom%create(config_geom, comm, nlevs)
+call geom%create(config_geom, comm, npx, npy, npz)
 
 ! Allocate state
 ! --------------

@@ -74,6 +74,9 @@ class StateWriteParameters : public oops::Parameters {
   oops::OptionalParameter<std::string> prefix{"prefix", this};
   oops::Parameter<bool> dateCols{"date colons", true, this};
   IOParametersWrapper ioParametersWrapper{this};
+  // Additional formats to output
+  oops::OptionalParameter<std::vector<IOParametersWrapper>>
+         additionalIO{"additional output formats", this};
 };
 
 // -------------------------------------------------------------------------------------------------

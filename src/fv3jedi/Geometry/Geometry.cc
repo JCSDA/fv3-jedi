@@ -43,10 +43,10 @@ Geometry::Geometry(const eckit::Configuration & config, const eckit::mpi::Comm &
   }
 
   // Geometry constructor
-  fv3jedi_geom_setup_f90(keyGeom_, params.toConfiguration(), &comm_, nLevels_, tileNum_);
+  fv3jedi_geom_setup_f90(keyGeom_, params.toConfiguration(), &comm_, npx_, npy_, npz_, tileNum_);
 
   // Construct the field sets and add to Geometry
-  fieldsMeta_.reset(new FieldsMetadata(nLevels_));
+  fieldsMeta_.reset(new FieldsMetadata(npz_));
   fv3jedi_geom_addfmd_f90(keyGeom_, fieldsMeta_.get());
 
   {
@@ -146,15 +146,8 @@ Geometry::Geometry(const eckit::Configuration & config, const eckit::mpi::Comm &
     }
   }
 
-  // Create function space without halo, for constructing the bump interpolator from fv3jedi
-  atlas::FieldSet fs;
-  fv3jedi_geom_fill_bump_lonlat_f90(keyGeom_, fs.get());
-  const atlas::Field lonlatFieldForBump = fs.field("bump_lonlat");
-  functionSpaceForBump_ = atlas::functionspace::PointCloud(lonlatFieldForBump);
-
   // Set function space pointers in Fortran
-  fv3jedi_geom_set_functionspace_pointer_f90(keyGeom_, functionSpace_.get(),
-                                             functionSpaceForBump_.get());
+  fv3jedi_geom_set_functionspace_pointer_f90(keyGeom_, functionSpace_.get());
 
   // Fill geometry fields. This contains both SABER-related fields and any fields requested to be
   // read from state files in the yamls.
@@ -193,9 +186,9 @@ Geometry::Geometry(const eckit::Configuration & config, const eckit::mpi::Comm &
   fv3jedi_geom_set_and_fill_geometry_fields_f90(keyGeom_, fields_.get(), fieldMasks_);
 
   // Copy some Fortran data to C++
-  ak_.resize(nLevels_+1);
-  bk_.resize(nLevels_+1);
-  fv3jedi_geom_get_data_f90(keyGeom_, nLevels_, ak_.data(), bk_.data(), pTop_);
+  ak_.resize(npz_+1);
+  bk_.resize(npz_+1);
+  fv3jedi_geom_get_data_f90(keyGeom_, npz_, ak_.data(), bk_.data(), pTop_);
 
   // If the parameters contains the fieldMasks then check that the fields are available
   if (params.fieldInterpMethods.value() != boost::none) {
@@ -219,13 +212,11 @@ Geometry::Geometry(const eckit::Configuration & config, const eckit::mpi::Comm &
 // -------------------------------------------------------------------------------------------------
 
 Geometry::Geometry(const Geometry & other) : comm_(other.comm_), ak_(other.ak_), bk_(other.bk_),
-nLevels_(other.nLevels_), pTop_(other.pTop_) {
+npx_(other.npx_), npy_(other.npy_), npz_(other.npz_), tileNum_(other.tileNum_), pTop_(other.pTop_) {
   fieldsMeta_ = std::make_shared<FieldsMetadata>(*other.fieldsMeta_);
   fv3jedi_geom_clone_f90(keyGeom_, other.keyGeom_, fieldsMeta_.get());
   functionSpace_ = atlas::functionspace::NodeColumns(other.functionSpace_);
-  functionSpaceForBump_ = atlas::functionspace::PointCloud(other.functionSpaceForBump_.lonlat());
-  fv3jedi_geom_set_functionspace_pointer_f90(keyGeom_, functionSpace_.get(),
-                                             functionSpaceForBump_.get());
+  fv3jedi_geom_set_functionspace_pointer_f90(keyGeom_, functionSpace_.get());
   fields_ = atlas::FieldSet();
   for (auto & field : other.fields_) {
     fields_->add(field);

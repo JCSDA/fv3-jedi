@@ -79,7 +79,9 @@ class Geometry : public util::Printable,
   const std::vector<double> & ak() const {return ak_;}
   const std::vector<double> & bk() const {return bk_;}
   const double & pTop() const {return pTop_;}
-  const int & nLevels() const {return nLevels_;}
+  const int & npx() const {return npx_;}
+  const int & npy() const {return npy_;}
+  const int & npz() const {return npz_;}
 
  private:
   void print(std::ostream &) const;
@@ -87,15 +89,15 @@ class Geometry : public util::Printable,
   F90geom keyGeom_;
   const eckit::mpi::Comm & comm_;
   atlas::FunctionSpace functionSpace_;
-  // temporary hack: FunctionSpace without halos for calling BUMP interpolation from within fv3jedi
-  atlas::FunctionSpace functionSpaceForBump_;
   atlas::FieldSet fields_;
   eckit::LocalConfiguration fieldMasks_;
   std::shared_ptr<FieldsMetadata> fieldsMeta_;
   std::vector<double> ak_;
   std::vector<double> bk_;
   int tileNum_;
-  int nLevels_;
+  int npx_;
+  int npy_;
+  int npz_;
   double pTop_;
 };
 // -------------------------------------------------------------------------------------------------

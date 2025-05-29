@@ -65,20 +65,27 @@ end subroutine c_fv3jedi_geom_initialize
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_geom_setup(c_key_self, c_conf, c_comm, c_nlev, tileNum ) &
+subroutine c_fv3jedi_geom_setup(c_key_self, c_conf, c_comm, c_npx, c_npy, c_npz, c_tile_num ) &
                                bind(c, name='fv3jedi_geom_setup_f90')
 
 !Arguments
 integer(c_int),     intent(inout) :: c_key_self
 type(c_ptr), value, intent(in)    :: c_conf
 type(c_ptr), value, intent(in)    :: c_comm
-integer(c_int),     intent(inout) :: c_nlev
-integer(c_int),     intent(inout) :: tileNum
+integer(c_int),     intent(inout) :: c_npx
+integer(c_int),     intent(inout) :: c_npy
+integer(c_int),     intent(inout) :: c_npz
+integer(c_int),     intent(inout) :: c_tile_num
 
 type(fv3jedi_geom), pointer :: self
 type(fckit_configuration)   :: f_conf
 type(fckit_mpi_comm)        :: f_comm
-integer                     :: f_nlev, i, ensNum
+integer                     :: f_npx
+integer                     :: f_npy
+integer                     :: f_npz
+integer                     :: f_tile_num
+integer                     :: i
+integer                     :: ensNum
 integer, allocatable        :: Atm_pelist(:)
 integer, allocatable        :: Ocean_pelist(:)
 integer, allocatable        :: Land_pelist(:)
@@ -87,7 +94,7 @@ integer                     :: atmos_npes
 integer                     :: ocean_npes
 integer                     :: land_npes
 integer                     :: ice_npes
-integer                     :: ensemble_id 
+integer                     :: ensemble_id
 integer                     :: ens_siz(6), ensemble_size, npes
 integer, allocatable :: ensemble_pelist(:, :)
 
@@ -135,12 +142,14 @@ endif
 
 ! Call implementation
 ! -------------------
-call self%create(f_conf, f_comm, f_nlev)
+call self%create(f_conf, f_comm, f_npx, f_npy, f_npz)
 
 ! Pass number of levels
 ! ---------------------
-c_nlev = f_nlev
-tileNum = self%ntile
+c_npx = f_npx
+c_npy = f_npy
+c_npz = f_npz
+f_tile_num = self%ntile
 
 end subroutine c_fv3jedi_geom_setup
 
@@ -264,38 +273,11 @@ end subroutine c_fv3jedi_geom_print
 
 ! --------------------------------------------------------------------------------------------------
 
-subroutine c_fv3jedi_geom_fill_bump_lonlat(c_key_self, c_afieldset) &
-                                           bind(c,name='fv3jedi_geom_fill_bump_lonlat_f90')
-
-!Arguments
-integer(c_int), intent(in) :: c_key_self
-type(c_ptr), intent(in), value :: c_afieldset
-
-type(fv3jedi_geom), pointer :: self
-type(atlas_fieldset) :: afieldset
-
-! LinkedList
-! ----------
-call fv3jedi_geom_registry%get(c_key_self,self)
-
-! Fortran APIs
-! ------------
-afieldset = atlas_fieldset(c_afieldset)
-
-! Call implementation
-! -------------------
-call self%fill_bump_lonlat(afieldset)
-
-end subroutine c_fv3jedi_geom_fill_bump_lonlat
-
-! --------------------------------------------------------------------------------------------------
-
-subroutine c_fv3jedi_geom_set_functionspace_pointer(c_key_self,c_afunctionspace,c_afunctionspace_for_bump) &
+subroutine c_fv3jedi_geom_set_functionspace_pointer(c_key_self,c_afunctionspace) &
     bind(c,name='fv3jedi_geom_set_functionspace_pointer_f90')
 
 integer(c_int), intent(in)     :: c_key_self
 type(c_ptr), intent(in), value :: c_afunctionspace
-type(c_ptr), intent(in), value :: c_afunctionspace_for_bump
 
 type(fv3jedi_geom),pointer :: self
 
@@ -306,7 +288,6 @@ call fv3jedi_geom_registry%get(c_key_self,self)
 ! Create function space
 ! ---------------------
 self%afunctionspace = atlas_functionspace(c_afunctionspace)
-self%afunctionspace_for_bump = atlas_functionspace(c_afunctionspace_for_bump)
 
 end subroutine c_fv3jedi_geom_set_functionspace_pointer
 

@@ -26,7 +26,7 @@ namespace fv3jedi {
 ModelData::ModelData(const Geometry & geometry) :
     ak_(geometry.ak()),
     bk_(geometry.bk()),
-    nLevels_(geometry.nLevels()),
+    nLevels_(geometry.npz()),
     pTop_(geometry.pTop()) {}
 
 // -------------------------------------------------------------------------------------------------
