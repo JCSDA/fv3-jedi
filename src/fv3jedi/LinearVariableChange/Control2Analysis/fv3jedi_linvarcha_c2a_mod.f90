@@ -198,14 +198,14 @@ endif
 ! Temperature
 ! -----------
 have_t = .false.
-have_q = dxc%has_field('sphum')
+have_q = dxc%has_field('water_vapor_mixing_ratio_wrt_moist_air')
 if (dxc%has_field('air_temperature')) then
   allocate(t(geom%isc:geom%iec,geom%jsc:geom%jec,geom%npz))
   call dxc%get_field('air_temperature', t)
   have_t = .true.
 elseif (dxc%has_field('virtual_temperature') .and. have_q) then
   allocate(t(geom%isc:geom%iec,geom%jsc:geom%jec,geom%npz))
-  call dxc%get_field('sphum', q)
+  call dxc%get_field('water_vapor_mixing_ratio_wrt_moist_air', q)
   call dxc%get_field('virtual_temperature'  , tv)
   call Tv_to_T_tl(geom, self%tvtraj, tv, self%qtraj, q, t)
   have_t = .true.
@@ -356,9 +356,9 @@ if (.not.allocated(fields_to_do)) return
 ! Virtual temperature
 ! -------------------
 have_tv = .false.
-if (dxa%has_field('air_temperature') .and. dxa%has_field('sphum')) then
+if (dxa%has_field('air_temperature') .and. dxa%has_field('water_vapor_mixing_ratio_wrt_moist_air')) then
   call dxa%get_field('air_temperature', t)
-  call dxa%get_field('sphum', q)
+  call dxa%get_field('water_vapor_mixing_ratio_wrt_moist_air', q)
   allocate(tv(geom%isc:geom%iec,geom%jsc:geom%jec,geom%npz))
   tv = 0.0_kind_real
   call Tv_to_T_ad(geom, self%tvtraj, tv, self%qtraj, q, t)
