@@ -93,9 +93,9 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/scatwind_letkf-member%ensmem%-gfs_2021032312.nc4
+        write multiple files: false
       io pool:
         max pool size: 1
-        write multiple files: false
       simulated variables:
       - windEastward
       - windNorthward
@@ -126,9 +126,9 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/amsua_n19_letkf-member%ensmem%-gfs_2021032312.nc4
+        write multiple files: false
       io pool:
         max pool size: 1
-        write multiple files: false
       simulated variables:
       - brightnessTemperature
       channels: 4-6,9-14
@@ -174,11 +174,11 @@ observations:
         engine:
           type: H5File
           obsfile: Data/hofx/sfc_letkf-member%ensmem%-gfs_2021032312.nc4
+        write multiple files: false
       simulated variables:
       - stationPressure
       io pool:
         max pool size: 1
-        write multiple files: false
     obs operator:
       name: SfcPCorrected
       da_psfc_scheme: UKMO
