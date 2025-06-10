@@ -1027,8 +1027,6 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertstate_geos_fv3jedi_for_mode
 
 # Cold starts to warm starts
 # --------------------------
-if( FV3_FORECAST_MODEL MATCHES "FV3CORE" )
-
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_cold_to_warm_start
                   MPI      6
                   ARGS     testinput/cold_to_warm_start.yaml
@@ -1065,8 +1063,6 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_geos_to_fms
                   MPI      6
                   ARGS     testinput/geos_to_fms.yaml
                   COMMAND  fv3jedi_geos_to_fms.x )
-
-endif()
 
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_convertincrement_geos_model2geovals
                   MPI      6

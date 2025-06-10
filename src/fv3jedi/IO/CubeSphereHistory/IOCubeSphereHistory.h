@@ -93,6 +93,14 @@ class IOCubeSphereHistoryParameters : public IOParametersBase {
   oops::OptionalParameter<bool> computeP{"compute edge pressure from surface pressure",
                                          "compute edge pressure from surface pressure",
                                          this};
+
+  // Maximum allowable difference in the Geometry lat/lon compared to the file lat/lon
+  // In practice users should expect differences order 1e-12 or smaller if everything
+  // is in double precision. In practice models may produce files at lower precision.
+  // Differences smaller than 1e-6 should be sufficient to assess that the geometry of
+  // the model producing the file being read is the same at the one in fv3-jedi.
+  oops::Parameter<double> maxDiff{"max allowable geometry difference",
+                                  "max allowable geometry difference", 1e-6, this};
 };
 
 // -------------------------------------------------------------------------------------------------

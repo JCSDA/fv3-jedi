@@ -18,6 +18,7 @@ states:
     provider: geos
     datapath: Data/inputs/GEOSChem_c48
     filename: GEOSChem.DefaultCollection.%yyyy%mm%dd_%hh%MMz.nc4
+    max allowable geometry difference: 1e-2  # File was written with low precision
     state variables:
     - air_temperature
     - pm25at

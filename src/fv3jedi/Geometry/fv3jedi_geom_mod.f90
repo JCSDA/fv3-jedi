@@ -29,14 +29,14 @@ use ensemble_manager_mod,       only: get_ensemble_id,get_ensemble_size
 use field_manager_mod,          only: fm_string_len, field_manager_init
 
 ! fv3 uses
-use fv_arrays_mod,              only: fv_atmos_type, deallocate_fv_atmos_type
+use fv3jedi_fv3_arrays_mod,     only: fv_atmos_type, deallocate_fv_atmos_type
+use fv3jedi_fv3_control_mod,    only: fv_control_init
 
 ! fv3jedi uses
 use fields_metadata_mod,        only: fields_metadata
 use fv3jedi_constants_mod,      only: constant
 use fv3jedi_kinds_mod,          only: kind_int, kind_real
 use fv3jedi_netcdf_utils_mod,   only: nccheck
-use fv_init_mod,                only: fv_init
 use fv3jedi_fmsnamelist_mod,    only: fv3jedi_fmsnamelist
 
 implicit none
@@ -175,7 +175,7 @@ integer,                     intent(out)   :: npz
 character(len=256)                    :: file_akbk
 type(fv_atmos_type), allocatable      :: Atm(:)
 logical, allocatable                  :: grids_on_this_pe(:)
-integer                               :: i, j, jj, gtile
+integer                               :: i, j, jj, this_grid
 integer                               :: p_split = 1
 integer                               :: ncstat, ncid, akvarid, bkvarid, readdim, dcount
 integer, dimension(nf90_max_var_dims) :: dimids, dimlens
@@ -224,7 +224,11 @@ call fmsnamelist%replace_namelist(conf)
 
 !Intialize using the model setup routine
 ! --------------------------------------
-call fv_init(Atm, 300.0_kind_real, grids_on_this_pe, p_split, gtile, .true.)
+call fv_control_init(Atm, 300.0_kind_real, this_grid, grids_on_this_pe, p_split, &
+                     skip_nml_read_in=.true.)
+
+! Sanity check
+if (this_grid .ne. 1) call abor1_ftn("Geometry not ready for ngrid > 1")
 
 ! Copy relevant contents of Atm
 ! -----------------------------
@@ -239,7 +243,7 @@ self%jsc = Atm(1)%bd%jsc
 self%jec = Atm(1)%bd%jec
 self%kec = Atm(1)%npz
 
-self%ntile  = gtile
+self%ntile  = Atm(1)%global_tile
 self%ntiles = Atm(1)%flagstruct%ntiles
 
 self%npx = Atm(1)%npx
@@ -343,7 +347,6 @@ endif
 
 ! Arrays from the Atm Structure
 ! -----------------------------
-
 self%grid_lon  = real(Atm(1)%gridstruct%agrid_64(:,:,1),kind_real)
 self%grid_lat  = real(Atm(1)%gridstruct%agrid_64(:,:,2),kind_real)
 self%egrid_lon = real(Atm(1)%gridstruct%grid_64(:,:,1),kind_real)

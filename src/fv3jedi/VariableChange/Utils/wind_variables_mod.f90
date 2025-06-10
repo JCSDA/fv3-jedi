@@ -15,7 +15,6 @@ use fv3jedi_kinds_mod, only: kind_real
 use fv3jedi_communication_mod, only: gather_field, scatter_field
 use fv3jedi_netcdf_utils_mod, only: nccheck
 
-use fv_mp_mod, only: fill_corners
 use fv_mp_adm_mod, only: mpp_update_domains_adm
 use mpp_domains_mod, only: mpp_update_domains, dgrid_ne
 use mpp_domains_mod, only: mpp_get_boundary, mpp_get_boundary_ad
@@ -2423,7 +2422,6 @@ do i=isd+1,ied
 enddo
 
 call mpp_update_domains( ud, vd, geom%domain, gridtype=DGRID_NE, complete=.true.)
-!if (.not. geom%bounded_domain) call fill_corners(ud, vd, geom%npx, geom%npy, VECTOR=.true., DGRID=.true.)
 
 end subroutine acs_to_d_domain_level
 

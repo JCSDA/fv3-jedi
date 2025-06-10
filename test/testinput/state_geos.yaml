@@ -12,6 +12,7 @@ state test:
     filetype: cube sphere history
     provider: geos
     datapath: Data/inputs/geos_c12
+    max allowable geometry difference: 1e-12
     filenames:
     - geos.bkg.20201214_210000z.nc4
     - geos.bkg.crtmsrf.20201214_210000z.nc4

@@ -56,14 +56,6 @@ include( fv3jedi_extra_macros )
 option( ENABLE_FV3JEDI_DOC "Build FV3-JEDI documentation" OFF )
 
 ################################################################################
-# Set default model to GFDL_atmos_cubed_sphere
-################################################################################
-
-if (NOT FV3_FORECAST_MODEL MATCHES GEOS AND NOT FV3_FORECAST_MODEL MATCHES UFS)
-  set(FV3_FORECAST_MODEL "FV3CORE")
-endif()
-
-################################################################################
 # Dependencies
 ################################################################################
 
@@ -115,12 +107,6 @@ endif()
 # MPI
 ecbuild_find_mpi( COMPONENTS CXX Fortran REQUIRED )
 
-# Set default forecast model
-# --------------------------
-if (NOT FV3_FORECAST_MODEL MATCHES GEOS AND NOT FV3_FORECAST_MODEL MATCHES UFS)
-  set(FV3_FORECAST_MODEL "FV3CORE")
-endif()
-
 # fms
 find_package(FMS 2023.04 REQUIRED COMPONENTS R4 R8)
 if (FV3_PRECISION MATCHES DOUBLE OR NOT FV3_PRECISION)
@@ -128,8 +114,6 @@ if (FV3_PRECISION MATCHES DOUBLE OR NOT FV3_PRECISION)
 else()
   add_library(fms ALIAS FMS::fms_r4)
 endif()
-
-# fv3
 
 # geos
 if (FV3_FORECAST_MODEL MATCHES "GEOS")

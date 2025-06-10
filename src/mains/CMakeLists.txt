@@ -116,29 +116,25 @@ ecbuild_add_executable( TARGET  fv3jedi_processperts.x
                                 saber
                       )
 
-if( FV3_FORECAST_MODEL MATCHES "FV3CORE" )
+ecbuild_add_executable( TARGET  fv3jedi_cold_to_warm.x
+                        SOURCES fv3jediColdToWarm.f90
+                        LIBS	${FV3JEDI_LIBRARIES}
+                      )
 
-  ecbuild_add_executable( TARGET  fv3jedi_cold_to_warm.x
-                          SOURCES fv3jediColdToWarm.f90
-                          LIBS	${FV3JEDI_LIBRARIES}
-                        )
+ecbuild_add_executable( TARGET  fv3jedi_a_to_d.x
+                        SOURCES fv3jediAtoD.f90
+                        LIBS	${FV3JEDI_LIBRARIES}
+                      )
 
-  ecbuild_add_executable( TARGET  fv3jedi_a_to_d.x
-                          SOURCES fv3jediAtoD.f90
-                          LIBS	${FV3JEDI_LIBRARIES}
-                        )
+ecbuild_add_executable( TARGET  fv3jedi_d_to_a.x
+                        SOURCES fv3jediDtoA.f90
+                        LIBS	${FV3JEDI_LIBRARIES}
+                      )
 
-  ecbuild_add_executable( TARGET  fv3jedi_d_to_a.x
-                          SOURCES fv3jediDtoA.f90
-                          LIBS	${FV3JEDI_LIBRARIES}
-                        )
-
-  ecbuild_add_executable( TARGET  fv3jedi_geos_to_fms.x
-                          SOURCES fv3jediGeosToFms.f90
-                          LIBS	${FV3JEDI_LIBRARIES}
-                        )
-
-endif()
+ecbuild_add_executable( TARGET  fv3jedi_geos_to_fms.x
+                        SOURCES fv3jediGeosToFms.f90
+                        LIBS	${FV3JEDI_LIBRARIES}
+                      )
 
 # Plotting utility
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/fv3jedi_plot_field.py ${CMAKE_BINARY_DIR}/bin/fv3jedi_plot_field.x COPYONLY)
