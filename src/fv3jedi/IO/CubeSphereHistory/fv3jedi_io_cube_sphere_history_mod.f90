@@ -1349,8 +1349,6 @@ character(len=24)  :: XCdirVar, YCdirVar
 character(len=24)  :: XCVarStr, XCLongName, XCUnits, YCVarStr, YCLongName, YCUnits
 integer :: varid(10000)
 
-logical, parameter :: addedge=.true.
-
 integer, pointer :: istart(:), icount(:)
 integer, allocatable :: dimidsg(:), tiles(:)
 integer, allocatable :: dimidsg2(:)
@@ -1488,10 +1486,8 @@ if (self%iam_io_proc) then
                      "nf90_def_dim "//trim(YdirVar) )
       call nccheck ( nf90_def_dim(self%ncid(n), trim(ZfulVar), self%npz,           self%z_dimid), &
                      "nf90_def_dim "//trim(ZfulVar) )
-      if (addedge) then
       call nccheck ( nf90_def_dim(self%ncid(n), trim(ZhlfVar), self%npz+1,         self%e_dimid), &
                      "nf90_def_dim "//trim(ZhlfVar) )
-      endif
       call nccheck ( nf90_def_dim(self%ncid(n), trim(XCdirVar), self%npx,          self%xc_dimid),&
                      "nf90_def_dim "//trim(XCdirVar) )
       call nccheck ( nf90_def_dim(self%ncid(n), trim(YCdirVar), ymult*(self%npy),  self%yc_dimid),&
@@ -1609,7 +1605,7 @@ if (self%iam_io_proc) then
 
       if (self%conf%tile_is_a_dimension(n)) then
         vc=vc+1;
-        call nccheck( nf90_def_var(self%ncid(n), "ncontact", NF90_INT, ncont, varid(vc)), &
+        call nccheck( nf90_def_var(self%ncid(n), "ncontact", NF90_INT, contdims(1), varid(vc)), &
                       "nf90_def_var ncontact" )
         call nccheck( nf90_put_att(self%ncid(n), varid(vc), "long_name", "number of contact points") )
 
@@ -1636,7 +1632,6 @@ if (self%iam_io_proc) then
       call nccheck( nf90_put_att(self%ncid(n), varid(vc), "standard_name", "model_layers") )
       call nccheck( nf90_put_att(self%ncid(n), varid(vc), "units", "level") )
 
-      if (addedge) then
       ! Note: as absurd as it is (since on indexes), edges should be double
       vc=vc+1;
       call nccheck( nf90_def_var(self%ncid(n), trim(ZhlfVar), nf90_double, self%e_dimid, varid(vc)), &
@@ -1649,7 +1644,6 @@ if (self%iam_io_proc) then
       call nccheck( nf90_put_att(self%ncid(n), varid(vc), "standard_name", &
                     "atmosphere_hybrid_sigma_pressure_coordinate") )
       call nccheck( nf90_put_att(self%ncid(n), varid(vc), "units", "layer") )
-      endif
 
       vc=vc+1;
       call nccheck( nf90_def_var(self%ncid(n), "time", self%conf%float_type, self%t_dimid, varid(vc)), "nf90_def_var time" )
@@ -1756,10 +1750,8 @@ if (self%iam_io_proc) then
 
       vc=vc+1;call nccheck( nf90_put_var( self%ncid(n), varid(vc), layers ), &
                             "nf90_put_var "//trim(ZfulVar) )
-      if (addedge) then
       vc=vc+1;call nccheck( nf90_put_var( self%ncid(n), varid(vc), edges ), &
                             "nf90_put_var "//trim(ZhlfVar) )
-      endif
 
       ! Write out Time
       vc=vc+1;call nccheck( nf90_put_var( self%ncid(n), varid(vc), 0 ), "nf90_put_var time" )
