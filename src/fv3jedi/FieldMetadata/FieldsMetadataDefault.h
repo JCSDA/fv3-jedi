@@ -523,6 +523,14 @@ namespace fv3jedi {
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
 
+    md.longName = "snowDensity";
+    md.units = "kgm-3";
+    md.kind = "double";
+    md.tracer = "false";
+    md.levels = "1";
+    md.space = "magnitude";
+    addFieldMetadata(fieldsmetadata, nlev, md);
+
     md.longName = "eastward_wind_at_surface";
     md.units = "ms-1";
     md.kind = "double";
