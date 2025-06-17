@@ -149,7 +149,7 @@ call self%create(f_conf, f_comm, f_npx, f_npy, f_npz)
 c_npx = f_npx
 c_npy = f_npy
 c_npz = f_npz
-f_tile_num = self%ntile
+c_tile_num = self%ntile
 
 end subroutine c_fv3jedi_geom_setup
 
