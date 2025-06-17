@@ -205,7 +205,7 @@ driver:
   do posterior observer: true
   run as observer only: false
 local ensemble DA:
-  solver: LETKF
+  solver: Deterministic LETKF
   inflation:
     rtps: 0.5
     rtpp: 0.6

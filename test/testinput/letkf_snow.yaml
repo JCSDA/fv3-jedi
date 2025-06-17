@@ -108,7 +108,7 @@ driver:
   save posterior ensemble: false
   update obs config with geometry info: false
 local ensemble DA:
-  solver: LETKF
+  solver: Deterministic LETKF
   inflation:
     rtps: 0.0
     rtpp: 0.0

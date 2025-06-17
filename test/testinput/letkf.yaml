@@ -206,7 +206,7 @@ driver:
   save posterior ensemble: false
   save posterior mean increment: true
 local ensemble DA:
-  solver: LETKF
+  solver: Deterministic LETKF
   inflation:
     rtps: 0.5
     rtpp: 0.6
