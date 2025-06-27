@@ -254,9 +254,14 @@ real(kind=kind_real), allocatable :: o3mr  (:,:,:)       !Ozone mixing ratio
 real(kind=kind_real), allocatable :: o3ppmv(:,:,:)       !Ozone ppmv
 
 !Surface pressure
-logical :: have_ps
+logical :: have_ps,have_dp
 real(kind=kind_real), pointer     :: ps  (:,:,:)         !Surface pressure
 real(kind=kind_real), pointer     :: delp(:,:,:)         !Pressure thickness
+
+!Air pressure
+logical :: have_prs,have_pe
+real(kind=kind_real), allocatable :: prs (:,:,:)         !Air pressure (midlevs)
+real(kind=kind_real), allocatable :: pe  (:,:,:)         !Air pressure (edges)
 
 !Skin temperature
 logical :: have_tskin
@@ -410,6 +415,20 @@ elseif (dxm%has_field('air_pressure_thickness')) then
   have_ps = .true.
 endif
 
+have_prs=.false.
+if (have_ps.and.dxg%has_field('air_pressure')) then
+  allocate(prs(self%isc:self%iec,self%jsc:self%jec,self%npz))
+  call ps_to_p_tl(geom,ps,prs)
+  have_prs=.true.
+endif
+
+have_pe=.false.
+if (have_ps.and.dxg%has_field('air_pressure_levels')) then
+  allocate(pe(self%isc:self%iec,self%jsc:self%jec,self%npz+1))
+  call ps_to_pe_tl(geom,ps,pe)
+  have_pe=.true.
+endif
+
 ! Skin temperature
 ! ----------------
 have_tskin = .false.
@@ -476,6 +495,14 @@ do f = 1, size(fields_to_do)
 
     if (have_qg) field_ptr = cgwpath
 
+  case ('air_pressure')
+
+     if (have_prs) field_ptr = prs
+
+  case ('air_pressure_levels')
+
+    if (have_pe) field_ptr = pe
+
   ! Simulated but not assimilated
   case ("skin_temperature_at_surface_where_sea")
   case ("skin_temperature_at_surface_where_land")
@@ -486,8 +513,6 @@ do f = 1, size(fields_to_do)
   case ("mass_content_of_rain_in_atmosphere_column")
   case ("mass_content_of_snow_in_atmosphere_column")
   case ("mass_content_of_graupel_in_atmosphere_column")
-  case ('air_pressure_levels')
-  case ('air_pressure')
 
   case default
 
@@ -507,6 +532,8 @@ if(allocated(ciwpath)) deallocate(ciwpath)
 if(allocated(crwpath)) deallocate(crwpath)
 if(allocated(cswpath)) deallocate(cswpath)
 if(allocated(cgwpath)) deallocate(cgwpath)
+if(allocated(prs)) deallocate(prs)
+if(allocated(pe)) deallocate(pe)
 
 end subroutine multiply
 
@@ -569,10 +596,16 @@ real(kind=kind_real), allocatable :: o3mr  (:,:,:)        !Ozone mixing ratio
 real(kind=kind_real), allocatable :: o3ppmv(:,:,:)        !Ozone ppmv
 
 !Surface pressure
-logical :: have_ps
-integer :: ps_index
+logical :: have_ps,have_dp
+integer :: ps_index,dp_index
 real(kind=kind_real), pointer     :: ps   (:,:,:)         !Surface pressure
 real(kind=kind_real), allocatable :: delp (:,:,:)         !Pressure thickness
+
+!Air pressure
+logical :: have_prs,have_pe
+integer :: prs_index,pe_index
+real(kind=kind_real), allocatable :: prs (:,:,:)         !Air pressure (midlevs)
+real(kind=kind_real), allocatable :: pe  (:,:,:)         !Air pressure (edges)
 
 !Skin temperature
 logical :: have_tsea,have,have_tland,have_tice,have_tsnow
@@ -657,7 +690,7 @@ endif
 
 ! Pressure
 ! --------
-have_ps = .false.
+have_ps = .false.; have_dp=.false.
 if (dxg%has_field( 'air_pressure_at_surface', ps_index)) then
   call dxg%get_field('air_pressure_at_surface', ps)
   allocate(delp(self%isc:self%iec,self%jsc:self%jec,self%npz))
@@ -667,6 +700,28 @@ if (dxg%has_field( 'air_pressure_at_surface', ps_index)) then
     delp(:,:,k) = delp(:,:,k) + ps(:,:,1)
   enddo
   have_ps = .true.
+  have_dp = .true.
+endif
+
+have_pe=.false.; have_prs=.false.
+if (dxg%has_field( "air_pressure_levels", pe_index).and.dxm%has_field("air_pressure_at_surface")) then
+  call dxg%get_field("air_pressure_levels", pe)
+  if(.not.have_ps) then
+    allocate(ps(self%isc:self%iec,self%jsc:self%jec,1))
+  endif
+  ps=0.0_kind_real
+  call ps_to_pe_ad(geom,ps,pe)
+  have_ps=.true.
+  have_pe=.true.
+elseif (dxg%has_field( "air_pressure", prs_index).and.dxm%has_field("air_pressure_at_surface")) then
+  call dxg%get_field("air_pressure", prs)
+  if(.not. have_ps) then
+    allocate(ps(self%isc:self%iec,self%jsc:self%jec,1))
+  endif
+  ps=0.0_kind_real
+  call ps_to_p_ad(geom,ps,prs)
+  have_ps=.true.
+  have_prs=.true.
 endif
 
 ! Cloud liquid water
@@ -859,6 +914,20 @@ do fm = 1, size(fields_to_do)
       field_ptr = field_ptr + delp
     endif
 
+  case ('air_pressure_levels')
+
+    if (have_pe) then
+      field_passed(pe_index) = .true.
+      field_ptr = field_ptr + pe
+    endif
+
+  case ('air_pressure_at_surface')
+
+    if (have_ps) then
+      field_passed(ps_index) = .true.
+      field_ptr = field_ptr + ps
+    endif
+
   case ('ozone_mass_mixing_ratio')
 
     if (have_o3mr) then
@@ -1003,6 +1072,8 @@ if(allocated(dqr)) deallocate(dqr)
 if(allocated(dqs)) deallocate(dqs)
 if(allocated(dqg)) deallocate(dqg)
 if(allocated(q_qmr)) deallocate(q_qmr)
+if(allocated(pe)) deallocate(pe)
+if(allocated(prs)) deallocate(prs)
 
 end subroutine multiplyadjoint
 

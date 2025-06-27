@@ -16,6 +16,10 @@ public delp_to_pe_p_logp
 public ps_to_delp
 public ps_to_delp_tl
 public ps_to_delp_ad
+public ps_to_p_tl
+public ps_to_p_ad
+public ps_to_pe_tl
+public ps_to_pe_ad
 public tropprs
 public tropprs_th
 
@@ -150,6 +154,70 @@ subroutine ps_to_delp_ad(geom,ps_ad,delp_ad)
  enddo
 
 endsubroutine ps_to_delp_ad
+
+! --------------------------------------------------------------------------------------------------
+! Calculate pressure levels from surface pressure (TL)
+subroutine ps_to_p_tl(geom,ps_tl,p_tl)
+
+ type(fv3jedi_geom)  , intent(in   ) :: geom !Geometry for the model
+ real(kind=kind_real), intent(inout) :: ps_tl(geom%isc:geom%iec,geom%jsc:geom%jec           )   !Surface pressure
+ real(kind=kind_real), intent(inout) ::  p_tl(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)   !Mid-lev pressures
+
+ integer :: k
+
+ do k=1,geom%npz
+    p_tl(:,:,k) = 0.5_kind_real*(geom%bk(k)+geom%bk(k+1))*ps_tl
+ enddo
+
+end subroutine ps_to_p_tl
+
+! --------------------------------------------------------------------------------------------------
+! Calculate pressure levels from surface pressure (AD)
+subroutine ps_to_p_ad(geom,ps_ad,p_ad)
+
+ type(fv3jedi_geom)  , intent(in   ) :: geom !Geometry for the model
+ real(kind=kind_real), intent(inout) :: ps_ad(geom%isc:geom%iec,geom%jsc:geom%jec           )   !Surface pressure
+ real(kind=kind_real), intent(inout) ::  p_ad(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz)   !Mid-lev pressures
+
+ integer :: k
+
+ do k=1,geom%npz
+    ps_ad(:,:) = ps_ad(:,:) + 0.5_kind_real*(geom%bk(k)+geom%bk(k+1))*p_ad(:,:,k)
+ enddo
+
+end subroutine ps_to_p_ad
+
+! --------------------------------------------------------------------------------------------------
+! Calculate pressure edges from surface pressure (TL)
+subroutine ps_to_pe_tl(geom,ps_tl,pe_tl)
+
+ type(fv3jedi_geom)  , intent(in   ) :: geom !Geometry for the model
+ real(kind=kind_real), intent(inout) :: ps_tl(geom%isc:geom%iec,geom%jsc:geom%jec             ) !Surface pressure
+ real(kind=kind_real), intent(inout) :: pe_tl(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz+1) !Edge pressures
+
+ integer :: k
+
+ do k=1,geom%npz+1
+    pe_tl(:,:,k) = geom%bk(k)*ps_tl
+ enddo
+
+end subroutine ps_to_pe_tl
+
+! --------------------------------------------------------------------------------------------------
+! Calculate pressure edges from surface pressure (AD)
+subroutine ps_to_pe_ad(geom,ps_ad,pe_ad)
+
+ type(fv3jedi_geom)  , intent(in   ) :: geom !Geometry for the model
+ real(kind=kind_real), intent(inout) :: ps_ad(geom%isc:geom%iec,geom%jsc:geom%jec             ) !Surface pressure
+ real(kind=kind_real), intent(inout) :: pe_ad(geom%isc:geom%iec,geom%jsc:geom%jec,1:geom%npz+1) !Mid-lev pressures
+
+ integer :: k
+
+ do k=1,geom%npz+1
+    ps_ad(:,:) = ps_ad(:,:) + geom%bk(k)*pe_ad(:,:,k)
+ enddo
+
+end subroutine ps_to_pe_ad
 
 ! --------------------------------------------------------------------------------------------------
 ! Locate tropopause using potential vorticity and ozone

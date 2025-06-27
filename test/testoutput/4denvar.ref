@@ -2,7 +2,7 @@ CostJb   : Nonlinear Jb = 0.0000000000000000e+00
 CostJo   : Nonlinear Jo(Aircraft) = 5.0508964449671830e+03, nobs = 2814, Jo/n = 1.7949170024759002e+00, err = 2.2009035741733514e+00
 CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 2.2015471147328403e+03, nobs = 1124, Jo/n = 1.9586718102605341e+00, err = 8.4267816534091757e+00
 CostFunction: Nonlinear J = 7.2524435597000229e+03
-DRPCGMinimizer: reduction in residual norm = 2.2683062327885811e-01
+DRPCGMinimizer: reduction in residual norm = 2.2683062327889908e-01
 CostFunction::addIncrement: Analysis: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 21 | cube sphere face size: C12
@@ -10,7 +10,7 @@ eastward_wind                                | Min:-9.9870309951732608e+01 Max:+
 northward_wind                               | Min:-9.8786769912619121e+01 Max:+1.1111138963306223e+02 RMS:+1.0635105883080898e+01
 air_temperature                              | Min:+1.5727112567986427e+02 Max:+3.0671880241909099e+02 RMS:+2.4964260372606665e+02
 air_pressure_thickness                       | Min:+6.0599994659423817e-01 Max:+1.7947824740983988e+03 RMS:+9.5767736977910954e+02
-water_vapor_mixing_ratio_wrt_moist_air       | Min:+0.0000000000000000e+00 Max:+1.8639534078307159e-02 RMS:+4.6949365816519933e-03
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+0.0000000000000000e+00 Max:+1.8639534078307159e-02 RMS:+4.6949365816519950e-03
 cloud_liquid_ice                             | Min:+0.0000000000000000e+00 Max:+5.0754207489580477e-04 RMS:+1.5795718671717992e-05
 cloud_liquid_water                           | Min:+0.0000000000000000e+00 Max:+9.8037403300115758e-04 RMS:+3.3869746788463320e-05
 ozone_mass_mixing_ratio                      | Min:+0.0000000000000000e+00 Max:+2.3572761383482399e-05 RMS:+4.3568440033018546e-06
@@ -31,10 +31,10 @@ f10m                                         | Min:+9.3271108264498082e-01 Max:+
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 21 | cube sphere face size: C12
 eastward_wind                                | Min:-1.0866781446436227e+02 Max:+1.4913413719149503e+02 RMS:+2.2119283168415951e+01
-northward_wind                               | Min:-1.0881063950802562e+02 Max:+9.8993997644380414e+01 RMS:+1.0464495228713588e+01
+northward_wind                               | Min:-1.0881063950802562e+02 Max:+9.8993997644380414e+01 RMS:+1.0464495228713590e+01
 air_temperature                              | Min:+1.5902301655471913e+02 Max:+3.1006133039700916e+02 RMS:+2.4963543346072200e+02
 air_pressure_thickness                       | Min:+6.0599994659423817e-01 Max:+1.7909196789903735e+03 RMS:+9.5766388894299291e+02
-water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.9976904892789862e-09 Max:+1.8404740572866889e-02 RMS:+4.6908463765148048e-03
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.9976904892789862e-09 Max:+1.8404740572866889e-02 RMS:+4.6908463765148161e-03
 cloud_liquid_ice                             | Min:+0.0000000000000000e+00 Max:+3.0073929018369230e-04 RMS:+1.2584623557495874e-05
 cloud_liquid_water                           | Min:+0.0000000000000000e+00 Max:+8.1874509154758826e-04 RMS:+3.1762915081755561e-05
 ozone_mass_mixing_ratio                      | Min:+0.0000000000000000e+00 Max:+1.7436519649194881e-05 RMS:+4.3549038457921459e-06
@@ -54,16 +54,16 @@ f10m                                         | Min:+9.4462027804037030e-01 Max:+
 ----------------------------------------------------------------------------------------------------
 Obs bias coefficients: 
 ---------------------------------------------------------------
-            constant:  Min= -1.1268265395542367,  Max= 1.1468649466537395,  Norm= 2.5241287821301999
-   lapseRate_order_2:  Min= -0.2113550866858118,  Max= 28.9377661390511101,  Norm= 29.0192359147459129
-           lapseRate:  Min= -5.8342185422406896,  Max= 0.4602338097720491,  Norm= 5.9220176409093082
-  emissivityJacobian:  Min= -1.5623042197887154,  Max= 9.0627101421498750,  Norm= 9.4571232591520520
-sensorScanAngle_order_4:  Min= -9.1061124358686776,  Max= 1.2541841453940783,  Norm= 14.3123338700404901
-sensorScanAngle_order_3:  Min= -1.2721361814984402,  Max= 2.2773783173219604,  Norm= 3.2545144348296389
-sensorScanAngle_order_2:  Min= -4.9095541880600253,  Max= 3.5083279663189963,  Norm= 7.4899382648762565
-     sensorScanAngle:  Min= -0.7566172337021715,  Max= 0.0667285427593316,  Norm= 1.2946583145822310
+            constant:  Min= -1.1268265395542367,  Max= 1.1468649466537391,  Norm= 2.5241287821301994
+   lapseRate_order_2:  Min= -0.2113550866858122,  Max= 28.9377661390511065,  Norm= 29.0192359147459094
+           lapseRate:  Min= -5.8342185422406878,  Max= 0.4602338097720489,  Norm= 5.9220176409093064
+  emissivityJacobian:  Min= -1.5623042197886978,  Max= 9.0627101421498466,  Norm= 9.4571232591520396
+sensorScanAngle_order_4:  Min= -9.1061124358686776,  Max= 1.2541841453940770,  Norm= 14.3123338700404901
+sensorScanAngle_order_3:  Min= -1.2721361814984404,  Max= 2.2773783173219604,  Norm= 3.2545144348296393
+sensorScanAngle_order_2:  Min= -4.9095541880600262,  Max= 3.5083279663189955,  Norm= 7.4899382648762565
+     sensorScanAngle:  Min= -0.7566172337021716,  Max= 0.0667285427593316,  Norm= 1.2946583145822312
 ---------------------------------------------------------------
-CostJb   : Nonlinear Jb = 425.3465967519906030
-CostJo   : Nonlinear Jo(Aircraft) = 3864.8739913325771340, nobs = 2814, Jo/n = 1.3734449151857062, err = 2.2009035741733514
-CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 1943.0343949764835543, nobs = 1124, Jo/n = 1.7286782873456259, err = 8.4267816534091757
-CostFunction: Nonlinear J = 6233.2549830610514618
+CostJb   : Nonlinear Jb = 425.3465967520391473
+CostJo   : Nonlinear Jo(Aircraft) = 3864.8739913325280213, nobs = 2814, Jo/n = 1.3734449151856887, err = 2.2009035741733514
+CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 1943.0343949753460038, nobs = 1124, Jo/n = 1.7286782873446138, err = 8.4267816534091757
+CostFunction: Nonlinear J = 6233.2549830599127745
