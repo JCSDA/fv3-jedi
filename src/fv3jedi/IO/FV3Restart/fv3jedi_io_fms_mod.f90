@@ -572,6 +572,7 @@ if (trim(io_file) == 'default') then
 
   ! Orog variables if short name contains orog
   if (index(trim(field%short_name), 'orog') /= 0) io_file = 'orography'
+  if (index(trim(field%short_name), 'fraction_of_land') /= 0) io_file = 'orography'
 
   ! Cold start variables if short name contains cold
   if (index(trim(field%short_name), 'cold') /= 0) io_file = 'cold'
