@@ -1,7 +1,7 @@
-CostJb   : Nonlinear Jb = 0.0000000000000000e+00
 CostJo   : Nonlinear Jo(Radiosonde) = 7.1523093909912830e+04, nobs = 1457, Jo/n = 4.9089288888066456e+01, err = 2.0329386501381626e+00
 CostJo   : Nonlinear Jo(ompsnm_npp) = 8.1461428862385083e+03, nobs = 6835, Jo/n = 1.1918277814540612e+00, err = 6.0000000000000000e+00
 CostJo   : Nonlinear Jo(omi_aura) = 8.1461428862385083e+03, nobs = 6835, Jo/n = 1.1918277814540612e+00, err = 6.0000000000000000e+00
+CostJb   : Nonlinear Jb = 0.0000000000000000e+00
 CostFunction: Nonlinear J = 8.7815379682389845e+04
 DRPCGMinimizer: reduction in residual norm = 1.3150763756665088e-01
 CostFunction::addIncrement: Analysis: 
@@ -16,8 +16,8 @@ water_vapor_mixing_ratio_wrt_moist_air       | Min:+0.0000000000000000e+00 Max:+
 geopotential_height_times_gravity_at_surface | Min:-2.6477954101562500e+02 Max:+4.9483356501111783e+04 RMS:+5.9494834270643069e+03
 ozone_mass_mixing_ratio                      | Min:+2.4812975821526111e-09 Max:+1.7471159067430224e-05 RMS:+4.3564070511852332e-06
 ----------------------------------------------------------------------------------------------------
-CostJb   : Nonlinear Jb = 244.6431691045874
 CostJo   : Nonlinear Jo(Radiosonde) = 3979.323199258225, nobs = 1457, Jo/n = 2.731175840259592, err = 2.032938650138163
 CostJo   : Nonlinear Jo(ompsnm_npp) = 6503.100479415728, nobs = 6835, Jo/n = 0.9514411820652126, err = 6
 CostJo   : Nonlinear Jo(omi_aura) = 6503.100479415728, nobs = 6835, Jo/n = 0.9514411820652126, err = 6
+CostJb   : Nonlinear Jb = 244.6431691045874
 CostFunction: Nonlinear J = 17230.16732719427

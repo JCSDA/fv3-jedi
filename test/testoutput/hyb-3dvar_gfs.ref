@@ -1,10 +1,10 @@
 Norm of input parameter StdDev: 4.8422805741030653e+05
-CostJb   : Nonlinear Jb = 0.0000000000000000e+00
 CostJo   : Nonlinear Jo(Aircraft) = 4.9039743627455955e+03, nobs = 2816, Jo/n = 1.7414681685886348e+00, err = 2.1996246767228533e+00
 CostJo   : Nonlinear Jo(Radiosonde) = 2.5407802341930642e+03, nobs = 1347, Jo/n = 1.8862511018508272e+00, err = 2.0631474620187364e+00
 CostJo   : Nonlinear Jo(GnssroBndNBAM) = 3.9833790236708865e+02, nobs = 123, Jo/n = 3.2385195314397452e+00, err = 2.9829099160316849e-04
 CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 6.9080343238028775e+02, nobs = 855, Jo/n = 8.0795723085413773e-01, err = 9.6460709104119360e+00
 CostJo   : Nonlinear Jo(SfcObs) = 0.0000000000000000e+00 --- No Observations
+CostJb   : Nonlinear Jb = 0.0000000000000000e+00
 CostFunction: Nonlinear J = 8.5338959316860364e+03
 DRPCGMinimizer: reduction in residual norm = 3.1433555582579696e-04
 CostFunction::addIncrement: Analysis: 
@@ -46,12 +46,12 @@ instantaneousAltitudeRate_order_2:  Min= -0.0751584227815810,  Max= 0.5394655545
 
 
 Norm of input parameter StdDev: 484228.0574103065300733
-CostJb   : Nonlinear Jb = 106.2171527573970167
 CostJo   : Nonlinear Jo(Aircraft) = 3866.2051719274095376, nobs = 2816, Jo/n = 1.3729421775310404, err = 2.1996246767228533
 CostJo   : Nonlinear Jo(Radiosonde) = 1964.0383546889661375, nobs = 1347, Jo/n = 1.4580834110534269, err = 2.0631474620187364
 CostJo   : Nonlinear Jo(GnssroBndNBAM) = 273.3206086697102819, nobs = 123, Jo/n = 2.2221187696724414, err = 0.0002982909916032
 CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 562.4574505736968604, nobs = 855, Jo/n = 0.6578449714312244, err = 9.6460709104119360
 CostJo   : Nonlinear Jo(SfcObs) = 0.0000000000000000 --- No Observations
+CostJb   : Nonlinear Jb = 106.2171527573970167
 CostFunction: Nonlinear J = 6772.2387386171794788
 DRPCGMinimizer: reduction in residual norm = 0.0152097714579879
 CostFunction::addIncrement: Analysis: 
@@ -87,15 +87,10 @@ Obs bias coefficients:
 instantaneousAltitudeRate:  Min= -0.3194482263657995,  Max= 0.1093555219888406,  Norm= 0.5730447714099025
 instantaneousAltitudeRate_order_2:  Min= -0.0751583097826568,  Max= 0.5352106297374752,  Norm= 0.5457751280451928
 ---------------------------------------------------------------
-
-
-
-
-
-CostJb   : Nonlinear Jb = 115.5018251992528775
 CostJo   : Nonlinear Jo(Aircraft) = 3835.9732838860036281, nobs = 2816, Jo/n = 1.3622064218345182, err = 2.1996246767228533
 CostJo   : Nonlinear Jo(Radiosonde) = 1952.4579785523642386, nobs = 1347, Jo/n = 1.4494862498532770, err = 2.0631474620187364
 CostJo   : Nonlinear Jo(GnssroBndNBAM) = 267.3848791236748639, nobs = 123, Jo/n = 2.1738608058835354, err = 0.0002982909916032
 CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 560.0081479259119988, nobs = 855, Jo/n = 0.6549802899718269, err = 9.6460709104119360
 CostJo   : Nonlinear Jo(SfcObs) = 0.0000000000000000 --- No Observations
+CostJb   : Nonlinear Jb = 115.5018251992528775
 CostFunction: Nonlinear J = 6731.3261146872082463

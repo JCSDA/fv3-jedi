@@ -1,5 +1,5 @@
-CostJb   : Nonlinear Jb = 0.0000000000000000e+00
 CostJo   : Nonlinear Jo(Aircraft) = 5.8750484431006134e+03, nobs = 2764, Jo/n = 2.1255602181984852e+00, err = 2.1981853448203252e+00
+CostJb   : Nonlinear Jb = 0.0000000000000000e+00
 CostFunction: Nonlinear J = 5.8750484431006134e+03
 DRPCGMinimizer: reduction in residual norm = 1.6110817584859409e+00
 CostFunction::addIncrement: Analysis: 
@@ -15,9 +15,6 @@ cloud_liquid_water                           | Min:+0.0000000000000000e+00 Max:+
 ozone_mass_mixing_ratio                      | Min:+0.0000000000000000e+00 Max:+2.3572761383482399e-05 RMS:+4.3568440033018504e-06
 geopotential_height_times_gravity_at_surface | Min:-2.6477954101562500e+02 Max:+4.9483356501111783e+04 RMS:+5.9494834270643069e+03
 ----------------------------------------------------------------------------------------------------
-
-
-
-CostJb   : Nonlinear Jb = 0.004826752810006396
 CostJo   : Nonlinear Jo(Aircraft) = 5734.918157046736, nobs = 2762, Jo/n = 2.076364285679484, err = 2.198816414499511
+CostJb   : Nonlinear Jb = 0.004826752810006396
 CostFunction: Nonlinear J = 5734.922983799546

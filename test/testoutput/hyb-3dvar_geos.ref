@@ -1,4 +1,3 @@
-CostJb   : Nonlinear Jb = 0.0000000000000000e+00
 CostJo   : Nonlinear Jo(Aircraft) = 4.5552310999833044e+03, nobs = 2815, Jo/n = 1.6181993250384741e+00, err = 2.2000621653748769e+00
 CostJo   : Nonlinear Jo(Radiosonde) = 2.4303069690773682e+03, nobs = 1349, Jo/n = 1.8015618747793685e+00, err = 2.0637630036718724e+00
 CostJo   : Nonlinear Jo(GnssroBndNBAM) = 4.0491349357891409e+02, nobs = 122, Jo/n = 3.3189630621222466e+00, err = 2.9507111341866540e-04
@@ -18,6 +17,7 @@ CostJo   : Nonlinear Jo(IASI-METOPA) = 4.6141722921291621e+03, nobs = 8451, Jo/n
 CostJo   : Nonlinear Jo(IASI-METOPB) = 5.6394341410298857e+03, nobs = 9117, Jo/n = 6.1856248119226565e-01, err = 1.1620246975800030e+00
 CostJo   : Nonlinear Jo(CRIS-NPP) = 4.1653650567780039e+02, nobs = 643, Jo/n = 6.4780171956112031e-01, err = 7.2568313107608784e-01
 CostJo   : Nonlinear Jo(SfcObs) = 0.0000000000000000e+00 --- No Observations
+CostJb   : Nonlinear Jb = 0.0000000000000000e+00
 CostFunction: Nonlinear J = 2.8893740623714224e+04
 DRPCGMinimizer: reduction in residual norm = 5.1740429591270354e-01
 CostFunction::addIncrement: Analysis: 
@@ -47,28 +47,6 @@ soilm                                        | Min:+1.0988816455122317e-03 Max:+
 eastward_wind_at_surface                     | Min:-1.4631289361976737e+01 Max:+2.0071757657543859e+01 RMS:+5.4868549560189432e+00
 northward_wind_at_surface                    | Min:-1.4834912659890456e+01 Max:+1.8979258912037594e+01 RMS:+4.4479201325957609e+00
 ----------------------------------------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-CostJb   : Nonlinear Jb = 3.804681795514844e-08
 CostJo   : Nonlinear Jo(Aircraft) = 4555.229966122562, nobs = 2815, Jo/n = 1.618198922246026, err = 2.200062165374877
 CostJo   : Nonlinear Jo(Radiosonde) = 2430.306754043444, nobs = 1349, Jo/n = 1.801561715376904, err = 2.063763003671872
 CostJo   : Nonlinear Jo(GnssroBndNBAM) = 311.7573019141737, nobs = 122, Jo/n = 2.555387720607981, err = 0.0002950711134186654
@@ -88,6 +66,7 @@ CostJo   : Nonlinear Jo(IASI-METOPA) = 4550.698275852401, nobs = 8451, Jo/n = 0.
 CostJo   : Nonlinear Jo(IASI-METOPB) = 5574.494517784681, nobs = 9117, Jo/n = 0.6114395654036066, err = 1.162024697580003
 CostJo   : Nonlinear Jo(CRIS-NPP) = 378.399734417058, nobs = 643, Jo/n = 0.5884910333080218, err = 0.7256831310760878
 CostJo   : Nonlinear Jo(SfcObs) = 0 --- No Observations
+CostJb   : Nonlinear Jb = 3.804681795514844e-08
 CostFunction: Nonlinear J = 27991.71091877526
 DRPCGMinimizer: reduction in residual norm = 0.5207977052127811
 CostFunction::addIncrement: Analysis: 
@@ -117,28 +96,6 @@ soilm                                        | Min:+1.0988816455122317e-03 Max:+
 eastward_wind_at_surface                     | Min:-1.4631289361976737e+01 Max:+2.0071757657543859e+01 RMS:+5.4868549560189432e+00
 northward_wind_at_surface                    | Min:-1.4834912659890456e+01 Max:+1.8979258912037594e+01 RMS:+4.4479201325957609e+00
 ----------------------------------------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-CostJb   : Nonlinear Jb = 4.202472243792833e-08
 CostJo   : Nonlinear Jo(Aircraft) = 4555.229792380176, nobs = 2815, Jo/n = 1.618198860525818, err = 2.200062165374877
 CostJo   : Nonlinear Jo(Radiosonde) = 2430.306721125798, nobs = 1349, Jo/n = 1.801561690975387, err = 2.063763003671872
 CostJo   : Nonlinear Jo(GnssroBndNBAM) = 302.786470228882, nobs = 122, Jo/n = 2.481856313351492, err = 0.0002950711134186654
@@ -158,4 +115,5 @@ CostJo   : Nonlinear Jo(IASI-METOPA) = 4546.850464436589, nobs = 8451, Jo/n = 0.
 CostJo   : Nonlinear Jo(IASI-METOPB) = 5568.991246673731, nobs = 9117, Jo/n = 0.6108359379920733, err = 1.162024697580003
 CostJo   : Nonlinear Jo(CRIS-NPP) = 377.7478563707232, nobs = 643, Jo/n = 0.5874772260819956, err = 0.7256831310760878
 CostJo   : Nonlinear Jo(SfcObs) = 0 --- No Observations
+CostJb   : Nonlinear Jb = 4.202472243792833e-08
 CostFunction: Nonlinear J = 27746.53099239007

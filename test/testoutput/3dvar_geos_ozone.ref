@@ -1,6 +1,6 @@
-CostJb   : Nonlinear Jb = 0.0000000000000000e+00
 CostJo   : Nonlinear Jo(ompsnm_npp) = 6.0243509124145903e+03, nobs = 6750, Jo/n = 8.9249643146882818e-01, err = 6.0000000000000000e+00
 CostJo   : Nonlinear Jo(omi_aura) = 0.0000000000000000e+00 --- No Observations
+CostJb   : Nonlinear Jb = 0.0000000000000000e+00
 CostFunction: Nonlinear J = 6.0243509124145903e+03
 DRPCGMinimizer: reduction in residual norm = 2.4385642588443737e-01
 CostFunction::addIncrement: Analysis: 
@@ -11,7 +11,7 @@ air_pressure_thickness                       | Min:+1.0000002384185789e+00 Max:+
 geopotential_height_times_gravity_at_surface | Min:-2.6583901977539068e+02 Max:+4.9849398987285414e+04 RMS:+5.9622785167944940e+03
 mole_fraction_of_ozone_in_air                | Min:+1.1900220921594743e-02 Max:+3.8072006481634240e+01 RMS:+3.7109235259592062e+00
 ----------------------------------------------------------------------------------------------------
-CostJb   : Nonlinear Jb = 111.668058284171
 CostJo   : Nonlinear Jo(ompsnm_npp) = 3091.074461362212, nobs = 6750, Jo/n = 0.4579369572388462, err = 6
 CostJo   : Nonlinear Jo(omi_aura) = 0 --- No Observations
+CostJb   : Nonlinear Jb = 111.668058284171
 CostFunction: Nonlinear J = 3202.742519646383

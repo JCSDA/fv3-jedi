@@ -1,6 +1,6 @@
-CostJb   : Nonlinear Jb = 0.0000000000000000e+00
 CostJo   : Nonlinear Jo(GnssroBndROPP1D) = 7.6945817814388931e+01, nobs = 132, Jo/n = 5.8292286223021916e-01, err = 8.8915342725866394e-04
 CostJo   : Nonlinear Jo(GnssroBndROPP2D) = 7.8826487758438788e+01, nobs = 132, Jo/n = 5.9717036180635441e-01, err = 8.8915342725866394e-04
+CostJb   : Nonlinear Jb = 0.0000000000000000e+00
 CostFunction: Nonlinear J = 1.5577230557282772e+02
 DRPCGMinimizer: reduction in residual norm = 1.2670623867089520e-01
 CostFunction::addIncrement: Analysis:
@@ -28,11 +28,7 @@ eastward_wind_at_surface                     | Min:-1.8101275076649053e+01 Max:+
 northward_wind_at_surface                    | Min:-1.4623627030973990e+01 Max:+1.8213843978241414e+01 RMS:+4.8372223427453616e+00
 f10m                                         | Min:+9.4200706791884525e-01 Max:+1.0783731020020086e+00 RMS:+9.9586000625264048e-01
 ----------------------------------------------------------------------------------------------------
-
-
-
-
-CostJb   : Nonlinear Jb = 0.0002800029898795617
 CostJo   : Nonlinear Jo(GnssroBndROPP1D) = 23.23392952320224, nobs = 132, Jo/n = 0.176014617600017, err = 0.0008891534272586639
 CostJo   : Nonlinear Jo(GnssroBndROPP2D) = 23.82760817871216, nobs = 132, Jo/n = 0.1805121831720618, err = 0.0008891534272586639
+CostJb   : Nonlinear Jb = 0.0002800029898795617
 CostFunction: Nonlinear J = 47.06181770490429

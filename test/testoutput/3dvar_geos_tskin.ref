@@ -1,5 +1,5 @@
-CostJb   : Nonlinear Jb = 0.0000000000000000e+00
 CostJo   : Nonlinear Jo(SeaSurfaceTemp) = 7.8170892135127974e+02, nobs = 88, Jo/n = 8.8830559244463601e+00, err = 7.3178641941236078e-01
+CostJb   : Nonlinear Jb = 0.0000000000000000e+00
 CostFunction: Nonlinear J = 7.8170892135127974e+02
 DRPCGMinimizer: reduction in residual norm = 7.8028179628038749e-02
 CostFunction::addIncrement: Analysis: 
@@ -15,6 +15,6 @@ fraction_of_land                             | Min:+0.0000000000000000e+00 Max:+
 fraction_of_ice                              | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+00 RMS:+1.4332917188695557e-01
 fraction_of_lake                             | Min:+0.0000000000000000e+00 Max:+8.2433401421318375e-01 RMS:+3.9135745916011447e-02
 ----------------------------------------------------------------------------------------------------
-CostJb   : Nonlinear Jb = 73.63308360442701
 CostJo   : Nonlinear Jo(SeaSurfaceTemp) = 134.3896713660386, nobs = 88, Jo/n = 1.527155356432256, err = 0.7317864194123608
+CostJb   : Nonlinear Jb = 73.63308360442701
 CostFunction: Nonlinear J = 208.0227549704656

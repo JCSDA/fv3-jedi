@@ -1,5 +1,5 @@
-CostJb   : Nonlinear Jb = 0.0000000000000000e+00
 CostJo   : Nonlinear Jo(Radiosonde) = 2.5498648757152641e+03, nobs = 1348, Jo/n = 1.8915911540914423e+00, err = 2.0632451582190372e+00
+CostJb   : Nonlinear Jb = 0.0000000000000000e+00
 CostFunction: Nonlinear J = 2.5498648757152641e+03
    Norm reduction all members ( 1) = 5.6660414323914032e-01, 5.8512261909720920e-01
    Quadratic cost function all members: J ( 1) = 2.2274059316072417e+03, 2.3605373910918938e+03
@@ -18,9 +18,6 @@ cloud_liquid_ice                             | Min:+0.0000000000000000e+00 Max:+
 cloud_liquid_water                           | Min:+0.0000000000000000e+00 Max:+9.5613291403337346e-04 RMS:+3.4619933777381978e-05
 ozone_mass_mixing_ratio                      | Min:+0.0000000000000000e+00 Max:+1.8715426404116443e-05 RMS:+4.3559018129299654e-06
 ----------------------------------------------------------------------------------------------------
-
-
-
-CostJb   : Nonlinear Jb = 170.8455578908242
 CostJo   : Nonlinear Jo(Radiosonde) = 1938.060138422981, nobs = 1348, Jo/n = 1.437730073014081, err = 2.063245158219037
+CostJb   : Nonlinear Jb = 170.8455578908242
 CostFunction: Nonlinear J = 2108.905696313805

@@ -1,5 +1,5 @@
-CostJb   : Nonlinear Jb = 0.0000000000000000e+00
 CostJo   : Nonlinear Jo(Radiosonde) = 8.8774116882964721e+04, nobs = 1457, Jo/n = 6.0929387016447990e+01, err = 2.0329386501381626e+00
+CostJb   : Nonlinear Jb = 0.0000000000000000e+00
 CostFunction: Nonlinear J = 8.8774116882964721e+04
 DRPCGMinimizer: reduction in residual norm = 1.1745389731565768e-02
 CostFunction::addIncrement: Analysis: 
@@ -20,6 +20,6 @@ fraction_of_ocean                            | Min:-9.8857172030039852e-32 Max:+
 fraction_of_lake                             | Min:-3.7859660702782663e-32 Max:+8.2433401421318375e-01 RMS:+3.9135745916011447e-02
 fraction_of_ice                              | Min:-3.2924058754102644e-34 Max:+1.0000000000000000e+00 RMS:+1.4332917188695557e-01
 ----------------------------------------------------------------------------------------------------
-CostJb   : Nonlinear Jb = 39.52315730313135
 CostJo   : Nonlinear Jo(Radiosonde) = 2873.676612107053, nobs = 1457, Jo/n = 1.972324373443413, err = 2.032938650138163
+CostJb   : Nonlinear Jb = 39.52315730313135
 CostFunction: Nonlinear J = 2913.199769410185

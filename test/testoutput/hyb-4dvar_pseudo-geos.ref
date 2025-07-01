@@ -1,7 +1,7 @@
-CostJb   : Nonlinear Jb = 0.0000000000000000e+00
 CostJo   : Nonlinear Jo(Aircraft) = 4.3197853082374331e+03, nobs = 2822, Jo/n = 1.5307531212747814e+00, err = 2.2006353369903104e+00
 CostJo   : Nonlinear Jo(GnssroBndNBAM) = 4.0148799250685329e+02, nobs = 122, Jo/n = 3.2908851844824039e+00, err = 3.0065881545449780e-04
 CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 6.6349779458849673e+02, nobs = 854, Jo/n = 7.7692950186006648e-01, err = 9.6437301682311869e+00
+CostJb   : Nonlinear Jb = 0.0000000000000000e+00
 CostFunction: Nonlinear J = 5.3847710953327833e+03
 DRPCGMinimizer: reduction in residual norm = 8.5232798913765817e-01
 CostFunction::addIncrement: Analysis: 
@@ -44,8 +44,8 @@ soilm                                        | Min:+1.0982974579477110e-03 Max:+
 eastward_wind_at_surface                     | Min:-1.8062565674841707e+01 Max:+2.2796206628119187e+01 RMS:+5.5192579618134117e+00
 northward_wind_at_surface                    | Min:-1.4108648338481105e+01 Max:+1.4886593593473570e+01 RMS:+4.5477360637279221e+00
 ----------------------------------------------------------------------------------------------------
-CostJb   : Nonlinear Jb = 7.093646600844952e-06
 CostJo   : Nonlinear Jo(Aircraft) = 5241.201812880434, nobs = 2780, Jo/n = 1.885324393122458, err = 2.198509140984742
 CostJo   : Nonlinear Jo(GnssroBndNBAM) = 391.3031090984279, nobs = 122, Jo/n = 3.207402533593671, err = 0.0003006588154544978
 CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 1009.333105478883, nobs = 854, Jo/n = 1.181888882293774, err = 9.643730168231187
+CostJb   : Nonlinear Jb = 7.093646600844952e-06
 CostFunction: Nonlinear J = 6641.838034551392

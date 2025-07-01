@@ -1,5 +1,5 @@
-CostJb   : Nonlinear Jb = 0.0000000000000000e+00
 CostJo   : Nonlinear Jo(Aod) = 1.3432370864445908e+04, nobs = 6821, Jo/n = 1.9692670963855603e+00, err = 3.0058385382682534e-01
+CostJb   : Nonlinear Jb = 0.0000000000000000e+00
 CostFunction: Nonlinear J = 1.3432370864445908e+04
 DRPCGMinimizer: reduction in residual norm = 4.3627625326831049e-01
 CostFunction::addIncrement: Analysis: 
@@ -29,9 +29,6 @@ mass_fraction_of_sea_salt003_in_air          | Min:+0.0000000000000000e+00 Max:+
 mass_fraction_of_sea_salt004_in_air          | Min:+0.0000000000000000e+00 Max:+2.0862813651581170e-07 RMS:+8.1942598899347776e-09
 mass_fraction_of_sea_salt005_in_air          | Min:+0.0000000000000000e+00 Max:+5.4163890555201568e-08 RMS:+1.5298971776767178e-09
 ----------------------------------------------------------------------------------------------------
-
-
-
-CostJb   : Nonlinear Jb = 0
 CostJo   : Nonlinear Jo(Aod) = 11973.97903531556, nobs = 6821, Jo/n = 1.755458002538567, err = 0.3005838538268253
+CostJb   : Nonlinear Jb = 0
 CostFunction: Nonlinear J = 11973.97903531556

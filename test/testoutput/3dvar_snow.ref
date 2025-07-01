@@ -1,5 +1,5 @@
-CostJb   : Nonlinear Jb = 0.0000000000000000e+00
 CostJo   : Nonlinear Jo(Snow depth) = 2.1399855067457843e+03, nobs = 6757, Jo/n = 3.1670645356604771e-01, err = 4.0000000000000000e+01
+CostJb   : Nonlinear Jb = 0.0000000000000000e+00
 CostFunction: Nonlinear J = 2.1399855067457843e+03
 DRPCGMinimizer: reduction in residual norm = 1.3050161052516444e-11
 CostFunction::addIncrement: Analysis: 
@@ -10,9 +10,6 @@ vtype                                        | Min:+0.0000000000000000e+00 Max:+
 sheleg                                       | Min:+0.0000000000000000e+00 Max:+3.5867762934643093e+02 RMS:+2.6093081788808018e+01
 slmsk                                        | Min:+0.0000000000000000e+00 Max:+2.0000000000000000e+00 RMS:+6.8949626002799513e-01
 ----------------------------------------------------------------------------------------------------
-
-
-
-CostJb   : Nonlinear Jb = 6.906560947120406
 CostJo   : Nonlinear Jo(Snow depth) = 2124.138048887639, nobs = 6757, Jo/n = 0.3143611142352581, err = 40
+CostJb   : Nonlinear Jb = 6.906560947120406
 CostFunction: Nonlinear J = 2131.04460983476

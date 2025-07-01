@@ -1,6 +1,6 @@
-CostJb   : Nonlinear Jb = 0.0000000000000000e+00
 CostJo   : Nonlinear Jo(Radiosonde) = 0.0000000000000000e+00 --- No Observations
 CostJo   : Nonlinear Jo(Empty) = 0.0000000000000000e+00 --- No Observations
+CostJb   : Nonlinear Jb = 0.0000000000000000e+00
 CostFunction: Nonlinear J = 0.0000000000000000e+00
 CostFunction::addIncrement: Analysis: 
 ----------------------------------------------------------------------------------------------------
@@ -11,12 +11,9 @@ air_temperature                              | Min:+1.6035734207814718e+02 Max:+
 air_pressure_thickness                       | Min:+6.0599994659423817e-01 Max:+1.7848057146959275e+03 RMS:+9.5720841709994363e+02
 water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.2296700465515011e-07 Max:+1.8568663644472846e-02 RMS:+4.6327444577966975e-03
 ----------------------------------------------------------------------------------------------------
-
-
-
-CostJb   : Nonlinear Jb = 0
 CostJo   : Nonlinear Jo(Radiosonde) = 0 --- No Observations
 CostJo   : Nonlinear Jo(Empty) = 0 --- No Observations
+CostJb   : Nonlinear Jb = 0
 CostFunction: Nonlinear J = 0
 CostFunction::addIncrement: Analysis: 
 ----------------------------------------------------------------------------------------------------
@@ -27,10 +24,7 @@ air_temperature                              | Min:+1.6035734207814718e+02 Max:+
 air_pressure_thickness                       | Min:+6.0599994659423817e-01 Max:+1.7848057146959275e+03 RMS:+9.5720841709994363e+02
 water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.2296700465515011e-07 Max:+1.8568663644472846e-02 RMS:+4.6327444577966975e-03
 ----------------------------------------------------------------------------------------------------
-
-
-
-CostJb   : Nonlinear Jb = 0
 CostJo   : Nonlinear Jo(Radiosonde) = 0 --- No Observations
 CostJo   : Nonlinear Jo(Empty) = 0 --- No Observations
+CostJb   : Nonlinear Jb = 0
 CostFunction: Nonlinear J = 0

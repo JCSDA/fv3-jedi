@@ -1,6 +1,6 @@
-CostJb   : Nonlinear Jb = 0.0000000000000000e+00
 CostJo   : Nonlinear Jo(Aircraft) = 5.0508964449671830e+03, nobs = 2814, Jo/n = 1.7949170024759002e+00, err = 2.2009035741733514e+00
 CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 2.2015471147328403e+03, nobs = 1124, Jo/n = 1.9586718102605341e+00, err = 8.4267816534091757e+00
+CostJb   : Nonlinear Jb = 0.0000000000000000e+00
 CostFunction: Nonlinear J = 7.2524435597000229e+03
 DRPCGMinimizer: reduction in residual norm = 2.2683062327889908e-01
 CostFunction::addIncrement: Analysis: 
@@ -63,7 +63,7 @@ sensorScanAngle_order_3:  Min= -1.2721361814984404,  Max= 2.2773783173219604,  N
 sensorScanAngle_order_2:  Min= -4.9095541880600262,  Max= 3.5083279663189955,  Norm= 7.4899382648762565
      sensorScanAngle:  Min= -0.7566172337021716,  Max= 0.0667285427593316,  Norm= 1.2946583145822312
 ---------------------------------------------------------------
-CostJb   : Nonlinear Jb = 425.3465967520391473
 CostJo   : Nonlinear Jo(Aircraft) = 3864.8739913325280213, nobs = 2814, Jo/n = 1.3734449151856887, err = 2.2009035741733514
 CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 1943.0343949753460038, nobs = 1124, Jo/n = 1.7286782873446138, err = 8.4267816534091757
+CostJb   : Nonlinear Jb = 425.3465967520391473
 CostFunction: Nonlinear J = 6233.2549830599127745

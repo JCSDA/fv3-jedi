@@ -1,5 +1,5 @@
-CostJb   : Nonlinear Jb = 0.0000000000000000e+00
 CostJo   : Nonlinear Jo(Radiosonde) = 2.4952954557259341e+03, nobs = 1347, Jo/n = 1.8524836345404114e+00, err = 2.0631474620187360e+00
+CostJb   : Nonlinear Jb = 0.0000000000000000e+00
 CostFunction: Nonlinear J = 2.4952954557259341e+03
 DRPLanczosMinimizer: reduction in residual norm = 1.9460735202436086e-01
 CostFunction::addIncrement: Analysis: 
@@ -27,11 +27,8 @@ eastward_wind_at_surface                     | Min:-1.8101275076649053e+01 Max:+
 northward_wind_at_surface                    | Min:-1.4623627030973990e+01 Max:+1.8213843978241414e+01 RMS:+4.8372223427453616e+00
 f10m                                         | Min:+9.4200706791884525e-01 Max:+1.0783731020020086e+00 RMS:+9.9586000625264048e-01
 ----------------------------------------------------------------------------------------------------
-
-
-
-CostJb   : Nonlinear Jb = 215.5854048507775
 CostJo   : Nonlinear Jo(Radiosonde) = 1878.603364074914, nobs = 1347, Jo/n = 1.394657285875957, err = 2.063147462018736
+CostJb   : Nonlinear Jb = 215.5854048507775
 CostFunction: Nonlinear J = 2094.188768925691
 CostFunction::addIncrement: Analysis: 
 ----------------------------------------------------------------------------------------------------

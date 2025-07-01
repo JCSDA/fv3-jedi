@@ -1,6 +1,6 @@
 Norm of input parameter StdDev: 6.4208377570689412e-01
-CostJb   : Nonlinear Jb = 0.0000000000000000e+00
 CostJo   : Nonlinear Jo(Aod) = 7.7752251874228671e+02, nobs = 555, Jo/n = 1.4009414752113274e+00, err = 1.1621934366905907e-01
+CostJb   : Nonlinear Jb = 0.0000000000000000e+00
 CostFunction: Nonlinear J = 7.7752251874228671e+02
 DRPCGMinimizer: reduction in residual norm = 1.1384672993887714e-11
 CostFunction::addIncrement: Analysis: 
@@ -31,8 +31,8 @@ Obs bias coefficients:
 ---------------------------------------------------------------
 
 Norm of input parameter StdDev: 0.6420837757068941
-CostJb   : Nonlinear Jb = 1.2740741158815740
 CostJo   : Nonlinear Jo(Aod) = 255.2815328266045185, nobs = 555, Jo/n = 0.4599667258137018, err = 0.1162193436690591
+CostJb   : Nonlinear Jb = 1.2740741158815740
 CostFunction: Nonlinear J = 256.5556069424860652
 DRPCGMinimizer: reduction in residual norm = 0.0000004733631286
 CostFunction::addIncrement: Analysis: 
@@ -61,7 +61,6 @@ Obs bias coefficients:
 ---------------------------------------------------------------
             constant:  Min= 0.0424768819892766,  Max= 0.0424768819892766,  Norm= 0.0424768819892766
 ---------------------------------------------------------------
-
-CostJb   : Nonlinear Jb = 1.2781881556583281
 CostJo   : Nonlinear Jo(Aod) = 255.2743734660676296, nobs = 555, Jo/n = 0.4599538260649867, err = 0.1162193436690591
+CostJb   : Nonlinear Jb = 1.2781881556583281
 CostFunction: Nonlinear J = 256.5525616217259426
