@@ -932,6 +932,9 @@ if (trim(field%long_name) == 'northward_wind_at_surface') io_file = 'surface_win
 ! Orog variables if name contains orog
 if (index(trim(field%long_name), 'orog') /= 0) io_file = 'orography'
 
+! Fraction of land is in the orography file
+if (index(trim(field%long_name), 'fraction_of_land') /= 0) io_file = 'orography'
+
 ! Cold start variables if name contains cold
 if (index(trim(field%long_name), 'cold') /= 0) io_file = 'cold'
 
