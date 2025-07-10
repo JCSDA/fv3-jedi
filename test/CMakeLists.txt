@@ -249,6 +249,7 @@ list( APPEND fv3jedi_testinput
   testinput/letkf.yaml
   testinput/letkf_perturbed.yaml
   testinput/lgetkf_linearobserver.yaml
+  testinput/lgetkf_linearobserver_hofx_reduceobs.yaml
   testinput/lgetkf_perturbed_linearobserver.yaml
   testinput/lgetkf.yaml
   testinput/linearization_error.yaml
@@ -405,6 +406,7 @@ list( APPEND fv3jedi_testoutput
   testoutput/letkf_observer_soil_moisture.ref
   testoutput/lgetkf.ref
   testoutput/lgetkf_linearobserver.ref
+  testoutput/lgetkf_linearobserver_hofx_reduceobs.ref
   testoutput/lgetkf_perturbed_linearobserver.ref
   testoutput/linearization_error.ref
   testoutput/adjointforecast.ref
@@ -1604,6 +1606,11 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_lgetkf
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_lgetkf_linearobserver
                   MPI      6
                   ARGS     testinput/lgetkf_linearobserver.yaml
+                  COMMAND  fv3jedi_letkf.x )
+
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_lgetkf_linearobserver_hofx_reduceobs
+                  MPI      6
+                  ARGS     testinput/lgetkf_linearobserver_hofx_reduceobs.yaml
                   COMMAND  fv3jedi_letkf.x )
 
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_lgetkf_perturbed_linearobserver

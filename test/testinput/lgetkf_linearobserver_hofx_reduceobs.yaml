@@ -1,0 +1,193 @@
+geometry:
+  fms initialization:
+    namelist filename: Data/fv3files/fmsmpp.nml
+    field table filename: Data/fv3files/field_table
+  akbk: Data/fv3files/akbk127.nc4
+  npx: 13
+  npy: 13
+  npz: 127
+time window:
+  begin: &date 2020-12-14T21:00:00Z
+  length: PT6H
+increment variables:
+- eastward_wind
+- northward_wind
+- air_temperature
+- air_pressure_thickness
+- water_vapor_mixing_ratio_wrt_moist_air
+- cloud_liquid_ice
+- cloud_liquid_water
+- ozone_mass_mixing_ratio
+background:
+   members from template:
+     template:
+       datetime: 2020-12-15T00:00:00Z
+       filetype: fms restart
+       datapath: Data/inputs/gfs_c12/mem%mem%/
+       filename_core: 20201215.000000.fv_core.res.nc
+       filename_trcr: 20201215.000000.fv_tracer.res.nc
+       filename_sfcd: 20201215.000000.sfc_data.nc
+       filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
+       filename_cplr: 20201215.000000.coupler.res
+       state variables:
+       - eastward_wind
+       - northward_wind
+       - air_temperature
+       - air_pressure_thickness
+       - water_vapor_mixing_ratio_wrt_moist_air
+       - cloud_liquid_ice
+       - cloud_liquid_water
+       - ozone_mass_mixing_ratio
+       - geopotential_height_times_gravity_at_surface
+       - slmsk
+       - sheleg
+       - skin_temperature_at_surface
+       - vtype
+       - stype
+       - vfrac
+       - stc
+       - soilMoistureVolumetric
+       - totalSnowDepth
+       - eastward_wind_at_surface
+       - northward_wind_at_surface
+       - f10m
+       field io names: &field_io_names
+         eastward_wind: ua
+         northward_wind: va
+         air_temperature: T
+         air_pressure_thickness: delp
+         water_vapor_mixing_ratio_wrt_moist_air: sphum
+         cloud_liquid_ice: ice_wat
+         cloud_liquid_water: liq_wat
+         ozone_mass_mixing_ratio: o3mr
+         geopotential_height_times_gravity_at_surface: phis
+         skin_temperature_at_surface: tsea
+         soilMoistureVolumetric: smc
+         totalSnowDepth: snwdph
+         eastward_wind_at_surface: u_srf
+         northward_wind_at_surface: v_srf
+     pattern: '%mem%'
+     nmembers: 3
+     zero padding: 3
+observations:
+  observers:
+  - obs space:
+      name: AMSUA-NOAA19
+      distribution:
+        name: RoundRobin
+        halo size: 5000e3
+      obsdatain:
+        engine:
+          type: H5File
+          obsfile: Data/obs/testinput_tier_1/amsua_n19_obs_2020121500_m.nc4
+      obsdataout:
+        engine:
+          type: H5File
+          obsfile: Data/hofx/amsua_n19_lgetkf_hofx_reduceobs_2020121500_m.nc4
+      simulated variables:
+      - brightnessTemperature
+      channels: 4-6,9-14
+    obs operator:
+      name: CRTM
+      Absorbers:
+      - H2O
+      - O3
+      obs options:
+        Sensor_ID: amsua_n19
+        EndianType: little_endian
+        CoefficientPath: Data/crtm/
+    obs error:
+      covariance model: diagonal
+    obs filters:
+    - filter: Bounds Check
+      filter variables:
+      - name: brightnessTemperature
+        channels: 4-6,9-14
+      minvalue: 100.0
+      maxvalue: 500.0
+    - filter: Background Check
+      filter variables:
+      - name: brightnessTemperature
+        channels: 4-6,9-14
+      threshold: 3.0
+    obs localizations:
+    - localization method: Horizontal Gaspari-Cohn
+      lengthscale: 1000e3
+      max nobs: 100
+  - obs space:
+      name: ATMS-NPP
+      distribution:
+        name: RoundRobin
+        halo size: 5000e3
+      obsdatain:
+        engine:
+          type: H5File
+          obsfile: Data/obs/testinput_tier_1/atms_npp_obs_2020121500_m.nc4
+      obsdataout:
+        engine:
+          type: H5File
+          obsfile: Data/hofx/atms_npp_lgetkf_hofx_reduceobs_2020121500_m.nc4
+      simulated variables:
+      - brightnessTemperature
+      channels: 5-15,17-22
+    obs operator:
+      name: CRTM
+      Absorbers:
+      - H2O
+      - O3
+      obs options:
+        Sensor_ID: atms_npp
+        EndianType: little_endian
+        CoefficientPath: Data/crtm/
+    obs error:
+      covariance model: diagonal
+    obs pre filters:
+    - filter: Domain Check
+      filter variables:
+      - name: brightnessTemperature
+        channels: 5-15,17-22
+      where:
+      - variable:
+          name: MetaData/sensorScanPosition
+        is_in: 7-90
+      action:
+        name: reduce obs space
+    - filter: Gaussian Thinning
+      horizontal_mesh: 145
+      use_reduced_horizontal_grid: true
+      distance_norm: geodesic
+      action:
+        name: reduce obs space
+    obs localizations:
+    - localization method: Horizontal Gaspari-Cohn
+      lengthscale: 1000e3
+      max nobs: 1000
+driver:
+  save posterior ensemble: false
+  save posterior mean increment: true
+  read HX from disk: false
+  run as observer only: true
+local ensemble DA:
+  solver: Deterministic GETKF
+  use linear observer: true
+  vertical localization:
+    fraction of retained variance: .5
+    lengthscale: 1.5
+    lengthscale units: logp
+  inflation:
+    rtps: 0.5
+    rtpp: 0.6
+    mult: 1.1
+output increment:
+  filetype: fms restart
+  datapath: Data/analysis/letkf/gfs/mem%{member}%/
+  filename is datetime templated: true
+  prefix: lgetkf.linearobserver.reduceobs.inc
+  type: ens
+  date: *date
+  field io names: *field_io_names
+test:
+  reference filename: testoutput/lgetkf_linearobserver_hofx_reduceobs.ref
+  test output filename: testoutput/lgetkf_linearobserver_hofx_reduceobs.test.out
+  float absolute tolerance: 1.0e-3
+  float relative tolerance: 1.0e-3
