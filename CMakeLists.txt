@@ -93,9 +93,6 @@ find_package( sp QUIET )
 # ufo
 find_package( ufo 1.10.0 REQUIRED )
 
-# femps
-find_package( femps 1.3.0 REQUIRED )
-
 # vader
 find_package( vader 1.7.0 REQUIRED )
 

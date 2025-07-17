@@ -103,6 +103,14 @@ list( APPEND fv3jedi_src_files
   VariableChange/Control2Analysis/VarChaC2A.cc
   VariableChange/Control2Analysis/VarChaC2A.h
   VariableChange/Control2Analysis/VarChaC2A.interface.h
+  VariableChange/femps/femps_const_mod.f90
+  VariableChange/femps/femps_fv3_mod.f90
+  VariableChange/femps/femps_grid_mod.f90
+  VariableChange/femps/femps_kinds_mod.f90
+  VariableChange/femps/femps_operators_mod.f90
+  VariableChange/femps/femps_solve_mod.f90
+  VariableChange/femps/femps_testgrid_mod.f90
+  VariableChange/femps/femps_utils_mod.f90
   VariableChange/Model2GeoVaLs/fv3jedi_vc_model2geovals.interface.F90
   VariableChange/Model2GeoVaLs/fv3jedi_vc_model2geovals_mod.f90
   VariableChange/Model2GeoVaLs/VarChaModel2GeoVaLs.cc
@@ -185,7 +193,7 @@ set_source_files_properties(
 # -------------------------------------------
 
 #Requirement libraries
-set(FV3JEDI_LIB_DEP oops saber ufo vader femps atlas atlas_f fv3jedilm fms ${LAPACK_LIBRARIES} ${NETCDF_LIBRARIES})
+set(FV3JEDI_LIB_DEP oops saber ufo vader atlas atlas_f fv3jedilm fms ${LAPACK_LIBRARIES} ${NETCDF_LIBRARIES})
 
 # Fortran OpenMP library
 if(OPENMP)
