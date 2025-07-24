@@ -5,7 +5,7 @@ forecast length: PT6H
 geometry:
   fms initialization:
     namelist filename: Data/fv3files/fmsmpp.nml
-  akbk: Data/fv3files/akbk72.nc4
+  akbk: Data/inputs/fv3files/akbk72.nc4
   npx: 13
   npy: 13
   npz: 72

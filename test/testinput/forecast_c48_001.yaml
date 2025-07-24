@@ -3,7 +3,7 @@ geometry:
   fms initialization:
     namelist filename: Data/ModelRunDirs/c48_001/input.nml
     field table filename: Data/ModelRunDirs/c48_001/field_table
-  akbk: Data/fv3files/akbk127.nc4
+  akbk: Data/inputs/fv3files/akbk127.nc4
   layout:
   - 1
   - 1

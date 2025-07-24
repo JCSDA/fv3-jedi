@@ -3,7 +3,7 @@ linear forecast:
     fms initialization:
       namelist filename: Data/fv3files/input_gfs_c12.nml
       field table filename: Data/fv3files/field_table_gfdl
-    akbk: Data/fv3files/akbk127.nc4
+    akbk: Data/inputs/fv3files/akbk127.nc4
     npx: 13
     npy: 13
     npz: 127
@@ -21,7 +21,7 @@ forecast:
     fms initialization:
       namelist filename: Data/fv3files/input_gfs_c12.nml
       field table filename: Data/fv3files/field_table_gfdl
-    akbk: Data/fv3files/akbk127.nc4
+    akbk: Data/inputs/fv3files/akbk127.nc4
     npx: 13
     npy: 13
     npz: 127
@@ -89,7 +89,7 @@ forecast aspect:
     fms initialization:
       namelist filename: Data/fv3files/input_gfs_c12.nml
       field table filename: Data/fv3files/field_table_gfdl
-    akbk: Data/fv3files/akbk127.nc4
+    akbk: Data/inputs/fv3files/akbk127.nc4
     npx: 13
     npy: 13
     npz: 127

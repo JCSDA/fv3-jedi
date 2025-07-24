@@ -55,9 +55,6 @@ endif()
 # FV3 config files
 # ----------------
 list( APPEND fv3jedi_test_fv3files
-Data/fv3files/akbk64.nc4
-Data/fv3files/akbk72.nc4
-Data/fv3files/akbk127.nc4
 Data/fv3files/field_table_gmao
 Data/fv3files/field_table_gfdl
 Data/fv3files/field_table_cold
@@ -460,18 +457,6 @@ endforeach()
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/testoutput)
 LINK_FILES( "${fv3jedi_testoutput}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
-# Grid data for femps
-# -------------------
-list( APPEND fv3jedi_femps_grid
-Data/femps/fv3grid_c0006.nc4
-Data/femps/fv3grid_c0012.nc4
-Data/femps/fv3grid_c0024.nc4
-Data/femps/fv3grid_c0048.nc4
-Data/femps/fv3grid_c0096.nc4
-)
-
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/femps)
-LINK_FILES( "${fv3jedi_femps_grid}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
 # Resources from other respositores
 # ---------------------------------

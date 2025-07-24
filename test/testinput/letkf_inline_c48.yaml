@@ -2,7 +2,7 @@ geometry:
   fms initialization:
     namelist filename: Data/ModelRunDirs/c48_001/input.nml
     field table filename: Data/ModelRunDirs/UFS_warmstart_1/field_table
-  akbk: Data/fv3files/akbk127.nc4
+  akbk: Data/inputs/fv3files/akbk127.nc4
   npx: 49
   npy: 49
   npz: 127

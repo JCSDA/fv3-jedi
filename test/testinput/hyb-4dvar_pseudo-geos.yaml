@@ -351,7 +351,7 @@ cost function:
     fms initialization:
       namelist filename: Data/fv3files/fmsmpp.nml
       field table filename: Data/fv3files/field_table_gmao
-    akbk: Data/fv3files/akbk72.nc4
+    akbk: Data/inputs/fv3files/akbk72.nc4
     npx: 13
     npy: 13
     npz: 72
@@ -371,7 +371,7 @@ variational:
     gradient norm reduction: 1e-10
     test: on
     geometry:
-      akbk: Data/fv3files/akbk72.nc4
+      akbk: Data/inputs/fv3files/akbk72.nc4
       npx: 13
       npy: 13
       npz: 72

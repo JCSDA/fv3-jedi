@@ -2,7 +2,7 @@ input geometry:
   fms initialization:
     namelist filename: Data/fv3files/fmsmpp.nml
     field table filename: Data/fv3files/field_table_gfdl
-  akbk: Data/fv3files/akbk127.nc4
+  akbk: Data/inputs/fv3files/akbk127.nc4
   layout:
   - 1
   - 2
@@ -10,7 +10,7 @@ input geometry:
   npy: 13
   npz: 127
 output geometry:
-  akbk: Data/fv3files/akbk127.nc4
+  akbk: Data/inputs/fv3files/akbk127.nc4
   layout:
   - 1
   - 2
@@ -31,7 +31,7 @@ variable change:
   do inverse: true
   femps_iterations: 60
   femps_ngrids: 2
-  femps_path2fv3gridfiles: Data/femps/
+  femps_path2fv3gridfiles: Data/inputs/femps/
   femps_checkconvergence: false
 states:
 - input:
