@@ -125,10 +125,10 @@ cost function:
           - name: windNorthward
           - name: airTemperature
           - name: specificHumidity
-        - name: SfcPCorrected
+        - name: SfcCorrected
           variables:
           - name: stationPressure
-          da_psfc_scheme: GSI
+          correction scheme to use: GSL
       linear obs operator:
         name: Composite
         components:
@@ -388,8 +388,8 @@ cost function:
         simulated variables:
         - stationPressure
       obs operator:
-        name: SfcPCorrected
-        da_psfc_scheme: UKMO
+        name: SfcCorrected
+        correction scheme to use: UKMO
       linear obs operator:
         name: Identity
       obs error:

@@ -180,8 +180,8 @@ observations:
       io pool:
         max pool size: 1
     obs operator:
-      name: SfcPCorrected
-      da_psfc_scheme: UKMO
+      name: SfcCorrected
+      correction scheme to use: UKMO
     linear obs operator:
       name: Identity
     obs error:
