@@ -1,0 +1,45 @@
+CostJo   : Nonlinear Jo(saberT) = 1.5006081175189800e+04, nobs = 30498, Jo/n = 4.9203492606694865e-01, err = 6.8845518006238953e+00
+CostFunction: Nonlinear J = 1.5006081175189800e+04
+DRPCGMinimizer: reduction in residual norm = 1.0800759507592803e-02
+CostFunction::addIncrement: Analysis: 
+----------------------------------------------------------------------------------------------------
+State print | number of fields = 36 | cube sphere face size: C12
+eastward_wind                                | Min:-1.3853720181892496e+02 Max:+2.1602417954036696e+02 RMS:+2.7244285278919897e+01
+northward_wind                               | Min:-1.6888907312190722e+02 Max:+9.9595691769948345e+01 RMS:+1.1153874461822733e+01
+air_temperature                              | Min:+1.6147681596417809e+02 Max:+3.0526068564576121e+02 RMS:+2.4282338361799705e+02
+air_pressure_at_surface                      | Min:+5.4596195579415733e+04 Max:+1.0400234512569163e+05 RMS:+9.8969400425902117e+04
+air_pressure_levels                          | Min:+2.5000000000000001e-04 Max:+1.0400234512569163e+05 RMS:+4.7011329234754565e+04
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.6263617128694113e-08 Max:+2.2495183914873599e-02 RMS:+4.2951694590021069e-03
+cloud_liquid_ice                             | Min:+0.0000000000000000e+00 Max:+1.8115056984276454e-04 RMS:+2.7294272776257700e-06
+cloud_liquid_water                           | Min:+0.0000000000000000e+00 Max:+5.5225644518066218e-04 RMS:+1.9793046783875187e-05
+rain_water                                   | Min:+0.0000000000000000e+00 Max:+2.4218805615451528e-03 RMS:+4.5882175101587627e-05
+snow_water                                   | Min:+0.0000000000000000e+00 Max:+1.4572908649863536e-03 RMS:+2.1623197707386113e-05
+mole_fraction_of_ozone_in_air                | Min:+4.0508668021991497e-13 Max:+3.0741890772025506e+01 RMS:+3.6600471024373791e+00
+geopotential_height_times_gravity_at_surface | Min:-2.6607180786132812e+02 Max:+4.9529586238160344e+04 RMS:+5.9521244976503649e+03
+initial_mass_fraction_of_large_scale_cloud_c | Min:+0.0000000000000000e+00 Max:+5.0790747135090063e-04 RMS:+1.8264458345279780e-05
+initial_mass_fraction_of_convective_cloud_co | Min:+0.0000000000000000e+00 Max:+2.8126752537350932e-04 RMS:+5.8980371719960696e-06
+convective_cloud_area_fraction               | Min:+0.0000000000000000e+00 Max:+1.0016254122402342e+00 RMS:+5.9461401955910091e-02
+fraction_of_ocean                            | Min:+0.0000000000000000e+00 Max:+1.0000000000000002e+00 RMS:+8.3391238208345175e-01
+fraction_of_land                             | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+00 RMS:+5.0703342328911372e-01
+isotropic_variance_of_filtered_topography    | Min:+0.0000000000000000e+00 Max:+6.3880157563505301e+04 RMS:+4.4791336083687229e+03
+surface_velocity_scale                       | Min:+7.7439538422951939e-04 Max:+1.0138752348222411e+00 RMS:+3.0821594337852742e-01
+surface_buoyancy_scale                       | Min:-1.5853441337542899e-02 Max:+3.1649736623069365e-02 RMS:+3.9251704165624126e-03
+planetary_boundary_layer_height              | Min:+7.1378329309866517e+00 Max:+2.5600729366794048e+03 RMS:+8.2538823633655727e+02
+surface_exchange_coefficient_for_momentum    | Min:+1.4974906198403349e-05 Max:+4.0653368738416146e-01 RMS:+4.1849702726663718e-02
+surface_exchange_coefficient_for_heat        | Min:+2.6626725181461897e-05 Max:+4.4083522936001401e-01 RMS:+4.1880656458329696e-02
+surface_exchange_coefficient_for_moisture    | Min:+2.6626725181461897e-05 Max:+4.4083522936001401e-01 RMS:+4.1880656458329696e-02
+KCBL_before_moist                            | Min:+1.4824280781734549e+02 Max:+1.8500000000000003e+02 RMS:+1.6814589261146057e+02
+surface_temp_before_moist                    | Min:+2.2906577675153281e+02 Max:+3.0866542529618812e+02 RMS:+2.8683783277526538e+02
+lower_index_where_Kh_greater_than_2          | Min:-9.9948823451995861e-01 Max:+1.8598374890446516e+02 RMS:+1.6986685482931037e+02
+upper_index_where_Kh_greater_than_2          | Min:-9.9948823451995861e-01 Max:+1.8397998709870689e+02 RMS:+1.5121729140227313e+02
+fraction_of_lake                             | Min:+0.0000000000000000e+00 Max:+7.3602032252371208e-01 RMS:+3.5925062748368354e-02
+fraction_of_ice                              | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+00 RMS:+1.2923283192407881e-01
+sheleg                                       | Min:+0.0000000000000000e+00 Max:+9.9999998699110412e+14 RMS:+8.1911939993701450e+14
+skin_temperature_at_surface                  | Min:+2.2896379746101374e+02 Max:+3.0919037597054250e+02 RMS:+2.8682942691050448e+02
+soilt                                        | Min:+2.4780760720730979e+02 Max:+9.9999998699110412e+14 RMS:+8.3413429588485488e+14
+soilm                                        | Min:+8.6664083087655225e-04 Max:+9.9999998699110412e+14 RMS:+8.3413429588485412e+14
+eastward_wind_at_surface                     | Min:-1.8078747781014684e+01 Max:+1.8590839699479666e+01 RMS:+5.2022698097511881e+00
+northward_wind_at_surface                    | Min:-1.2662304881179871e+01 Max:+1.4623938516669433e+01 RMS:+4.2222991073285776e+00
+----------------------------------------------------------------------------------------------------
+CostJo   : Nonlinear Jo(saberT) = 6599.708455564194, nobs = 30498, Jo/n = 0.2163980738266179, err = 6.884551800623895
+CostFunction: Nonlinear J = 6599.708455564194

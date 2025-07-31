@@ -1,0 +1,241 @@
+cost function:
+  cost type: 3D-Var
+  jb evaluation: false
+  time window:
+    begin: '2016-01-01T21:00:00Z'
+    end: '2016-01-02T03:00:00Z'
+    bound to include: begin
+  geometry:
+    fms initialization:
+      namelist filename: Data/fv3files/input_geos_c12_z186.nml
+      field table filename: Data/fv3files/field_table_gmao
+    akbk: Data/inputs/fv3files/akbk186.nc4
+    npx: 13
+    npy: 13
+    npz: 186
+  analysis variables:
+  - eastward_wind
+  - northward_wind
+  - air_temperature
+  - water_vapor_mixing_ratio_wrt_moist_air
+  - air_pressure_at_surface
+  - air_pressure_levels
+  - cloud_liquid_ice
+  - cloud_liquid_water
+  - rain_water
+  - snow_water
+  - mole_fraction_of_ozone_in_air
+  - geopotential_height_times_gravity_at_surface
+  - fraction_of_ocean
+  - fraction_of_lake
+  - fraction_of_ice
+  - skin_temperature_at_surface
+  background:
+    datetime: '2016-01-02T00:00:00Z'
+    filetype: cube sphere history
+    provider: geos
+    compute edge pressure from surface pressure: true
+    max allowable geometry difference: 1e-3
+    datapath: Data/inputs/geos_c12
+    filename: geos_mlt.bkg_clcv_rst.20160102_0000z.nc4
+    state variables:
+    - eastward_wind
+    - northward_wind
+    - air_temperature
+    - air_pressure_at_surface
+    - air_pressure_levels
+    - water_vapor_mixing_ratio_wrt_moist_air
+    - cloud_liquid_ice
+    - cloud_liquid_water
+    - rain_water
+    - snow_water
+    - mole_fraction_of_ozone_in_air
+    - geopotential_height_times_gravity_at_surface
+    - initial_mass_fraction_of_large_scale_cloud_condensate
+    - initial_mass_fraction_of_convective_cloud_condensate
+    - convective_cloud_area_fraction
+    - fraction_of_ocean
+    - fraction_of_land
+    - isotropic_variance_of_filtered_topography
+    - surface_velocity_scale
+    - surface_buoyancy_scale
+    - planetary_boundary_layer_height
+    - surface_exchange_coefficient_for_momentum
+    - surface_exchange_coefficient_for_heat
+    - surface_exchange_coefficient_for_moisture
+    - KCBL_before_moist
+    - surface_temp_before_moist
+    - lower_index_where_Kh_greater_than_2
+    - upper_index_where_Kh_greater_than_2
+    - fraction_of_lake
+    - fraction_of_ice
+    - sheleg
+    - skin_temperature_at_surface
+    - soilt
+    - soilm
+    - eastward_wind_at_surface
+    - northward_wind_at_surface
+    field io names:
+      eastward_wind: ua
+      northward_wind: va
+      air_temperature: t
+      air_pressure_at_surface: ps
+      air_pressure_levels: pe
+      water_vapor_mixing_ratio_wrt_moist_air: q
+      cloud_liquid_ice: qi
+      cloud_liquid_water: ql
+      rain_water: qr
+      snow_water: qs
+      mole_fraction_of_ozone_in_air: o3ppmv
+      geopotential_height_times_gravity_at_surface: phis
+      initial_mass_fraction_of_large_scale_cloud_condensate: qls
+      initial_mass_fraction_of_convective_cloud_condensate: qcn
+      convective_cloud_area_fraction: cfcn
+      fraction_of_ocean: frocean
+      fraction_of_land: frland
+      isotropic_variance_of_filtered_topography: varflt
+      surface_velocity_scale: ustar
+      surface_buoyancy_scale: bstar
+      planetary_boundary_layer_height: zpbl
+      surface_exchange_coefficient_for_momentum: cm
+      surface_exchange_coefficient_for_heat: ct
+      surface_exchange_coefficient_for_moisture: cq
+      KCBL_before_moist: kcbl
+      surface_temp_before_moist: tsm
+      lower_index_where_Kh_greater_than_2: khl
+      upper_index_where_Kh_greater_than_2: khu
+      fraction_of_lake: frlake
+      fraction_of_ice: frseaice
+      skin_temperature_at_surface: ts
+      eastward_wind_at_surface: u10m
+      northward_wind_at_surface: v10m
+  background error:
+    covariance model: SABER
+    saber central block:
+      saber block name: ID
+  observations:
+    get values:
+      variable change:
+        variable change name: Model2GeoVaLs
+        hydrometeor effective radii method: gsi
+        tropopause pressure method: gsi
+    observers:
+    - obs space:
+        name: saberT
+        obsdatain:
+          engine:
+            type: H5File
+            obsfile: Data/obs/testinput_tier_1/saber_timed_2016010200_m.nc4
+        obsdataout:
+          engine:
+            type: H5File
+            obsfile: Data/hofx/saber_timed_2016010200_m.nc4
+        io pool:
+          max pool size: 1
+        simulated variables:
+        - airTemperature
+      obs operator:
+        name: Composite
+        components:
+        - name: VertInterp
+          variables:
+          - name: airTemperature
+      linear obs operator:
+        name: Composite
+        components:
+        - name: VertInterp
+          variables:
+          - name: airTemperature
+      obs filters:
+      - filter: Domain Check
+        filter variables:
+        - name: airTemperature
+        where:
+        - variable:
+            name: MetaData/pressure
+          minvalue: 0.5
+          maxvalue: 10000.0
+        action:
+          name: reject
+      - filter: Perform Action
+        filter variables:
+        - name: airTemperature
+        action:
+          name: assign error
+          error function:
+            name: ObsFunction/ObsErrorModelStepwiseLinear
+            options:
+              xvar:
+                name: MetaData/pressure
+              xvals: [8.50851914e+04,5.97046046e+04,4.18949496e+04,2.93978466e+04,
+                      2.06285815e+04,1.44751546e+04,1.01572714e+04,7.12739624e+03,
+                      5.00132123e+03,3.50944625e+03,2.46259187e+03,1.72801015e+03,
+                      1.21255134e+03,8.50851914e+02,5.97046046e+02,4.18949496e+02,
+                      2.93978466e+02,2.06285815e+02,1.44751546e+02,1.01572714e+02,
+                      7.12739624e+01,5.00132123e+01,3.50944625e+01,2.46259187e+01,
+                      1.72801015e+01,1.21255134e+01,8.50851914e+00,5.97046046e+00,
+                      4.18949496e+00,2.93978466e+00,2.06285815e+00,1.44751546e+00,
+                      1.01572714e+00,7.12739624e-01,5.00132123e-01,3.50944625e-01,
+                      2.46259187e-01,1.72801015e-01,1.21255134e-01]
+              errors: [      160.0,       160.0, 153.03642847,120.34753278, 41.17975669,
+                       23.06202572,  8.3601981 ,  3.18719459 , 1.79196546 , 1.97379713,
+                        1.57073754,  1.12634655,  1.12307446 , 1.20582712 , 1.19869575,
+                        1.25091315,  1.63907942,  1.96384868 , 2.61642718 , 3.23840885,
+                        3.59636554,  4.17289048,  5.07024947 , 4.82717441 , 3.94751004,
+                        4.66466103,  6.24514474,  6.13995774 , 6.59820787 , 7.60539332,
+                        9.8369862 , 10.31535387, 11.58366423 ,13.92075107 ,15.72582962,
+                       17.39400635, 18.45249   , 18.36440028 ,18.87276406]
+      - filter: Perform Action
+        filter variables:
+        - name: airTemperature
+        action:
+          name: inflate error
+          inflation factor: 1.2
+variational:
+  minimizer:
+    algorithm: DRPCG
+  iterations:
+  - geometry:
+      fms initialization:
+        namelist filename: Data/fv3files/input_geos_c12_z186.nml
+        field table filename: Data/fv3files/field_table_gmao
+      akbk: Data/inputs/fv3files/akbk186.nc4
+      npx: 13
+      npy: 13
+      npz: 186
+    gradient norm reduction: 10e-5
+    ninner: '5'
+    diagnostics:
+      departures: ombg
+    online diagnostics:
+      write increment: true
+      increment:
+        state component:
+          filetype: auxgrid
+          gridtype: latlon
+          datapath: Data/increment/
+          filename: geos-mlt.increment-iter1.
+          field io names:
+            eastward_wind: ua
+            northward_wind: va
+            air_temperature: t
+            water_vapor_mixing_ratio_wrt_moist_air: q
+            cloud_liquid_ice: qi
+            cloud_liquid_water: ql
+            rain_water: qr
+            snow_water: qs
+            mole_fraction_of_ozone_in_air: o3ppmv
+            geopotential_height_times_gravity_at_surface: phis
+            skin_temperature_at_surface: ts
+            air_pressure_at_surface: ps
+            air_pressure_levels: pe
+final:
+  diagnostics:
+    departures: oman
+  prints:
+    frequency: PT3H
+test:
+  reference filename: testoutput/3dvar_geos_mlt_saber_timed.ref
+  float relative tolerance: 1.0e-2
+  integer tolerance: 3
+  test output filename: testoutput/3dvar_geos_mlt_saber_timed.test.out

@@ -68,6 +68,7 @@ Data/fv3files/input_gfs_c24.nml
 Data/fv3files/input_gfs_c24_p12.nml
 Data/fv3files/input_geos_c12.nml
 Data/fv3files/input_geos_c12_p12.nml
+Data/fv3files/input_geos_c12_z186.nml
 Data/fv3files/input_geos_c24.nml
 Data/fv3files/input_lam_cmaq.nml
 Data/fv3files/input_lam_rrfs.nml
@@ -103,6 +104,7 @@ set(staticb_dates_aero 2018041421;2018041500;2018041503)
 list( APPEND fv3jedi_testinput
   testinput/3denvar_gfs_tskin_c12.yaml
   testinput/3dvar_geos_cf.yaml
+  testinput/3dvar_geos_mlt_saber_timed.yaml
   testinput/3dvar_geos_ozone_c12.yaml
   testinput/3dvar_geos_tskin.yaml
   testinput/3dvar_gfs_sondes_c12.yaml
@@ -309,6 +311,7 @@ LINK_FILES( "${fv3jedi_testinput}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_B
 # -------------------
 list( APPEND fv3jedi_testoutput
   testoutput/3dvar_geos_cf.ref
+  testoutput/3dvar_geos_mlt_saber_timed.ref
   testoutput/3dvar_geos_ozone.ref
   testoutput/3dvar_geos_tskin.ref
   testoutput/3dvar_gfs_sondes.ref
@@ -1335,6 +1338,11 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_dirac_geos_gsi_global
                   MPI      6
                   ARGS     testinput/dirac_geos_gsi_global.yaml
                   COMMAND  fv3jedi_error_covariance_toolbox.x )
+
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_3dvar_geos_mlt_saber_timed
+                  MPI      6
+                  ARGS     testinput/3dvar_geos_mlt_saber_timed.yaml
+                  COMMAND  fv3jedi_var.x )
 
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_3dvar_geos_ozone
                   MPI      6
