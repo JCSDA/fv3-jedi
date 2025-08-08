@@ -610,6 +610,7 @@ real(kind=kind_real), allocatable :: pe  (:,:,:)         !Air pressure (edges)
 !Skin temperature
 logical :: have_tsea,have,have_tland,have_tice,have_tsnow
 integer :: tskin_index
+integer :: tskin_sea_index, tskin_land_index, tskin_ice_index, tskin_snow_index
 real(kind=kind_real), pointer     :: dtsea   (:,:,:)       !Sea surface temperature
 real(kind=kind_real), pointer     :: dtland  (:,:,:)       !Land surface temperature
 real(kind=kind_real), pointer     :: dtice   (:,:,:)       !Ice surface temperature
@@ -791,19 +792,19 @@ have_tsea  = .false.
 have_tice  = .false.
 have_tsnow = .false.
 if (dxm%has_field('skin_temperature_at_surface',tskin_index)) then
-   if ( allocated(self%frland).and.dxg%has_field('skin_temperature_at_surface_where_land') ) then
+   if ( allocated(self%frland).and.dxg%has_field('skin_temperature_at_surface_where_land',tskin_land_index) ) then
      call dxg%get_field('skin_temperature_at_surface_where_land',dtland)
      have_tland = .true.
    endif
-   if ( allocated(self%frocean).and.dxg%has_field('skin_temperature_at_surface_where_sea') ) then
+   if ( allocated(self%frocean).and.dxg%has_field('skin_temperature_at_surface_where_sea',tskin_sea_index) ) then
      call dxg%get_field('skin_temperature_at_surface_where_sea',dtsea)
      have_tsea = .true.
    endif
-   if ( allocated(self%frseaice).and.dxg%has_field('skin_temperature_at_surface_where_ice') ) then
+   if ( allocated(self%frseaice).and.dxg%has_field('skin_temperature_at_surface_where_ice',tskin_ice_index) ) then
      call dxg%get_field('skin_temperature_at_surface_where_ice',dtice)
      have_tice = .true.
    endif
-   if ( allocated(self%frsnow).and.dxg%has_field('skin_temperature_at_surface_where_snow') ) then
+   if ( allocated(self%frsnow).and.dxg%has_field('skin_temperature_at_surface_where_snow',tskin_snow_index) ) then
      call dxg%get_field('skin_temperature_at_surface_where_snow',dtsnow)
      have_tsnow = .true.
    endif
@@ -980,28 +981,28 @@ do fm = 1, size(fields_to_do)
   case ('skin_temperature_at_surface')
 
     if (have_tsea) then
-      field_passed(tskin_index) = .true.
+      field_passed(tskin_sea_index) = .true.
       where (self%frocean>0.0_kind_real)
         field_ptr = field_ptr + dtsea
       endwhere
     endif
 
     if (have_tland) then
-      field_passed(tskin_index) = .true.
+      field_passed(tskin_land_index) = .true.
       where (self%frland>0.0_kind_real)
         field_ptr = field_ptr + dtland
       endwhere
     endif
 
     if (have_tice) then
-      field_passed(tskin_index) = .true.
+      field_passed(tskin_ice_index) = .true.
       where (self%frseaice>0.0_kind_real)
         field_ptr = field_ptr + dtice
       endwhere
     endif
 
     if (have_tsnow) then
-      field_passed(tskin_index) = .true.
+      field_passed(tskin_snow_index) = .true.
       where (self%frsnow>0.0_kind_real)
         field_ptr = field_ptr + dtsnow
       endwhere
