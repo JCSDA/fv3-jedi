@@ -36,7 +36,7 @@ class ModelPseudoParameters : public oops::Parameters {
   IOParametersWrapper ioParametersWrapper{this};
 };
 // -------------------------------------------------------------------------------------------------
-static oops::interface::ModelMaker<Traits, ModelPseudo> makermodel_("PSEUDO");
+static ModelMaker<ModelPseudo> makerfv3jedipseudo_("PSEUDO");
 // -------------------------------------------------------------------------------------------------
 ModelPseudo::ModelPseudo(const Geometry & resol, const eckit::Configuration & config)
   : tstep_(0), io_()

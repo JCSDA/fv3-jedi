@@ -34,7 +34,7 @@ VariableChange::VariableChange(const eckit::Configuration & config, const Geomet
   run_vader_ = params.run_vader.value();
   run_fv3jedi_ = params.run_fv3jedi.value();
   eckit::LocalConfiguration variableChangeConfig = params.toConfiguration();
-  ModelData modelData{geometry};
+  ModelData modelData(geometry);
   eckit::LocalConfiguration vaderConfig;
   vaderConfig.set(vader::configCookbookKey,
                   variableChangeConfig.getSubConfiguration("vader custom cookbook"));

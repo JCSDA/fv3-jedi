@@ -11,14 +11,14 @@
 #include <memory>
 #include <ostream>
 #include <string>
+#include <vector>
 
-#include "oops/interface/LinearModelBase.h"
 #include "oops/util/Duration.h"
 #include "oops/util/ObjectCounter.h"
 #include "oops/util/Printable.h"
 
 #include "fv3jedi/LinearVariableChange/Base/LinearVariableChangeBase.h"
-#include "fv3jedi/Utilities/Traits.h"
+#include "fv3jedi/Utilities/interface.h"
 
 // Forward declarations
 namespace eckit {
@@ -26,35 +26,38 @@ namespace eckit {
 }
 
 namespace fv3jedi {
+  class ModelBias;
+  class ModelBiasIncrement;
 
 // -------------------------------------------------------------------------------------------------
 
 // Linear model definition.
 
-class Tlm: public oops::interface::LinearModelBase<Traits>,
+class Tlm: public util::Printable,
            private util::ObjectCounter<Tlm> {
  public:
   static const std::string classname() {return "fv3jedi::Tlm";}
+  static std::vector<std::string> names() {return {"FV3JEDITLM"};}
 
   // Constructor/destructor
   Tlm(const Geometry &, const eckit::Configuration &);
   ~Tlm();
 
   // Set the trajectory
-  void setTrajectory(const State &, State &, const ModelBias &) override;
+  void setTrajectory(const State &, State &, const ModelBias &);
 
   // Run TLM and its adjoint
-  void initializeTL(Increment &) const override;
-  void stepTL(Increment &, const ModelBiasIncrement &) const override;
-  void finalizeTL(Increment &) const override;
+  void initializeTL(Increment &) const;
+  void stepTL(Increment &, const ModelBiasIncrement &) const;
+  void finalizeTL(Increment &) const;
 
-  void initializeAD(Increment &) const override;
-  void stepAD(Increment &, ModelBiasIncrement &) const override;
-  void finalizeAD(Increment &) const override;
+  void initializeAD(Increment &) const;
+  void stepAD(Increment &, ModelBiasIncrement &) const;
+  void finalizeAD(Increment &) const;
 
   // Accessor functions
-  const util::Duration & timeResolution() const override {return tstep_;}
-  const util::Duration & stepTrajectory() const override {return tstep_;}
+  const util::Duration & timeResolution() const {return tstep_;}
+  const util::Duration & stepTrajectory() const {return tstep_;}
 
  private:
   void print(std::ostream &) const override;

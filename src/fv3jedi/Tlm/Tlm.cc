@@ -19,12 +19,9 @@
 #include "fv3jedi/Tlm/Tlm.h"
 #include "fv3jedi/Tlm/Tlm.interface.h"
 #include "fv3jedi/Tlm/Traj.interface.h"
-#include "fv3jedi/Utilities/Traits.h"
 
 namespace fv3jedi {
 
-// -------------------------------------------------------------------------------------------------
-static oops::interface::LinearModelMaker<Traits, Tlm> makerTLM_("FV3JEDITLM");
 // -------------------------------------------------------------------------------------------------
 Tlm::Tlm(const Geometry & geom, const eckit::Configuration & config)
   : geom_(geom), keySelf_(0), tstep_(), trajmap_()

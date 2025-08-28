@@ -50,7 +50,7 @@ class ModelFV3LMParameters : public oops::Parameters {
 };
 
 // -------------------------------------------------------------------------------------------------
-static oops::interface::ModelMaker<Traits, ModelFV3LM> makermodel_("FV3LM");
+static ModelMaker<ModelFV3LM> makerfv3jedilm_("FV3LM");
 // -------------------------------------------------------------------------------------------------
 ModelFV3LM::ModelFV3LM(const Geometry & resol, const eckit::Configuration & config)
   : keyConfig_(0), tstep_(0), geom_(resol)

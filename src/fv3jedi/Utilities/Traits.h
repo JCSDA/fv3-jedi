@@ -18,6 +18,9 @@
 #include "fv3jedi/State/State.h"
 #include "fv3jedi/VariableChange/VariableChange.h"
 
+#include "fv3jedi//Model/ModelWrapper.h"
+#include "fv3jedi//Tlm/Tlm.h"
+
 #include "fv3jedi/ModelBias/ModelBias.h"
 #include "fv3jedi/ModelBias/ModelBiasIncrement.h"
 
@@ -40,8 +43,10 @@ struct Traits {
   typedef fv3jedi::ModelBiasIncrement   ModelAuxIncrement;
   typedef fv3jedi::ModelBiasCovariance  ModelAuxCovariance;
   typedef fv3jedi::ModelData            ModelData;
+  typedef fv3jedi::ModelWrapper         Model;
   typedef fv3jedi::NormGradient         NormGradient;
   typedef fv3jedi::State                State;
+  typedef fv3jedi::Tlm                  LinearModel;
   typedef fv3jedi::VariableChange       VariableChange;
 };
 

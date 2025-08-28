@@ -23,7 +23,7 @@
 
 namespace fv3jedi {
 // -------------------------------------------------------------------------------------------------
-static oops::interface::ModelMaker<Traits, ModelUFS> makermodel_("UFS");
+static ModelMaker<ModelUFS> makerfv3jediufs_("UFS");
 // -------------------------------------------------------------------------------------------------
 ModelUFS::ModelUFS(const Geometry & resol, const eckit::Configuration & modelConf)
   : keyConfig_(0), tstep_(modelConf.getString("tstep")),

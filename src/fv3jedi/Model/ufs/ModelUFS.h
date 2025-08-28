@@ -11,13 +11,12 @@
 #include <string>
 
 #include "oops/base/Variables.h"
-#include "oops/interface/ModelBase.h"
 #include "oops/util/Duration.h"
 #include "oops/util/ObjectCounter.h"
 #include "oops/util/Printable.h"
 
 #include "fv3jedi/Geometry/Geometry.h"
-#include "fv3jedi/Utilities/Traits.h"
+#include "fv3jedi/Model/ModelBase.h"
 #include "ModelUFS.interface.h"
 
 // Forward declarations
@@ -32,7 +31,7 @@ namespace fv3jedi {
 
 // -------------------------------------------------------------------------------------------------
 
-class ModelUFS: public oops::interface::ModelBase<Traits>,
+class ModelUFS: public ModelBase,
                 private util::ObjectCounter<ModelUFS> {
  public:
   static const std::string classname() {return "fv3jedi::ModelUFS";}
@@ -40,18 +39,18 @@ class ModelUFS: public oops::interface::ModelBase<Traits>,
   ModelUFS(const Geometry &, const eckit::Configuration &);
   ~ModelUFS();
 
-  void initialize(State &) const;
-  void step(State &, const ModelBias &) const;
+  void initialize(State &) const override;
+  void step(State &, const ModelBias &) const override;
 
 /// Finish model integration
-  void finalize(State &) const;
-  int saveTrajectory(State &, const ModelBias &) const;
+  void finalize(State &) const override;
+  int saveTrajectory(State &, const ModelBias &) const override;
 
-  const util::Duration & timeResolution() const {return tstep_;}
+  const util::Duration & timeResolution() const override {return tstep_;}
   const oops::Variables & variables() const {return vars_;}
 
  private:
-  void print(std::ostream &) const;
+  void print(std::ostream &) const override;
   F90model keyConfig_;
   util::Duration tstep_;
   util::Duration fclength_;

@@ -40,7 +40,7 @@ class ModelGEOSParameters : public oops::ModelParametersBase {
   oops::OptionalParameter<bool> esmfLogging{ "ESMF_Logging", this};
 };
 // -----------------------------------------------------------------------------
-static oops::interface::ModelMaker<Traits, ModelGEOS> makermodel_("GEOS");
+static ModelMaker<ModelGEOS> makerfv3jedigeos_("GEOS");
 // -----------------------------------------------------------------------------
 ModelGEOS::ModelGEOS(const Geometry & resol, const eckit::Configuration & config)
   : keyConfig_(0), tstep_(0), geom_(resol)

@@ -12,12 +12,12 @@
 #include <string>
 
 #include "oops/base/Variables.h"
-#include "oops/interface/ModelBase.h"
 #include "oops/util/Duration.h"
 #include "oops/util/ObjectCounter.h"
+#include "oops/util/Printable.h"
 
 #include "fv3jedi/IO/Utils/IOBase.h"
-#include "fv3jedi/Utilities/Traits.h"
+#include "fv3jedi/Model/ModelBase.h"
 
 namespace fv3jedi {
   class Geometry;
@@ -27,7 +27,7 @@ namespace fv3jedi {
 
 // -------------------------------------------------------------------------------------------------
 
-class ModelPseudo: public oops::interface::ModelBase<Traits>,
+class ModelPseudo: public ModelBase,
                    private util::ObjectCounter<ModelPseudo> {
  public:
   static const std::string classname() {return "fv3jedi::ModelPseudo";}
@@ -36,19 +36,19 @@ class ModelPseudo: public oops::interface::ModelBase<Traits>,
   ~ModelPseudo();
 
 /// Prepare model integration
-  void initialize(State &) const;
+  void initialize(State &) const override;
 
 /// Model integration
-  void step(State &, const ModelBias &) const;
+  void step(State &, const ModelBias &) const override;
 
 /// Finish model integration
-  void finalize(State &) const;
+  void finalize(State &) const override;
 
 /// Utilities
-  const util::Duration & timeResolution() const {return tstep_;}
+  const util::Duration & timeResolution() const override {return tstep_;}
 
  private:
-  void print(std::ostream &) const;
+  void print(std::ostream &) const override;
   util::Duration tstep_;
   bool runstagecheck_;
   mutable bool runstage_ = true;

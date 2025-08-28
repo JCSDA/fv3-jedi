@@ -11,13 +11,13 @@
 #include <string>
 
 #include "oops/base/Variables.h"
-#include "oops/interface/ModelBase.h"
 #include "oops/util/Duration.h"
 #include "oops/util/ObjectCounter.h"
+#include "oops/util/Printable.h"
 
 #include "fv3jedi/Geometry/Geometry.h"
 #include "fv3jedi/Model/geos/ModelGEOS.interface.h"
-#include "fv3jedi/Utilities/Traits.h"
+#include "fv3jedi/Model/ModelBase.h"
 
 // Forward declarations
 namespace eckit {
@@ -35,7 +35,7 @@ namespace fv3jedi {
  *  FV3JEDI nonlinear model definition and configuration parameters.
  */
 
-class ModelGEOS: public oops::interface::ModelBase<Traits>,
+class ModelGEOS: public ModelBase,
                  private util::ObjectCounter<ModelGEOS> {
  public:
   static const std::string classname() {return "fv3jedi::ModelGEOS";}
@@ -44,19 +44,19 @@ class ModelGEOS: public oops::interface::ModelBase<Traits>,
   ~ModelGEOS();
 
 /// Prepare model integration
-  void initialize(State &) const;
+  void initialize(State &) const override;
 
 /// Model integration
-  void step(State &, const ModelBias &) const;
+  void step(State &, const ModelBias &) const override;
 
 /// Finish model integration
-  void finalize(State &) const;
+  void finalize(State &) const override;
 
 /// Utilities
-  const util::Duration & timeResolution() const {return tstep_;}
+  const util::Duration & timeResolution() const override {return tstep_;}
 
  private:
-  void print(std::ostream &) const;
+  void print(std::ostream &) const override;
   F90model keyConfig_;
   util::Duration tstep_;
   const Geometry geom_;
