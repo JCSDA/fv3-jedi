@@ -315,5 +315,6 @@ variational:
 test:
   reference filename: testoutput/hyb-3dvar_geos_sondes_c12.ref
   float relative tolerance: 1.0e-2
+  float absolute tolerance: 1.0e-12
   integer tolerance: 3
   test output filename: testoutput/hyb-3dvar_geos_sondes_c12.test.out

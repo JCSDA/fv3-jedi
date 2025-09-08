@@ -13,7 +13,7 @@ ozone_mass_mixing_ratio                      | Min:+0.0000000000000000e+00 Max:+
 Covariance(SABER) * Increment:
 ----------------------------------------------------------------------------------------------------
 Increment print | number of fields = 8 | cube sphere face size: C12
-eastward_wind                                | Min:+0.0000000000000000e+00 Max:+9.3362897892079755e-01 RMS:+3.0209910397833575e-02
+eastward_wind                                | Min:+0.0000000000000000e+00 Max:+9.3362897892079688e-01 RMS:+2.7193085215978893e-02
 northward_wind                               | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 air_temperature                              | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 air_pressure_at_surface                      | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00

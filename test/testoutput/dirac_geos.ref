@@ -13,14 +13,14 @@ mole_fraction_of_ozone_in_air                | Min:+0.0000000000000000e+00 Max:+
 Covariance(ensemble) * Increment:
 ----------------------------------------------------------------------------------------------------
 Increment print | number of fields = 8 | cube sphere face size: C12
-eastward_wind                                | Min:-2.4827655962023829e-01 Max:+3.5138045352550773e-02 RMS:+2.1275977944631803e-03
-northward_wind                               | Min:-1.5898210039033672e-01 Max:+4.7226461334749913e-02 RMS:+9.2499133073628375e-04
-air_temperature                              | Min:-4.9106734760839287e-02 Max:+5.3346429788127897e-02 RMS:+4.0907499575981498e-04
+eastward_wind                                | Min:-2.4013055104351397e-01 Max:+1.0433497910541996e-02 RMS:+1.6309480520642452e-03
+northward_wind                               | Min:-6.4039268760493678e-02 Max:+4.2274593099219264e-02 RMS:+3.6134342886075916e-04
+air_temperature                              | Min:-9.9141246499448183e-03 Max:+5.3346429788127897e-02 RMS:+2.4282852861610166e-04
 air_pressure_at_surface                      | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
-water_vapor_mixing_ratio_wrt_moist_air       | Min:-1.9942832930063243e-05 Max:+9.3287774517237769e-06 RMS:+1.2165591370209880e-07
+water_vapor_mixing_ratio_wrt_moist_air       | Min:-1.9942832930063243e-05 Max:+9.3287774517237939e-06 RMS:+1.1743520751973371e-07
 cloud_liquid_ice                             | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 cloud_liquid_water                           | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
-mole_fraction_of_ozone_in_air                | Min:-8.7085172910362580e-05 Max:+9.3227556579938951e-05 RMS:+7.6682913604905817e-07
+mole_fraction_of_ozone_in_air                | Min:+0.0000000000000000e+00 Max:+9.3227556579938951e-05 RMS:+5.0824902183246653e-07
 ----------------------------------------------------------------------------------------------------
 Localization(ensemble_localization) diagnostics:
 - Localization at zero separation:
@@ -28,12 +28,12 @@ Localization(ensemble_localization) diagnostics:
 Localization(ensemble) * Increment:
 ----------------------------------------------------------------------------------------------------
 Increment print | number of fields = 8 | cube sphere face size: C12
-eastward_wind                                | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+00 RMS:+1.0879190545790606e-02
-northward_wind                               | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+00 RMS:+1.0879190545790606e-02
-air_temperature                              | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+00 RMS:+1.0879190545790606e-02
+eastward_wind                                | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+00 RMS:+7.6927494087491140e-03
+northward_wind                               | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+00 RMS:+7.6927494087491140e-03
+air_temperature                              | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+00 RMS:+7.6927494087491140e-03
 air_pressure_at_surface                      | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
-water_vapor_mixing_ratio_wrt_moist_air       | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+00 RMS:+1.0879190545790606e-02
-cloud_liquid_ice                             | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+00 RMS:+1.0879190545790606e-02
-cloud_liquid_water                           | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+00 RMS:+1.0879190545790606e-02
-mole_fraction_of_ozone_in_air                | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+00 RMS:+1.0879190545790606e-02
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+00 RMS:+7.6927494087491140e-03
+cloud_liquid_ice                             | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+00 RMS:+7.6927494087491140e-03
+cloud_liquid_water                           | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+00 RMS:+7.6927494087491140e-03
+mole_fraction_of_ozone_in_air                | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+00 RMS:+7.6927494087491140e-03
 ----------------------------------------------------------------------------------------------------

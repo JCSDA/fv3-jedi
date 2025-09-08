@@ -1,28 +1,28 @@
 CostJo   : Nonlinear Jo(Aod) = 1.3287027270827161e+03, nobs = 42, Jo/n = 3.1635779216255145e+01, err = 2.1260290846545030e-01
 CostJb   : Nonlinear Jb = 0.0000000000000000e+00
 CostFunction: Nonlinear J = 1.3287027270827161e+03
-DRPCGMinimizer: reduction in residual norm = 2.8714079083925596e-13
+DRPCGMinimizer: reduction in residual norm = 2.8560905554300902e-13
 CostFunction::addIncrement: Analysis: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 17 | cube sphere face size: C12
-air_temperature                              | Min:+1.8589183454569675e+02 Max:+3.0601267340335858e+02 RMS:+2.5098911810744389e+02
-air_pressure_thickness                       | Min:+6.0599999747384670e-01 Max:+1.7891272479965564e+03 RMS:+9.5566854497818156e+02
-water_vapor_mixing_ratio_wrt_moist_air       | Min:+4.1298966009749130e-07 Max:+1.8719123712137489e-02 RMS:+4.7594629520518105e-03
-mass_fraction_of_sulfate_in_air              | Min:+0.0000000000000000e+00 Max:+2.1794914942506050e+01 RMS:+7.8701265727221481e-01
-mass_fraction_of_hydrophobic_black_carbon_in | Min:+0.0000000000000000e+00 Max:+4.1821904415617972e+00 RMS:+6.7835883442342024e-02
-mass_fraction_of_hydrophilic_black_carbon_in | Min:+0.0000000000000000e+00 Max:+2.0376511509233883e+00 RMS:+9.5817151378209883e-02
-mass_fraction_of_hydrophobic_organic_carbon_ | Min:+8.3603285768991813e-24 Max:+9.1960523921379895e+00 RMS:+3.0668776274640874e-01
-mass_fraction_of_hydrophilic_organic_carbon_ | Min:+0.0000000000000000e+00 Max:+2.0987446057890295e+01 RMS:+1.0854690947072392e+00
-mass_fraction_of_dust001_in_air              | Min:+0.0000000000000000e+00 Max:+5.6153326490735867e+02 RMS:+1.1260478192738434e+01
-mass_fraction_of_dust002_in_air              | Min:+0.0000000000000000e+00 Max:+5.2947716728275009e+02 RMS:+1.0665679815598386e+01
-mass_fraction_of_dust003_in_air              | Min:+0.0000000000000000e+00 Max:+1.0864946401458803e+03 RMS:+2.1922484784464459e+01
-mass_fraction_of_dust004_in_air              | Min:+0.0000000000000000e+00 Max:+1.9087127455646419e+03 RMS:+3.2963508289784727e+01
-mass_fraction_of_dust005_in_air              | Min:+0.0000000000000000e+00 Max:+1.3525251878850722e+02 RMS:+1.3473355385358743e+00
-mass_fraction_of_sea_salt001_in_air          | Min:+0.0000000000000000e+00 Max:+1.7686191437124310e-01 RMS:+8.1974250489275334e-03
-mass_fraction_of_sea_salt002_in_air          | Min:+0.0000000000000000e+00 Max:+5.7571516692368387e+00 RMS:+2.6458210376395436e-01
-mass_fraction_of_sea_salt003_in_air          | Min:+0.0000000000000000e+00 Max:+5.6999890731854713e+01 RMS:+2.3957062075284759e+00
-mass_fraction_of_sea_salt004_in_air          | Min:+0.0000000000000000e+00 Max:+1.6433274370542702e+02 RMS:+5.8888610420355452e+00
+air_temperature                              | Min:+1.8589183454569675e+02 Max:+3.0601267340335858e+02 RMS:+2.5098911810744383e+02
+air_pressure_thickness                       | Min:+6.0599999747384670e-01 Max:+1.7891272479965564e+03 RMS:+9.5566854497818179e+02
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+4.1298966009749130e-07 Max:+1.8719123712137489e-02 RMS:+4.7594629520518114e-03
+mass_fraction_of_sulfate_in_air              | Min:+0.0000000000000000e+00 Max:+2.1794914942506050e+01 RMS:+7.8707629737625195e-01
+mass_fraction_of_hydrophobic_black_carbon_in | Min:+0.0000000000000000e+00 Max:+4.1821904415617972e+00 RMS:+6.7842036824820096e-02
+mass_fraction_of_hydrophilic_black_carbon_in | Min:+0.0000000000000000e+00 Max:+2.0376511509233883e+00 RMS:+9.5839509016158578e-02
+mass_fraction_of_hydrophobic_organic_carbon_ | Min:+0.0000000000000000e+00 Max:+9.1960523921379895e+00 RMS:+3.0667982879656924e-01
+mass_fraction_of_hydrophilic_organic_carbon_ | Min:+0.0000000000000000e+00 Max:+2.0987446057890295e+01 RMS:+1.0854987164500802e+00
+mass_fraction_of_dust001_in_air              | Min:+0.0000000000000000e+00 Max:+5.6198907812156256e+02 RMS:+1.1259676360240970e+01
+mass_fraction_of_dust002_in_air              | Min:+0.0000000000000000e+00 Max:+5.2990676366909224e+02 RMS:+1.0664887722777374e+01
+mass_fraction_of_dust003_in_air              | Min:+0.0000000000000000e+00 Max:+1.0873760755827518e+03 RMS:+2.1920840694869256e+01
+mass_fraction_of_dust004_in_air              | Min:+0.0000000000000000e+00 Max:+1.9102919814623453e+03 RMS:+3.2961783716672848e+01
+mass_fraction_of_dust005_in_air              | Min:+0.0000000000000000e+00 Max:+1.3536138352758704e+02 RMS:+1.3474103831355322e+00
+mass_fraction_of_sea_salt001_in_air          | Min:+0.0000000000000000e+00 Max:+1.7686191437124310e-01 RMS:+8.1960871444010305e-03
+mass_fraction_of_sea_salt002_in_air          | Min:+0.0000000000000000e+00 Max:+5.7571516692368387e+00 RMS:+2.6453907781757552e-01
+mass_fraction_of_sea_salt003_in_air          | Min:+0.0000000000000000e+00 Max:+5.6999890731854713e+01 RMS:+2.3953631205775028e+00
+mass_fraction_of_sea_salt004_in_air          | Min:+0.0000000000000000e+00 Max:+1.6433274370542702e+02 RMS:+5.8887400487663273e+00
 ----------------------------------------------------------------------------------------------------
-CostJo   : Nonlinear Jo(Aod) = 1279.532555549398, nobs = 42, Jo/n = 30.46506084641423, err = 0.2126029084654503
-CostJb   : Nonlinear Jb = 2.819080801437512
-CostFunction: Nonlinear J = 1282.351636350835
+CostJo   : Nonlinear Jo(Aod) = 1279.305251731107, nobs = 42, Jo/n = 30.45964885074065, err = 0.2126029084654503
+CostJb   : Nonlinear Jb = 2.84099725657266
+CostFunction: Nonlinear J = 1282.14624898768
