@@ -478,14 +478,11 @@ do jvar = 1, vars%nvars()
     call geom%field_masks%get_or_die(trim(field%long_name), conf_str)
     call meta%set('mask', trim(conf_str))
   endif
-
-  ! Release pointer
-  call afield%final()
-
 enddo
-
 ! Clean up
 if (allocated(tmp)) deallocate(tmp)
+call afield%final()
+call meta%final()
 
 end subroutine to_fieldset
 
@@ -527,11 +524,8 @@ do jvar = 1,vars%nvars()
     field%array(geom%isc:geom%iec, geom%jsc:geom%jec, jl) = &
       reshape(real_ptr(jl, 1:geom%ngrid), (/geom%iec-geom%isc+1, geom%jec-geom%jsc+1/))
   enddo
-
-  ! Release pointer
-  call afield%final()
-
 enddo
+call afield%final()
 
 end subroutine from_fieldset
 

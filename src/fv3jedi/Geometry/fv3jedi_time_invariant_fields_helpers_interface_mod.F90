@@ -36,6 +36,8 @@ afieldset = atlas_fieldset(c_afieldset)
 ! -------------------
 call calculate_nominal_surface_pressure(afieldset)
 
+call afieldset%final()
+
 end subroutine c_fv3jedi_nominal_surface_pressure
 
 ! --------------------------------------------------------------------------------------------------

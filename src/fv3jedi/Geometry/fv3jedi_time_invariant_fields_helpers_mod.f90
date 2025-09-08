@@ -55,6 +55,8 @@ subroutine calculate_nominal_surface_pressure(afieldset)
       nsp_ptr(1,n) = ps*orog_factor**lapse_exponent
     end if
   enddo
+  call nsp_field%final()
+  call orog_field%final()
 
 end subroutine calculate_nominal_surface_pressure
 

@@ -630,6 +630,7 @@ deallocate(self%lon_us)
 !call mpp_deallocate_domain(self%domain_fix)
 
 call self%afunctionspace%final()
+call self%geometry_fields%final()
 
 end subroutine delete
 
@@ -689,7 +690,6 @@ call afield%data(int_ptr)
 int_ptr(1, :) = 0
 int_ptr(1, 1:self%ngrid) = 1
 call afieldset%add(afield)
-call afield%final()
 
 ! Add area
 afield = self%afunctionspace%create_field(name='area', kind=atlas_real(kind_real), levels=1)
@@ -697,7 +697,6 @@ call afield%data(real_ptr)
 real_ptr(1, :) = -1.0_kind_real
 real_ptr(1, 1:self%ngrid) = reshape(self%area(self%isc:self%iec, self%jsc:self%jec), (/self%ngrid/))
 call afieldset%add(afield)
-call afield%final()
 
 ! Add vertical unit
 ps = constant('ps')
@@ -729,6 +728,7 @@ else
 endif
 call afieldset%add(afield)
 call afield%final()
+call afield2%final()
 
 end subroutine set_and_fill_geometry_fields
 

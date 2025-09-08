@@ -192,6 +192,8 @@ contains
       call abor1_ftn('fv3jedi_geom_iter_current: unknown geom%iterator_dimension')
     end select
 
+    call nsp_field%final()
+
   end subroutine fv3jedi_geom_iter_current
 
   ! ------------------------------------------------------------------------------
@@ -228,6 +230,7 @@ contains
                    + (self%jindex - self%geom%jsc) * (self%geom%iec - self%geom%isc + 1)
       oro = orog_ptr(1, orog_index)
     endif
+    call orog_field%final()
 
   end subroutine fv3jedi_geom_iter_orography
 
@@ -265,6 +268,7 @@ contains
                   + (self%jindex - self%geom%jsc) * (self%geom%iec - self%geom%isc + 1)
       nsp = nsp_ptr(1, nsp_index)
     endif
+    call nsp_field%final()
 
   end subroutine fv3jedi_geom_iter_nominal_surface_pressure
 

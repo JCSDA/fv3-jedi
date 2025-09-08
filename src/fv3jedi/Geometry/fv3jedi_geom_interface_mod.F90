@@ -317,6 +317,8 @@ f_field_masks = fckit_configuration(c_field_masks)
 ! -------------------
 call self%set_and_fill_geometry_fields(afieldset, f_field_masks)
 
+call afieldset%final()
+
 end subroutine c_fv3jedi_geom_set_and_fill_geometry_fields
 
 ! --------------------------------------------------------------------------------------------------

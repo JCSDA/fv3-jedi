@@ -292,6 +292,8 @@ afieldset = atlas_fieldset(c_afieldset)
 
 call self%to_fieldset(geom, vars, afieldset)
 
+call afieldset%final()
+
 end subroutine fv3jedi_state_to_fieldset_c
 
 ! --------------------------------------------------------------------------------------------------
@@ -316,6 +318,8 @@ vars = oops_variables(c_vars)
 afieldset = atlas_fieldset(c_afieldset)
 
 call self%from_fieldset(geom, vars, afieldset)
+
+call afieldset%final()
 
 end subroutine fv3jedi_state_from_fieldset_c
 
