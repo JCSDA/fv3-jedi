@@ -43,7 +43,7 @@ cost function:
         obsdataout:
           engine:
             type: H5File
-            obsfile: Data/hofx/aircraft_hyb-3dvar-gfs_2020121500_m.nc4
+            obsfile: Data/hofx/aircraft_hyb-4dvar_cda-gfs_2020121500_m.nc4
         simulated variables:
         - windEastward
         - windNorthward
@@ -112,7 +112,7 @@ cost function:
     tstep: PT1H
     datapath: Data/inputs/gfs_c12/bkg/
     filename_core: 20201214.210000.fv_core.res.nc
-    filename_core_out: checkpoint.4dvar_append_obs.fv_core.res.nc
+    filename_core_out: checkpoint.4dvar_cda.fv_core.res.nc
     datapath_out: Data/forecast
   geometry:
     fms initialization:
@@ -125,7 +125,7 @@ cost function:
 output:
   filetype: fms restart
   datapath: Data/analysis/eda/gfs/mem001
-  prefix: eda-4dvar-gfs
+  prefix: CDA-4dvar-gfs
   frequency: PT3H
   field io names: *field_io_names
 variational:
@@ -150,10 +150,10 @@ variational:
       lm_do_mst: 0
   - ninner: 2
     gradient norm reduction: 1e-10
-    continuous DA:
+    continuous da:
       obs append directory: Data/obs/testinput_tier_1/obsappend2
       time window:
-        begin: 2020-12-14T21:00:00Z
+        begin: 2020-12-14T22:00:00Z
         length: PT6H
     test: on
     geometry:
@@ -170,6 +170,6 @@ variational:
       lm_do_trb: 0
       lm_do_mst: 0
 test:
-  reference filename: testoutput/4dvar_append_obs.ref
-  test output filename: testoutput/4dvar_append_obs.test.out
+  reference filename: testoutput/4dvar_cda.ref
+  test output filename: testoutput/4dvar_cda.test.out
   float relative tolerance: 1.0e-3

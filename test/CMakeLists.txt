@@ -102,6 +102,7 @@ set(staticb_dates_aero 2018041421;2018041500;2018041503)
 # Test input scripts
 # ------------------
 list( APPEND fv3jedi_testinput
+  testinput/3dfgat_cda.yaml
   testinput/3denvar_gfs_tskin_c12.yaml
   testinput/3dvar_geos_cf.yaml
   testinput/3dvar_geos_mlt_saber_timed.yaml
@@ -115,7 +116,7 @@ list( APPEND fv3jedi_testinput
   testinput/3dvar_snow.yaml
   testinput/4denvar_seq.yaml
   testinput/4denvar.yaml
-  testinput/4dvar_append_obs.yaml
+  testinput/4dvar_cda.yaml
   testinput/4dvar_geos_aero.yaml
   testinput/4dvar_geos_cf.yaml
   testinput/4dvar_hybrid_linear_model.yaml
@@ -310,6 +311,7 @@ LINK_FILES( "${fv3jedi_testinput}" ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_B
 # Test output scripts
 # -------------------
 list( APPEND fv3jedi_testoutput
+  testoutput/3dfgat_cda.ref
   testoutput/3dvar_geos_cf.ref
   testoutput/3dvar_geos_mlt_saber_timed.ref
   testoutput/3dvar_geos_ozone.ref
@@ -319,7 +321,7 @@ list( APPEND fv3jedi_testoutput
   testoutput/3dvar_gfs_0obs.ref
   testoutput/3dvar_gfs_aero.ref
   testoutput/4denvar.ref
-  testoutput/4dvar_append_obs.ref
+  testoutput/4dvar_cda.ref
   testoutput/4dvar_hybrid_linear_model.ref
   testoutput/4dvar_geos_aero.ref
   testoutput/4dvar_geos_cf.ref
@@ -1517,9 +1519,14 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_4dvar_hybrid_linear_model
 
 # Continuous DA
 #--------------
-ecbuild_add_test( TARGET   fv3jedi_test_tier1_4dvar_append_obs
+ecbuild_add_test( TARGET fv3jedi_test_tier1_3dfgat_cda
                   MPI      6
-                  ARGS     testinput/4dvar_append_obs.yaml
+                  ARGS     testinput/3dfgat_cda.yaml
+                  COMMAND  fv3jedi_var.x )
+
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_4dvar_cda
+                  MPI      6
+                  ARGS     testinput/4dvar_cda.yaml
                   COMMAND  fv3jedi_var.x
                   TEST_DEPENDS fv3jedi_test_tier1_gen_hybrid_linear_model_coeffs )
 

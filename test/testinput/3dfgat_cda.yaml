@@ -1,0 +1,159 @@
+cost function:
+  background:
+    datetime: 2020-12-14T21:00:00Z
+    filetype: fms restart
+    datapath: Data/inputs/gfs_c12/bkg
+    filename_core: 20201214.210000.fv_core.res.nc
+    filename_trcr: 20201214.210000.fv_tracer.res.nc
+    filename_sfcd: 20201214.210000.sfc_data.nc
+    filename_sfcw: 20201214.210000.fv_srf_wnd.res.nc
+    filename_cplr: 20201214.210000.coupler.res
+    state variables: &modelvars
+    - eastward_wind
+    - northward_wind
+    - air_temperature
+    - air_pressure_thickness
+    - water_vapor_mixing_ratio_wrt_moist_air
+    - cloud_liquid_ice
+    - cloud_liquid_water
+    - ozone_mass_mixing_ratio
+    - geopotential_height_times_gravity_at_surface
+    field io names: &field_io_names
+      eastward_wind: ua
+      northward_wind: va
+      air_temperature: T
+      air_pressure_thickness: delp
+      water_vapor_mixing_ratio_wrt_moist_air: sphum
+      cloud_liquid_ice: ice_wat
+      cloud_liquid_water: liq_wat
+      ozone_mass_mixing_ratio: o3mr
+      geopotential_height_times_gravity_at_surface: phis
+  background error:
+    covariance model: SABER
+    saber central block:
+      saber block name: ID
+  observations:
+    observers:
+    - obs space:
+        name: Aircraft
+        obsdatain:
+          engine:
+            type: H5File
+            obsfile: Data/obs/testinput_tier_1/obsappend1/aircraft_obs_2020121500_m_renamed_var.nc4
+        obsdataout:
+          engine:
+            type: H5File
+            obsfile: Data/hofx/aircraft_hyb-3dfgat_cda-gfs_2020121500_m.nc4
+        simulated variables:
+        - windEastward
+        - windNorthward
+        - airTemperature
+        observed variables:
+        - windEastward
+        - windNorthward
+        derived variables:
+        - airTemperature
+      obs operator:
+        name: VertInterp
+        vertical coordinate: air_pressure
+        observation vertical coordinate: pressure
+        observation vertical coordinate group: MetaData
+        interpolation method: log-linear
+      obs error:
+        covariance model: diagonal
+      obs filters:
+      - filter: Variable Assignment
+        assignments:
+        - name: DerivedObsValue/airTemperature
+          type: float
+          source variable:
+            name: ObsValue/renamed_airTemperature
+      - filter: Perform Action
+        filter variables:
+        - airTemperature
+        action:
+          name: assign error
+          error function:
+            name: ObsError/renamed_airTemperature
+      - filter: Variable Assignment
+        assignments:
+        - name: PreQC/airTemperature
+          type: int
+          source variable:
+            name: PreQC/renamed_airTemperature
+      - filter: PreQC
+        maxvalue: 3
+      - filter: Background Check
+        apply at iterations: 0, 1
+        filter variables:
+        - name: windEastward
+        - name: windNorthward
+        - name: airTemperature
+        threshold: 6.0
+  cost type: 3D-FGAT
+  analysis variables: &anavars
+  - eastward_wind
+  - northward_wind
+  - air_temperature
+  - air_pressure_thickness
+  - water_vapor_mixing_ratio_wrt_moist_air
+  - cloud_liquid_ice
+  - cloud_liquid_water
+  - ozone_mass_mixing_ratio
+  time window:
+    begin: 2020-12-14T21:00:00Z
+    length: PT6H
+  model:
+    name: FV3LM
+    namelist filename: Data/fv3files/input_gfs_c12.nml
+    lm_do_dyn: 1
+    lm_do_trb: 0
+    lm_do_mst: 0
+    tstep: PT1H
+    datapath: Data/inputs/gfs_c12/bkg/
+    filename_core: 20201214.210000.fv_core.res.nc
+    filename_core_out: checkpoint.3dfgat_cda.fv_core.res.nc
+    datapath_out: Data/forecast
+  geometry:
+    fms initialization:
+      namelist filename: Data/fv3files/input_gfs_c12.nml
+      field table filename: Data/fv3files/field_table_gmao
+    akbk: Data/inputs/fv3files/akbk127.nc4
+    npx: 13
+    npy: 13
+    npz: 127
+output:
+  filetype: fms restart
+  datapath: Data/analysis/eda/gfs/mem001
+  prefix: CDA-3dfgat-gfs
+  frequency: PT3H
+  field io names: *field_io_names
+variational:
+  minimizer:
+    algorithm: DRPCG
+  iterations:
+  - ninner: 2
+    gradient norm reduction: 1e-10
+    test: on
+    geometry:
+      akbk: Data/inputs/fv3files/akbk127.nc4
+      npx: 13
+      npy: 13
+      npz: 127
+  - ninner: 2
+    gradient norm reduction: 1e-10
+    continuous da:
+      obs append directory: Data/obs/testinput_tier_1/obsappend2
+      time window:
+        begin: 2020-12-14T22:00:00Z
+        length: PT6H
+    test: on
+    geometry:
+      akbk: Data/inputs/fv3files/akbk127.nc4
+      npx: 13
+      npy: 13
+      npz: 127
+test:
+  reference filename: testoutput/3dfgat_cda.ref
+  test output filename: testoutput/3dfgat_cda.test.out
+  float relative tolerance: 1.0e-3
