@@ -567,7 +567,7 @@ endif
 ! CO2
 ! ---
 allocate(co2(self%isc:self%iec,self%jsc:self%jec,self%npz))
-co2 = 407.0_kind_real
+co2 = 4.07e-4_kind_real !mol mol-1
 if (xm%has_field('co2')) then
   call xm%get_field('co2', co2)
 endif

@@ -35,7 +35,7 @@ virtual_temperature                          | Min:+1.5865052804677049e+02 Max:+
 mole_fraction_of_ozone_in_air                | Min:+1.6996711920336184e-03 Max:+1.0542826851928563e+01 RMS:+2.6288280390864083e+00
 geopotential_height                          | Min:-1.6837767841807079e+01 Max:+7.9805489051111930e+04 RMS:+2.4840160350346418e+04
 height_above_mean_sea_level_at_surface       | Min:-2.6999999083848717e+01 Max:+5.0458980896750454e+03 RMS:+6.0667847094209617e+02
-mole_fraction_of_carbon_dioxide_in_air       | Min:+4.0700000000000000e+02 Max:+4.0700000000000000e+02 RMS:+4.0700000000000000e+02
+mole_fraction_of_carbon_dioxide_in_air       | Min:+4.0700000000000003e-04 Max:+4.0700000000000003e-04 RMS:+4.0699999999991535e-04
 water_vapor_mixing_ratio_wrt_dry_air         | Min:+1.2804727169382259e-09 Max:+1.9080970843572336e-02 RMS:+4.7529192956846109e-03
 mass_content_of_cloud_liquid_water_in_atmosp | Min:+0.0000000000000000e+00 Max:+1.3538278602069012e-01 RMS:+3.3329400924364083e-03
 mass_content_of_cloud_ice_in_atmosphere_laye | Min:+0.0000000000000000e+00 Max:+6.0801698649563578e-02 RMS:+1.9403475487795639e-03
@@ -71,7 +71,7 @@ virtual_temperature                          | Min:+1.5865052804677049e+02 Max:+
 mole_fraction_of_ozone_in_air                | Min:+1.6996711920336184e-03 Max:+1.0542826851928563e+01 RMS:+2.6288280390864083e+00
 geopotential_height                          | Min:-1.6837767841807079e+01 Max:+7.9805489051111930e+04 RMS:+2.4840160350346418e+04
 height_above_mean_sea_level_at_surface       | Min:-2.6999999083848717e+01 Max:+5.0458980896750454e+03 RMS:+6.0667847094209617e+02
-mole_fraction_of_carbon_dioxide_in_air       | Min:+4.0700000000000000e+02 Max:+4.0700000000000000e+02 RMS:+4.0700000000000000e+02
+mole_fraction_of_carbon_dioxide_in_air       | Min:+4.0700000000000003e-04 Max:+4.0700000000000003e-04 RMS:+4.0699999999991535e-04
 water_vapor_mixing_ratio_wrt_dry_air         | Min:+1.2804727169382259e-09 Max:+1.9080970843572336e-02 RMS:+4.7529192956846109e-03
 mass_content_of_cloud_liquid_water_in_atmosp | Min:+0.0000000000000000e+00 Max:+1.3538278602069012e-01 RMS:+3.3329400924364083e-03
 mass_content_of_cloud_ice_in_atmosphere_laye | Min:+0.0000000000000000e+00 Max:+6.0801698649563578e-02 RMS:+1.9403475487795639e-03
