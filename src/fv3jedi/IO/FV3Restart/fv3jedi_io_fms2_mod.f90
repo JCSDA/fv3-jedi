@@ -468,7 +468,9 @@ do var = 1,size(fields)
     fields(indexof_ps)%long_name = 'air_pressure_thickness'
     fields(indexof_ps)%npz = self%npz
     ! Create io name lookup
-    call field_io_names_local%set("air_pressure_thickness", "delp")
+    if (.not. field_io_names_local%has("air_pressure_thickness")) then
+      call field_io_names_local%set("air_pressure_thickness", "delp")
+    end if
   endif
 
   ! Get file to use
