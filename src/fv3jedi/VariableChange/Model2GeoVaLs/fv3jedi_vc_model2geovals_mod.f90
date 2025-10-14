@@ -638,7 +638,7 @@ if (have_t .and. have_pressures .and. have_q) then
   allocate(q_ge_0(self%isc:self%iec,self%jsc:self%jec,self%npz))
   q_ge_0 = q
   where(q < 0.0_kind_real) q_ge_0 = 0.0_kind_real
-  rho_air = prs / (rdry * t * (1.0_kind_real + (zvir + 1.0) * q_ge_0))
+  rho_air = prs / (rdry * t * (1.0_kind_real + zvir * q_ge_0))
   deallocate(q_ge_0)
   have_airdens = .true.
 endif
