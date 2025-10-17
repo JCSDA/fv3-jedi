@@ -1532,17 +1532,18 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_4dvar_cda
 
 # FSOI
 # ----
-ecbuild_add_test( TARGET   fv3jedi_test_tier1_hyb-3dvar_fsoi_forward
-                  MPI      6
-                  ARGS     testinput/hyb-3dvar_fsoi_forward.yaml
-                  COMMAND  fv3jedi_var.x
-                  TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_gfs )
-
-ecbuild_add_test( TARGET   fv3jedi_test_tier1_hyb-3dvar_fsoi_backward
-                  MPI      6
-                  ARGS     testinput/hyb-3dvar_fsoi_backward.yaml
-                  COMMAND  fv3jedi_var.x
-                  TEST_DEPENDS fv3jedi_test_tier1_hyb-3dvar_fsoi_forward )
+# Disabling FSOI tests in favor of the quadratic cost function checks
+#ecbuild_add_test( TARGET   fv3jedi_test_tier1_hyb-3dvar_fsoi_forward
+#                  MPI      6
+#                  ARGS     testinput/hyb-3dvar_fsoi_forward.yaml
+#                  COMMAND  fv3jedi_var.x
+#                  TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_gfs )
+#
+#ecbuild_add_test( TARGET   fv3jedi_test_tier1_hyb-3dvar_fsoi_backward
+#                  MPI      6
+#                  ARGS     testinput/hyb-3dvar_fsoi_backward.yaml
+#                  COMMAND  fv3jedi_var.x
+#                  TEST_DEPENDS fv3jedi_test_tier1_hyb-3dvar_fsoi_forward )
 
 # Diff states
 # -----------
