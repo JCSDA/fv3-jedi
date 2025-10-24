@@ -238,7 +238,7 @@ void IOStructuredGrid::writeStructuredFields(const atlas::FieldSet & fields,
   std::vector<int> timArr(nTim);
 
   for (int i = 0; i < nLat; ++i) {
-    latArr[i] = regGrid.y(i);
+    latArr[i] = regGrid.y(nLat - 1 - i);
   }
   for (int i = 0; i < nLon; ++i) {
     lonArr[i] = regGrid.x(i);
