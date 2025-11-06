@@ -146,8 +146,6 @@ cost function:
               drivers:
                 multivariate strategy: duplicated
                 compute nicas: true
-              model:
-                level for 2d variables: last
               nicas:
                 resolution: 6
                 min effective resolution: 0.2
