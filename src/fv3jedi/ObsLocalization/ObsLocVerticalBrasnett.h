@@ -13,21 +13,19 @@
 #include "eckit/config/Configuration.h"
 
 #include "fv3jedi/GeometryIterator/GeometryIterator.h"
-#include "fv3jedi/Utilities/Traits.h"
 
 #include "ioda/ObsSpace.h"
 #include "ioda/ObsVector.h"
 
-#include "oops/base/ObsLocalizationBase.h"
 #include "oops/util/missingValues.h"
 
-#include "ufo/ObsTraits.h"
+#include "ufo/obslocalization/ObsLocalizationBase.h"
 
 namespace fv3jedi {
 
 /// Brasnett 99 observation space localization for snow DA (in vertical).
 /// https://doi.org/10.1175/1520-0450(1999)038<0726:AGAOSD>2.0.CO;2
-class ObsLocVerticalBrasnett: public oops::ObsLocalizationBase<Traits, ufo::ObsTraits> {
+class ObsLocVerticalBrasnett: public ufo::ObsLocalizationBase<GeometryIterator> {
  public:
   ObsLocVerticalBrasnett(const eckit::Configuration &, const ioda::ObsSpace &);
 

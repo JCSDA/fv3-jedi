@@ -28,6 +28,8 @@
 
 #include "fv3jedi/NormGradient/NormGradient.h"
 
+#include "ufo/obslocalization/ObsLocalization.h"
+
 namespace fv3jedi {
 
 struct Traits {
@@ -48,6 +50,7 @@ struct Traits {
   typedef fv3jedi::State                State;
   typedef fv3jedi::Tlm                  LinearModel;
   typedef fv3jedi::VariableChange       VariableChange;
+  typedef ufo::ObsLocalization<GeometryIterator>   ObsLocalization;
 };
 
 }  // namespace fv3jedi

@@ -7,17 +7,15 @@
 
 #pragma once
 
+#include "fv3jedi/GeometryIterator/GeometryIterator.h"
 #include "fv3jedi/ObsLocalization/ObsLocVerticalBrasnett.h"
-#include "fv3jedi/Utilities/Traits.h"
-#include "oops/base/ObsLocalizationBase.h"
 #include "ufo/instantiateObsLocFactory.h"
-#include "ufo/ObsTraits.h"
+#include "ufo/obslocalization/ObsLocalizationBase.h"
 
 namespace fv3jedi {
 void instantiateObsLocFactory() {
-  ufo::instantiateObsLocFactory<fv3jedi::Traits>();
-  static oops::ObsLocalizationMaker<fv3jedi::Traits, ufo::ObsTraits,
-                                    fv3jedi::ObsLocVerticalBrasnett>
+  ufo::instantiateObsLocFactory<GeometryIterator>();
+  static ufo::ObsLocalizationMaker<GeometryIterator, fv3jedi::ObsLocVerticalBrasnett>
          makerVerticalBrasnett_("Vertical Brasnett");
 }
 
