@@ -212,7 +212,6 @@ list( APPEND fv3jedi_testinput
   testinput/geometry_nested.yaml
   testinput/geos_to_fms.yaml
   testinput/getvalues.yaml
-  testinput/global_interpolator.yaml
   testinput/hofx_fv3-geos_cf.yaml
   testinput/hofx_fv3-geos.yaml
   testinput/hofx_fv3-gfs.yaml
@@ -299,7 +298,6 @@ list( APPEND fv3jedi_testinput
   testinput/staticb_var_aero.yaml
   testinput/staticb_var_geos.yaml
   testinput/staticb_vbal_geos.yaml
-  testinput/unstructured_interpolator.yaml
   testinput/variablechange_gfs.yaml
   testinput/ens_spread_geos.yaml
   testinput/processperts_gfs.yaml
@@ -616,14 +614,6 @@ ecbuild_add_executable( TARGET  test_fv3jedi_getvalues.x
                         SOURCES mains/TestGetValues.cc
                         LIBS    ${FV3JEDI_LIBRARIES})
 
-ecbuild_add_executable( TARGET  test_fv3jedi_unstructured_interpolator.x
-                        SOURCES mains/TestUnstructuredInterpolator.cc
-                        LIBS    ${FV3JEDI_LIBRARIES} )
-
-ecbuild_add_executable( TARGET  test_fv3jedi_global_interpolator.x
-                        SOURCES mains/TestGlobalInterpolator.cc
-                        LIBS    ${FV3JEDI_LIBRARIES} )
-
 ecbuild_add_executable( TARGET  test_fv3jedi_increment.x
                         SOURCES mains/TestIncrement.cc
                         LIBS    ${FV3JEDI_LIBRARIES})
@@ -847,16 +837,6 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_getvalues
                   MPI      6
                   ARGS     testinput/getvalues.yaml
                   COMMAND  test_fv3jedi_getvalues.x )
-
-ecbuild_add_test( TARGET   fv3jedi_test_tier1_unstructured_interpolator
-                  MPI      6
-                  ARGS     testinput/unstructured_interpolator.yaml
-                  COMMAND  test_fv3jedi_unstructured_interpolator.x )
-
-ecbuild_add_test( TARGET   fv3jedi_test_tier1_global_interpolator
-                  MPI      6
-                  ARGS     testinput/global_interpolator.yaml
-                  COMMAND  test_fv3jedi_global_interpolator.x )
 
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_state_gfs
                   MPI      6
