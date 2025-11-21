@@ -15,14 +15,14 @@ Norm of input parameter rh - 2: 1570275.183683959
 Norm of input parameter nicas_a - 1: 0.8511142945324142
 Norm of input parameter nicas_a - 2: 0.2518522788751278
 Norm of input parameter nicas_norm - 1: 1.016417278140478
-Norm of input parameter nicas_norm - 2: 1.010547519210366
+Norm of input parameter nicas_norm - 2: 1.01054559074699
 Covariance(SABER) * Increment:
 ----------------------------------------------------------------------------------------------------
 Increment print | number of fields = 7 | cube sphere face size: C12
-eastward_wind                                | Min:-1.6432429491712603e-02 Max:+1.6232829633722683e-02 RMS:+7.5009763809277070e-04
-northward_wind                               | Min:-2.4542488512526491e-02 Max:+2.0577277344221927e-02 RMS:+9.3189407288754957e-04
-air_temperature                              | Min:-6.1342138903931779e-03 Max:+7.1194850041557223e-01 RMS:+3.6001100492528589e-03
-air_pressure_at_surface                      | Min:-2.4693951673703318e-01 Max:+5.0491577763580257e-02 RMS:+3.1995404370347043e-02
+eastward_wind                                | Min:-2.1947153027246331e-02 Max:+1.5592482126303918e-02 RMS:+8.6886440972284268e-04
+northward_wind                               | Min:-3.0596064303226145e-02 Max:+2.0889317848260570e-02 RMS:+1.0472599413404327e-03
+air_temperature                              | Min:-6.6798836126543771e-03 Max:+8.9146719235189176e-01 RMS:+3.5160524510098106e-03
+air_pressure_at_surface                      | Min:-2.5267212441422077e-01 Max:+4.9883016696630152e-02 RMS:+3.5061463807899713e-02
 water_vapor_mixing_ratio_wrt_moist_air       | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 cloud_liquid_water                           | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 ozone_mass_mixing_ratio                      | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
