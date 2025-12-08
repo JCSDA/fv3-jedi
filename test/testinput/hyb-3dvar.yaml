@@ -168,7 +168,7 @@ cost function:
         observation vertical coordinate group: MetaData
         interpolation method: log-linear
       obs error:
-        covariance model: diagonal ufo
+        covariance model: diagonal
       obs filters:
       - filter: Variable Assignment
         assignments:
@@ -213,7 +213,7 @@ cost function:
           use_compress: 1
           super_ref_qc: NBAM
       obs error:
-        covariance model: diagonal ufo
+        covariance model: diagonal
       obs filters:
       - filter: Domain Check
         filter variables:
@@ -308,7 +308,7 @@ cost function:
       linear obs operator:
         name: Identity
       obs error:
-        covariance model: diagonal ufo
+        covariance model: diagonal
       obs filters:
       - filter: Background Check
         threshold: 1000
@@ -329,7 +329,7 @@ cost function:
         observation vertical coordinate group: MetaData
         interpolation method: log-linear
       obs error:
-        covariance model: diagonal ufo
+        covariance model: diagonal
       obs filters:
       - filter: PreQC
         maxvalue: 3

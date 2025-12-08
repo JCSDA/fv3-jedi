@@ -134,7 +134,7 @@ observations:
         use_compress: 1
         super_ref_qc: NBAM
     obs error:
-      covariance model: diagonal ufo
+      covariance model: diagonal
     get values:
       time interpolation: linear
   - obs space:
@@ -162,7 +162,7 @@ observations:
         EndianType: little_endian
         CoefficientPath: Data/crtm/
     obs error:
-      covariance model: diagonal ufo
+      covariance model: diagonal
     get values:
       time interpolation: linear
 prints:
