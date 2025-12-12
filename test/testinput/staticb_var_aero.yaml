@@ -66,10 +66,11 @@ background error:
         sub-ensembles: 3
       diagnostics:
         target ensemble size: 30
+      nicas:
+        filter min effective resolution: 0.35
       variance:
         objective filtering: true
         filtering iterations: 1
-        smoother min effective resolution: 0.35
         initial length-scale:
         - variables:
           - mass_fraction_of_sulfate_in_air

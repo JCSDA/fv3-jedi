@@ -9,20 +9,20 @@ water_vapor_mixing_ratio_wrt_moist_air       | Min:+0.0000000000000000e+00 Max:+
 cloud_liquid_water                           | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 ozone_mass_mixing_ratio                      | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 ----------------------------------------------------------------------------------------------------
-Norm of input parameter StdDev: 484228.0574102871
-Norm of input parameter rh - 1: 3860863.267809463
-Norm of input parameter rh - 2: 1570275.18368391
+Norm of input parameter StdDev: 475260.0950503324
+Norm of input parameter rh - 1: 3860863.267809398
+Norm of input parameter rh - 2: 1570275.183683913
 Norm of input parameter nicas_a - 1: 0.8511142945324091
 Norm of input parameter nicas_a - 2: 0.2518522788751273
-Norm of input parameter nicas_norm - 1: 1.016417278140484
+Norm of input parameter nicas_norm - 1: 1.016417282847874
 Norm of input parameter nicas_norm - 2: 1.010545590746997
 Covariance(SABER) * Increment:
 ----------------------------------------------------------------------------------------------------
 Increment print | number of fields = 7 | cube sphere face size: C12
-eastward_wind                                | Min:-2.1947153027246331e-02 Max:+1.5592482126303918e-02 RMS:+8.6886440972284182e-04
-northward_wind                               | Min:-3.0596064303226145e-02 Max:+2.0889317848260570e-02 RMS:+1.0472599413404314e-03
-air_temperature                              | Min:-6.6798836126543771e-03 Max:+8.9146719235189176e-01 RMS:+3.5160524510098063e-03
-air_pressure_at_surface                      | Min:-2.5267212441422077e-01 Max:+4.9883016696630152e-02 RMS:+3.5061463807899713e-02
+eastward_wind                                | Min:-1.4678176310896898e-02 Max:+1.2280764014104516e-02 RMS:+6.7316740936156940e-04
+northward_wind                               | Min:-2.3968858803969005e-02 Max:+1.4591132095648905e-02 RMS:+8.4408874570980196e-04
+air_temperature                              | Min:-5.2266522042684590e-03 Max:+3.2600622966696069e-01 RMS:+1.4567517229571564e-03
+air_pressure_at_surface                      | Min:-1.9802568202051310e-01 Max:+4.8432511206401699e-02 RMS:+2.9165579385387878e-02
 water_vapor_mixing_ratio_wrt_moist_air       | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 cloud_liquid_water                           | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 ozone_mass_mixing_ratio                      | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
