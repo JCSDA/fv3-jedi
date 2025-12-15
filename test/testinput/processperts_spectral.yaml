@@ -68,7 +68,7 @@ bands:
       saber outer blocks:
       - saber block name: spectral analytical filter
         function:
-          horizontal daley length: 5000e3
+          horizontal daley length: 500e3
         normalize filter variance: false
         active variables:
         - air_horizontal_streamfunction
@@ -94,9 +94,9 @@ bands:
         - water_vapor_mixing_ratio_wrt_moist_air
         instantaneous statistics:
           multiply fset filename: wb1_variance
-          output path: Data/filtered_pert
+          output path: Data/filtered_pert_spectral
       - saber block name: write fields
-        output path: Data/filtered_pert
+        output path: Data/filtered_pert_spectral
         multiply fset filename: wb1_inc
       - saber block name: interpolation
         active variables:
@@ -120,7 +120,7 @@ bands:
     model write:
       filetype: auxgrid
       gridtype: latlon
-      filename: Data/filtered_pert/wb1_pert_mb%MEM%_
+      filename: Data/filtered_pert_spectral/wb1_pert_mb%MEM%_
       member pattern: '%MEM%'
       field io names: *field_io_names
 - band:
@@ -129,7 +129,7 @@ bands:
     model write:
       filetype: auxgrid
       gridtype: latlon
-      filename: Data/filtered_pert/wb2_pert_mb%MEM%_
+      filename: Data/filtered_pert_spectral/wb2_pert_mb%MEM%_
       member pattern: '%MEM%'
       field io names: *field_io_names
 
@@ -165,6 +165,6 @@ ensemble:
     zero padding: 3
 
 test:
-  reference filename: testoutput/processperts_gfs.ref
-  test output filename: testoutput/processperts_gfs.test.out
+  reference filename: testoutput/processperts_spectral.ref
+  test output filename: testoutput/processperts_spectral.test.out
   float relative tolerance: 1.0e-3

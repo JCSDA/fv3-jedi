@@ -14,7 +14,7 @@ Adjoint test for block diffusion passed
 Covariance(SABER) * Increment:
 ----------------------------------------------------------------------------------------------------
 Increment print | number of fields = 8 | cube sphere face size: C12
-eastward_wind                                | Min:+0.0000000000000000e+00 Max:+9.0206518260139812e-01 RMS:+7.1081231492779416e-03
+eastward_wind                                | Min:+0.0000000000000000e+00 Max:+9.0206518260140545e-01 RMS:+7.1081231492781871e-03
 northward_wind                               | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 air_temperature                              | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 air_pressure_at_surface                      | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00

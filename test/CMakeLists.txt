@@ -300,7 +300,9 @@ list( APPEND fv3jedi_testinput
   testinput/staticb_vbal_geos.yaml
   testinput/variablechange_gfs.yaml
   testinput/ens_spread_geos.yaml
-  testinput/processperts_gfs.yaml
+  testinput/processperts_bump.yaml
+  testinput/processperts_diffusion.yaml
+  testinput/processperts_spectral.yaml
 )
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/testinput)
@@ -431,7 +433,9 @@ list( APPEND fv3jedi_testoutput
   testoutput/ensembleb_loc_gfs.ref
   testoutput/ensembleb_nicas_gfs.ref
   testoutput/ensembleb_dirac_local_gfs_12pe.ref
-  testoutput/processperts_gfs.ref
+  testoutput/processperts_bump.ref
+  testoutput/processperts_diffusion.ref
+  testoutput/processperts_spectral.ref
   testoutput/update_output.py
 )
 
@@ -684,7 +688,9 @@ file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/analysis/letkf/gfs_land)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/increment)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/ensvariance)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/convertstate)
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/filtered_pert)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/filtered_pert_bump)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/filtered_pert_diffusion)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/filtered_pert_spectral)
 
 set(members mem001;mem002;mem003;mem004)
 foreach(MEM IN LISTS members)
@@ -1643,10 +1649,20 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_enshofx_fv3lm
 
 # Ensemble perturbation scale decomposition
 # ------------------------
-ecbuild_add_test( TARGET   fv3jedi_test_tier1_process_perts
-	          MPI      6
-		  ARGS     testinput/processperts_gfs.yaml
-		  COMMAND  fv3jedi_processperts.x)
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_process_perts_spectral
+                  MPI      6
+                  ARGS     testinput/processperts_spectral.yaml
+                  COMMAND  fv3jedi_processperts.x)
+
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_process_perts_bump
+                  MPI      6
+                  ARGS     testinput/processperts_bump.yaml
+                  COMMAND  fv3jedi_processperts.x)
+
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_process_perts_diffusion
+                  MPI      6
+                  ARGS     testinput/processperts_diffusion.yaml
+                  COMMAND  fv3jedi_processperts.x)
 
 # Ensemble data assimilation tests
 # --------------------------------

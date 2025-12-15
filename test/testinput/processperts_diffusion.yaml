@@ -1,0 +1,128 @@
+geometry:
+  fms initialization:
+    namelist filename: Data/fv3files/fmsmpp.nml
+    field table filename: Data/fv3files/field_table_gfdl
+  akbk: Data/inputs/fv3files/akbk127.nc4
+  layout:
+  - 1
+  - 1
+  npx: 13
+  npy: 13
+  npz: 127
+background:
+  datetime: 2020-12-15T00:00:00Z
+  filetype: fms restart
+  state variables:
+  - eastward_wind
+  - northward_wind
+  - air_temperature
+  - air_pressure_thickness
+  - water_vapor_mixing_ratio_wrt_moist_air
+  - cloud_liquid_ice
+  - cloud_liquid_water
+  - ozone_mass_mixing_ratio
+  - geopotential_height_times_gravity_at_surface
+  - slmsk
+  - sheleg
+  - skin_temperature_at_surface
+  - vtype
+  - stype
+  - vfrac
+  - stc
+  - soilMoistureVolumetric
+  - totalSnowDepth
+  - eastward_wind_at_surface
+  - northward_wind_at_surface
+  - f10m
+  - air_pressure_at_surface
+  datapath: Data/inputs/gfs_c12/bkg/
+  filename_core: 20201215.000000.fv_core.res.nc
+  filename_trcr: 20201215.000000.fv_tracer.res.nc
+  filename_sfcd: 20201215.000000.sfc_data.nc
+  filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
+  filename_cplr: 20201215.000000.coupler.res
+  field io names: &field_io_names
+    eastward_wind: ua
+    northward_wind: va
+    air_temperature: T
+    air_pressure_thickness: delp
+    water_vapor_mixing_ratio_wrt_moist_air: sphum
+    cloud_liquid_ice: ice_wat
+    cloud_liquid_water: liq_wat
+    ozone_mass_mixing_ratio: o3mr
+    geopotential_height_times_gravity_at_surface: phis
+    skin_temperature_at_surface: tsea
+    soilMoistureVolumetric: smc
+    totalSnowDepth: snwdph
+    eastward_wind_at_surface: u_srf
+    northward_wind_at_surface: v_srf
+    air_pressure_at_surface: ps
+    air_horizontal_streamfunction: psi
+    air_horizontal_velocity_potential: chi
+
+bands:
+- band:
+    filter:
+      saber central block:
+        saber block name: diffusion
+        read:
+          groups:
+          - variables:
+            - eastward_wind
+            - northward_wind
+            - air_temperature
+            - water_vapor_mixing_ratio_wrt_moist_air
+            horizontal:
+              filepath: Data/diffusion/diffusion_hz
+  output:
+    model write:
+      filetype: auxgrid
+      gridtype: latlon
+      filename: Data/filtered_pert_diffusion/wb1_pert_mb%MEM%_
+      member pattern: '%MEM%'
+      field io names: *field_io_names
+- band:
+    residual increment from previous bands: true
+  output:
+    model write:
+      filetype: auxgrid
+      gridtype: latlon
+      filename: Data/filtered_pert_diffusion/wb2_pert_mb%MEM%_
+      member pattern: '%MEM%'
+      field io names: *field_io_names
+
+input variables:
+- eastward_wind
+- northward_wind
+- air_temperature
+- water_vapor_mixing_ratio_wrt_moist_air
+
+ensemble:
+  members from template:
+    template:
+      datetime: 2020-12-15T00:00:00Z
+      filetype: fms restart
+      state variables:
+      - eastward_wind
+      - northward_wind
+      - air_temperature
+      - air_pressure_thickness
+      - water_vapor_mixing_ratio_wrt_moist_air
+      - cloud_liquid_ice
+      - cloud_liquid_water
+      - ozone_mass_mixing_ratio
+      datapath: Data/inputs/gfs_c12/mem%mem%/
+      filename_core: 20201215.000000.fv_core.res.nc
+      filename_trcr: 20201215.000000.fv_tracer.res.nc
+      filename_sfcd: 20201215.000000.sfc_data.nc
+      filename_sfcw: 20201215.000000.fv_srf_wnd.res.nc
+      filename_cplr: 20201215.000000.coupler.res
+      field io names: *field_io_names
+    pattern: '%mem%'
+    nmembers: 10
+    zero padding: 3
+  
+test:
+  reference filename: testoutput/processperts_diffusion.ref
+  test output filename: testoutput/processperts_diffusion.test.out
+  float relative tolerance: 1.0e-3
