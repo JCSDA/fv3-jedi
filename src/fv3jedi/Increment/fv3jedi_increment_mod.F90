@@ -234,7 +234,7 @@ type(fv3jedi_geom),        intent(in)    :: geom
 ! Locals
 integer :: ndir,idir
 integer, allocatable :: ixdir(:),iydir(:),ildir(:),itdir(:)
-character(len=32), allocatable :: ifdir(:)
+character(len=:), allocatable :: ifdir(:)
 character(len=:), allocatable :: str_array(:)
 type(fv3jedi_field), pointer :: dirac_field
 
