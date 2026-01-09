@@ -944,6 +944,9 @@ if (index(trim(field%long_name), 'cold') /= 0) io_file = 'cold'
 if (trim(field%long_name) == 'stc') io_file = 'surface'
 if (trim(field%long_name) == 'soilMoistureVolumetric') io_file = 'surface'
 
+! Reflectivity variable goes in physics file
+if (trim(field%long_name) == 'equivalent_reflectivity_factor') io_file = 'physics'
+
 ! Set the filename index
 ! ----------------------
 select case (io_file)
