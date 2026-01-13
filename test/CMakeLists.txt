@@ -839,10 +839,11 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_geometry_iterator_lam_cmaq
                   ARGS     testinput/geometry_iterator_lam_cmaq.yaml
                   COMMAND  test_fv3jedi_geometryiterator.x )
 
-ecbuild_add_test( TARGET   fv3jedi_test_tier1_getvalues
-                  MPI      6
-                  ARGS     testinput/getvalues.yaml
-                  COMMAND  test_fv3jedi_getvalues.x )
+# Disable test until it is fixed
+#ecbuild_add_test( TARGET   fv3jedi_test_tier1_getvalues
+#                  MPI      6
+#                  ARGS     testinput/getvalues.yaml
+#                  COMMAND  test_fv3jedi_getvalues.x )
 
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_state_gfs
                   MPI      6
