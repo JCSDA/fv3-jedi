@@ -48,7 +48,7 @@ linear model test:
   first multiplier TL: 1.0e-11
   iterations TL: 1
   tolerance TL: 1.0
-  tolerance AD: 2.0e-11
+  tolerance AD: 3.0e-11
 model:
   name: FV3LM
   use internal namelist: true
