@@ -81,9 +81,7 @@ bands:
       filename: Data/filtered_pert_diffusion/wb1_pert_mb%MEM%_
       member pattern: '%MEM%'
       field io names: *field_io_names
-- band:
-    residual increment from previous bands: true
-  output:
+- output:
     model write:
       filetype: auxgrid
       gridtype: latlon
