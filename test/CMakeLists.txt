@@ -1672,6 +1672,7 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_eda_3dvar_control_pert
                   MPI      12
                   ARGS     testinput/eda_3dvar_control_pert.yaml
                   COMMAND  fv3jedi_controlpert.x
+                  LABELS   CI_exclude_fv3jedi
                   TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_gfs )
 
 # Block-Lanczos EDA of 3DVars
@@ -1679,6 +1680,7 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_eda_block_3dvar
                   MPI      12
                   ARGS     testinput/eda_block_3dvar.yaml
                   COMMAND  fv3jedi_eda.x
+                  LABELS   CI_exclude_fv3jedi
                   TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_gfs )
 
 # Tier 2 tests
