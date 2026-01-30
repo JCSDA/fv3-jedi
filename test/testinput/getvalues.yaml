@@ -11,10 +11,8 @@ state:
     method: dcmip-test-4-0
   datetime: 2020-12-15T00:00:00Z
 variables:
-- virtual_temperature
+- air_temperature
 - air_pressure
-test variables:
-- virtual_temperature
 locations:
   time window:
     begin: 2020-12-14T21:00:00Z
@@ -22,7 +20,7 @@ locations:
   obs space:
     name: Random Locations
     simulated variables:
-    - virtualTemperature
+    - airTemperature
     - pressure
     obsdatain:
       engine:
@@ -36,4 +34,4 @@ locations:
         obs errors:
         - 1.2
         - 2.5
-tolerance interpolation: 0.9
+tolerance interpolation: 1.0e-3
