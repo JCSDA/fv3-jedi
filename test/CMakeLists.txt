@@ -251,7 +251,6 @@ list( APPEND fv3jedi_testinput
   testinput/lgetkf_linearobserver_hofx_reduceobs.yaml
   testinput/lgetkf_perturbed_linearobserver.yaml
   testinput/lgetkf.yaml
-  testinput/linearization_error.yaml
   testinput/linearmodel_physics.yaml
   testinput/linearmodel.yaml
   testinput/linearvariablechange_geos.yaml
@@ -298,6 +297,7 @@ list( APPEND fv3jedi_testinput
   testinput/staticb_var_aero.yaml
   testinput/staticb_var_geos.yaml
   testinput/staticb_vbal_geos.yaml
+  testinput/tlm_toolbox_linearization_error.yaml
   testinput/variablechange_gfs.yaml
   testinput/ens_spread_geos.yaml
   testinput/processperts_bump.yaml
@@ -410,7 +410,6 @@ list( APPEND fv3jedi_testoutput
   testoutput/lgetkf_linearobserver.ref
   testoutput/lgetkf_linearobserver_hofx_reduceobs.ref
   testoutput/lgetkf_perturbed_linearobserver.ref
-  testoutput/linearization_error.ref
   testoutput/adjointforecast.ref
   testoutput/staticb_dirac_global_gfs_6pe.ref
   testoutput/staticb_dirac_global_gfs_12pe.ref
@@ -436,6 +435,7 @@ list( APPEND fv3jedi_testoutput
   testoutput/processperts_bump.ref
   testoutput/processperts_diffusion.ref
   testoutput/processperts_spectral.ref
+  testoutput/tlm_toolbox_linearization_error.ref
   testoutput/update_output.py
 )
 
@@ -1132,10 +1132,10 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_hybrid_linear_model
                   COMMAND  test_fv3jedi_linearmodel.x
                   TEST_DEPENDS fv3jedi_test_tier1_gen_hybrid_linear_model_coeffs )
 
-ecbuild_add_test( TARGET   fv3jedi_test_tier1_linearization_error
+ecbuild_add_test( TARGET   fv3jedi_test_tier1_tlm_toolbox_linearization_error
                   MPI      6
-                  ARGS     testinput/linearization_error.yaml
-                  COMMAND  fv3jedi_linearization_error.x
+                  ARGS     testinput/tlm_toolbox_linearization_error.yaml
+                  COMMAND  fv3jedi_tlm_toolbox.x
                   TEST_DEPENDS fv3jedi_test_tier1_gen_hybrid_linear_model_coeffs )
 
 # Forecast tests

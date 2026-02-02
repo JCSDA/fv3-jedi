@@ -1,4 +1,4 @@
-linear model geometry:
+geometry:
   fms initialization:
     namelist filename: Data/fv3files/input_gfs_c12.nml
     field table filename: Data/fv3files/field_table_gmao
@@ -104,14 +104,7 @@ linear model:
             nmembers: 5
             zero padding: 3
 model aux increment: {}
-model geometry:
-  fms initialization:
-    namelist filename: Data/fv3files/input_gfs_c12.nml
-    field table filename: Data/fv3files/field_table_gmao
-  akbk: Data/inputs/fv3files/akbk127.nc4
-  npx: 13
-  npy: 13
-  npz: 127
+
 model:
   name: FV3LM
   use internal namelist: true
@@ -123,7 +116,7 @@ model:
   filename_core: 20201214.210000.fv_core.res.nc
   filename_core_out: checkpoint.linearization_error.fv_core.res.nc
   datapath_out: Data/forecast
-model aux control: {}
+model aux control: null
 forecast length: PT3H
 time resolution: PT3H
 x1:
@@ -148,22 +141,41 @@ x2:
   filename_cplr: 20201214.210000.coupler.res
   state variables: *bgvars
   field io names: *field_io_names
-output on structured grid:
-  local interpolator type: oops unstructured grid interpolator
-  grid type: latlon
-  type: inc
-  resolution in degrees: 6.0
-  all model levels: true
-  bottom model level: false
-  variables to output:
-  - eastward_wind
-  - northward_wind
-  - air_temperature
-  - air_pressure_thickness
-  - water_vapor_mixing_ratio_wrt_moist_air
-  datapath: Data
-  exp: linearization-error-HTLM
+compute error: true
+output:
+  dx:
+    structured grid:
+      local interpolator type: oops unstructured grid interpolator
+      grid type: latlon
+      type: inc
+      resolution in degrees: 6.0
+      all model levels: true
+      bottom model level: false
+      variables to output:
+      - eastward_wind
+      - northward_wind
+      - air_temperature
+      - air_pressure_thickness
+      - water_vapor_mixing_ratio_wrt_moist_air
+      datapath: Data
+      exp: linearization-error-HTLM-dx
+  error:
+    structured grid:
+      local interpolator type: oops unstructured grid interpolator
+      grid type: latlon
+      type: inc
+      resolution in degrees: 6.0
+      all model levels: true
+      bottom model level: false
+      variables to output:
+      - eastward_wind
+      - northward_wind
+      - air_temperature
+      - air_pressure_thickness
+      - water_vapor_mixing_ratio_wrt_moist_air
+      datapath: Data
+      exp: linearization-error-HTLM-error
 test:
-  reference filename: testoutput/linearization_error.ref
-  test output filename: testoutput/linearization_error.test.out
+  reference filename: testoutput/tlm_toolbox_linearization_error.ref
+  test output filename: testoutput/tlm_toolbox_linearization_error.test.out
   float relative tolerance: 1.0e-5

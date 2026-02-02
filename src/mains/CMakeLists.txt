@@ -105,11 +105,6 @@ ecbuild_add_executable( TARGET  fv3jedi_genenspertB.x
                                 saber
                       )
 
-ecbuild_add_executable( TARGET  fv3jedi_linearization_error.x
-                        SOURCES fv3jediLinearizationError.cc
-                        LIBS    ${FV3JEDI_LIBRARIES}
-                      )
-
 ecbuild_add_executable( TARGET  fv3jedi_processperts.x
                         SOURCES fv3jediProcessPerts.cc
                         LIBS    ${FV3JEDI_LIBRARIES}
@@ -134,6 +129,10 @@ ecbuild_add_executable( TARGET  fv3jedi_d_to_a.x
 ecbuild_add_executable( TARGET  fv3jedi_geos_to_fms.x
                         SOURCES fv3jediGeosToFms.f90
                         LIBS	${FV3JEDI_LIBRARIES}
+                      )
+ecbuild_add_executable( TARGET fv3jedi_tlm_toolbox.x
+                        SOURCES fv3jediTLMToolbox.cc
+                        LIBS   ${FV3JEDI_LIBRARIES}
                       )
 
 # Plotting utility
