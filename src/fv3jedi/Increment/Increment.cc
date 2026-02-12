@@ -43,6 +43,7 @@ Increment::Increment(const Geometry & geom, const oops::Variables & vars,
   : geom_(geom), vars_(vars), time_(time)
 {
   oops::Log::trace() << "Increment::Increment (from geom, vars and time) starting" << std::endl;
+  vars_.sort();
   fv3jedi_increment_create_f90(keyInc_, geom_.toFortran(), vars_, time_);
   fv3jedi_increment_zero_f90(keyInc_);
   oops::Log::trace() << "Increment::Increment (from geom, vars and time) done" << std::endl;
@@ -133,6 +134,7 @@ Increment & Increment::operator=(const Increment & rhs) {
 // -------------------------------------------------------------------------------------------------
 void Increment::updateFields(const oops::Variables & newVars) {
   vars_ = newVars;
+  vars_.sort();
   fv3jedi_increment_update_fields_f90(keyInc_, geom_.toFortran(), vars_);
 }
 // -------------------------------------------------------------------------------------------------

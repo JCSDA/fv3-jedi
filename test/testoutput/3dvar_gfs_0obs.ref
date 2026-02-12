@@ -5,10 +5,10 @@ CostFunction: Nonlinear J = 0.0000000000000000e+00
 CostFunction::addIncrement: Analysis: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 5 | cube sphere face size: C24
+air_pressure_thickness                       | Min:+6.0599994659423817e-01 Max:+1.7848057146959275e+03 RMS:+9.5720841709994363e+02
+air_temperature                              | Min:+1.6035734207814718e+02 Max:+3.0542230023020431e+02 RMS:+2.4961068048998081e+02
 eastward_wind                                | Min:-1.0473489055564801e+02 Max:+1.4034660828163609e+02 RMS:+2.1345784564802980e+01
 northward_wind                               | Min:-9.2575441765357425e+01 Max:+1.0100100260770733e+02 RMS:+9.3518640361397605e+00
-air_temperature                              | Min:+1.6035734207814718e+02 Max:+3.0542230023020431e+02 RMS:+2.4961068048998081e+02
-air_pressure_thickness                       | Min:+6.0599994659423817e-01 Max:+1.7848057146959275e+03 RMS:+9.5720841709994363e+02
 water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.2296700465515011e-07 Max:+1.8568663644472846e-02 RMS:+4.6327444577966975e-03
 ----------------------------------------------------------------------------------------------------
 CostJo   : Nonlinear Jo(Radiosonde) = 0 --- No Observations
@@ -18,10 +18,10 @@ CostFunction: Nonlinear J = 0
 CostFunction::addIncrement: Analysis: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 5 | cube sphere face size: C24
+air_pressure_thickness                       | Min:+6.0599994659423817e-01 Max:+1.7848057146959275e+03 RMS:+9.5720841709994363e+02
+air_temperature                              | Min:+1.6035734207814718e+02 Max:+3.0542230023020431e+02 RMS:+2.4961068048998081e+02
 eastward_wind                                | Min:-1.0473489055564801e+02 Max:+1.4034660828163609e+02 RMS:+2.1345784564802980e+01
 northward_wind                               | Min:-9.2575441765357425e+01 Max:+1.0100100260770733e+02 RMS:+9.3518640361397605e+00
-air_temperature                              | Min:+1.6035734207814718e+02 Max:+3.0542230023020431e+02 RMS:+2.4961068048998081e+02
-air_pressure_thickness                       | Min:+6.0599994659423817e-01 Max:+1.7848057146959275e+03 RMS:+9.5720841709994363e+02
 water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.2296700465515011e-07 Max:+1.8568663644472846e-02 RMS:+4.6327444577966975e-03
 ----------------------------------------------------------------------------------------------------
 CostJo   : Nonlinear Jo(Radiosonde) = 0 --- No Observations

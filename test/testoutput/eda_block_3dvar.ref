@@ -9,14 +9,14 @@ DRPBlockLanczosMinimizer: reduction in residual norm = 2.8299046475802181e-01
 CostFunction::addIncrement: Analysis: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 8 | cube sphere face size: C12
-eastward_wind                                | Min:-1.0797118622722284e+02 Max:+1.5492613031869496e+02 RMS:+2.2181666810976576e+01
-northward_wind                               | Min:-1.0274617339721389e+02 Max:+1.0485102796646616e+02 RMS:+1.0404870063063809e+01
-air_temperature                              | Min:+1.5954863907810443e+02 Max:+3.0611868474360767e+02 RMS:+2.4963147724371805e+02
 air_pressure_thickness                       | Min:+6.0599994186648898e-01 Max:+1.7932480411430104e+03 RMS:+9.5773074580235254e+02
-water_vapor_mixing_ratio_wrt_moist_air       | Min:+0.0000000000000000e+00 Max:+1.8614343020040072e-02 RMS:+4.6904243700469578e-03
+air_temperature                              | Min:+1.5954863907810443e+02 Max:+3.0611868474360767e+02 RMS:+2.4963147724371805e+02
 cloud_liquid_ice                             | Min:+0.0000000000000000e+00 Max:+3.7750459463813162e-04 RMS:+1.5616068806859723e-05
 cloud_liquid_water                           | Min:+0.0000000000000000e+00 Max:+9.6139574028308525e-04 RMS:+3.4774027209346338e-05
+eastward_wind                                | Min:-1.0797118622722284e+02 Max:+1.5492613031869496e+02 RMS:+2.2181666810976576e+01
+northward_wind                               | Min:-1.0274617339721389e+02 Max:+1.0485102796646616e+02 RMS:+1.0404870063063809e+01
 ozone_mass_mixing_ratio                      | Min:+0.0000000000000000e+00 Max:+1.8479460540807625e-05 RMS:+4.3561614684088563e-06
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+0.0000000000000000e+00 Max:+1.8614343020040072e-02 RMS:+4.6904243700469578e-03
 ----------------------------------------------------------------------------------------------------
 CostJo   : Nonlinear Jo(Radiosonde) = 1928.143649269304, nobs = 1348, Jo/n = 1.43037362705438, err = 2.063245158219037
 CostJb   : Nonlinear Jb = 174.3304322356609

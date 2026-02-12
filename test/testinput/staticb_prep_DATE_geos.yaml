@@ -104,8 +104,8 @@ background error:
     active variables:
     - air_horizontal_streamfunction
     - air_horizontal_velocity_potential
-    - air_temperature
     - air_pressure_at_surface
+    - air_temperature
     calibration:
       general:
         universe length-scale: 2500.0e3

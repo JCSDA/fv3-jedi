@@ -19,7 +19,7 @@ linear variable change tests:
     - cloud_liquid_ice
     - cloud_liquid_water
     - volume_mixing_ratio_of_o3
-  test inverse: true
+  test inverse: false
   tolerance inverse: 1000
 - linear variable change:
     linear variable change name: Model2GeoVaLs

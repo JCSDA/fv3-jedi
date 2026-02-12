@@ -1,14 +1,14 @@
 Input state: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 8 | cube sphere face size: C12
+air_pressure_thickness                       | Min:+6.0599994659423817e-01 Max:+1.7932493401135462e+03 RMS:+9.5772714447654255e+02
+air_temperature                              | Min:+1.5893188481427586e+02 Max:+3.0607987103609668e+02 RMS:+2.4962976662036075e+02
+cloud_liquid_ice                             | Min:-7.7766709947912867e-22 Max:+3.7845767540385194e-04 RMS:+1.5641684671465961e-05
+cloud_liquid_water                           | Min:-1.1862399630120345e-20 Max:+9.6147869399588407e-04 RMS:+3.5319125319529939e-05
 eastward_wind                                | Min:-1.0728300853990336e+02 Max:+1.5481434902121916e+02 RMS:+2.2179184956753542e+01
 northward_wind                               | Min:-1.0298456209954855e+02 Max:+1.0492779444275304e+02 RMS:+1.0410946624689153e+01
-air_temperature                              | Min:+1.5893188481427586e+02 Max:+3.0607987103609668e+02 RMS:+2.4962976662036075e+02
-air_pressure_thickness                       | Min:+6.0599994659423817e-01 Max:+1.7932493401135462e+03 RMS:+9.5772714447654255e+02
-water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.4263959012878502e-09 Max:+1.8614343020040072e-02 RMS:+4.6924063076807581e-03
-cloud_liquid_water                           | Min:-1.1862399630120345e-20 Max:+9.6147869399588407e-04 RMS:+3.5319125319529939e-05
-cloud_liquid_ice                             | Min:-7.7766709947912867e-22 Max:+3.7845767540385194e-04 RMS:+1.5641684671465961e-05
 ozone_mass_mixing_ratio                      | Min:+2.9744141544568681e-09 Max:+1.8493564124952562e-05 RMS:+4.3563600505976961e-06
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.4263959012878502e-09 Max:+1.8614343020040072e-02 RMS:+4.6924063076807581e-03
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaC2A variable change
 Variable change from: 8 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, water_vapor_mixing_ratio_wrt_moist_air, cloud_liquid_water, cloud_liquid_ice, ozone_mass_mixing_ratio
@@ -18,36 +18,36 @@ State after variable transform:
 State print | number of fields = 8 | cube sphere face size: C12
 air_horizontal_streamfunction                | Min:-2.7840934595888728e+08 Max:+1.8436147662129119e+08 RMS:+4.9634076200833984e+07
 air_horizontal_velocity_potential            | Min:-1.2823337958309071e+08 Max:+1.4208335974775353e+08 RMS:+1.2446207423043426e+07
-air_temperature                              | Min:+1.5893188481427586e+02 Max:+3.0607987103609668e+02 RMS:+2.4962976662036075e+02
 air_pressure_at_surface                      | Min:+5.3984521429421715e+04 Max:+1.0475941918096632e+05 RMS:+9.8986058763320121e+04
-water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.4263959012878502e-09 Max:+1.8614343020040072e-02 RMS:+4.6924063076807581e-03
-cloud_liquid_water                           | Min:-1.1862399630120345e-20 Max:+9.6147869399588407e-04 RMS:+3.5319125319529939e-05
+air_temperature                              | Min:+1.5893188481427586e+02 Max:+3.0607987103609668e+02 RMS:+2.4962976662036075e+02
 cloud_liquid_ice                             | Min:-7.7766709947912867e-22 Max:+3.7845767540385194e-04 RMS:+1.5641684671465961e-05
+cloud_liquid_water                           | Min:-1.1862399630120345e-20 Max:+9.6147869399588407e-04 RMS:+3.5319125319529939e-05
 ozone_mass_mixing_ratio                      | Min:+2.9744141544568681e-09 Max:+1.8493564124952562e-05 RMS:+4.3563600505976961e-06
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.4263959012878502e-09 Max:+1.8614343020040072e-02 RMS:+4.6924063076807581e-03
 ----------------------------------------------------------------------------------------------------
 Output state: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 8 | cube sphere face size: C12
 air_horizontal_streamfunction                | Min:-2.7840934595888728e+08 Max:+1.8436147662129119e+08 RMS:+4.9634076200833984e+07
 air_horizontal_velocity_potential            | Min:-1.2823337958309071e+08 Max:+1.4208335974775353e+08 RMS:+1.2446207423043426e+07
-air_temperature                              | Min:+1.5893188481427586e+02 Max:+3.0607987103609668e+02 RMS:+2.4962976662036075e+02
 air_pressure_at_surface                      | Min:+5.3984521429421715e+04 Max:+1.0475941918096632e+05 RMS:+9.8986058763320121e+04
-water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.4263959012878502e-09 Max:+1.8614343020040072e-02 RMS:+4.6924063076807581e-03
-cloud_liquid_water                           | Min:-1.1862399630120345e-20 Max:+9.6147869399588407e-04 RMS:+3.5319125319529939e-05
+air_temperature                              | Min:+1.5893188481427586e+02 Max:+3.0607987103609668e+02 RMS:+2.4962976662036075e+02
 cloud_liquid_ice                             | Min:-7.7766709947912867e-22 Max:+3.7845767540385194e-04 RMS:+1.5641684671465961e-05
+cloud_liquid_water                           | Min:-1.1862399630120345e-20 Max:+9.6147869399588407e-04 RMS:+3.5319125319529939e-05
 ozone_mass_mixing_ratio                      | Min:+2.9744141544568681e-09 Max:+1.8493564124952562e-05 RMS:+4.3563600505976961e-06
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.4263959012878502e-09 Max:+1.8614343020040072e-02 RMS:+4.6924063076807581e-03
 ----------------------------------------------------------------------------------------------------
 Input state: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 8 | cube sphere face size: C12
+air_pressure_thickness                       | Min:+6.0599994659423828e-01 Max:+1.7930756752146413e+03 RMS:+9.5773624726965261e+02
+air_temperature                              | Min:+1.5983949507707294e+02 Max:+3.0543631096731536e+02 RMS:+2.4962789030556488e+02
+cloud_liquid_ice                             | Min:-4.6255892271795764e-22 Max:+3.8941726719795677e-04 RMS:+1.4392601796007846e-05
+cloud_liquid_water                           | Min:-1.3009943076486942e-20 Max:+9.1472221160142527e-04 RMS:+3.6696526040470205e-05
 eastward_wind                                | Min:-1.0822268330022928e+02 Max:+1.5356254043962969e+02 RMS:+2.2170269171418969e+01
 northward_wind                               | Min:-1.0126798550610448e+02 Max:+1.0588115658371220e+02 RMS:+1.0403124989527459e+01
-air_temperature                              | Min:+1.5983949507707294e+02 Max:+3.0543631096731536e+02 RMS:+2.4962789030556488e+02
-air_pressure_thickness                       | Min:+6.0599994659423828e-01 Max:+1.7930756752146413e+03 RMS:+9.5773624726965261e+02
-water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.6385973223636026e-09 Max:+1.8672578889830711e-02 RMS:+4.7004470388421265e-03
-cloud_liquid_water                           | Min:-1.3009943076486942e-20 Max:+9.1472221160142527e-04 RMS:+3.6696526040470205e-05
-cloud_liquid_ice                             | Min:-4.6255892271795764e-22 Max:+3.8941726719795677e-04 RMS:+1.4392601796007846e-05
 ozone_mass_mixing_ratio                      | Min:+7.8621485615378954e-09 Max:+1.8484501939361488e-05 RMS:+4.3561326195354988e-06
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.6385973223636026e-09 Max:+1.8672578889830711e-02 RMS:+4.7004470388421265e-03
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaC2A variable change
 Variable change from: 8 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, water_vapor_mixing_ratio_wrt_moist_air, cloud_liquid_water, cloud_liquid_ice, ozone_mass_mixing_ratio
@@ -57,36 +57,36 @@ State after variable transform:
 State print | number of fields = 8 | cube sphere face size: C12
 air_horizontal_streamfunction                | Min:-2.7775558417391992e+08 Max:+1.8338888162584394e+08 RMS:+4.9629870209219903e+07
 air_horizontal_velocity_potential            | Min:-1.2417617859044649e+08 Max:+1.4244226885172719e+08 RMS:+1.2309999812995974e+07
-air_temperature                              | Min:+1.5983949507707294e+02 Max:+3.0543631096731536e+02 RMS:+2.4962789030556488e+02
 air_pressure_at_surface                      | Min:+5.3951964700991251e+04 Max:+1.0475160112959401e+05 RMS:+9.8986886860120605e+04
-water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.6385973223636026e-09 Max:+1.8672578889830711e-02 RMS:+4.7004470388421265e-03
-cloud_liquid_water                           | Min:-1.3009943076486942e-20 Max:+9.1472221160142527e-04 RMS:+3.6696526040470205e-05
+air_temperature                              | Min:+1.5983949507707294e+02 Max:+3.0543631096731536e+02 RMS:+2.4962789030556488e+02
 cloud_liquid_ice                             | Min:-4.6255892271795764e-22 Max:+3.8941726719795677e-04 RMS:+1.4392601796007846e-05
+cloud_liquid_water                           | Min:-1.3009943076486942e-20 Max:+9.1472221160142527e-04 RMS:+3.6696526040470205e-05
 ozone_mass_mixing_ratio                      | Min:+7.8621485615378954e-09 Max:+1.8484501939361488e-05 RMS:+4.3561326195354988e-06
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.6385973223636026e-09 Max:+1.8672578889830711e-02 RMS:+4.7004470388421265e-03
 ----------------------------------------------------------------------------------------------------
 Output state: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 8 | cube sphere face size: C12
 air_horizontal_streamfunction                | Min:-2.7775558417391992e+08 Max:+1.8338888162584394e+08 RMS:+4.9629870209219903e+07
 air_horizontal_velocity_potential            | Min:-1.2417617859044649e+08 Max:+1.4244226885172719e+08 RMS:+1.2309999812995974e+07
-air_temperature                              | Min:+1.5983949507707294e+02 Max:+3.0543631096731536e+02 RMS:+2.4962789030556488e+02
 air_pressure_at_surface                      | Min:+5.3951964700991251e+04 Max:+1.0475160112959401e+05 RMS:+9.8986886860120605e+04
-water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.6385973223636026e-09 Max:+1.8672578889830711e-02 RMS:+4.7004470388421265e-03
-cloud_liquid_water                           | Min:-1.3009943076486942e-20 Max:+9.1472221160142527e-04 RMS:+3.6696526040470205e-05
+air_temperature                              | Min:+1.5983949507707294e+02 Max:+3.0543631096731536e+02 RMS:+2.4962789030556488e+02
 cloud_liquid_ice                             | Min:-4.6255892271795764e-22 Max:+3.8941726719795677e-04 RMS:+1.4392601796007846e-05
+cloud_liquid_water                           | Min:-1.3009943076486942e-20 Max:+9.1472221160142527e-04 RMS:+3.6696526040470205e-05
 ozone_mass_mixing_ratio                      | Min:+7.8621485615378954e-09 Max:+1.8484501939361488e-05 RMS:+4.3561326195354988e-06
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.6385973223636026e-09 Max:+1.8672578889830711e-02 RMS:+4.7004470388421265e-03
 ----------------------------------------------------------------------------------------------------
 Input state: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 8 | cube sphere face size: C12
+air_pressure_thickness                       | Min:+6.0599994659423817e-01 Max:+1.7939362334629375e+03 RMS:+9.5773570980015165e+02
+air_temperature                              | Min:+1.5987973247947534e+02 Max:+3.0623069067093979e+02 RMS:+2.4963493807300989e+02
+cloud_liquid_ice                             | Min:-3.7867249550273297e-22 Max:+3.2313205135860927e-04 RMS:+1.4098162738454380e-05
+cloud_liquid_water                           | Min:-4.5881380147693652e-21 Max:+9.6133096269309510e-04 RMS:+3.3957783747453723e-05
 eastward_wind                                | Min:-1.0654054226083943e+02 Max:+1.5410435437511831e+02 RMS:+2.2178947642639372e+01
 northward_wind                               | Min:-1.0358422040061124e+02 Max:+1.0197527041695791e+02 RMS:+1.0399862707864600e+01
-air_temperature                              | Min:+1.5987973247947534e+02 Max:+3.0623069067093979e+02 RMS:+2.4963493807300989e+02
-air_pressure_thickness                       | Min:+6.0599994659423817e-01 Max:+1.7939362334629375e+03 RMS:+9.5773570980015165e+02
-water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.0248780306053949e-09 Max:+1.8339119524752652e-02 RMS:+4.7081248704617489e-03
-cloud_liquid_water                           | Min:-4.5881380147693652e-21 Max:+9.6133096269309510e-04 RMS:+3.3957783747453723e-05
-cloud_liquid_ice                             | Min:-3.7867249550273297e-22 Max:+3.2313205135860927e-04 RMS:+1.4098162738454380e-05
 ozone_mass_mixing_ratio                      | Min:-2.0401767509703437e-09 Max:+1.8151335654549060e-05 RMS:+4.3566629626813078e-06
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.0248780306053949e-09 Max:+1.8339119524752652e-02 RMS:+4.7081248704617489e-03
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaC2A variable change
 Variable change from: 8 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, water_vapor_mixing_ratio_wrt_moist_air, cloud_liquid_water, cloud_liquid_ice, ozone_mass_mixing_ratio
@@ -96,36 +96,36 @@ State after variable transform:
 State print | number of fields = 8 | cube sphere face size: C12
 air_horizontal_streamfunction                | Min:-2.7861551530933350e+08 Max:+1.8182555321562836e+08 RMS:+4.9638990499801226e+07
 air_horizontal_velocity_potential            | Min:-1.2910674693294652e+08 Max:+1.3573575993634281e+08 RMS:+1.2465562253710859e+07
-air_temperature                              | Min:+1.5987973247947534e+02 Max:+3.0623069067093979e+02 RMS:+2.4963493807300989e+02
 air_pressure_at_surface                      | Min:+5.3968785702698944e+04 Max:+1.0479055628281360e+05 RMS:+9.8986810543672676e+04
-water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.0248780306053949e-09 Max:+1.8339119524752652e-02 RMS:+4.7081248704617489e-03
-cloud_liquid_water                           | Min:-4.5881380147693652e-21 Max:+9.6133096269309510e-04 RMS:+3.3957783747453723e-05
+air_temperature                              | Min:+1.5987973247947534e+02 Max:+3.0623069067093979e+02 RMS:+2.4963493807300989e+02
 cloud_liquid_ice                             | Min:-3.7867249550273297e-22 Max:+3.2313205135860927e-04 RMS:+1.4098162738454380e-05
+cloud_liquid_water                           | Min:-4.5881380147693652e-21 Max:+9.6133096269309510e-04 RMS:+3.3957783747453723e-05
 ozone_mass_mixing_ratio                      | Min:-2.0401767509703437e-09 Max:+1.8151335654549060e-05 RMS:+4.3566629626813078e-06
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.0248780306053949e-09 Max:+1.8339119524752652e-02 RMS:+4.7081248704617489e-03
 ----------------------------------------------------------------------------------------------------
 Output state: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 8 | cube sphere face size: C12
 air_horizontal_streamfunction                | Min:-2.7861551530933350e+08 Max:+1.8182555321562836e+08 RMS:+4.9638990499801226e+07
 air_horizontal_velocity_potential            | Min:-1.2910674693294652e+08 Max:+1.3573575993634281e+08 RMS:+1.2465562253710859e+07
-air_temperature                              | Min:+1.5987973247947534e+02 Max:+3.0623069067093979e+02 RMS:+2.4963493807300989e+02
 air_pressure_at_surface                      | Min:+5.3968785702698944e+04 Max:+1.0479055628281360e+05 RMS:+9.8986810543672676e+04
-water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.0248780306053949e-09 Max:+1.8339119524752652e-02 RMS:+4.7081248704617489e-03
-cloud_liquid_water                           | Min:-4.5881380147693652e-21 Max:+9.6133096269309510e-04 RMS:+3.3957783747453723e-05
+air_temperature                              | Min:+1.5987973247947534e+02 Max:+3.0623069067093979e+02 RMS:+2.4963493807300989e+02
 cloud_liquid_ice                             | Min:-3.7867249550273297e-22 Max:+3.2313205135860927e-04 RMS:+1.4098162738454380e-05
+cloud_liquid_water                           | Min:-4.5881380147693652e-21 Max:+9.6133096269309510e-04 RMS:+3.3957783747453723e-05
 ozone_mass_mixing_ratio                      | Min:-2.0401767509703437e-09 Max:+1.8151335654549060e-05 RMS:+4.3566629626813078e-06
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.0248780306053949e-09 Max:+1.8339119524752652e-02 RMS:+4.7081248704617489e-03
 ----------------------------------------------------------------------------------------------------
 Input state: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 8 | cube sphere face size: C12
+air_pressure_thickness                       | Min:+6.0599994659423817e-01 Max:+1.7932573239210242e+03 RMS:+9.5774896298217629e+02
+air_temperature                              | Min:+1.5890429877567141e+02 Max:+3.0591063182742886e+02 RMS:+2.4963329775271527e+02
+cloud_liquid_ice                             | Min:-1.2435201177165919e-22 Max:+5.3003371323828209e-04 RMS:+1.7126956591312566e-05
+cloud_liquid_water                           | Min:-1.1044614342236574e-20 Max:+9.9891389048681833e-04 RMS:+3.2567837230539896e-05
 eastward_wind                                | Min:-1.0538409673317513e+02 Max:+1.5536154468403782e+02 RMS:+2.2216831782066492e+01
 northward_wind                               | Min:-1.0254338770210207e+02 Max:+1.0467840809089634e+02 RMS:+1.0450937377483779e+01
-air_temperature                              | Min:+1.5890429877567141e+02 Max:+3.0591063182742886e+02 RMS:+2.4963329775271527e+02
-air_pressure_thickness                       | Min:+6.0599994659423817e-01 Max:+1.7932573239210242e+03 RMS:+9.5774896298217629e+02
-water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.6537837256844957e-09 Max:+1.8525054572869293e-02 RMS:+4.7196461906495856e-03
-cloud_liquid_water                           | Min:-1.1044614342236574e-20 Max:+9.9891389048681833e-04 RMS:+3.2567837230539896e-05
-cloud_liquid_ice                             | Min:-1.2435201177165919e-22 Max:+5.3003371323828209e-04 RMS:+1.7126956591312566e-05
 ozone_mass_mixing_ratio                      | Min:+7.2504230998195822e-10 Max:+2.0112543978187676e-05 RMS:+4.3556095559355499e-06
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.6537837256844957e-09 Max:+1.8525054572869293e-02 RMS:+4.7196461906495856e-03
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaC2A variable change
 Variable change from: 8 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, water_vapor_mixing_ratio_wrt_moist_air, cloud_liquid_water, cloud_liquid_ice, ozone_mass_mixing_ratio
@@ -135,36 +135,36 @@ State after variable transform:
 State print | number of fields = 8 | cube sphere face size: C12
 air_horizontal_streamfunction                | Min:-2.7908299519490647e+08 Max:+1.8170478940442297e+08 RMS:+4.9716491768920131e+07
 air_horizontal_velocity_potential            | Min:-1.2309648109284635e+08 Max:+1.4783938805856621e+08 RMS:+1.2503916333675468e+07
-air_temperature                              | Min:+1.5890429877567141e+02 Max:+3.0591063182742886e+02 RMS:+2.4963329775271527e+02
 air_pressure_at_surface                      | Min:+5.3975280509228927e+04 Max:+1.0475988610764466e+05 RMS:+9.8988074413485156e+04
-water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.6537837256844957e-09 Max:+1.8525054572869293e-02 RMS:+4.7196461906495856e-03
-cloud_liquid_water                           | Min:-1.1044614342236574e-20 Max:+9.9891389048681833e-04 RMS:+3.2567837230539896e-05
+air_temperature                              | Min:+1.5890429877567141e+02 Max:+3.0591063182742886e+02 RMS:+2.4963329775271527e+02
 cloud_liquid_ice                             | Min:-1.2435201177165919e-22 Max:+5.3003371323828209e-04 RMS:+1.7126956591312566e-05
+cloud_liquid_water                           | Min:-1.1044614342236574e-20 Max:+9.9891389048681833e-04 RMS:+3.2567837230539896e-05
 ozone_mass_mixing_ratio                      | Min:+7.2504230998195822e-10 Max:+2.0112543978187676e-05 RMS:+4.3556095559355499e-06
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.6537837256844957e-09 Max:+1.8525054572869293e-02 RMS:+4.7196461906495856e-03
 ----------------------------------------------------------------------------------------------------
 Output state: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 8 | cube sphere face size: C12
 air_horizontal_streamfunction                | Min:-2.7908299519490647e+08 Max:+1.8170478940442297e+08 RMS:+4.9716491768920131e+07
 air_horizontal_velocity_potential            | Min:-1.2309648109284635e+08 Max:+1.4783938805856621e+08 RMS:+1.2503916333675468e+07
-air_temperature                              | Min:+1.5890429877567141e+02 Max:+3.0591063182742886e+02 RMS:+2.4963329775271527e+02
 air_pressure_at_surface                      | Min:+5.3975280509228927e+04 Max:+1.0475988610764466e+05 RMS:+9.8988074413485156e+04
-water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.6537837256844957e-09 Max:+1.8525054572869293e-02 RMS:+4.7196461906495856e-03
-cloud_liquid_water                           | Min:-1.1044614342236574e-20 Max:+9.9891389048681833e-04 RMS:+3.2567837230539896e-05
+air_temperature                              | Min:+1.5890429877567141e+02 Max:+3.0591063182742886e+02 RMS:+2.4963329775271527e+02
 cloud_liquid_ice                             | Min:-1.2435201177165919e-22 Max:+5.3003371323828209e-04 RMS:+1.7126956591312566e-05
+cloud_liquid_water                           | Min:-1.1044614342236574e-20 Max:+9.9891389048681833e-04 RMS:+3.2567837230539896e-05
 ozone_mass_mixing_ratio                      | Min:+7.2504230998195822e-10 Max:+2.0112543978187676e-05 RMS:+4.3556095559355499e-06
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.6537837256844957e-09 Max:+1.8525054572869293e-02 RMS:+4.7196461906495856e-03
 ----------------------------------------------------------------------------------------------------
 Input state: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 8 | cube sphere face size: C12
+air_pressure_thickness                       | Min:+6.0599994659423817e-01 Max:+1.7920205299147069e+03 RMS:+9.5772406208550046e+02
+air_temperature                              | Min:+1.5909684955177926e+02 Max:+3.0615658390438898e+02 RMS:+2.4962483472470186e+02
+cloud_liquid_ice                             | Min:-6.0797787100982309e-22 Max:+3.3410631162128631e-04 RMS:+1.4197350908181423e-05
+cloud_liquid_water                           | Min:-1.2251114260257531e-20 Max:+9.4286686130435433e-04 RMS:+3.5558243587927133e-05
 eastward_wind                                | Min:-1.1336344566622030e+02 Max:+1.5410218489512576e+02 RMS:+2.2237919149679936e+01
 northward_wind                               | Min:-1.0225467843364829e+02 Max:+1.0023863081166807e+02 RMS:+1.0395662540343702e+01
-air_temperature                              | Min:+1.5909684955177926e+02 Max:+3.0615658390438898e+02 RMS:+2.4962483472470186e+02
-air_pressure_thickness                       | Min:+6.0599994659423817e-01 Max:+1.7920205299147069e+03 RMS:+9.5772406208550046e+02
-water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.2506728017445651e-09 Max:+1.8450600425209546e-02 RMS:+4.6767613784635051e-03
-cloud_liquid_water                           | Min:-1.2251114260257531e-20 Max:+9.4286686130435433e-04 RMS:+3.5558243587927133e-05
-cloud_liquid_ice                             | Min:-6.0797787100982309e-22 Max:+3.3410631162128631e-04 RMS:+1.4197350908181423e-05
 ozone_mass_mixing_ratio                      | Min:-1.6855544686263505e-09 Max:+1.7395451891797272e-05 RMS:+4.3565260797063933e-06
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.2506728017445651e-09 Max:+1.8450600425209546e-02 RMS:+4.6767613784635051e-03
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaC2A variable change
 Variable change from: 8 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, water_vapor_mixing_ratio_wrt_moist_air, cloud_liquid_water, cloud_liquid_ice, ozone_mass_mixing_ratio
@@ -174,36 +174,36 @@ State after variable transform:
 State print | number of fields = 8 | cube sphere face size: C12
 air_horizontal_streamfunction                | Min:-2.8022328085163438e+08 Max:+1.8498208160115033e+08 RMS:+4.9774893840681143e+07
 air_horizontal_velocity_potential            | Min:-1.2786373220965099e+08 Max:+1.4438329076384705e+08 RMS:+1.2536103960605487e+07
-air_temperature                              | Min:+1.5909684955177926e+02 Max:+3.0615658390438898e+02 RMS:+2.4962483472470186e+02
 air_pressure_at_surface                      | Min:+5.3948827305856998e+04 Max:+1.0470396403756498e+05 RMS:+9.8985762095996964e+04
-water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.2506728017445651e-09 Max:+1.8450600425209546e-02 RMS:+4.6767613784635051e-03
-cloud_liquid_water                           | Min:-1.2251114260257531e-20 Max:+9.4286686130435433e-04 RMS:+3.5558243587927133e-05
+air_temperature                              | Min:+1.5909684955177926e+02 Max:+3.0615658390438898e+02 RMS:+2.4962483472470186e+02
 cloud_liquid_ice                             | Min:-6.0797787100982309e-22 Max:+3.3410631162128631e-04 RMS:+1.4197350908181423e-05
+cloud_liquid_water                           | Min:-1.2251114260257531e-20 Max:+9.4286686130435433e-04 RMS:+3.5558243587927133e-05
 ozone_mass_mixing_ratio                      | Min:-1.6855544686263505e-09 Max:+1.7395451891797272e-05 RMS:+4.3565260797063933e-06
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.2506728017445651e-09 Max:+1.8450600425209546e-02 RMS:+4.6767613784635051e-03
 ----------------------------------------------------------------------------------------------------
 Output state: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 8 | cube sphere face size: C12
 air_horizontal_streamfunction                | Min:-2.8022328085163438e+08 Max:+1.8498208160115033e+08 RMS:+4.9774893840681143e+07
 air_horizontal_velocity_potential            | Min:-1.2786373220965099e+08 Max:+1.4438329076384705e+08 RMS:+1.2536103960605487e+07
-air_temperature                              | Min:+1.5909684955177926e+02 Max:+3.0615658390438898e+02 RMS:+2.4962483472470186e+02
 air_pressure_at_surface                      | Min:+5.3948827305856998e+04 Max:+1.0470396403756498e+05 RMS:+9.8985762095996964e+04
-water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.2506728017445651e-09 Max:+1.8450600425209546e-02 RMS:+4.6767613784635051e-03
-cloud_liquid_water                           | Min:-1.2251114260257531e-20 Max:+9.4286686130435433e-04 RMS:+3.5558243587927133e-05
+air_temperature                              | Min:+1.5909684955177926e+02 Max:+3.0615658390438898e+02 RMS:+2.4962483472470186e+02
 cloud_liquid_ice                             | Min:-6.0797787100982309e-22 Max:+3.3410631162128631e-04 RMS:+1.4197350908181423e-05
+cloud_liquid_water                           | Min:-1.2251114260257531e-20 Max:+9.4286686130435433e-04 RMS:+3.5558243587927133e-05
 ozone_mass_mixing_ratio                      | Min:-1.6855544686263505e-09 Max:+1.7395451891797272e-05 RMS:+4.3565260797063933e-06
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.2506728017445651e-09 Max:+1.8450600425209546e-02 RMS:+4.6767613784635051e-03
 ----------------------------------------------------------------------------------------------------
 Input state: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 8 | cube sphere face size: C12
+air_pressure_thickness                       | Min:+6.0599994659423817e-01 Max:+1.7938779570588529e+03 RMS:+9.5773106214828090e+02
+air_temperature                              | Min:+1.5943544826064095e+02 Max:+3.0559385391714540e+02 RMS:+2.4963080977144614e+02
+cloud_liquid_ice                             | Min:-2.5640930454771588e-22 Max:+7.6154751278819397e-04 RMS:+1.6287729254998773e-05
+cloud_liquid_water                           | Min:-1.0664408798778475e-20 Max:+9.7501311442761804e-04 RMS:+3.5310201710669495e-05
 eastward_wind                                | Min:-1.1341132869530571e+02 Max:+1.5377742265729552e+02 RMS:+2.2177030103810242e+01
 northward_wind                               | Min:-1.0012721678230501e+02 Max:+1.0326140392931293e+02 RMS:+1.0362637438392957e+01
-air_temperature                              | Min:+1.5943544826064095e+02 Max:+3.0559385391714540e+02 RMS:+2.4963080977144614e+02
-air_pressure_thickness                       | Min:+6.0599994659423817e-01 Max:+1.7938779570588529e+03 RMS:+9.5773106214828090e+02
-water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.0798520525784696e-09 Max:+1.8431640363486615e-02 RMS:+4.6823040994236568e-03
-cloud_liquid_water                           | Min:-1.0664408798778475e-20 Max:+9.7501311442761804e-04 RMS:+3.5310201710669495e-05
-cloud_liquid_ice                             | Min:-2.5640930454771588e-22 Max:+7.6154751278819397e-04 RMS:+1.6287729254998773e-05
 ozone_mass_mixing_ratio                      | Min:-2.0404785466194633e-09 Max:+1.7616060942920580e-05 RMS:+4.3580989664361683e-06
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.0798520525784696e-09 Max:+1.8431640363486615e-02 RMS:+4.6823040994236568e-03
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaC2A variable change
 Variable change from: 8 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, water_vapor_mixing_ratio_wrt_moist_air, cloud_liquid_water, cloud_liquid_ice, ozone_mass_mixing_ratio
@@ -213,36 +213,36 @@ State after variable transform:
 State print | number of fields = 8 | cube sphere face size: C12
 air_horizontal_streamfunction                | Min:-2.7852248714928544e+08 Max:+1.8410444736523941e+08 RMS:+4.9639719500920184e+07
 air_horizontal_velocity_potential            | Min:-1.2367888057597917e+08 Max:+1.3685065170680901e+08 RMS:+1.2197028174886024e+07
-air_temperature                              | Min:+1.5943544826064095e+02 Max:+3.0559385391714540e+02 RMS:+2.4963080977144614e+02
 air_pressure_at_surface                      | Min:+5.3998805323147259e+04 Max:+1.0478786119775873e+05 RMS:+9.8986446743631503e+04
-water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.0798520525784696e-09 Max:+1.8431640363486615e-02 RMS:+4.6823040994236568e-03
-cloud_liquid_water                           | Min:-1.0664408798778475e-20 Max:+9.7501311442761804e-04 RMS:+3.5310201710669495e-05
+air_temperature                              | Min:+1.5943544826064095e+02 Max:+3.0559385391714540e+02 RMS:+2.4963080977144614e+02
 cloud_liquid_ice                             | Min:-2.5640930454771588e-22 Max:+7.6154751278819397e-04 RMS:+1.6287729254998773e-05
+cloud_liquid_water                           | Min:-1.0664408798778475e-20 Max:+9.7501311442761804e-04 RMS:+3.5310201710669495e-05
 ozone_mass_mixing_ratio                      | Min:-2.0404785466194633e-09 Max:+1.7616060942920580e-05 RMS:+4.3580989664361683e-06
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.0798520525784696e-09 Max:+1.8431640363486615e-02 RMS:+4.6823040994236568e-03
 ----------------------------------------------------------------------------------------------------
 Output state: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 8 | cube sphere face size: C12
 air_horizontal_streamfunction                | Min:-2.7852248714928544e+08 Max:+1.8410444736523941e+08 RMS:+4.9639719500920184e+07
 air_horizontal_velocity_potential            | Min:-1.2367888057597917e+08 Max:+1.3685065170680901e+08 RMS:+1.2197028174886024e+07
-air_temperature                              | Min:+1.5943544826064095e+02 Max:+3.0559385391714540e+02 RMS:+2.4963080977144614e+02
 air_pressure_at_surface                      | Min:+5.3998805323147259e+04 Max:+1.0478786119775873e+05 RMS:+9.8986446743631503e+04
-water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.0798520525784696e-09 Max:+1.8431640363486615e-02 RMS:+4.6823040994236568e-03
-cloud_liquid_water                           | Min:-1.0664408798778475e-20 Max:+9.7501311442761804e-04 RMS:+3.5310201710669495e-05
+air_temperature                              | Min:+1.5943544826064095e+02 Max:+3.0559385391714540e+02 RMS:+2.4963080977144614e+02
 cloud_liquid_ice                             | Min:-2.5640930454771588e-22 Max:+7.6154751278819397e-04 RMS:+1.6287729254998773e-05
+cloud_liquid_water                           | Min:-1.0664408798778475e-20 Max:+9.7501311442761804e-04 RMS:+3.5310201710669495e-05
 ozone_mass_mixing_ratio                      | Min:-2.0404785466194633e-09 Max:+1.7616060942920580e-05 RMS:+4.3580989664361683e-06
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.0798520525784696e-09 Max:+1.8431640363486615e-02 RMS:+4.6823040994236568e-03
 ----------------------------------------------------------------------------------------------------
 Input state: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 8 | cube sphere face size: C12
+air_pressure_thickness                       | Min:+6.0599994659423817e-01 Max:+1.7932164862383224e+03 RMS:+9.5773644281909992e+02
+air_temperature                              | Min:+1.5817590464354197e+02 Max:+3.0557708118206330e+02 RMS:+2.4962874214080463e+02
+cloud_liquid_ice                             | Min:-1.8629835448140802e-22 Max:+5.0831416618720804e-04 RMS:+1.5792110266980663e-05
+cloud_liquid_water                           | Min:-9.7477635900703217e-21 Max:+9.7490831057520956e-04 RMS:+3.5908500418812822e-05
 eastward_wind                                | Min:-1.1154894347164390e+02 Max:+1.5470951070889939e+02 RMS:+2.2187229888513667e+01
 northward_wind                               | Min:-1.0376022002043422e+02 Max:+1.0432381600192031e+02 RMS:+1.0418262474587976e+01
-air_temperature                              | Min:+1.5817590464354197e+02 Max:+3.0557708118206330e+02 RMS:+2.4962874214080463e+02
-air_pressure_thickness                       | Min:+6.0599994659423817e-01 Max:+1.7932164862383224e+03 RMS:+9.5773644281909992e+02
-water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.1330557382949513e-09 Max:+1.8574243076045424e-02 RMS:+4.7018678473599211e-03
-cloud_liquid_water                           | Min:-9.7477635900703217e-21 Max:+9.7490831057520956e-04 RMS:+3.5908500418812822e-05
-cloud_liquid_ice                             | Min:-1.8629835448140802e-22 Max:+5.0831416618720804e-04 RMS:+1.5792110266980663e-05
 ozone_mass_mixing_ratio                      | Min:+4.7507334303703184e-09 Max:+1.7689683822557023e-05 RMS:+4.3549328545235066e-06
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.1330557382949513e-09 Max:+1.8574243076045424e-02 RMS:+4.7018678473599211e-03
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaC2A variable change
 Variable change from: 8 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, water_vapor_mixing_ratio_wrt_moist_air, cloud_liquid_water, cloud_liquid_ice, ozone_mass_mixing_ratio
@@ -252,36 +252,36 @@ State after variable transform:
 State print | number of fields = 8 | cube sphere face size: C12
 air_horizontal_streamfunction                | Min:-2.8011155701983041e+08 Max:+1.8069799052239272e+08 RMS:+4.9724158736659199e+07
 air_horizontal_velocity_potential            | Min:-1.2272514680624539e+08 Max:+1.3898962887151733e+08 RMS:+1.2423986182667609e+07
-air_temperature                              | Min:+1.5817590464354197e+02 Max:+3.0557708118206330e+02 RMS:+2.4962874214080463e+02
 air_pressure_at_surface                      | Min:+5.3967137677558414e+04 Max:+1.0475797854684042e+05 RMS:+9.8986891772576302e+04
-water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.1330557382949513e-09 Max:+1.8574243076045424e-02 RMS:+4.7018678473599211e-03
-cloud_liquid_water                           | Min:-9.7477635900703217e-21 Max:+9.7490831057520956e-04 RMS:+3.5908500418812822e-05
+air_temperature                              | Min:+1.5817590464354197e+02 Max:+3.0557708118206330e+02 RMS:+2.4962874214080463e+02
 cloud_liquid_ice                             | Min:-1.8629835448140802e-22 Max:+5.0831416618720804e-04 RMS:+1.5792110266980663e-05
+cloud_liquid_water                           | Min:-9.7477635900703217e-21 Max:+9.7490831057520956e-04 RMS:+3.5908500418812822e-05
 ozone_mass_mixing_ratio                      | Min:+4.7507334303703184e-09 Max:+1.7689683822557023e-05 RMS:+4.3549328545235066e-06
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.1330557382949513e-09 Max:+1.8574243076045424e-02 RMS:+4.7018678473599211e-03
 ----------------------------------------------------------------------------------------------------
 Output state: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 8 | cube sphere face size: C12
 air_horizontal_streamfunction                | Min:-2.8011155701983041e+08 Max:+1.8069799052239272e+08 RMS:+4.9724158736659199e+07
 air_horizontal_velocity_potential            | Min:-1.2272514680624539e+08 Max:+1.3898962887151733e+08 RMS:+1.2423986182667609e+07
-air_temperature                              | Min:+1.5817590464354197e+02 Max:+3.0557708118206330e+02 RMS:+2.4962874214080463e+02
 air_pressure_at_surface                      | Min:+5.3967137677558414e+04 Max:+1.0475797854684042e+05 RMS:+9.8986891772576302e+04
-water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.1330557382949513e-09 Max:+1.8574243076045424e-02 RMS:+4.7018678473599211e-03
-cloud_liquid_water                           | Min:-9.7477635900703217e-21 Max:+9.7490831057520956e-04 RMS:+3.5908500418812822e-05
+air_temperature                              | Min:+1.5817590464354197e+02 Max:+3.0557708118206330e+02 RMS:+2.4962874214080463e+02
 cloud_liquid_ice                             | Min:-1.8629835448140802e-22 Max:+5.0831416618720804e-04 RMS:+1.5792110266980663e-05
+cloud_liquid_water                           | Min:-9.7477635900703217e-21 Max:+9.7490831057520956e-04 RMS:+3.5908500418812822e-05
 ozone_mass_mixing_ratio                      | Min:+4.7507334303703184e-09 Max:+1.7689683822557023e-05 RMS:+4.3549328545235066e-06
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.1330557382949513e-09 Max:+1.8574243076045424e-02 RMS:+4.7018678473599211e-03
 ----------------------------------------------------------------------------------------------------
 Input state: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 8 | cube sphere face size: C12
+air_pressure_thickness                       | Min:+6.0599994659423817e-01 Max:+1.7939347746210092e+03 RMS:+9.5774076506532708e+02
+air_temperature                              | Min:+1.5822324771210964e+02 Max:+3.0509799856828545e+02 RMS:+2.4962072748534672e+02
+cloud_liquid_ice                             | Min:-2.1104932768248133e-22 Max:+4.1628794106461691e-04 RMS:+1.4131002229540900e-05
+cloud_liquid_water                           | Min:-7.0212845167933003e-21 Max:+1.0376280723417214e-03 RMS:+3.4365420936128056e-05
 eastward_wind                                | Min:-1.0305756884940999e+02 Max:+1.5472045167889246e+02 RMS:+2.2154592497828922e+01
 northward_wind                               | Min:-1.0376133989531860e+02 Max:+1.0580641141853749e+02 RMS:+1.0413577744794399e+01
-air_temperature                              | Min:+1.5822324771210964e+02 Max:+3.0509799856828545e+02 RMS:+2.4962072748534672e+02
-air_pressure_thickness                       | Min:+6.0599994659423817e-01 Max:+1.7939347746210092e+03 RMS:+9.5774076506532708e+02
-water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.1995061532338570e-09 Max:+1.8363285311648922e-02 RMS:+4.6861201345212771e-03
-cloud_liquid_water                           | Min:-7.0212845167933003e-21 Max:+1.0376280723417214e-03 RMS:+3.4365420936128056e-05
-cloud_liquid_ice                             | Min:-2.1104932768248133e-22 Max:+4.1628794106461691e-04 RMS:+1.4131002229540900e-05
 ozone_mass_mixing_ratio                      | Min:-1.8101120797711535e-09 Max:+1.8917579784838969e-05 RMS:+4.3563258817611424e-06
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.1995061532338570e-09 Max:+1.8363285311648922e-02 RMS:+4.6861201345212771e-03
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaC2A variable change
 Variable change from: 8 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, water_vapor_mixing_ratio_wrt_moist_air, cloud_liquid_water, cloud_liquid_ice, ozone_mass_mixing_ratio
@@ -291,36 +291,36 @@ State after variable transform:
 State print | number of fields = 8 | cube sphere face size: C12
 air_horizontal_streamfunction                | Min:-2.8001371967142808e+08 Max:+1.8639082212000933e+08 RMS:+4.9692372990372166e+07
 air_horizontal_velocity_potential            | Min:-1.2873428448020372e+08 Max:+1.4542724031133363e+08 RMS:+1.2355905767326523e+07
-air_temperature                              | Min:+1.5822324771210964e+02 Max:+3.0509799856828545e+02 RMS:+2.4962072748534672e+02
 air_pressure_at_surface                      | Min:+5.3994001188932998e+04 Max:+1.0479049311185828e+05 RMS:+9.8987327888234053e+04
-water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.1995061532338570e-09 Max:+1.8363285311648922e-02 RMS:+4.6861201345212771e-03
-cloud_liquid_water                           | Min:-7.0212845167933003e-21 Max:+1.0376280723417214e-03 RMS:+3.4365420936128056e-05
+air_temperature                              | Min:+1.5822324771210964e+02 Max:+3.0509799856828545e+02 RMS:+2.4962072748534672e+02
 cloud_liquid_ice                             | Min:-2.1104932768248133e-22 Max:+4.1628794106461691e-04 RMS:+1.4131002229540900e-05
+cloud_liquid_water                           | Min:-7.0212845167933003e-21 Max:+1.0376280723417214e-03 RMS:+3.4365420936128056e-05
 ozone_mass_mixing_ratio                      | Min:-1.8101120797711535e-09 Max:+1.8917579784838969e-05 RMS:+4.3563258817611424e-06
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.1995061532338570e-09 Max:+1.8363285311648922e-02 RMS:+4.6861201345212771e-03
 ----------------------------------------------------------------------------------------------------
 Output state: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 8 | cube sphere face size: C12
 air_horizontal_streamfunction                | Min:-2.8001371967142808e+08 Max:+1.8639082212000933e+08 RMS:+4.9692372990372166e+07
 air_horizontal_velocity_potential            | Min:-1.2873428448020372e+08 Max:+1.4542724031133363e+08 RMS:+1.2355905767326523e+07
-air_temperature                              | Min:+1.5822324771210964e+02 Max:+3.0509799856828545e+02 RMS:+2.4962072748534672e+02
 air_pressure_at_surface                      | Min:+5.3994001188932998e+04 Max:+1.0479049311185828e+05 RMS:+9.8987327888234053e+04
-water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.1995061532338570e-09 Max:+1.8363285311648922e-02 RMS:+4.6861201345212771e-03
-cloud_liquid_water                           | Min:-7.0212845167933003e-21 Max:+1.0376280723417214e-03 RMS:+3.4365420936128056e-05
+air_temperature                              | Min:+1.5822324771210964e+02 Max:+3.0509799856828545e+02 RMS:+2.4962072748534672e+02
 cloud_liquid_ice                             | Min:-2.1104932768248133e-22 Max:+4.1628794106461691e-04 RMS:+1.4131002229540900e-05
+cloud_liquid_water                           | Min:-7.0212845167933003e-21 Max:+1.0376280723417214e-03 RMS:+3.4365420936128056e-05
 ozone_mass_mixing_ratio                      | Min:-1.8101120797711535e-09 Max:+1.8917579784838969e-05 RMS:+4.3563258817611424e-06
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.1995061532338570e-09 Max:+1.8363285311648922e-02 RMS:+4.6861201345212771e-03
 ----------------------------------------------------------------------------------------------------
 Input state: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 8 | cube sphere face size: C12
+air_pressure_thickness                       | Min:+6.0599994659423817e-01 Max:+1.7928131696187770e+03 RMS:+9.5773854258524113e+02
+air_temperature                              | Min:+1.5814905484295625e+02 Max:+3.0533408711434834e+02 RMS:+2.4962659497871661e+02
+cloud_liquid_ice                             | Min:-2.1995966839856406e-22 Max:+3.7959239767136014e-04 RMS:+1.5711800210773938e-05
+cloud_liquid_water                           | Min:-6.2078002010923943e-21 Max:+9.9797504609478176e-04 RMS:+3.5322389700237485e-05
 eastward_wind                                | Min:-1.0588261422400856e+02 Max:+1.5485988633829649e+02 RMS:+2.2156969961483931e+01
 northward_wind                               | Min:-1.0362721475299671e+02 Max:+1.0228925475682078e+02 RMS:+1.0385268677479523e+01
-air_temperature                              | Min:+1.5814905484295625e+02 Max:+3.0533408711434834e+02 RMS:+2.4962659497871661e+02
-air_pressure_thickness                       | Min:+6.0599994659423817e-01 Max:+1.7928131696187770e+03 RMS:+9.5773854258524113e+02
-water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.0060042612805134e-09 Max:+1.8595046040951607e-02 RMS:+4.7066573487430366e-03
-cloud_liquid_water                           | Min:-6.2078002010923943e-21 Max:+9.9797504609478176e-04 RMS:+3.5322389700237485e-05
-cloud_liquid_ice                             | Min:-2.1995966839856406e-22 Max:+3.7959239767136014e-04 RMS:+1.5711800210773938e-05
 ozone_mass_mixing_ratio                      | Min:+4.0941952381139940e-09 Max:+2.0795408514766231e-05 RMS:+4.3566534317671708e-06
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.0060042612805134e-09 Max:+1.8595046040951607e-02 RMS:+4.7066573487430366e-03
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaC2A variable change
 Variable change from: 8 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, water_vapor_mixing_ratio_wrt_moist_air, cloud_liquid_water, cloud_liquid_ice, ozone_mass_mixing_ratio
@@ -330,36 +330,36 @@ State after variable transform:
 State print | number of fields = 8 | cube sphere face size: C12
 air_horizontal_streamfunction                | Min:-2.7965067118095940e+08 Max:+1.8035632240052053e+08 RMS:+4.9592905000904180e+07
 air_horizontal_velocity_potential            | Min:-1.2070098760636342e+08 Max:+1.3790806094069603e+08 RMS:+1.2290264848226707e+07
-air_temperature                              | Min:+1.5814905484295625e+02 Max:+3.0533408711434834e+02 RMS:+2.4962659497871661e+02
 air_pressure_at_surface                      | Min:+5.3991823817255987e+04 Max:+1.0473981448810367e+05 RMS:+9.8987152020183086e+04
-water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.0060042612805134e-09 Max:+1.8595046040951607e-02 RMS:+4.7066573487430366e-03
-cloud_liquid_water                           | Min:-6.2078002010923943e-21 Max:+9.9797504609478176e-04 RMS:+3.5322389700237485e-05
+air_temperature                              | Min:+1.5814905484295625e+02 Max:+3.0533408711434834e+02 RMS:+2.4962659497871661e+02
 cloud_liquid_ice                             | Min:-2.1995966839856406e-22 Max:+3.7959239767136014e-04 RMS:+1.5711800210773938e-05
+cloud_liquid_water                           | Min:-6.2078002010923943e-21 Max:+9.9797504609478176e-04 RMS:+3.5322389700237485e-05
 ozone_mass_mixing_ratio                      | Min:+4.0941952381139940e-09 Max:+2.0795408514766231e-05 RMS:+4.3566534317671708e-06
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.0060042612805134e-09 Max:+1.8595046040951607e-02 RMS:+4.7066573487430366e-03
 ----------------------------------------------------------------------------------------------------
 Output state: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 8 | cube sphere face size: C12
 air_horizontal_streamfunction                | Min:-2.7965067118095940e+08 Max:+1.8035632240052053e+08 RMS:+4.9592905000904180e+07
 air_horizontal_velocity_potential            | Min:-1.2070098760636342e+08 Max:+1.3790806094069603e+08 RMS:+1.2290264848226707e+07
-air_temperature                              | Min:+1.5814905484295625e+02 Max:+3.0533408711434834e+02 RMS:+2.4962659497871661e+02
 air_pressure_at_surface                      | Min:+5.3991823817255987e+04 Max:+1.0473981448810367e+05 RMS:+9.8987152020183086e+04
-water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.0060042612805134e-09 Max:+1.8595046040951607e-02 RMS:+4.7066573487430366e-03
-cloud_liquid_water                           | Min:-6.2078002010923943e-21 Max:+9.9797504609478176e-04 RMS:+3.5322389700237485e-05
+air_temperature                              | Min:+1.5814905484295625e+02 Max:+3.0533408711434834e+02 RMS:+2.4962659497871661e+02
 cloud_liquid_ice                             | Min:-2.1995966839856406e-22 Max:+3.7959239767136014e-04 RMS:+1.5711800210773938e-05
+cloud_liquid_water                           | Min:-6.2078002010923943e-21 Max:+9.9797504609478176e-04 RMS:+3.5322389700237485e-05
 ozone_mass_mixing_ratio                      | Min:+4.0941952381139940e-09 Max:+2.0795408514766231e-05 RMS:+4.3566534317671708e-06
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.0060042612805134e-09 Max:+1.8595046040951607e-02 RMS:+4.7066573487430366e-03
 ----------------------------------------------------------------------------------------------------
 Input state: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 8 | cube sphere face size: C12
+air_pressure_thickness                       | Min:+6.0599994659423817e-01 Max:+1.7939387567849524e+03 RMS:+9.5771839040677219e+02
+air_temperature                              | Min:+1.5965483694175916e+02 Max:+3.0603784187560132e+02 RMS:+2.4962686021613342e+02
+cloud_liquid_ice                             | Min:-1.0050696213099395e-21 Max:+4.4214070670475189e-04 RMS:+1.4133627686756658e-05
+cloud_liquid_water                           | Min:-1.6000339476650640e-20 Max:+9.9172944772024131e-04 RMS:+3.4925429087647197e-05
 eastward_wind                                | Min:-1.0654704668208970e+02 Max:+1.5441340304681736e+02 RMS:+2.2199099197628286e+01
 northward_wind                               | Min:-1.0460658002219239e+02 Max:+1.0613453711817101e+02 RMS:+1.0408491795314502e+01
-air_temperature                              | Min:+1.5965483694175916e+02 Max:+3.0603784187560132e+02 RMS:+2.4962686021613342e+02
-air_pressure_thickness                       | Min:+6.0599994659423817e-01 Max:+1.7939387567849524e+03 RMS:+9.5771839040677219e+02
-water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.1032807207943813e-09 Max:+1.8855896739835672e-02 RMS:+4.6932123099883618e-03
-cloud_liquid_water                           | Min:-1.6000339476650640e-20 Max:+9.9172944772024131e-04 RMS:+3.4925429087647197e-05
-cloud_liquid_ice                             | Min:-1.0050696213099395e-21 Max:+4.4214070670475189e-04 RMS:+1.4133627686756658e-05
 ozone_mass_mixing_ratio                      | Min:+1.0512694261624498e-09 Max:+1.9381616650354006e-05 RMS:+4.3569961140591882e-06
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.1032807207943813e-09 Max:+1.8855896739835672e-02 RMS:+4.6932123099883618e-03
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaC2A variable change
 Variable change from: 8 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, water_vapor_mixing_ratio_wrt_moist_air, cloud_liquid_water, cloud_liquid_ice, ozone_mass_mixing_ratio
@@ -369,22 +369,22 @@ State after variable transform:
 State print | number of fields = 8 | cube sphere face size: C12
 air_horizontal_streamfunction                | Min:-2.8152858144142658e+08 Max:+1.8518789938708690e+08 RMS:+4.9664143114667520e+07
 air_horizontal_velocity_potential            | Min:-1.3143329834852162e+08 Max:+1.4312091596907869e+08 RMS:+1.2346825024019066e+07
-air_temperature                              | Min:+1.5965483694175916e+02 Max:+3.0603784187560132e+02 RMS:+2.4962686021613342e+02
 air_pressure_at_surface                      | Min:+5.3948922222101100e+04 Max:+1.0479068846023615e+05 RMS:+9.8985223383815726e+04
-water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.1032807207943813e-09 Max:+1.8855896739835672e-02 RMS:+4.6932123099883618e-03
-cloud_liquid_water                           | Min:-1.6000339476650640e-20 Max:+9.9172944772024131e-04 RMS:+3.4925429087647197e-05
+air_temperature                              | Min:+1.5965483694175916e+02 Max:+3.0603784187560132e+02 RMS:+2.4962686021613342e+02
 cloud_liquid_ice                             | Min:-1.0050696213099395e-21 Max:+4.4214070670475189e-04 RMS:+1.4133627686756658e-05
+cloud_liquid_water                           | Min:-1.6000339476650640e-20 Max:+9.9172944772024131e-04 RMS:+3.4925429087647197e-05
 ozone_mass_mixing_ratio                      | Min:+1.0512694261624498e-09 Max:+1.9381616650354006e-05 RMS:+4.3569961140591882e-06
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.1032807207943813e-09 Max:+1.8855896739835672e-02 RMS:+4.6932123099883618e-03
 ----------------------------------------------------------------------------------------------------
 Output state: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 8 | cube sphere face size: C12
 air_horizontal_streamfunction                | Min:-2.8152858144142658e+08 Max:+1.8518789938708690e+08 RMS:+4.9664143114667520e+07
 air_horizontal_velocity_potential            | Min:-1.3143329834852162e+08 Max:+1.4312091596907869e+08 RMS:+1.2346825024019066e+07
-air_temperature                              | Min:+1.5965483694175916e+02 Max:+3.0603784187560132e+02 RMS:+2.4962686021613342e+02
 air_pressure_at_surface                      | Min:+5.3948922222101100e+04 Max:+1.0479068846023615e+05 RMS:+9.8985223383815726e+04
-water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.1032807207943813e-09 Max:+1.8855896739835672e-02 RMS:+4.6932123099883618e-03
-cloud_liquid_water                           | Min:-1.6000339476650640e-20 Max:+9.9172944772024131e-04 RMS:+3.4925429087647197e-05
+air_temperature                              | Min:+1.5965483694175916e+02 Max:+3.0603784187560132e+02 RMS:+2.4962686021613342e+02
 cloud_liquid_ice                             | Min:-1.0050696213099395e-21 Max:+4.4214070670475189e-04 RMS:+1.4133627686756658e-05
+cloud_liquid_water                           | Min:-1.6000339476650640e-20 Max:+9.9172944772024131e-04 RMS:+3.4925429087647197e-05
 ozone_mass_mixing_ratio                      | Min:+1.0512694261624498e-09 Max:+1.9381616650354006e-05 RMS:+4.3569961140591882e-06
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.1032807207943813e-09 Max:+1.8855896739835672e-02 RMS:+4.6932123099883618e-03
 ----------------------------------------------------------------------------------------------------

@@ -1,7 +1,6 @@
 linear variable change tests:
 - linear variable change:
     linear variable change name: Control2Analysis
-    testinverse: 1
     input variables:
     - air_horizontal_streamfunction
     - air_horizontal_velocity_potential
@@ -20,6 +19,7 @@ linear variable change tests:
     - cloud_liquid_ice
     - cloud_liquid_water
     - ozone_mass_mixing_ratio
+  test inverse: false
   tolerance inverse: 1000
 geometry:
   fms initialization:

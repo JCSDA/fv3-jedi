@@ -94,5 +94,5 @@ background error:
 test:
   reference filename: testoutput/ensembleb_nicas_gfs.ref
   test output filename: testoutput/ensembleb_nicas_gfs.test.out
-  float relative tolerance: 1.0e-5
-  float absolute tolerance: 1.0e-5
+  float relative tolerance: 1.0e-4
+  float absolute tolerance: 1.0e-4

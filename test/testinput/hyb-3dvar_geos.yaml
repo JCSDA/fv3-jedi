@@ -72,7 +72,6 @@ cost function:
       northward_wind_at_surface: v10m
   background error:
     covariance model: hybrid
-    covariance type: hybrid
     components:
     - covariance:
         covariance model: FV3JEDI-ID

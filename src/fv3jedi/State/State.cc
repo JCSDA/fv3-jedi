@@ -41,6 +41,7 @@ State::State(const Geometry & geom, const oops::Variables & vars, const util::Da
   : geom_(geom), vars_(vars), time_(time)
 {
   oops::Log::trace() << "State::State (from geom, vars and time) starting" << std::endl;
+  vars_.sort();
   fv3jedi_state_create_f90(keyState_, geom_.toFortran(), vars_, time_);
   oops::Log::trace() << "State::State (from geom, vars and time) done" << std::endl;
 }
@@ -76,6 +77,7 @@ State::State(const Geometry & geom, const eckit::Configuration & config)
     ASSERT(params.stateVariables.value() != boost::none);
     vars_ = oops::Variables(*params.stateVariables.value());
   }
+  vars_.sort();
 
   // Datetime from the config for read and analytical
   ASSERT(params.datetime.value() != boost::none);
@@ -186,6 +188,7 @@ void State::changeResolution(const State & other) {
 
 void State::updateFields(const oops::Variables & newVars) {
   vars_ = newVars;
+  vars_.sort();
   fv3jedi_state_update_fields_f90(keyState_, geom_.toFortran(), vars_);
 }
 

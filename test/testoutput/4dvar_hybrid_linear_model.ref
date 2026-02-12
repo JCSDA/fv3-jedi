@@ -5,15 +5,15 @@ DRPCGMinimizer: reduction in residual norm = 1.6110817584859409e+00
 CostFunction::addIncrement: Analysis: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 9 | cube sphere face size: C12
-eastward_wind                                | Min:-9.9870309952286433e+01 Max:+1.6846199862558279e+02 RMS:+2.2146985138701709e+01
-northward_wind                               | Min:-9.8786769981158898e+01 Max:+1.1111138963302824e+02 RMS:+1.0634298778739074e+01
-air_temperature                              | Min:+1.5727112567931937e+02 Max:+3.0671885037183137e+02 RMS:+2.4964139412335774e+02
 air_pressure_thickness                       | Min:+6.0599809267147475e-01 Max:+1.7947824740978024e+03 RMS:+9.5767736977823847e+02
-water_vapor_mixing_ratio_wrt_moist_air       | Min:+0.0000000000000000e+00 Max:+1.8640101222576113e-02 RMS:+4.7045994571622571e-03
+air_temperature                              | Min:+1.5727112567931937e+02 Max:+3.0671885037183137e+02 RMS:+2.4964139412335774e+02
 cloud_liquid_ice                             | Min:+0.0000000000000000e+00 Max:+5.0754207489580477e-04 RMS:+1.5795718671717992e-05
 cloud_liquid_water                           | Min:+0.0000000000000000e+00 Max:+9.8037403300115758e-04 RMS:+3.3869746788463320e-05
-ozone_mass_mixing_ratio                      | Min:+0.0000000000000000e+00 Max:+2.3572761383482399e-05 RMS:+4.3568440033018504e-06
+eastward_wind                                | Min:-9.9870309952286433e+01 Max:+1.6846199862558279e+02 RMS:+2.2146985138701709e+01
 geopotential_height_times_gravity_at_surface | Min:-2.6477954101562500e+02 Max:+4.9483356501111783e+04 RMS:+5.9494834270643069e+03
+northward_wind                               | Min:-9.8786769981158898e+01 Max:+1.1111138963302824e+02 RMS:+1.0634298778739074e+01
+ozone_mass_mixing_ratio                      | Min:+0.0000000000000000e+00 Max:+2.3572761383482399e-05 RMS:+4.3568440033018504e-06
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+0.0000000000000000e+00 Max:+1.8640101222576113e-02 RMS:+4.7045994571622571e-03
 ----------------------------------------------------------------------------------------------------
 CostJo   : Nonlinear Jo(Aircraft) = 5734.918157046736, nobs = 2762, Jo/n = 2.076364285679484, err = 2.198816414499511
 CostJb   : Nonlinear Jb = 0.004826752810006396
