@@ -68,9 +68,9 @@ background error:
           files prefix: cor_3D_geos
           overriding sampling file: var-mom_3D_2020121421_geos_sampling
           overriding moments file:
-          - var-mom_3D_2020121421_geos_mom_000001_1
-          - var-mom_3D_2020121500_geos_mom_000001_1
-          - var-mom_3D_2020121503_geos_mom_000001_1
+          - var-mom_3D_2020121421_geos_mom_000001
+          - var-mom_3D_2020121500_geos_mom_000001
+          - var-mom_3D_2020121503_geos_mom_000001
       - model:
           variables:
           - air_pressure_at_surface
@@ -78,9 +78,9 @@ background error:
           files prefix: cor_2D_geos
           overriding sampling file: var-mom_2D_2020121421_geos_sampling
           overriding moments file:
-          - var-mom_2D_2020121421_geos_mom_000001_1
-          - var-mom_2D_2020121500_geos_mom_000001_1
-          - var-mom_2D_2020121503_geos_mom_000001_1
+          - var-mom_2D_2020121421_geos_mom_000001
+          - var-mom_2D_2020121500_geos_mom_000001
+          - var-mom_2D_2020121503_geos_mom_000001
       output model files:
       - parameter: cor_a
         component: 1

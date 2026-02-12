@@ -48,9 +48,9 @@ background error:
         files prefix: loc_gfs
         overriding sampling file: mom_2020121421_gfs_sampling
         overriding moments file:
-        - mom_2020121421_gfs_mom_000001_1
-        - mom_2020121500_gfs_mom_000001_1
-        - mom_2020121503_gfs_mom_000001_1
+        - mom_2020121421_gfs_mom_000001
+        - mom_2020121500_gfs_mom_000001
+        - mom_2020121503_gfs_mom_000001
       drivers:
         compute covariance: true
         compute correlation: true

@@ -74,6 +74,7 @@ cost function:
       air_horizontal_velocity_potential: chi
   background error:
     covariance model: hybrid
+    covariance type: hybrid
     components:
     - covariance:
         covariance model: SABER
