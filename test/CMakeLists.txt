@@ -1510,13 +1510,14 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_4dvar_hybrid_linear_model
 ecbuild_add_test( TARGET fv3jedi_test_tier1_3dfgat_cda
                   MPI      6
                   ARGS     testinput/3dfgat_cda.yaml
-                  COMMAND  fv3jedi_var.x )
+                  COMMAND  fv3jedi_var.x 
+	          TEST_DEPENDS fv3jedi_bumpparameters_nicas_gfs_nicas_local)
 
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_4dvar_cda
                   MPI      6
                   ARGS     testinput/4dvar_cda.yaml
                   COMMAND  fv3jedi_var.x
-                  TEST_DEPENDS fv3jedi_test_tier1_gen_hybrid_linear_model_coeffs )
+                  TEST_DEPENDS fv3jedi_bumpparameters_nicas_gfs_nicas_local )
 
 # FSOI
 # ----

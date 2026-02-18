@@ -1,4 +1,14 @@
 cost function:
+  cost type: 3D-FGAT
+  analysis variables: &anavars
+  - eastward_wind
+  - northward_wind
+  - air_temperature
+  - air_pressure_thickness
+  - water_vapor_mixing_ratio_wrt_moist_air
+  - cloud_liquid_ice
+  - cloud_liquid_water
+  - ozone_mass_mixing_ratio
   background:
     datetime: 2020-12-14T21:00:00Z
     filetype: fms restart
@@ -29,9 +39,115 @@ cost function:
       ozone_mass_mixing_ratio: o3mr
       geopotential_height_times_gravity_at_surface: phis
   background error:
-    covariance model: SABER
-    saber central block:
-      saber block name: ID
+    covariance model: hybrid
+    components:
+    - covariance:
+        covariance model: SABER
+        saber central block:
+          saber block name: BUMP_NICAS
+          read:
+            io:
+              files prefix: Data/bump/fv3jedi_bumpparameters_nicas_gfs
+              alias:
+              - in code: eastward_wind
+                in file: fixed_2500km_0.3
+              - in code: northward_wind
+                in file: fixed_2500km_0.3
+              - in code: air_temperature
+                in file: fixed_2500km_0.3
+              - in code: water_vapor_mixing_ratio_wrt_moist_air
+                in file: fixed_2500km_0.3
+              - in code: cloud_liquid_ice
+                in file: fixed_2500km_0.3
+              - in code: cloud_liquid_water
+                in file: fixed_2500km_0.3
+              - in code: ozone_mass_mixing_ratio
+                in file: fixed_2500km_0.3
+              - in code: air_pressure_at_surface
+                in file: fixed_2500km
+            drivers:
+              multivariate strategy: univariate
+              read local nicas: true
+            grids:
+            - model:
+                variables:
+                - eastward_wind
+                - northward_wind
+                - air_temperature
+                - water_vapor_mixing_ratio_wrt_moist_air
+                - cloud_liquid_ice
+                - cloud_liquid_water
+                - ozone_mass_mixing_ratio
+            - model:
+                variables:
+                - air_pressure_at_surface
+        linear variable change:
+          linear variable change name: Control2Analysis
+          input variables:
+          - eastward_wind
+          - northward_wind
+          - air_temperature
+          - air_pressure_at_surface
+          - water_vapor_mixing_ratio_wrt_moist_air
+          - cloud_liquid_ice
+          - cloud_liquid_water
+          - ozone_mass_mixing_ratio
+          output variables: *anavars
+      weight:
+        value: 0.1
+    - covariance:
+        covariance model: ensemble
+        members from template:
+          template:
+            datetime: 2020-12-14T21:00:00Z
+            filetype: fms restart
+            state variables: &bvars
+            - eastward_wind
+            - northward_wind
+            - air_temperature
+            - air_pressure_at_surface
+            - water_vapor_mixing_ratio_wrt_moist_air
+            - cloud_liquid_ice
+            - cloud_liquid_water
+            - ozone_mass_mixing_ratio
+            datapath: Data/inputs/gfs_c12/mem%mem%/
+            filename_core: 20201214.210000.fv_core.res.nc
+            filename_trcr: 20201214.210000.fv_tracer.res.nc
+            filename_sfcd: 20201214.210000.sfc_data.nc
+            filename_sfcw: 20201214.210000.fv_srf_wnd.res.nc
+            filename_cplr: 20201214.210000.coupler.res
+            field io names: *field_io_names
+          pattern: '%mem%'
+          nmembers: 10
+          zero padding: 3
+        localization:
+          localization method: SABER
+          saber central block:
+            saber block name: BUMP_NICAS
+            active variables: *bvars
+            read:
+              io:
+                files prefix: Data/bump/fv3jedi_bumpparameters_nicas_gfs
+                alias:
+                - in code: common
+                  in file: fixed_2500km_0.3
+              drivers:
+                multivariate strategy: duplicated
+                read local nicas: true
+        linear variable change:
+          linear variable change name: Control2Analysis
+          input variables:
+          - eastward_wind
+          - northward_wind
+          - air_temperature
+          - air_pressure_at_surface
+          - water_vapor_mixing_ratio_wrt_moist_air
+          - cloud_liquid_ice
+          - cloud_liquid_water
+          - ozone_mass_mixing_ratio
+          output variables: *anavars
+      weight:
+        value: 0.9
   observations:
     observers:
     - obs space:
@@ -90,16 +206,6 @@ cost function:
         - name: windNorthward
         - name: airTemperature
         threshold: 6.0
-  cost type: 3D-FGAT
-  analysis variables: &anavars
-  - eastward_wind
-  - northward_wind
-  - air_temperature
-  - air_pressure_thickness
-  - water_vapor_mixing_ratio_wrt_moist_air
-  - cloud_liquid_ice
-  - cloud_liquid_water
-  - ozone_mass_mixing_ratio
   time window:
     begin: 2020-12-14T21:00:00Z
     length: PT6H
@@ -147,6 +253,10 @@ variational:
       time window:
         begin: 2020-12-14T22:00:00Z
         length: PT6H
+      background error:
+        covariance model: SABER
+        saber central block:
+          saber block name: ID
     test: on
     geometry:
       akbk: Data/inputs/fv3files/akbk127.nc4
