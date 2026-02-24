@@ -81,7 +81,7 @@ find_package( crtm 2.2.3 REQUIRED )
 find_package( ropp-ufo QUIET )
 
 # gsibec
-find_package( gsibec 1.2.1 QUIET )
+find_package( gsibec 1.4.2 QUIET )
 if( gsibec_FOUND )
     message( STATUS "FV3-SABER block GSI is enabled" )
     add_definitions(-DENABLE_GSIBEC=1)
