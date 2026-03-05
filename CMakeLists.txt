@@ -87,8 +87,8 @@ if( gsibec_FOUND )
     add_definitions(-DENABLE_GSIBEC=1)
 endif()
 
-# ncep-sp
-find_package( sp QUIET )
+# ncep-ip
+find_package( ip QUIET )
 
 # ufo
 find_package( ufo 1.10.0 REQUIRED )

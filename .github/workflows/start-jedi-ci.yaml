@@ -42,7 +42,7 @@ jobs:
         with:
           container_version: 'latest'
           unittest_tag: 'fv3-jedi'
-          unittest_dependencies: crtm fv3-jedi-data fv3-jedi-lm ioda ioda-data jedi-model-data oops ropp-ufo saber ufo ufo-data vader
+          unittest_dependencies: gsibec crtm fv3-jedi-data fv3-jedi-lm ioda ioda-data jedi-model-data oops ropp-ufo saber ufo ufo-data vader
           test_script: run_tests.sh
           target_repo_dir: target_repository
           bundle_branch: develop
