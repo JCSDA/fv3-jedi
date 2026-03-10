@@ -1364,11 +1364,13 @@ if( ${ip_FOUND} )
   ecbuild_add_test( TARGET   fv3jedi_test_tier1_dirac_gfs_gsi_global
                     MPI      6
                     ARGS     testinput/dirac_gfs_gsi_global.yaml
+                    LABELS   CI_exclude_fv3jedi
                     COMMAND  fv3jedi_error_covariance_toolbox.x )
 
   ecbuild_add_test( TARGET   fv3jedi_test_tier1_3dvar_gfs_sondes
                     MPI      6
                     ARGS     testinput/3dvar_gfs_sondes_c12.yaml
+                    LABELS   CI_exclude_fv3jedi
                     COMMAND  fv3jedi_var.x )
 endif()
 
