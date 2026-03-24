@@ -62,60 +62,62 @@ background:
 
 bands:
 - band:
+    interpolation block: &interpolation # To avoid a copy in right inverse and direct blocks
+      saber block name: interpolation
+      active variables:
+      - eastward_wind
+      - northward_wind
+      - air_temperature
+      - water_vapor_mixing_ratio_wrt_moist_air
+      inner geometry:
+        function space: StructuredColumns
+        grid:
+          type: regular_gaussian
+          N: 13
+        partitioner: ectrans
+        halo: 1
+      forward interpolator:
+        local interpolator type: oops unstructured grid interpolator
+      inverse interpolator:
+        local interpolator type: oops unstructured grid interpolator
     filter:
-      saber central block:
-        saber block name: ID
-      saber outer blocks:
-      - saber block name: spectral analytical filter
-        function:
-          horizontal daley length: 500e3
-        normalize filter variance: false
-        active variables:
-        - air_horizontal_streamfunction
-        - air_horizontal_velocity_potential
-        - air_temperature
-        - water_vapor_mixing_ratio_wrt_moist_air
-      - saber block name: spectral to gauss
-        active variables:
-        - eastward_wind
-        - northward_wind
-        - air_horizontal_streamfunction
-        - air_horizontal_velocity_potential
-        - air_temperature
-        - water_vapor_mixing_ratio_wrt_moist_air
-        filter mode: true
-      - saber block name: write variances
-        binning:
-          type: "horizontal global average"
-        field names:
-        - eastward_wind
-        - northward_wind
-        - air_temperature
-        - water_vapor_mixing_ratio_wrt_moist_air
-        instantaneous statistics:
-          multiply fset filename: wb1_variance
-          output path: Data/filtered_pert_spectral
-      - saber block name: write fields
+    - <<: *interpolation
+      right inverse: true
+      reuse already created block: true
+    - saber block name: spectral to gauss
+      right inverse: true
+      reuse already created block: true
+    - saber block name: spectral analytical filter
+      function:
+        horizontal daley length: 500e3
+      active variables:
+      - air_horizontal_streamfunction
+      - air_horizontal_velocity_potential
+      - air_temperature
+      - water_vapor_mixing_ratio_wrt_moist_air
+    - saber block name: spectral to gauss
+      active variables:
+      - eastward_wind
+      - northward_wind
+      - air_horizontal_streamfunction
+      - air_horizontal_velocity_potential
+      - air_temperature
+      - water_vapor_mixing_ratio_wrt_moist_air
+    - saber block name: write variances
+      binning:
+        type: "horizontal global average"
+      field names:
+      - eastward_wind
+      - northward_wind
+      - air_temperature
+      - water_vapor_mixing_ratio_wrt_moist_air
+      instantaneous statistics:
+        multiply fset filename: wb1_variance
         output path: Data/filtered_pert_spectral
-        multiply fset filename: wb1_inc
-      - saber block name: interpolation
-        active variables:
-        - eastward_wind
-        - northward_wind
-        - air_temperature
-        - water_vapor_mixing_ratio_wrt_moist_air
-        filter mode: true
-        inner geometry:
-          function space: StructuredColumns
-          grid:
-            type: regular_gaussian
-            N: 13
-          partitioner: ectrans
-          halo: 1
-        forward interpolator:
-          local interpolator type: oops unstructured grid interpolator
-        inverse interpolator:
-          local interpolator type: oops unstructured grid interpolator
+    - saber block name: write fields
+      output path: Data/filtered_pert_spectral
+      multiply fset filename: wb1_inc
+    - <<: *interpolation
   output:
     model write:
       filetype: auxgrid

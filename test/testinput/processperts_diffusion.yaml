@@ -63,17 +63,16 @@ background:
 bands:
 - band:
     filter:
-      saber central block:
-        saber block name: diffusion
-        read:
-          groups:
-          - variables:
-            - eastward_wind
-            - northward_wind
-            - air_temperature
-            - water_vapor_mixing_ratio_wrt_moist_air
-            horizontal:
-              filepath: Data/diffusion/diffusion_hz
+    - saber block name: diffusion filter
+      read:
+        groups:
+        - variables:
+          - eastward_wind
+          - northward_wind
+          - air_temperature
+          - water_vapor_mixing_ratio_wrt_moist_air
+          horizontal:
+            filepath: Data/diffusion/diffusion_hz
   output:
     model write:
       filetype: auxgrid

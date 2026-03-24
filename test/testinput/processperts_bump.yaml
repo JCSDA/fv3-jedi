@@ -63,33 +63,32 @@ background:
 bands:
 - band:
     filter:
-      saber central block:
-        saber block name: BUMP_NICAS
-        calibration:
-          general:
-            universe length-scale: 3000.0e3
-          drivers:
-            multivariate strategy: univariate
-            compute nicas: true
-          nicas:
-            filter mode: true
-            filter resolution: 6
-            explicit length-scales: true
-            horizontal length-scale:
-            - groups:
-              - eastward_wind
-              - northward_wind
-              - air_temperature
-              - water_vapor_mixing_ratio_wrt_moist_air
-              value: 3000.0e3
-            vertical length-scale:
-            - groups:
-              - eastward_wind
-              - northward_wind
-              - air_temperature
-              - water_vapor_mixing_ratio_wrt_moist_air
-              value: 0.0
-            same horizontal convolution: true
+    - saber block name: BUMP_NICASFilter
+      read:
+        general:
+          universe length-scale: 3000.0e3
+        drivers:
+          multivariate strategy: univariate
+          compute nicas: true
+        nicas:
+          filter mode: true
+          filter resolution: 6
+          explicit length-scales: true
+          horizontal length-scale:
+          - groups:
+            - eastward_wind
+            - northward_wind
+            - air_temperature
+            - water_vapor_mixing_ratio_wrt_moist_air
+            value: 3000.0e3
+          vertical length-scale:
+          - groups:
+            - eastward_wind
+            - northward_wind
+            - air_temperature
+            - water_vapor_mixing_ratio_wrt_moist_air
+            value: 0.0
+          same horizontal convolution: true
   output:
     model write:
       filetype: auxgrid
