@@ -1318,7 +1318,8 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_dirac_gfs
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_dirac_gfs_diffusion
                   MPI      6
                   ARGS     testinput/dirac_gfs_diffusion.yaml
-                  COMMAND  fv3jedi_error_covariance_toolbox.x )
+                  COMMAND  fv3jedi_error_covariance_toolbox.x
+                  TEST_DEPENDS fv3jedi_test_tier1_diffusionparameters )
 
 if( ${gsibec_FOUND} )
 
@@ -1408,7 +1409,8 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_hyb-3dvar
                   MPI      6
                   ARGS     testinput/hyb-3dvar.yaml
                   COMMAND  fv3jedi_var.x
-                  TEST_DEPENDS fv3jedi_test_tier1_bumpparameters_nicas_gfs )
+                  TEST_DEPENDS fv3jedi_test_tier1_convertstate_gfs
+                               fv3jedi_test_tier1_bumpparameters_nicas_gfs )
 
 if (FV3JEDI_TEST_TIER GREATER_EQUAL 2)
   ecbuild_add_test( TARGET   fv3jedi_test_tier2_hyb-3dvar_p12
@@ -1422,7 +1424,8 @@ endif()
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_3dvar_gfs_0obs
                   MPI      6
                   ARGS     testinput/3dvar_gfs_0obs.yaml
-                  COMMAND  fv3jedi_var.x )
+                  COMMAND  fv3jedi_var.x
+                  TEST_DEPENDS fv3jedi_test_tier1_convertstate_gfs )
 
 if( ${ropp-ufo_FOUND} )
   ecbuild_add_test( TARGET   fv3jedi_test_tier1_hyb-3dvar_gfs_gnssro_ropp
@@ -1647,7 +1650,8 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_obslocalizations
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_enshofx_fv3lm
                   MPI      12
                   ARGS     testinput/enshofx_fv3lm.yaml
-                  COMMAND  fv3jedi_enshofx.x )
+                  COMMAND  fv3jedi_enshofx.x 
+                  TEST_DEPENDS fv3jedi_test_tier1_hofx_fv3lm )
 
 
 # Ensemble perturbation scale decomposition
@@ -1665,7 +1669,8 @@ ecbuild_add_test( TARGET   fv3jedi_test_tier1_process_perts_bump
 ecbuild_add_test( TARGET   fv3jedi_test_tier1_process_perts_diffusion
                   MPI      6
                   ARGS     testinput/processperts_diffusion.yaml
-                  COMMAND  fv3jedi_processperts.x)
+                  COMMAND  fv3jedi_processperts.x
+                  TEST_DEPENDS fv3jedi_test_tier1_diffusionparameters)
 
 # Ensemble data assimilation tests
 # --------------------------------
