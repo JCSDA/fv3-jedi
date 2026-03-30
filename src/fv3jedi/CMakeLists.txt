@@ -162,14 +162,14 @@ list(APPEND fv3_defs INTERNAL_FILE_NML)
 list(APPEND fv3_defs ENABLE_QUAD_PRECISION)
 set_source_files_properties(${fv3jedi_fv3_src_files} PROPERTIES COMPILE_DEFINITIONS "${fv3_defs}")
 
-# Add all the compiler flags to the fv3 files
-# -------------------------------------------
+# Add additional compiler flags to the fv3 files
+# ----------------------------------------------
 
 # Fortran‐preprocessor flag
 set_fortran_preprocessing_flag(FORTRAN_PREPROCESSOR_FLAG)
 
 # Compiler specific flags.
-if(CMAKE_Fortran_COMPILER_ID STREQUAL "Intel")
+if(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")  # Intel or IntelLLVM
   set(FV3_FLAGS "-r8")
 elseif(CMAKE_Fortran_COMPILER_ID STREQUAL "GNU")
   set(FV3_FLAGS "-fdefault-real-8 -fdefault-double-8 -ffree-line-length-none")
