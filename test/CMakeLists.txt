@@ -620,14 +620,6 @@ ecbuild_add_executable( TARGET  test_fv3jedi_localization.x
                         SOURCES mains/TestLocalization.cc
                         LIBS    ${FV3JEDI_LIBRARIES})
 
-#ecbuild_add_executable( TARGET  test_fv3jedi_modelauxcontrol.x
-#                        SOURCES mains/TestModelAuxControl.cc
-#                        LIBS    ${FV3JEDI_LIBRARIES})
-#
-#ecbuild_add_executable( TARGET  test_fv3jedi_modelauxcovariance.x
-#                        SOURCES mains/TestModelAuxCovariance.cc
-#                        LIBS    ${FV3JEDI_LIBRARIES})
-
 ecbuild_add_executable( TARGET  test_fv3jedi_model.x
                         SOURCES mains/TestModel.cc
                         LIBS    ${FV3JEDI_LIBRARIES})
