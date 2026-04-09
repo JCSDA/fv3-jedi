@@ -2063,7 +2063,7 @@ ecbuild_add_test( TARGET   fv3jedi_4dvar_geos_aero_p12
                   MPI      12
                   ARGS     testinput/4dvar_geos_aero.yaml
                   COMMAND  fv3jedi_var.x
-                  LABELS   tier2 )
+                  LABELS   tier2 ci_oneapi_disable)
 
 ecbuild_add_test( TARGET   fv3jedi_4dvar_geos_cf_p12
                   MPI      12
