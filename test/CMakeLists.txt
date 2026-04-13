@@ -1351,15 +1351,14 @@ if( ${ip_FOUND} )
   ecbuild_add_test( TARGET   fv3jedi_dirac_gfs_gsi_global
                     MPI      6
                     ARGS     testinput/dirac_gfs_gsi_global.yaml
-                    LABELS   CI_exclude_fv3jedi
+                    LABELS   ci_oneapi_disable
                     COMMAND  fv3jedi_error_covariance_toolbox.x )
 
   ecbuild_add_test( TARGET   fv3jedi_3dvar_gfs_sondes
                     MPI      6
                     ARGS     testinput/3dvar_gfs_sondes_c12.yaml
-                    LABELS   CI_exclude_fv3jedi
-                    COMMAND  fv3jedi_var.x
-                    LABELS   tier2 )
+					COMMAND  fv3jedi_var.x
+                    LABELS   ci_oneapi_disable tier2 )
 endif()
 
 endif()
