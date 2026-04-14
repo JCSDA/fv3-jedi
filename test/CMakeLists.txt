@@ -225,8 +225,6 @@ list( APPEND fv3jedi_testinput
   testinput/hofx_nomodel_lam_rrfs.yaml
   testinput/hofx_nomodel.yaml
   testinput/hofx_save_geovals.yaml
-  testinput/hyb-3dvar_fsoi_backward.yaml
-  testinput/hyb-3dvar_fsoi_forward.yaml
   testinput/hyb-3dvar_geos_sondes_c12.yaml
   testinput/hyb-3dvar_geos.yaml
   testinput/hyb-3dvar_gfs_gnssro_ropp.yaml
@@ -387,8 +385,6 @@ list( APPEND fv3jedi_testoutput
   testoutput/hofx_nomodel_lam_rrfs.ref
   testoutput/hofx_nomodel_lam_rrfs_obs_on_lbc.ref
   testoutput/hofx_save_geovals.ref
-  testoutput/hyb-3dvar_fsoi_backward.ref
-  testoutput/hyb-3dvar_fsoi_forward.ref
   testoutput/hyb-3dvar_geos.ref
   testoutput/hyb-3dvar_geos_sondes_c12.ref
   testoutput/hyb-fgat_gfs_aero.ref
@@ -1510,21 +1506,6 @@ ecbuild_add_test( TARGET   fv3jedi_4dvar_cda
                   COMMAND  fv3jedi_var.x
                   TEST_DEPENDS fv3jedi_bumpparameters_nicas_gfs_nicas_local
                   LABELS   tier2 )
-
-# FSOI
-# ----
-# Disabling FSOI tests in favor of the quadratic cost function checks
-#ecbuild_add_test( TARGET   fv3jedi_hyb-3dvar_fsoi_forward
-#                  MPI      6
-#                  ARGS     testinput/hyb-3dvar_fsoi_forward.yaml
-#                  COMMAND  fv3jedi_var.x
-#                  TEST_DEPENDS fv3jedi_bumpparameters_nicas_gfs )
-#
-#ecbuild_add_test( TARGET   fv3jedi_hyb-3dvar_fsoi_backward
-#                  MPI      6
-#                  ARGS     testinput/hyb-3dvar_fsoi_backward.yaml
-#                  COMMAND  fv3jedi_var.x
-#                  TEST_DEPENDS fv3jedi_hyb-3dvar_fsoi_forward )
 
 # Diff states
 # -----------
