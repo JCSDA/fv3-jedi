@@ -30,8 +30,8 @@ static IOMaker<IOStructuredGrid> makerIOStructuredGrid_("structured grid");
 static IOMaker<IOStructuredGrid> makerIOAuxGrid_("auxgrid");
 // -------------------------------------------------------------------------------------------------
 IOStructuredGrid::IOStructuredGrid(const Geometry & geom, const Parameters_ & params)
-  : IOBase(geom, params.toConfiguration()), interpolator_(), params_(params), gridStr_(""),
-    geom_(geom), writeFunctionSpace_() {
+  : IOBase(geom, params.toConfiguration()), interpolator_(), geom_(geom),
+    gridStr_(""), params_(params), writeFunctionSpace_() {
   util::Timer timer(classname(), "IOStructuredGrid");
   oops::Log::trace() << classname() << " constructor starting" << std::endl;
 
