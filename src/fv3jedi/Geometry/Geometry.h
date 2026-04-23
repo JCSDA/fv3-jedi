@@ -83,6 +83,8 @@ class Geometry : public util::Printable,
   const int & npy() const {return npy_;}
   const int & npz() const {return npz_;}
 
+  const bool & doVerticalRemapping() const {return doVerticalRemapping_;}
+
  private:
   void print(std::ostream &) const;
 
@@ -99,6 +101,7 @@ class Geometry : public util::Printable,
   int npy_;
   int npz_;
   double pTop_;
+  bool doVerticalRemapping_;
 };
 // -------------------------------------------------------------------------------------------------
 

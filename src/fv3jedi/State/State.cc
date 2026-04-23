@@ -31,6 +31,7 @@
 #include "fv3jedi/Increment/Increment.h"
 #include "fv3jedi/IO/Utils/IOBase.h"
 #include "fv3jedi/State/State.h"
+#include "fv3jedi/Utilities/fv3jedi_vertical_remap.h"
 #include "fv3jedi/VariableChange/VariableChange.h"
 
 namespace fv3jedi {
@@ -176,12 +177,25 @@ void State::changeResolution(const State & other) {
   oops::GlobalInterpolator interp(conf, source_geom, target_fs, geom_.getComm());
 
   atlas::FieldSet source{};
-  atlas::FieldSet target{};
+  atlas::FieldSet target_interp{};
 
   // Interpolate atlas::FieldSet representation of fv3 data
   other.toFieldSet(source);
-  interp.apply(source, target);
-  this->fromFieldSet(target);
+  interp.apply(source, target_interp);
+
+  if ( geom_.doVerticalRemapping() ) {
+    ASSERT(geom_.fields().has("surface_geopotential_height"));
+
+    // Remap the vertical coordinates
+    fv3jedi::VertRemap vertRemap(geom_, geom_.fields());
+    atlas::FieldSet target_remap = vertRemap.remap(target_interp);
+
+    // Convert the interpolated and vetically remapped field set back to state
+    this->fromFieldSet(target_remap);
+  } else {
+    // Convert the interpolated field set back to state
+    this->fromFieldSet(target_interp);
+  }
 }
 
 // -------------------------------------------------------------------------------------------------

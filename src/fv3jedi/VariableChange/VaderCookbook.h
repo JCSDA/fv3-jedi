@@ -25,6 +25,8 @@ namespace fv3jedi {
       {"air_pressure_levels",          {"AirPressureAtInterface_B", "AirPressureAtInterface_A"}},
       // p: from pe
       {"air_pressure",                 {"AirPressure_A"}},
+      // ln(p): from p
+      {"ln_air_pressure",              {"LnAirPressure_A"}},
       // ln(p) from pe
       {"ln_air_pressure_at_interface", {"LnAirPressureAtInterface_A"}},
       // p^kappa from pe and ln(p)

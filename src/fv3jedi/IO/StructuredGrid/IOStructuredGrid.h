@@ -36,6 +36,14 @@ class IOStructuredGridParameters : public IOParametersBase {
   oops::Parameter<std::string> filename{"filename", "filename",
                                         "cube_to_geometric_%Y%m%dT%H%M%S.nc4", this};
 
+  // Flag to indicate whether to remap vertical coordinates based on orography
+  oops::Parameter<bool> doVerticalRemapping{"do vertical remapping",
+                                            "do vertical remapping", false, this};
+
+  // Orography filename
+  oops::OptionalParameter<std::string> orographyFilename{"orography filename",
+                                                         "orography filename", this};
+
   // Interpolator type
   oops::Parameter<std::string> interpolator{"local interpolator type", "local interpolator type",
                                             "oops unstructured grid interpolator",
@@ -85,6 +93,10 @@ class IOStructuredGrid : public IOBase, private util::ObjectCounter<IOStructured
   void writeStructuredFields(const atlas::FieldSet &, const util::DateTime &,
                              const eckit::LocalConfiguration &,
                              const eckit::LocalConfiguration &) const;
+  void readStructuredFields(std::string pathFile,
+                            atlas::FieldSet &, const util::DateTime &,
+                            const eckit::LocalConfiguration &,
+                            const eckit::LocalConfiguration &) const;
 
   // Data
   std::unique_ptr<oops::GlobalInterpolator> interpolator_;

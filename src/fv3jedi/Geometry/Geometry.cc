@@ -207,12 +207,16 @@ Geometry::Geometry(const eckit::Configuration & config, const eckit::mpi::Comm &
       ASSERT_MSG(fmdSet.find(key) != fmdSet.end(), msg);
     }
   }
+
+  // Set vertical remapping parameters
+  doVerticalRemapping_ = params.doVerticalRemapping.value();
 }
 
 // -------------------------------------------------------------------------------------------------
 
 Geometry::Geometry(const Geometry & other) : comm_(other.comm_), ak_(other.ak_), bk_(other.bk_),
-npx_(other.npx_), npy_(other.npy_), npz_(other.npz_), tileNum_(other.tileNum_), pTop_(other.pTop_) {
+npx_(other.npx_), npy_(other.npy_), npz_(other.npz_), tileNum_(other.tileNum_), pTop_(other.pTop_),
+ doVerticalRemapping_(other.doVerticalRemapping_) {
   fieldsMeta_ = std::make_shared<FieldsMetadata>(*other.fieldsMeta_);
   fv3jedi_geom_clone_f90(keyGeom_, other.keyGeom_, fieldsMeta_.get());
   functionSpace_ = atlas::functionspace::NodeColumns(other.functionSpace_);

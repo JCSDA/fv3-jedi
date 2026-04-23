@@ -97,6 +97,8 @@ list( APPEND fv3jedi_src_files
   Utilities/fv3jedi_kinds_mod.f90
   Utilities/fv3jedi_netcdf_utils_mod.F90
   Utilities/fv3jedi_tile_comms_mod.f90
+  Utilities/fv3jedi_vertical_remap.h
+  Utilities/fv3jedi_vertical_remap.cc
   VariableChange/VaderCookbook.h
   VariableChange/VariableChange.cc
   VariableChange/VariableChange.h

@@ -179,6 +179,14 @@ namespace fv3jedi {
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
 
+    md.longName = "ln_air_pressure";
+    md.units = "Pa";
+    md.kind = "double";
+    md.tracer = "false";
+    md.levels = "full";
+    md.space = "magnitude";
+    addFieldMetadata(fieldsmetadata, nlev, md);
+
     md.longName = "water_vapor_mixing_ratio_wrt_moist_air";
     md.units = "kgkg-1";
     md.kind = "double";
@@ -1848,4 +1856,3 @@ namespace fv3jedi {
     addFieldMetadata(fieldsmetadata, nlev, md);
   }
 }  // namespace fv3jedi
-

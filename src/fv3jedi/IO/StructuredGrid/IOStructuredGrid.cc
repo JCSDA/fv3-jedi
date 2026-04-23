@@ -14,6 +14,7 @@
 #include "atlas/grid.h"
 
 #include "oops/base/GeometryData.h"
+#include "oops/util/FieldSetHelpers.h"
 #include "oops/util/Logger.h"
 #include "oops/util/stringFunctions.h"
 #include "oops/util/Timer.h"
@@ -23,6 +24,7 @@
 #include "fv3jedi/Increment/Increment.h"
 #include "fv3jedi/IO/StructuredGrid/IOStructuredGrid.h"
 #include "fv3jedi/State/State.h"
+#include "fv3jedi/Utilities/fv3jedi_vertical_remap.h"
 
 namespace fv3jedi {
 // -------------------------------------------------------------------------------------------------
@@ -98,7 +100,7 @@ IOStructuredGrid::~IOStructuredGrid() {
 
 // -------------------------------------------------------------------------------------------------
 
-void IOStructuredGrid::read(State & x, const eckit::LocalConfiguration & fileionames,
+void IOStructuredGrid::read(State & x, const eckit::LocalConfiguration &  ,
                                 const eckit::LocalConfiguration & fileioscaling) const {
   ABORT("IOStructuredGrid::read(State) not implemented");
   }
@@ -127,9 +129,35 @@ void IOStructuredGrid::interpAndWrite(const T & obj, const std::string & label,
   // Apply interpolation
   interpolator_->apply(fieldsCubeSphere, fieldsGeographic);
 
-  // Write to disk if rank 0
-  if (geom_.getComm().rank() == 0) {
-    this->writeStructuredFields(fieldsGeographic, obj.validTime(), fileionames, fileioscaling);
+  // If orography filename is provided, remap vertical coordinates
+  if ( !params_.doVerticalRemapping.value() ) {
+    // Write to disk if rank 0
+    if (geom_.getComm().rank() == 0) {
+      this->writeStructuredFields(fieldsGeographic, obj.validTime(), fileionames, fileioscaling);
+    }
+  } else {
+    ASSERT(params_.orographyFilename.value() != boost::none);
+
+    // Define orography variables
+    atlas::FieldSet fieldsOrog;
+    atlas::Field zsOrogNew = fieldsGeographic["geopotential_height_at_surface"].clone();
+    fieldsOrog.add(zsOrogNew);
+
+    // Write to disk if rank 0
+    if (geom_.getComm().rank() == 0) {
+      // Read structured-grid orography from file
+      const std::string orogFilename = params_.orographyFilename.value().value();
+      this -> readStructuredFields(orogFilename, fieldsOrog, obj.validTime(),
+                                   fileionames, fileioscaling);
+
+      // Remap the vertical coordinates to account for orography changes
+      fv3jedi::VertRemap vert_remap(geom_, fieldsOrog);
+      atlas::FieldSet fieldsGeographicRemap = vert_remap.remap(fieldsGeographic);
+
+      // Write to disk
+      this->writeStructuredFields(fieldsGeographicRemap, obj.validTime(),
+                                  fileionames, fileioscaling);
+    }
   }
 
   oops::Log::trace() << classname() << " write " << label << " done" << std::endl;
@@ -410,6 +438,160 @@ void IOStructuredGrid::writeStructuredFields(const atlas::FieldSet & fields,
   // Close netCDF file
   // -----------------
   nc_rc(nc_close(fileId), "nc_close");
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void IOStructuredGrid::readStructuredFields(const std::string pathFile,
+                                            atlas::FieldSet & fields,
+                                            const util::DateTime & time,
+                                            const eckit::LocalConfiguration & ioNames,
+                                            const eckit::LocalConfiguration & ioScaling) const {
+  // NetCDF IDs
+  int fileId;
+
+  // Open a file to read fields from
+  // -------------------------------
+  nc_rc(nc_open(pathFile.c_str(), NC_NOWRITE, &fileId), "nc_open " + pathFile);
+
+  // Get file number of dimensions + their IDs
+  // -----------------------------------------
+  int ndims;
+  nc_inq_ndims(fileId, &ndims);
+
+  std::vector<int> dimids(ndims);
+  nc_inq_dimids(fileId, &ndims, dimids.data(), 0);
+
+  // Create regular grid for determining lat/lon values
+  // --------------------------------------------------
+  const atlas::RegularGrid regGrid(writeFunctionSpace_->grid());
+
+  // Get grid dimensions
+  // -------------------
+  const int nLat = regGrid.ny();
+  const int nLon = regGrid.nx();
+  const int nLev = geom_.npz();
+  const int nEdg = geom_.npz() + 1;
+  const int nTim = 1;
+
+  // Ensure that the lat and lon dimensions are found and have the correct lengths
+  size_t dimSize;
+  bool hasLat = false;
+  bool hasLon = false;
+  bool hasLev = false;
+  bool hasEdg = false;
+  bool hasTim = false;
+  int latId;
+  int lonId;
+  int levId;
+  int edgId;
+  int timId;
+  for (int i = 0; i < ndims; ++i) {
+    // Get the name and size of the dimension
+    char dimName[NC_MAX_NAME + 1];
+    nc_rc(nc_inq_dim(fileId, dimids[i], dimName, &dimSize), "nc_inq_dim");
+
+    if (std::string(dimName) == params_.latName.value().c_str()) {
+      hasLat = true;
+      latId = dimids[i];
+      ASSERT(dimSize == nLat);
+    } else if (std::string(dimName) == params_.lonName.value().c_str()) {
+      hasLon = true;
+      lonId = dimids[i];
+      ASSERT(dimSize == nLon);
+    } else if (std::string(dimName) == params_.levName.value().c_str()) {
+      hasLev = true;
+      levId = dimids[i];
+      ASSERT(dimSize == nLev);
+    } else if (std::string(dimName) == params_.edgName.value().c_str()) {
+      hasEdg = true;
+      edgId = dimids[i];
+      ASSERT(dimSize == nEdg);
+    } else if (std::string(dimName) == params_.timName.value().c_str()) {
+      hasTim = true;
+      timId = dimids[i];
+      ASSERT(dimSize == nTim);
+    }
+  }
+
+  // Ensure required dimensions were found
+  ASSERT(hasLat);
+  ASSERT(hasLon);
+  ASSERT(hasLev);
+  ASSERT(hasEdg);
+  ASSERT(hasTim);
+
+  // Read the fields from the file
+  // -------------------------------
+  for (auto & field : fields) {
+    // Get IO name for this field
+    std::string fieldName = field.name();
+    if (ioNames.has(fieldName)) {
+      fieldName = ioNames.getString(field.name());
+    }
+
+    // Get the variable ID for this field
+    int varId;
+    nc_rc(nc_inq_varid(fileId, fieldName.c_str(), &varId), "nc_inq_varid " + fieldName);
+
+    // Get number of dimensions + their IDs
+    int ndims;
+    int dimids[NC_MAX_VAR_DIMS];
+    nc_rc(nc_inq_var(fileId, varId,
+                     nullptr,   // var name (unused)
+                     nullptr,   // type (unused)
+                     &ndims,
+                     dimids,
+                     nullptr),  // attributes (unused)
+          "nc_inq_var");
+
+    // Ensure that the field has either 3 or 4 dimensions
+    ASSERT(ndims == 3 || ndims == 4);
+
+    // Ensure that the dimensions are in the expected order
+    size_t nLevField = 0;
+    if ( ndims == 3 ) {
+      ASSERT(dimids[0] == timId &&
+             dimids[1] == latId &&
+             dimids[2] == lonId);
+      nLevField = 1;
+    } else if ( ndims == 4 ) {
+      ASSERT((dimids[0] == timId &&
+              dimids[1] == levId &&
+              dimids[2] == latId &&
+              dimids[3] == lonId) ||
+             (dimids[0] == timId &&
+              dimids[1] == edgId &&
+              dimids[2] == latId &&
+              dimids[3] == lonId));
+
+      nLevField = field.shape(1);
+      if ( dimids[1] == edgId ) {
+        ASSERT(nLevField == nEdg);
+      } else {
+        ASSERT(nLevField == nLev);
+      }
+    }
+
+    // Read the variable data
+    std::vector<double> values(field.size());
+
+    nc_rc(nc_get_var_double(fileId, varId, values.data()), "nc_get_var_double " + fieldName);
+
+    // Create field and unpack data into it
+    auto fieldView = atlas::array::make_view<double, 2>(field);
+
+    for (size_t k = 0; k < nLevField; ++k) {
+      for (size_t j = 0; j < nLat; ++j) {
+        for (size_t i = 0; i < nLon; ++i) {
+          fieldView((nLat - 1 - j) * nLon + i, k) = values[ k*nLat*nLon + j*nLon + i ];
+        }
+      }
+    }
+
+    // Close file
+    nc_rc(nc_close(fileId), "nc_close");
+  }
 }
 
 // -------------------------------------------------------------------------------------------------
