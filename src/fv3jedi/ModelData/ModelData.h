@@ -19,12 +19,12 @@ namespace fv3jedi {
 class ModelData : public util::Printable {
  public:
   static const std::string classname() {return "fv3jedi::ModelData";}
-  static const oops::Variables defaultVariables();
 
   explicit ModelData(const Geometry &);
-  ~ModelData();
+  ~ModelData() = default;
 
   const eckit::LocalConfiguration modelData() const;
+  oops::Variables defaultVariables() const;
 
  private:
   void print(std::ostream &) const override;
@@ -33,6 +33,7 @@ class ModelData : public util::Printable {
   const std::vector<double> bk_;
   const int nLevels_;
   const double pTop_;
+  const oops::Variables variables_;
 };
 
 // -------------------------------------------------------------------------------------------------
