@@ -178,7 +178,6 @@ list( APPEND fv3jedi_testinput
   testinput/ensembleb_nicas_gfs.yaml
   testinput/ensembleb_prep_DATE_geos.yaml
   testinput/ensembleb_prep_DATE_gfs.yaml
-  testinput/ensemble_ufs_forecast.yaml
   testinput/enshofx_fv3lm_1.yaml
   testinput/enshofx_fv3lm_2.yaml
   testinput/enshofx_fv3lm.yaml
@@ -195,9 +194,6 @@ list( APPEND fv3jedi_testinput
   testinput/forecast_fv3lm_tracers.yaml
   testinput/forecast_fv3lm.yaml
   testinput/forecast_geos.yaml
-  testinput/forecast_ufs_1.yaml
-  testinput/forecast_ufs_2.yaml
-  testinput/forecast_ufs_c48_warmstart.yaml
   testinput/gen_hybrid_linear_model_coeffs.yaml
   testinput/geometry_2d.yaml
   testinput/geometry_geos.yaml
@@ -259,7 +255,6 @@ list( APPEND fv3jedi_testinput
   testinput/model_geos.yaml
   testinput/model_pseudo-geos.yaml
   testinput/model_pseudo-gfs.yaml
-  testinput/model_ufs_c48_warmstart.yaml
   testinput/obslocalizations.yaml
   testinput/obslocalization_vertical.yaml
   testinput/obslocalization.yaml
@@ -702,52 +697,6 @@ file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/ensembleb)
 # Randomization
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Data/randomization/)
 
-# Stage directory with directories for running the models
-# -------------------------------------------------------
-
-if (FV3_FORECAST_MODEL MATCHES "UFS")
-  if( UFS_APP MATCHES "^(ATM)$" OR UFS_APP MATCHES "^(S2S)$" )
-    set(FV3_FORECAST_MODEL_RUNDIR_WARMSTART ${CMAKE_SOURCE_DIR}/fv3-jedi-data/testinput_tier_1/inputs/control_c48_intel/)
-    set(FV3_FORECAST_MODEL_TESTDIR_WARMSTART ${CMAKE_CURRENT_BINARY_DIR}/Data/ModelRunDirs/${FV3_FORECAST_MODEL}_warmstart_1/)
-    file(MAKE_DIRECTORY ${FV3_FORECAST_MODEL_TESTDIR_WARMSTART})
-
-    set(FV3_FORECAST_MODEL_RUNDIR_WARMSTART_2 ${CMAKE_SOURCE_DIR}/fv3-jedi-data/testinput_tier_1/inputs/control_c48_intel/)
-    set(FV3_FORECAST_MODEL_TESTDIR_WARMSTART_2 ${CMAKE_CURRENT_BINARY_DIR}/Data/ModelRunDirs/${FV3_FORECAST_MODEL}_warmstart_2/)
-    file(MAKE_DIRECTORY ${FV3_FORECAST_MODEL_TESTDIR_WARMSTART_2})
-
-    set(FV3_SETUP_UFS_DATA_SCRIPT setup-c48.sh)
-    configure_file(${FV3_SETUP_UFS_DATA_SCRIPT} ${CMAKE_BINARY_DIR}/bin/${FV3_SETUP_UFS_DATA_SCRIPT} COPYONLY)
-
-    set(FV3_SETUP_LETKF_DATA_SCRIPT prep-letkf.sh)
-    configure_file(${FV3_SETUP_LETKF_DATA_SCRIPT} ${CMAKE_BINARY_DIR}/bin/${FV3_SETUP_LETKF_DATA_SCRIPT} COPYONLY)
-
-    set(FV3_SETUP_UFS_RUNDIR_SCRIPT fv3jedi_setup_ufs_rundir.py)
-    configure_file(${FV3_SETUP_UFS_RUNDIR_SCRIPT} ${CMAKE_BINARY_DIR}/bin/${FV3_SETUP_UFS_RUNDIR_SCRIPT} COPYONLY)
-
-    ecbuild_add_test( TARGET  fv3jedi_setup_ufs_c48_data
-                      TYPE    SCRIPT
-                      COMMAND ${CMAKE_BINARY_DIR}/bin/${FV3_SETUP_UFS_DATA_SCRIPT}
-                      ARGS    ${CMAKE_BINARY_DIR} ${UFS_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/fv3-jedi-data/testinput_tier_1/inputs )
-
-    ecbuild_add_test( TARGET  fv3jedi_setup_ufs_rundir_warmstart
-                      TYPE    SCRIPT
-                      COMMAND ${CMAKE_BINARY_DIR}/bin/${FV3_SETUP_UFS_RUNDIR_SCRIPT}
-                      ARGS    ${FV3_FORECAST_MODEL_RUNDIR_WARMSTART} ${FV3_FORECAST_MODEL_TESTDIR_WARMSTART}
-                      TEST_DEPENDS fv3jedi_setup_ufs_c48_data)
-
-    ecbuild_add_test( TARGET  fv3jedi_setup_ufs_rundir_warmstart_2
-                      TYPE    SCRIPT
-                      COMMAND ${CMAKE_BINARY_DIR}/bin/${FV3_SETUP_UFS_RUNDIR_SCRIPT}
-                      ARGS    ${FV3_FORECAST_MODEL_RUNDIR_WARMSTART_2} ${FV3_FORECAST_MODEL_TESTDIR_WARMSTART_2}
-                      TEST_DEPENDS fv3jedi_setup_ufs_c48_data)
-
-  else()
-    message("WARNING: No ctests configured for UFS APP ${UFS_APP}")
-  endif()
-endif()
-
-# Setting up RUNDIR for other models would happen here
-
 ecbuild_add_resources( TARGET   fv3jedi_test_scripts
                        SOURCES_PACK
                        ${fv3jedi_testinput}
@@ -1079,16 +1028,7 @@ ecbuild_add_test( TARGET   fv3jedi_model_fv3lm_tracers
                   ARGS     testinput/model_fv3lm_tracers.yaml
                   COMMAND  test_fv3jedi_model.x )
 
-if( FV3_FORECAST_MODEL MATCHES "UFS")
-  ecbuild_add_test( TARGET   fv3jedi_model_ufs_warmstart
-                    MPI      6
-                    ARGS     testinput/model_ufs_c48_warmstart.yaml
-                    COMMAND  test_fv3jedi_model.x
-                    TEST_DEPENDS fv3jedi_setup_ufs_rundir_warmstart )
-
-endif()
-
-# Disabled until setup of GEOS model rundir is added (e.g., see fv3jedi_setup_ufs_rundir_warmstart)
+# Disabled until setup of GEOS model rundir is added
 #if( FV3_FORECAST_MODEL MATCHES "GEOS" AND BUILD_LARGE_TESTS)
 #ecbuild_add_test( TARGET   fv3jedi_model_geos
 #                  MPI      6
@@ -1132,34 +1072,7 @@ ecbuild_add_test( TARGET   fv3jedi_forecast_fv3lm_tracers
                   ARGS     testinput/forecast_fv3lm_tracers.yaml
                   COMMAND  fv3jedi_forecast.x )
 
-
-if( FV3_FORECAST_MODEL MATCHES "UFS")
-ecbuild_add_test( TARGET   fv3jedi_forecast_ufs_warmstart
-                  MPI      6
-                  ARGS     testinput/forecast_ufs_c48_warmstart.yaml
-                  COMMAND  fv3jedi_forecast.x
-                  TEST_DEPENDS fv3jedi_setup_ufs_rundir_warmstart )
-
-ecbuild_add_test( TARGET   fv3jedi_EnsGETKF_ufs_warmstart
-                  MPI      12
-                  ARGS     testinput/ensemble_ufs_forecast.yaml
-                  COMMAND  fv3jedi_EnsGETKF.x
-                  TEST_DEPENDS fv3jedi_setup_ufs_rundir_warmstart )
-
-ecbuild_add_test( TARGET  fv3jedi_setup_letkf_ufs_rundir
-                      TYPE    SCRIPT
-                      COMMAND ${CMAKE_BINARY_DIR}/bin/${FV3_SETUP_LETKF_DATA_SCRIPT}
-                      ARGS    ${FV3_FORECAST_MODEL_RUNDIR_WARMSTART} ${FV3_FORECAST_MODEL_TESTDIR_WARMSTART}
-                      TEST_DEPENDS fv3jedi_EnsGETKF_ufs_warmstart )
-
-ecbuild_add_test( TARGET   fv3jedi_letkf_inline_ufs
-                  MPI      12
-                  ARGS     testinput/letkf_inline_c48.yaml
-                  COMMAND  fv3jedi_letkf.x
-                  TEST_DEPENDS fv3jedi_setup_letkf_ufs_rundir )
-endif()
-
-# Disabled until setup of GEOS model rundir is added (e.g., see fv3jedi_setup_ufs_rundir_warmstart)
+# Disabled until setup of GEOS model rundir is added
 #if( FV3_FORECAST_MODEL MATCHES "GEOS" AND BUILD_LARGE_TESTS)
 #  ecbuild_add_test( TARGET   fv3jedi_forecast_geos
 #                    MPI      6
