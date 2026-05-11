@@ -78,30 +78,35 @@ observations:
       - name: totalSnowDepth
       minvalue: 0.0
       maxvalue: 10000.0
+      apply at iterations: 0,1
     - filter: Domain Check
       where:
       - variable:
           name: MetaData/stationElevation
         minvalue: -999.0
         maxvalue: 10000.0
+      apply at iterations: 0,1
     - filter: Domain Check
       where:
       - variable:
           name: GeoVaLs/slmsk
         minvalue: 0.5
         maxvalue: 1.5
+      apply at iterations: 0,1
     - filter: RejectList
       where:
       - variable:
           name: GeoVaLs/vtype
         minvalue: 14.5
         maxvalue: 15.5
+      apply at iterations: 0,1
     - filter: Background Check
       filter variables:
       - name: totalSnowDepth
       threshold: 6.25
       action:
         name: reject
+      apply at iterations: 0,1
 driver:
   save posterior mean: true
   save posterior mean increment: true

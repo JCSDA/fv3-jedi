@@ -132,6 +132,7 @@ observations:
     obs filters:
     - filter: Background Check
       threshold: 1000
+      apply at iterations: 0,1
     obs localizations:
     - localization method: Horizontal Gaspari-Cohn
       lengthscale: 5000e3

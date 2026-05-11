@@ -8,14 +8,14 @@ stc                                          | Min:+2.1541509228250027e+02 Max:+
 vtype                                        | Min:+0.0000000000000000e+00 Max:+2.0000000000000000e+01 RMS:+5.9580662333294638e+00
 ----------------------------------------------------------------------------------------------------
 H(x) for member 1:
-SoilMoistureSMAP nobs= 2671 Min=0.0481620104171261, Max=1, RMS=0.2131257901150869
 
+SoilMoistureSMAP nobs= 2671 Min=0.0481620104171261, Max=1, RMS=0.2131257901150869
 
 H(x) ensemble background mean: 
-SoilMoistureSMAP nobs= 2671 Min=0.0481620104171261, Max=1, RMS=0.2131257901150869
 
+SoilMoistureSMAP nobs= 425 Min=0.0481620104171261, Max=0.519293047534091, RMS=0.120970814751164
 
 background y - H(x): 
-SoilMoistureSMAP nobs= 2671 Min=-0.8345875889062881, Max=0.4199429897864666, RMS=0.1061188214428601
 
+SoilMoistureSMAP nobs= 425 Min=-0.2767489208392988, Max=0.4199429897864667, RMS=0.09847914187994741
 

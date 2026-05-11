@@ -150,11 +150,13 @@ observations:
         channels: 4-6,9-14
       minvalue: 100.0
       maxvalue: 500.0
+      apply at iterations: 0,1
     - filter: Background Check
       filter variables:
       - name: brightnessTemperature
         channels: 4-6,9-14
       threshold: 3.0
+      apply at iterations: 0,1
     obs localizations:
     - localization method: Horizontal Gaspari-Cohn
       lengthscale: 1000e3
@@ -189,6 +191,7 @@ observations:
     obs filters:
     - filter: Background Check
       threshold: 1000
+      apply at iterations: 0,1
     obs localizations:
     - localization method: Horizontal SOAR
       soar horizontal decay: 0.000018
