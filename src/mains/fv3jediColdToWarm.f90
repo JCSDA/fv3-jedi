@@ -7,8 +7,9 @@ use fckit_mpi_module,           only: fckit_mpi_comm, fckit_mpi_comm, fckit_mpi_
 
 ! fms uses
 use constants_mod,              only: grav, rdgas, rvgas
-use fms_io_mod,                 only: nullify_domain
 use fms_mod,                    only: fms_init
+use fms2_io_mod,                only: open_file, close_file, read_restart, write_restart, &
+                                      FmsNetcdfDomainFile_t, unlimited
 use mpp_mod,                    only: mpp_exit, mpp_pe, mpp_npes, mpp_error, FATAL, NOTE, &
                                       mpp_root_pe
 use mpp_domains_mod,            only: domain2D, mpp_deallocate_domain, mpp_define_layout, &
@@ -17,9 +18,6 @@ use mpp_domains_mod,            only: domain2D, mpp_deallocate_domain, mpp_defin
 use field_manager_mod,          only: fm_string_len, field_manager_init, MODEL_ATMOS
 use tracer_manager_mod,         only: get_number_tracers, get_tracer_names, get_tracer_index, &
                                       NO_TRACER, set_tracer_profile
-use fms_io_mod,                 only: restart_file_type, register_restart_field
-use fms_io_mod,                 only: free_restart_type, restore_state, save_restart
-use fms_io_mod,                 only: set_domain, nullify_domain
 use mpp_domains_mod,            only: east, north, center
 
 ! fv3 uses
@@ -32,7 +30,7 @@ use fv3jedi_fv3_control_mod,    only: fv_control_init
 use fv3jedi_geom_mod,           only: initialize_fms => initialize, fv3jedi_geom
 use fv3jedi_fmsnamelist_mod,    only: fv3jedi_fmsnamelist
 use fv3jedi_kinds_mod,          only: kind_int, kind_real
-
+use fv3jedi_io_fms_mod,         only: fv3jedi_register_field
 
 ! Nothing implicit
 implicit none
@@ -46,8 +44,8 @@ type :: state_cold_type
   real(kind=kind_real), dimension(:,:,:,:), allocatable :: q_cold
   real(kind=kind_real), dimension(:,:,:),   allocatable :: zh_cold
   real(kind=kind_real), dimension(:,:,:),   allocatable :: w_cold
-  real(kind=kind_real), dimension(:,:),     allocatable :: ps_cold
-  real(kind=kind_real), dimension(:,:),     allocatable :: orog_filt
+  real(kind=kind_real), dimension(:,:,:),   allocatable :: ps_cold
+  real(kind=kind_real), dimension(:,:,:),   allocatable :: orog_filt
 end type state_cold_type
 
 ! Local variables
@@ -63,8 +61,6 @@ logical, allocatable :: grids_on_this_pe(:)
 type(fv3jedi_fmsnamelist) :: fmsnamelist
 
 type(state_cold_type)       :: state_cold
-
-real(kind=kind_real), dimension(:), allocatable :: phis_flat
 
 ! Parameters
 logical :: data_source_fv3gfs
@@ -147,8 +143,8 @@ allocate(state_cold%  vd_cold(isc:iec+1, jsc:jec  , 1:npz+1))
 allocate(state_cold%   t_cold(isc:iec  , jsc:jec  , 1:npz+1))
 allocate(state_cold%  zh_cold(isc:iec  , jsc:jec  , 1:npz+2))
 allocate(state_cold%   w_cold(isc:iec  , jsc:jec  , 1:npz+1))
-allocate(state_cold%  ps_cold(isc:iec  , jsc:jec           ))
-allocate(state_cold%orog_filt(isc:iec  , jsc:jec           ))
+allocate(state_cold%  ps_cold(isc:iec  , jsc:jec  , 1      ))
+allocate(state_cold%orog_filt(isc:iec  , jsc:jec  , 1      ))
 
 call get_number_tracers(MODEL_ATMOS, num_tracers=ntracers, num_prog=ntprog)
 allocate(state_cold%q_cold(isc:iec,jsc:jec,1:npz+1,ntracers))
@@ -205,7 +201,7 @@ character(len=1024) :: datapath, fname_cold, fname_orog
 character(len=:), allocatable :: str
 integer :: spechum, liq_wat, ice_wat, rainwat, snowwat, graupel, ntclamt, o3mr
 integer :: idrst
-type(restart_file_type) :: rstc, rsto
+type(FmsNetcdfDomainFile_t) :: rstc, rsto
 
 ! Read file path and names from config
 ! ------------------------------------
@@ -219,75 +215,61 @@ call conf%get_or_die("filename_orog", str)
 fname_orog = str
 deallocate(str)
 
-! Winds
-idrst = register_restart_field(rstc, trim(fname_cold), 'u_w_cold', state_cold%u_w_cold, &
-                               domain=Atm(1)%domain, position=east  )
-idrst = register_restart_field(rstc, trim(fname_cold), 'v_w_cold', state_cold%v_w_cold, &
-                               domain=Atm(1)%domain, position=east  )
-idrst = register_restart_field(rstc, trim(fname_cold), 'u_s_cold', state_cold%u_s_cold, &
-                               domain=Atm(1)%domain, position=north )
-idrst = register_restart_field(rstc, trim(fname_cold), 'v_s_cold', state_cold%v_s_cold, &
-                               domain=Atm(1)%domain, position=north )
-idrst = register_restart_field(rstc, trim(fname_cold), 'w_cold'  , state_cold%w_cold,   &
-                               domain=Atm(1)%domain, position=center)
+! Open file
+if ( open_file(rstc, trim(datapath)//'/'//trim(fname_cold), "read", Atm(1)%domain, is_restart=.true., &
+               dont_add_res_to_filename=.true.) ) then
+   ! Winds
+   call fv3jedi_register_field(rstc, 'u_w_cold', state_cold%u_w_cold, center, .true.)
+   call fv3jedi_register_field(rstc, 'v_w_cold', state_cold%v_w_cold, center, .true.)
+   call fv3jedi_register_field(rstc, 'u_s_cold', state_cold%u_s_cold, center, .true.)
+   call fv3jedi_register_field(rstc, 'v_s_cold', state_cold%v_s_cold, center, .true.)
+   call fv3jedi_register_field(rstc, 'w_cold', state_cold%w_cold, center, .true.)
+   call fv3jedi_register_field(rstc, 't_cold', state_cold%t_cold, center, .true.)
+   call fv3jedi_register_field(rstc, 'ps_cold', state_cold%ps_cold, center, .true.)
+   call fv3jedi_register_field(rstc, 'zh_cold', state_cold%zh_cold, center, .true.)
 
-! Thermo
-idrst = register_restart_field(rstc, trim(fname_cold), 't_cold'  , state_cold%t_cold,   &
-                               domain=Atm(1)%domain, position=center)
-idrst = register_restart_field(rstc, trim(fname_cold), 'ps_cold' , state_cold%ps_cold,  &
-                               domain=Atm(1)%domain, position=center)
-idrst = register_restart_field(rstc, trim(fname_cold), 'zh_cold' , state_cold%zh_cold,  &
-                               domain=Atm(1)%domain, position=center)
+   ! Tracers
+   spechum = get_tracer_index(MODEL_ATMOS, 'sphum'  )
+   liq_wat = get_tracer_index(MODEL_ATMOS, 'liq_wat')
+   ice_wat = get_tracer_index(MODEL_ATMOS, 'ice_wat')
+   rainwat = get_tracer_index(MODEL_ATMOS, 'rainwat')
+   snowwat = get_tracer_index(MODEL_ATMOS, 'snowwat')
+   graupel = get_tracer_index(MODEL_ATMOS, 'graupel')
 
-! Tracers
-spechum = get_tracer_index(MODEL_ATMOS, 'sphum'  )
-liq_wat = get_tracer_index(MODEL_ATMOS, 'liq_wat')
-ice_wat = get_tracer_index(MODEL_ATMOS, 'ice_wat')
-rainwat = get_tracer_index(MODEL_ATMOS, 'rainwat')
-snowwat = get_tracer_index(MODEL_ATMOS, 'snowwat')
-graupel = get_tracer_index(MODEL_ATMOS, 'graupel')
 
-idrst = register_restart_field(rstc, trim(fname_cold), 'sphum_cold'  , &
-                               state_cold%q_cold(:,:,:,spechum), domain=Atm(1)%domain, &
-                               position=center)
-idrst = register_restart_field(rstc, trim(fname_cold), 'liq_wat_cold', &
-                               state_cold%q_cold(:,:,:,liq_wat), domain=Atm(1)%domain, &
-                               position=center)
-idrst = register_restart_field(rstc, trim(fname_cold), 'ice_wat_cold', &
-                               state_cold%q_cold(:,:,:,ice_wat), domain=Atm(1)%domain, &
-                               position=center)
-idrst = register_restart_field(rstc, trim(fname_cold), 'rainwat_cold', &
-                               state_cold%q_cold(:,:,:,rainwat), domain=Atm(1)%domain, &
-                               position=center)
-idrst = register_restart_field(rstc, trim(fname_cold), 'snowwat_cold', &
-                               state_cold%q_cold(:,:,:,snowwat), domain=Atm(1)%domain, &
-                               position=center)
-idrst = register_restart_field(rstc, trim(fname_cold), 'graupel_cold', &
-                               state_cold%q_cold(:,:,:,graupel), domain=Atm(1)%domain, &
-                               position=center)
+   call fv3jedi_register_field(rstc, 'sphum_cold', state_cold%q_cold(:,:,:,spechum), center, .true.)
+   call fv3jedi_register_field(rstc, 'liq_wat_cold', state_cold%q_cold(:,:,:,liq_wat), center, .true.)
+   call fv3jedi_register_field(rstc, 'ice_wat_cold', state_cold%q_cold(:,:,:,ice_wat), center, .true.)
+   call fv3jedi_register_field(rstc, 'rainwat_cold', state_cold%q_cold(:,:,:,rainwat), center, .true.)
+   call fv3jedi_register_field(rstc, 'snowwat_cold', state_cold%q_cold(:,:,:,snowwat), center, .true.)
+   call fv3jedi_register_field(rstc, 'graupel_cold', state_cold%q_cold(:,:,:,graupel), center, .true.)
 
-o3mr = get_tracer_index(MODEL_ATMOS, 'o3mr')
-if (o3mr > 0) &
-idrst = register_restart_field(rstc, trim(fname_cold), 'o3mr_cold', state_cold%q_cold(:,:,:,o3mr), &
-                               domain=Atm(1)%domain, position=center)
+   o3mr = get_tracer_index(MODEL_ATMOS, 'o3mr')
+   if (o3mr > 0) &
+        call fv3jedi_register_field(rstc, 'o3mr_cold', state_cold%q_cold(:,:,:,o3mr), center, .true.)
 
-ntclamt = get_tracer_index(MODEL_ATMOS, 'cld_amt')
-if (ntclamt > 0) &
-state_cold%q_cold(:,:,:,ntclamt) = 0.0
-!idrst = register_restart_field(rstc, trim(fname_cold), 'cldamt_cold', &
-!                               state_cold%q_cold(:,:,:,ntclamt), domain=Atm(1)%domain, &
-!                               position=center)
+   ntclamt = get_tracer_index(MODEL_ATMOS, 'cld_amt')
+   if (ntclamt > 0) &
+        state_cold%q_cold(:,:,:,ntclamt) = 0.0
+   !call fv3jedi_register_field(rstc, 'cldamt_cold', state_cold%q_cold(:,:,:,ntclamt), center, .true.)
 
-! Read
-call restore_state(rstc, directory=trim(adjustl(datapath)))
-call free_restart_type(rstc)
+   ! Read
+   call read_restart(rstc)
+   call close_file(rstc)
+else
+   call abor1_ftn("fv3jediColdToWarm: failed to open cold start file: "//trim(datapath)//'/'//trim(fname_cold))
+end if
 
 ! Orography
-idrst = register_restart_field(rsto, trim(fname_orog), 'orog_filt', state_cold%orog_filt, &
-                               domain=Atm(1)%domain, position=center)
+if ( open_file(rsto, trim(datapath)//'/'//trim(fname_orog), "read", Atm(1)%domain, is_restart=.true., &
+               dont_add_res_to_filename=.true.) ) then
+   call fv3jedi_register_field(rsto, 'orog_filt', state_cold%orog_filt, center, .true.)
 
-call restore_state(rsto, directory=trim(adjustl(datapath)))
-call free_restart_type(rsto)
+   call read_restart(rsto)
+   call close_file(rsto)
+else
+   call abor1_ftn("fv3jediColdToWarm: failed to open orography file: "//trim(datapath)//'/'//trim(fname_orog))
+end if
 
 
 end subroutine read_restarts
@@ -307,10 +289,11 @@ character(len=:), allocatable :: str
 character(len=20) :: isodatetime
 character(len=1024) :: prefix, dpath, fcore, ftrac
 integer :: idrst, date(6)
-type(restart_file_type) :: rcore, rtrac
+type(FmsNetcdfDomainFile_t) :: rcore, rtrac
 integer :: nt, ntracers, ntprog
 character(len=64) :: tracer_name
 integer :: isc, iec, jsc, jec, npz
+real(kind=kind_real), allocatable :: phis(:,:,:)
 
 ! Path to write files to
 call conf%get_or_die("datapath", str)
@@ -336,51 +319,50 @@ npz = Atm(1)%npz
 fcore = trim(adjustl(prefix))//"fv_core.res.nc"
 ftrac = trim(adjustl(prefix))//"fv_tracer.res.nc"
 
-idrst = register_restart_field( rcore, trim(fcore), 'u', Atm(1)%u(isc:iec, jsc:jec+1, 1:npz), &
-                                domain=Atm(1)%domain, &
-                                position=north, longname = 'u_component_of_native_D_grid_wind', &
-                                units = 'ms-1' )
-idrst = register_restart_field( rcore, trim(fcore), 'v', Atm(1)%v(isc:iec+1, jsc:jec, 1:npz), &
-                                domain=Atm(1)%domain, &
-                                position=east, longname = 'v_component_of_native_D_grid_wind', &
-                                units = 'ms-1' )
-idrst = register_restart_field( rcore, trim(fcore), 'T', Atm(1)%pt(isc:iec,jsc:jec,1:npz), &
-                                domain=Atm(1)%domain, &
-                                position=center, longname = 'air_temperature', &
-                                units = 'K' )
-idrst = register_restart_field( rcore, trim(fcore), 'w', Atm(1)%w(isc:iec,jsc:jec,1:npz), &
-                                domain=Atm(1)%domain, &
-                                position=center, longname = 'upward_air_velocity', &
-                                units = 'ms-1' )
-idrst = register_restart_field( rcore, trim(fcore), 'DELP', Atm(1)%delp(isc:iec,jsc:jec,1:npz), &
-                                domain=Atm(1)%domain, &
-                                position=center, longname = 'air_pressure_thickness', &
-                                units = 'Pa' )
-idrst = register_restart_field( rcore, trim(fcore), 'delz', Atm(1)%delz(isc:iec,jsc:jec,1:npz),&
-                                domain=Atm(1)%domain, &
-                                position=center, longname = 'layer_thickness', &
-                                units = 'm' )
-idrst = register_restart_field( rcore, trim(fcore), 'phis', Atm(1)%phis, domain=Atm(1)%domain, &
-                                position=center, longname = 'sfc_geopotential_height_times_grav', &
-                                units = 'm' )
+! Open file
+if ( open_file(rcore, trim(dpath)//trim(fcore), 'overwrite', Atm(1)%domain, is_restart=.true., &
+               dont_add_res_to_filename=.true.) ) then
+   ! Resize phis as 3D array with singleton dimension in vertical
+   allocate(phis(size(Atm(1)%phis,1), size(Atm(1)%phis,2), 1))
+   phis(:,:,1) = Atm(1)%phis
+   
+   call fv3jedi_register_field(rcore, 'u', Atm(1)%u(isc:iec, jsc:jec+1, 1:npz), north, .true., &
+                              'u_component_of_native_D_grid_wind', 'ms-1')
+   call fv3jedi_register_field(rcore, 'v', Atm(1)%v(isc:iec+1, jsc:jec, 1:npz), east, .true., &
+                               'v_component_of_native_D_grid_wind', 'ms-1')
+   call fv3jedi_register_field(rcore, 'T', Atm(1)%pt(isc:iec,jsc:jec,1:npz), center, .true., &
+                               'air_temperature', 'K')
+   call fv3jedi_register_field(rcore, 'w', Atm(1)%w(isc:iec,jsc:jec,1:npz), center, .true., &
+	                       'upward_air_velocity', 'ms-1')
+   call fv3jedi_register_field(rcore, 'DELP', Atm(1)%delp(isc:iec,jsc:jec,1:npz), center, .true., &
+                               'air_pressure_thickness', 'Pa')
+   call fv3jedi_register_field(rcore, 'delz', Atm(1)%delz(isc:iec,jsc:jec,1:npz), center, .true., &
+                               'layer_thickness', 'm')
+   call fv3jedi_register_field(rcore, 'phis', phis, center, .true., &
+                               'sfc_geopotential_height_times_grav', 'm')
+
+   ! Write and close
+   call write_restart(rcore)
+   call close_file(rcore)
+else
+   call abor1_ftn("fv3jediColdToWarm: failed to open core restart file for writing: "//trim(dpath)//trim(fcore))
+end if
 
 ! Register tracers
-call get_number_tracers(MODEL_ATMOS, num_tracers=ntracers, num_prog=ntprog)
-do nt = 1, ntracers
-  call get_tracer_names(MODEL_ATMOS, nt, tracer_name)
-  idrst = register_restart_field( rtrac, trim(ftrac), tracer_name, &
-                                  Atm(1)%q(isc:iec,jsc:jec,1:npz,nt), &
-                                  domain=Atm(1)%domain, position=center, longname = tracer_name, &
-                                  units = 'kgkg-1' )
-enddo
+if ( open_file(rtrac, trim(ftrac), 'overwrite', Atm(1)%domain, is_restart=.true., &
+               dont_add_res_to_filename=.true.) ) then
+   call get_number_tracers(MODEL_ATMOS, num_tracers=ntracers, num_prog=ntprog)
+   do nt = 1, ntracers
+      call get_tracer_names(MODEL_ATMOS, nt, tracer_name)
+      call fv3jedi_register_field(rtrac, tracer_name, Atm(1)%q(isc:iec,jsc:jec,1:npz,nt), center, .true., &
+                                  tracer_name, 'kgkg-1')
+   enddo
 
-! Save the restarts
-call save_restart(rcore, directory=trim(adjustl(dpath)))
-call save_restart(rtrac, directory=trim(adjustl(dpath)))
-
-! Free up
-call free_restart_type(rcore)
-call free_restart_type(rtrac)
+   call write_restart(rtrac)
+   call close_file(rtrac)
+else
+   call abor1_ftn("fv3jediColdToWarm: failed to open tracer restart file for writing: "//trim(ftrac))
+end if
 
 ! Get datetime from config (yyyy-mm-ddThh:mm:ss)
 call conf%get_or_die("datetime", str)
@@ -492,7 +474,7 @@ if( .not. conf%get('check tracers nt', nt_checker) ) nt_checker = 0
   npz = Atm(1)%npz
 
   ! Orography
-  Atm(1)%phis(isc:iec,jsc:jec) = state_cold%orog_filt(isc:iec,jsc:jec) * grav  ! Convert to phis
+  Atm(1)%phis(isc:iec,jsc:jec) = state_cold%orog_filt(isc:iec,jsc:jec,1) * grav  ! Convert to phis
 
   ! akbk from cold starts have different levels (for now extra levels are zero)
   levp = size(state_cold%w_cold,3)
@@ -526,16 +508,16 @@ if( .not. conf%get('check tracers nt', nt_checker) ) nt_checker = 0
   ! Call remapping non-wind variables
   ! ---------------------------------
   if (allocated(state_cold%t_cold)) then
-    call remap_scalar(Atm(1), levp, npz, ntracers, ak, bk, state_cold%ps_cold, &
+    call remap_scalar(Atm(1), levp, npz, ntracers, ak, bk, state_cold%ps_cold(:,:,1), &
                       state_cold%q_cold, state_cold%zh_cold, state_cold%w_cold, state_cold%t_cold)
   else
-    call remap_scalar(Atm(1), levp, npz, ntracers, ak, bk, state_cold%ps_cold, &
+    call remap_scalar(Atm(1), levp, npz, ntracers, ak, bk, state_cold%ps_cold(:,:,1), &
                       state_cold%q_cold, state_cold%zh_cold, state_cold%w_cold)
   endif
 
   ! Call remapping wind variables
   ! -----------------------------
-  call remap_dwinds(levp, npz, ak, bk, state_cold%ps_cold, state_cold%ud_cold, &
+  call remap_dwinds(levp, npz, ak, bk, state_cold%ps_cold(:,:,1), state_cold%ud_cold, &
                     state_cold%vd_cold, Atm(1))
 
   ! Tracer weighting

@@ -11,14 +11,15 @@ use fckit_mpi_module
 use netcdf
 
 ! fms uses
-use fms_io_mod,                 only: register_restart_field, free_restart_type, restore_state, &
-                                      save_restart, restart_file_type
-use mpp_domains_mod,            only: east, north
+use fms2_io_mod,                only: open_file, close_file, read_restart, write_restart, &
+                                      FmsNetcdfDomainFile_t, unlimited
+use mpp_domains_mod,            only: east, north, center
 
 ! fv3jedi uses ***this code should not make use of state or increment type***
 use fv3jedi_geom_mod,           only: initialize_fms => initialize, fv3jedi_geom
 use fv3jedi_kinds_mod,          only: kind_real
 use fv3jedi_fmsnamelist_mod,    only: fv3jedi_fmsnamelist
+use fv3jedi_io_fms_mod,         only: fv3jedi_register_field
 
 ! Nothing implicit
 implicit none
@@ -207,7 +208,7 @@ real(kind=kind_real),      intent(in) :: v(geom%isc:geom%iec+1,geom%jsc:geom%jec
 character(len=1024) :: dpath, fcore
 character(len=:), allocatable :: str
 integer :: rc
-type(restart_file_type) :: rst
+type(FmsNetcdfDomainFile_t) :: rst
 
 ! Read file path and names from config
 ! ------------------------------------
@@ -218,15 +219,13 @@ call conf%get_or_die("filename_core", str)
 fcore = str
 deallocate(str)
 
-! Register and write
-! -----------------
-rc = register_restart_field( rst, trim(fcore), 'u', u, domain=geom%domain, position=north, &
-                             longname = 'u_component_of_native_D_grid_wind', units = 'ms-1')
-rc = register_restart_field( rst, trim(fcore), 'v', v, domain=geom%domain, position=east, &
-                             longname = 'v_component_of_native_D_grid_wind', units = 'ms-1')
+if ( open_file(rst, trim(dpath)//'/'//trim(fcore), "overwrite", geom%domain, is_restart=.true. ) ) then
+   call fv3jedi_register_field(rst, 'u', u, north, .true.)
+   call fv3jedi_register_field(rst, 'v', v, east, .true.)
 
-call save_restart(rst, directory=trim(adjustl(dpath)))
-call free_restart_type(rst)
+   call write_restart(rst)
+   call close_file(rst)
+end if
 
 end subroutine write_fms
 
