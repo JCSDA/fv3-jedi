@@ -28,6 +28,7 @@ ModelData::ModelData(const Geometry & geometry) :
     bk_(geometry.bk()),
     nLevels_(geometry.npz()),
     pTop_(geometry.pTop()),
+    levelsAreTopDown_(geometry.levelsAreTopDown()),
     variables_(geometry.fieldsMetaData().getLongNames()) {}
 
 // -------------------------------------------------------------------------------------------------
@@ -51,6 +52,7 @@ const eckit::LocalConfiguration ModelData::modelData() const {
   modelData.set("sigma_pressure_hybrid_coordinate_a_coefficient", ak_);
   modelData.set("sigma_pressure_hybrid_coordinate_b_coefficient", bk_);
   modelData.set("nLevels", nLevels_);
+  modelData.set("levels_are_top_down", levelsAreTopDown_);
 
   return modelData;
 }
