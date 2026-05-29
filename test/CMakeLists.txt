@@ -864,6 +864,7 @@ ecbuild_add_test( TARGET   fv3jedi_convertstate_gchp_from_stretched_grid
 ecbuild_add_test( TARGET   fv3jedi_convertstate_geos_crtm_surface
                   MPI      6
                   ARGS     testinput/convertstate_geos_crtm_surface.yaml
+                  CONDITION crtm_FOUND
                   COMMAND  fv3jedi_convertstate.x )
 
 ecbuild_add_test( TARGET   fv3jedi_convertstate_gfs_c2ll
@@ -1085,6 +1086,7 @@ ecbuild_add_test( TARGET   fv3jedi_forecast_fv3lm_tracers
 ecbuild_add_test( TARGET   fv3jedi_hofx_fv3lm
                   MPI      6
                   ARGS     testinput/hofx_fv3lm.yaml
+                  CONDITION crtm_FOUND
                   COMMAND  fv3jedi_hofx.x )
 
 ecbuild_add_test( TARGET   fv3jedi_hofx_fv3-geos_cf
@@ -1106,6 +1108,7 @@ endif()
 ecbuild_add_test( TARGET   fv3jedi_hofx_nomodel
                   MPI      6
                   ARGS     testinput/hofx_nomodel.yaml
+                  CONDITION crtm_FOUND
                   COMMAND  fv3jedi_hofx_nomodel.x )
 
 
@@ -1117,16 +1120,19 @@ ecbuild_add_test( TARGET   fv3jedi_hofx_nomodel_lam_cmaq
 ecbuild_add_test( TARGET   fv3jedi_hofx_nomodel_amsua_fov
                   MPI      6
                   ARGS     testinput/hofx_nomodel_amsua_fov.yaml
+                  CONDITION crtm_FOUND
                   COMMAND  fv3jedi_hofx_nomodel.x )
 
 ecbuild_add_test( TARGET   fv3jedi_hofx_nomodel_amsua_radii
                   MPI      6
                   ARGS     testinput/hofx_nomodel_amsua_radii.yaml
+                  CONDITION crtm_FOUND
                   COMMAND  fv3jedi_hofx_nomodel.x )
 
 ecbuild_add_test( TARGET   fv3jedi_hofx_nomodel_abi_radii
                   MPI      6
                   ARGS     testinput/hofx_nomodel_abi_radii.yaml
+                  CONDITION crtm_FOUND
                   COMMAND  fv3jedi_hofx_nomodel.x )
 
 # Test to save GeoVaLs to file
@@ -1266,7 +1272,7 @@ if( ${ip_FOUND} )
   ecbuild_add_test( TARGET   fv3jedi_3dvar_gfs_sondes
                     MPI      6
                     ARGS     testinput/3dvar_gfs_sondes_c12.yaml
-					COMMAND  fv3jedi_var.x
+                    COMMAND  fv3jedi_var.x
                     LABELS   ci_oneapi_disable tier2 )
 endif()
 
@@ -1303,6 +1309,7 @@ ecbuild_add_test( TARGET   fv3jedi_ensrecenter_gfs
 ecbuild_add_test( TARGET   fv3jedi_hyb-3dvar
                   MPI      6
                   ARGS     testinput/hyb-3dvar.yaml
+                  CONDITION crtm_FOUND
                   COMMAND  fv3jedi_var.x
                   TEST_DEPENDS fv3jedi_convertstate_gfs
                                fv3jedi_bumpparameters_nicas_gfs )
@@ -1310,6 +1317,7 @@ ecbuild_add_test( TARGET   fv3jedi_hyb-3dvar
 ecbuild_add_test( TARGET   fv3jedi_hyb-3dvar_p12
                   MPI      12
                   ARGS     testinput/hyb-3dvar_p12.yaml
+                  CONDITION crtm_FOUND
                   COMMAND  fv3jedi_var.x
                   TEST_DEPENDS fv3jedi_bumpparameters_nicas_gfs_p12
                   LABELS   tier2 )
@@ -1346,6 +1354,7 @@ ecbuild_add_test( TARGET   fv3jedi_3dvar_geos_cf
 ecbuild_add_test( TARGET   fv3jedi_hyb-fgat_gfs_aero
                   MPI      6
                   ARGS     testinput/hyb-fgat_gfs_aero.yaml
+                  CONDITION crtm_FOUND
                   COMMAND  fv3jedi_var.x
                   TEST_DEPENDS fv3jedi_bumpparameters_nicas_gfs_aero )
 
@@ -1354,6 +1363,7 @@ ecbuild_add_test( TARGET   fv3jedi_hyb-fgat_gfs_aero
 ecbuild_add_test( TARGET   fv3jedi_hyb-fgat_fv3lm
                   MPI      6
                   ARGS     testinput/hyb-fgat_fv3lm.yaml
+                  CONDITION crtm_FOUND
                   COMMAND  fv3jedi_var.x
                   TEST_DEPENDS fv3jedi_bumpparameters_nicas_geos )
 
@@ -1366,12 +1376,14 @@ ecbuild_add_test( TARGET   fv3jedi_hyb-fgat_fv3lm
 ecbuild_add_test( TARGET   fv3jedi_4denvar
                   MPI      12
                   ARGS     testinput/4denvar.yaml
+                  CONDITION crtm_FOUND
                   COMMAND  fv3jedi_var.x
                   TEST_DEPENDS fv3jedi_bumpparameters_nicas_gfs )
 
 ecbuild_add_test( TARGET   fv3jedi_4denvar_seq
                   MPI      6
                   ARGS     testinput/4denvar_seq.yaml
+                  CONDITION crtm_FOUND
                   COMMAND  fv3jedi_var.x
                   TEST_DEPENDS fv3jedi_bumpparameters_nicas_gfs )
 
@@ -1381,6 +1393,7 @@ ecbuild_add_test( TARGET   fv3jedi_4denvar_seq
 ecbuild_add_test( TARGET   fv3jedi_hyb-4dvar_pseudo-geos
                   MPI      6
                   ARGS     testinput/hyb-4dvar_pseudo-geos.yaml
+                  CONDITION crtm_FOUND
                   COMMAND  fv3jedi_var.x
                   TEST_DEPENDS fv3jedi_bumpparameters_nicas_geos
                   LABELS   tier2 )
@@ -1411,7 +1424,7 @@ ecbuild_add_test( TARGET fv3jedi_3dfgat_cda
                   MPI      6
                   ARGS     testinput/3dfgat_cda.yaml
                   COMMAND  fv3jedi_var.x 
-	          TEST_DEPENDS fv3jedi_bumpparameters_nicas_gfs_nicas_local)
+                  TEST_DEPENDS fv3jedi_bumpparameters_nicas_gfs_nicas_local)
 
 ecbuild_add_test( TARGET   fv3jedi_4dvar_cda
                   MPI      6
@@ -1426,12 +1439,14 @@ ecbuild_add_test( TARGET   fv3jedi_4dvar_cda
 ecbuild_add_test( TARGET   fv3jedi_diffstates_gfs
                   MPI      6
                   ARGS     testinput/diffstates_gfs.yaml
+                  CONDITION crtm_FOUND
                   COMMAND  fv3jedi_diffstates.x
                   TEST_DEPENDS fv3jedi_hyb-3dvar )
 
 ecbuild_add_test( TARGET   fv3jedi_diffstates_geos
                   MPI      6
                   ARGS     testinput/diffstates_geos.yaml
+                  CONDITION crtm_FOUND
                   COMMAND  fv3jedi_diffstates.x
                   TEST_DEPENDS fv3jedi_hyb-4dvar_pseudo-geos
                   LABELS   tier2 )  # Depends on hyb-4dvar_pseudo-geos test which is tier2
@@ -1447,12 +1462,14 @@ ecbuild_add_test( TARGET   fv3jedi_diffstates_lam_cmaq
 ecbuild_add_test( TARGET   fv3jedi_addincrement_gfs
                   MPI      6
                   ARGS     testinput/addincrement_gfs.yaml
+                  CONDITION crtm_FOUND
                   COMMAND  fv3jedi_addincrement.x
                   TEST_DEPENDS fv3jedi_diffstates_gfs )
 
 ecbuild_add_test( TARGET   fv3jedi_addincrement_geos
                   MPI      12
                   ARGS     testinput/addincrement_geos.yaml
+                  CONDITION crtm_FOUND
                   COMMAND  fv3jedi_addincrement.x
                   TEST_DEPENDS fv3jedi_diffstates_geos
                   LABELS   tier2 )
@@ -1462,11 +1479,13 @@ ecbuild_add_test( TARGET   fv3jedi_addincrement_geos
 ecbuild_add_test( TARGET   fv3jedi_letkf
                   MPI      6
                   ARGS     testinput/letkf.yaml
+                  CONDITION crtm_FOUND
                   COMMAND  fv3jedi_letkf.x )
 
 ecbuild_add_test( TARGET   fv3jedi_letkf_perturbed
                   MPI      6
                   ARGS     testinput/letkf_perturbed.yaml
+                  CONDITION crtm_FOUND
                   COMMAND  fv3jedi_letkf.x )
 
 ecbuild_add_test( TARGET   fv3jedi_letkf3d_vertloc
@@ -1477,21 +1496,25 @@ ecbuild_add_test( TARGET   fv3jedi_letkf3d_vertloc
 ecbuild_add_test( TARGET   fv3jedi_lgetkf
                   MPI      6
                   ARGS     testinput/lgetkf.yaml
+                  CONDITION crtm_FOUND
                   COMMAND  fv3jedi_letkf.x )
 
 ecbuild_add_test( TARGET   fv3jedi_lgetkf_linearobserver
                   MPI      6
                   ARGS     testinput/lgetkf_linearobserver.yaml
+                  CONDITION crtm_FOUND
                   COMMAND  fv3jedi_letkf.x )
 
 ecbuild_add_test( TARGET   fv3jedi_lgetkf_linearobserver_hofx_reduceobs
                   MPI      6
                   ARGS     testinput/lgetkf_linearobserver_hofx_reduceobs.yaml
+                  CONDITION crtm_FOUND
                   COMMAND  fv3jedi_letkf.x )
 
 ecbuild_add_test( TARGET   fv3jedi_lgetkf_perturbed_linearobserver
                   MPI      6
                   ARGS     testinput/lgetkf_perturbed_linearobserver.yaml
+                  CONDITION crtm_FOUND
                   COMMAND  fv3jedi_letkf.x )
 
 # Land DA
@@ -1533,6 +1556,7 @@ ecbuild_add_test( TARGET   fv3jedi_obslocalizations
 ecbuild_add_test( TARGET   fv3jedi_enshofx_fv3lm
                   MPI      12
                   ARGS     testinput/enshofx_fv3lm.yaml
+                  CONDITION crtm_FOUND
                   COMMAND  fv3jedi_enshofx.x 
                   TEST_DEPENDS fv3jedi_hofx_fv3lm )
 
@@ -1882,12 +1906,14 @@ ecbuild_add_test( TARGET       fv3jedi_ensembleb_loc_gfs
 ecbuild_add_test( TARGET   fv3jedi_hofx_fv3-gfs
                   MPI      6
                   ARGS     testinput/hofx_fv3-gfs.yaml
+                  CONDITION crtm_FOUND
                   COMMAND  fv3jedi_hofx.x
                   LABELS   tier2 )
 
 ecbuild_add_test( TARGET   fv3jedi_hofx_fv3-geos
                   MPI      6
                   ARGS     testinput/hofx_fv3-geos.yaml
+                  CONDITION crtm_FOUND
                   COMMAND  fv3jedi_hofx.x
                   LABELS   tier2 )
 
@@ -1911,6 +1937,7 @@ ecbuild_add_test( TARGET   fv3jedi_hofx_nomodel_lam_rrfs_obs_on_lbc
 ecbuild_add_test( TARGET   fv3jedi_3dvar_gfs_aero
                   MPI      12
                   ARGS     testinput/3dvar_gfs_aero.yaml
+                  CONDITION crtm_FOUND
                   COMMAND  fv3jedi_var.x
                   TEST_DEPENDS fv3jedi_staticb_var_aero
                                fv3jedi_bumpparameters_nicas_gfs_aero
@@ -1920,6 +1947,7 @@ ecbuild_add_test( TARGET   fv3jedi_3dvar_gfs_aero
 ecbuild_add_test( TARGET   fv3jedi_hyb-3dvar_gfs
                   MPI      12
                   ARGS     testinput/hyb-3dvar_gfs.yaml
+                  CONDITION crtm_FOUND
                   COMMAND  fv3jedi_var.x
                   TEST_DEPENDS fv3jedi_staticb_vbal_gfs
                                fv3jedi_staticb_var_gfs
@@ -1930,6 +1958,7 @@ ecbuild_add_test( TARGET   fv3jedi_hyb-3dvar_gfs
 ecbuild_add_test( TARGET   fv3jedi_hyb-3dvar_geos
                   MPI      6
                   ARGS     testinput/hyb-3dvar_geos.yaml
+                  CONDITION crtm_FOUND
                   COMMAND  fv3jedi_var.x
                   TEST_DEPENDS fv3jedi_bumpparameters_nicas_geos
                   LABELS   tier2 )
@@ -1939,6 +1968,7 @@ ecbuild_add_test( TARGET   fv3jedi_hyb-3dvar_geos
 ecbuild_add_test( TARGET   fv3jedi_3denvar_gfs_tskin
                   MPI      6
                   ARGS     testinput/3denvar_gfs_tskin_c12.yaml
+                  CONDITION crtm_FOUND
                   COMMAND  fv3jedi_var.x
                   LABELS   tier2 )
 
@@ -1947,6 +1977,7 @@ ecbuild_add_test( TARGET   fv3jedi_3denvar_gfs_tskin
 ecbuild_add_test( TARGET   fv3jedi_eda_4dvar_fv3lm
                   MPI      12
                   ARGS     testinput/eda_4dvar_fv3lm.yaml
+                  CONDITION crtm_FOUND
                   COMMAND  fv3jedi_eda.x
                   TEST_DEPENDS fv3jedi_bumpparameters_nicas_gfs
                   LABELS   tier2 )
@@ -1955,6 +1986,7 @@ ecbuild_add_test( TARGET   fv3jedi_eda_4dvar_fv3lm
 ecbuild_add_test( TARGET   fv3jedi_4dvar_geos_aero_p12
                   MPI      12
                   ARGS     testinput/4dvar_geos_aero.yaml
+                  CONDITION crtm_FOUND
                   COMMAND  fv3jedi_var.x
                   LABELS   tier2 ci_oneapi_disable)
 
