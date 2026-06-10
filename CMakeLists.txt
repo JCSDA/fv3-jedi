@@ -74,8 +74,13 @@ find_package( oops 1.10.0 REQUIRED )
 # saber
 find_package( saber 1.10.0 REQUIRED )
 
-# crtm
-find_package( crtm 2.2.3 REQUIRED )
+# crtm (optional)
+find_package( crtm 2.2.3 QUIET )
+if( crtm_FOUND )
+  message( STATUS "CRTM found: enabling CRTM-dependent code paths and tests" )
+else()
+  message( STATUS "CRTM not found: disabling CRTM-dependent tests" )
+endif()
 
 # ropp
 find_package( ropp-ufo QUIET )
