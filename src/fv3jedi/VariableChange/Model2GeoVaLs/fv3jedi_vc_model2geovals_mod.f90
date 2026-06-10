@@ -37,6 +37,7 @@ type :: fv3jedi_vc_model2geovals
   character(len=10) :: tropprs_method
   character(len=16) :: radii_method
   character(len=8) :: use_mask
+  real(kind=kind_real) :: qmin
   contains
     procedure, public :: create
     procedure, public :: delete
@@ -56,6 +57,7 @@ type(fv3jedi_geom),              intent(in)    :: geom
 type(fckit_configuration),       intent(in)    :: conf
 
 character(len=:), allocatable :: str
+real(kind=kind_real) :: qmin
 
 ! Method to use for tropopause pressure ([gsi] or thompson)
 if (.not. conf%get('tropopause pressure method', str)) str = 'gsi'
@@ -68,6 +70,9 @@ self%radii_method = trim(str)
 ! We can mask either the land or the sea, default is neither.
 if (.not. conf%get('mask over', str)) str = 'none'
 self%use_mask = trim(str)
+
+if (.not. conf%get('qmin', qmin)) qmin = 0.0_kind_real
+self%qmin = qmin
 
 ! Grid convenience
 self%isc = geom%isc
@@ -101,7 +106,7 @@ real(kind=kind_real), pointer :: field_ptr(:,:,:)
 
 ! Specific humidity
 logical :: have_q
-real(kind=kind_real), pointer     :: q     (:,:,:)         !Specific humidity
+real(kind=kind_real), allocatable :: q (:,:,:)         !Specific humidity
 
 ! moist_air_density
 logical :: have_airdens
@@ -287,17 +292,22 @@ real(kind=kind_real), allocatable :: divg     (:,:,:)
 logical :: have_tropprs
 real(kind=kind_real), allocatable :: tprs     (:,:,:)
 
+real(kind=kind_real) :: qmin
 real(kind=kind_real) :: rdry, zvir
 ! Constants
 rdry = constant('rdry')
 zvir = constant('zvir')
 
-
 ! Identity part of the change of fields
 ! -------------------------------------
 call copy_subset(xm%fields, xg%fields, fields_to_do)
 
-
+qmin = self%qmin
+if (xg%has_field('water_vapor_mixing_ratio_wrt_moist_air')) then
+  call xg%get_field('water_vapor_mixing_ratio_wrt_moist_air',  field_ptr)
+  where(field_ptr < qmin) field_ptr = qmin
+endif
+  
 ! if (geom%f_comm%rank()==0) then
 !   do f = 1, size(xm%fields)
 !     print*, 'Model2GeoVaLs.changeVar, Model fields:   ', trim(xm%fields(f)%long_name)
@@ -363,6 +373,10 @@ endif
 have_q = .false.
 if (xm%has_field('water_vapor_mixing_ratio_wrt_moist_air')) then
   call xm%get_field('water_vapor_mixing_ratio_wrt_moist_air',  q)
+  
+! The qmin check below mimics GSI for testing purpose
+!-----------------------------------------------------
+  where(q < qmin) q = qmin
   have_q = .true.
 endif
 
@@ -1277,7 +1291,6 @@ if (allocated(soilt)) deallocate(soilt)
 if (allocated(soilm)) deallocate(soilm)
 if (associated(zorl)) nullify(zorl)
 if (associated(field_ptr)) nullify(field_ptr)
-if (associated(q)) nullify(q)
 if (associated(frocean)) nullify(frocean)
 if (associated(frlake)) nullify(frlake)
 if (associated(frseaice)) nullify(frseaice)
@@ -1296,6 +1309,7 @@ if (associated(qscn)) nullify(qscn)
 if (allocated(ud)) deallocate(ud)
 if (allocated(vd)) deallocate(vd)
 if (allocated(fields_to_do)) deallocate(fields_to_do)
+if (allocated(q)) deallocate(q)
 if (allocated(qsat)) deallocate(qsat)
 if (allocated(rh)) deallocate(rh)
 if (allocated(t)) deallocate(t)
