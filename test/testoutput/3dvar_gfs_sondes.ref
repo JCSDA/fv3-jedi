@@ -1,23 +1,25 @@
-CostJo   : Nonlinear Jo(Radiosonde) = 7.1523093909912830e+04, nobs = 1457, Jo/n = 4.9089288888066456e+01, err = 2.0329386501381626e+00
-CostJo   : Nonlinear Jo(ompsnm_npp) = 8.1461428862385083e+03, nobs = 6835, Jo/n = 1.1918277814540612e+00, err = 6.0000000000000000e+00
-CostJo   : Nonlinear Jo(omi_aura) = 8.1461428862385083e+03, nobs = 6835, Jo/n = 1.1918277814540612e+00, err = 6.0000000000000000e+00
+CostJo   : Nonlinear Jo(Radiosonde) = 7.1522556427707881e+04, nobs = 1457, Jo/n = 4.9088919991563408e+01, err = 2.0329386501381626e+00
+CostJo   : Nonlinear Jo(ompsnm_npp) = 8.1461428862385092e+03, nobs = 6835, Jo/n = 1.1918277814540614e+00, err = 6.0000000000000000e+00
+CostJo   : Nonlinear Jo(omi_aura) = 8.1461428862385092e+03, nobs = 6835, Jo/n = 1.1918277814540614e+00, err = 6.0000000000000000e+00
+Adjoint test for block interpolation passed
+Adjoint test for block gsi static covariance passed
 CostJb   : Nonlinear Jb = 0.0000000000000000e+00
-CostFunction: Nonlinear J = 8.7815379682389845e+04
-DRPCGMinimizer: reduction in residual norm = 1.3150763756665088e-01
+CostFunction: Nonlinear J = 8.7814842200184896e+04
+DRPCGMinimizer: reduction in residual norm = 1.3093400197964478e-01
 CostFunction::addIncrement: Analysis: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 8 | cube sphere face size: C12
-air_pressure_at_surface                      | Min:+5.3985367887873406e+04 Max:+1.0473541855794514e+05 RMS:+9.8985158774145573e+04
-air_pressure_thickness                       | Min:+6.0599994659423817e-01 Max:+1.7927172479208255e+03 RMS:+9.5771383767079669e+02
-air_temperature                              | Min:+1.5865009520755856e+02 Max:+3.0653870833090474e+02 RMS:+2.4962362796940292e+02
-eastward_wind                                | Min:-1.0808002439566755e+02 Max:+1.5254281574925454e+02 RMS:+2.2156286109267096e+01
+air_pressure_at_surface                      | Min:+5.3985367884136023e+04 Max:+1.0473541860304010e+05 RMS:+9.8985159654698204e+04
+air_pressure_thickness                       | Min:+6.0599994659423817e-01 Max:+1.7927172479208255e+03 RMS:+9.5771383767079806e+02
+air_temperature                              | Min:+1.5865009340336192e+02 Max:+3.0653870591991455e+02 RMS:+2.4962363133659198e+02
+eastward_wind                                | Min:-1.0808003830477632e+02 Max:+1.5254283383149823e+02 RMS:+2.2156282743828868e+01
 geopotential_height_times_gravity_at_surface | Min:-2.6477954101562500e+02 Max:+4.9483356501111783e+04 RMS:+5.9494834270643069e+03
-northward_wind                               | Min:-1.0151446908246145e+02 Max:+1.0656765178741405e+02 RMS:+1.0394012648260652e+01
-ozone_mass_mixing_ratio                      | Min:+2.4812975821526111e-09 Max:+1.7471159067430224e-05 RMS:+4.3564070511852332e-06
-water_vapor_mixing_ratio_wrt_moist_air       | Min:+0.0000000000000000e+00 Max:+1.8723704386097544e-02 RMS:+4.6968294480487461e-03
+northward_wind                               | Min:-1.0151447239876791e+02 Max:+1.0656765292063676e+02 RMS:+1.0394008935390374e+01
+ozone_mass_mixing_ratio                      | Min:+2.4777084340645380e-09 Max:+1.7471159198503317e-05 RMS:+4.3564070941889799e-06
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+0.0000000000000000e+00 Max:+1.8723704386097544e-02 RMS:+4.6968250298477128e-03
 ----------------------------------------------------------------------------------------------------
-CostJo   : Nonlinear Jo(Radiosonde) = 3979.323199258225, nobs = 1457, Jo/n = 2.731175840259592, err = 2.032938650138163
-CostJo   : Nonlinear Jo(ompsnm_npp) = 6503.100479415728, nobs = 6835, Jo/n = 0.9514411820652126, err = 6
-CostJo   : Nonlinear Jo(omi_aura) = 6503.100479415728, nobs = 6835, Jo/n = 0.9514411820652126, err = 6
-CostJb   : Nonlinear Jb = 244.6431691045874
-CostFunction: Nonlinear J = 17230.16732719427
+CostJo   : Nonlinear Jo(Radiosonde) = 3980.876004726112, nobs = 1457, Jo/n = 2.7322415955567, err = 2.032938650138163
+CostJo   : Nonlinear Jo(ompsnm_npp) = 6502.116705604208, nobs = 6835, Jo/n = 0.9512972502712813, err = 6
+CostJo   : Nonlinear Jo(omi_aura) = 6502.116705604208, nobs = 6835, Jo/n = 0.9512972502712813, err = 6
+CostJb   : Nonlinear Jb = 246.5678285539358
+CostFunction: Nonlinear J = 17231.67724448846
