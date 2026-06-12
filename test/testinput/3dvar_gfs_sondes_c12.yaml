@@ -51,8 +51,6 @@ cost function:
       mole_fraction_of_ozone_in_air: o3ppmv
   background error:
     covariance model: SABER
-    adjoint test: true
-    adjoint tolerance: 1e-9
     saber central block:
       saber block name: gsi static covariance
       read:

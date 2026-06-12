@@ -125,19 +125,19 @@ state_vector::
 
 control_vector::
 !var     level  itracer as/tsfc_sdv  an_amp0   source  funcof  be
- sf       72      0       0.45        -1.0     state    u       -1.00   
- vp       72      0       0.55        -1.0     state    v       -1.00
+ sf       72      0       0.45        -1.0     state    u:v     -1.00   
+ vp       72      0       0.55        -1.0     state    u:v     -1.00
  t        72      0       0.90        -1.0     state    tv      -1.00
- q        72      1       0.60        -1.0     state    sphu    -1.00
- oz       72      1       0.20        -1.0     state    ozone   -1.00
- ql       72      1       0.00        -1.0     state    qltot   -1.00
- qi       72      1       0.00        -1.0     state    qitot   -1.00
- qr       72      1       0.00        -1.0     state    qrtot   -1.00
- qs       72      1       0.00        -1.0     state    qstot   -1.00
- ps        1      0       0.75        -1.0     state    ps      -1.00
- sst       1      0       1.20        -1.0     state    ts      -1.00
- stl       1      0       3.00        -1.0     motley   ts      -1.00
- sti       1      0       3.00        -1.0     motley   ts      -1.00
+ q        72      1       0.60        -1.0     state    q       -1.00
+ oz       72      1       0.20        -1.0     state    oz      -1.00
+ ql       72      1       0.00        -1.0     state    ql      -1.00
+ qi       72      1       0.00        -1.0     state    qi      -1.00
+ qr       72      1       0.00        -1.0     state    qr      -1.00
+ qs       72      1       0.00        -1.0     state    qs      -1.00
+ ps        1      0       0.75        -1.0     state    prse    -1.00
+ sst       1      0       1.20        -1.0     state    sst     -1.00
+ stl       1      0       3.00        -1.0     motley   sst     -1.00
+ sti       1      0       3.00        -1.0     motley   sst     -1.00
 !             sf    vp    t    q    oz   q2 qi ql qr qs    ps
 ! afcts_ = "0.51  0.65 0.98 0.62  0.20 0.64  1  1  1  1  0.83"
 ::

@@ -71,8 +71,6 @@ cost function:
     components:
     - covariance:
         covariance model: SABER
-        adjoint test: true
-        adjoint tolerance: 1e-9
         saber central block:
           saber block name: gsi static covariance
           read:

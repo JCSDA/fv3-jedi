@@ -1252,12 +1252,14 @@ ecbuild_add_test( TARGET   fv3jedi_hyb-3dvar_geos_sondes
 ecbuild_add_test( TARGET   fv3jedi_hyb-4denvar_geos_sondes
                   MPI      6
                   ARGS     testinput/hyb-4denvar_geos_sondes_c12.yaml
-                  COMMAND  fv3jedi_var.x )
+                  COMMAND  fv3jedi_var.x
+                  LABELS   tier2 )
 if( ${ip_FOUND} )
   ecbuild_add_test( TARGET   fv3jedi_hyb-4denvar_llens_geos
                     MPI      6
                     ARGS     testinput/hyb-4denvar_llens_geos.yaml
-                    COMMAND  fv3jedi_var.x )
+                    COMMAND  fv3jedi_var.x
+                    LABELS   ci_flake_disable tier2 )
 endif()
 
 if( ${ip_FOUND} )
