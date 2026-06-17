@@ -483,14 +483,6 @@ namespace fv3jedi {
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
 
-/*    md.longName = "soilt";
-    md.units = "none";
-    md.kind = "double";
-    md.tracer = "false";
-    md.levels = "1";
-    md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
-*/
     md.longName = "soilt1";
     md.units = "none";
     md.kind = "double";
@@ -556,6 +548,14 @@ namespace fv3jedi {
     addFieldMetadata(fieldsmetadata, nlev, md);
 
     md.longName = "soilMoistureVolumetric";
+    md.units = "none";
+    md.kind = "double";
+    md.tracer = "false";
+    md.levels = "4";
+    md.space = "magnitude";
+    addFieldMetadata(fieldsmetadata, nlev, md);
+
+    md.longName = "slc";        //soilLiquidContentVolumetric?
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
