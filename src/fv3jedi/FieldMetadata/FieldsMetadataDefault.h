@@ -563,14 +563,6 @@ namespace fv3jedi {
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
 
-    md.longName = "slc";        //soilLiquidContentVolumetric?
-    md.units = "none";
-    md.kind = "double";
-    md.tracer = "false";
-    md.levels = "4";
-    md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
-
     md.longName = "smois";
     md.units = "none";
     md.kind = "double";
