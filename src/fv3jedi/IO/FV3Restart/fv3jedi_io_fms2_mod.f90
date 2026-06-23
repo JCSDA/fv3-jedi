@@ -947,7 +947,6 @@ if (index(trim(field%long_name), 'cold') /= 0) io_file = 'cold'
 
 ! Multi-level soils go in surface
 if (trim(field%long_name) == 'stc') io_file = 'surface'
-if (trim(field%long_name) == 'slc') io_file = 'surface'
 if (trim(field%long_name) == 'soilMoistureVolumetric') io_file = 'surface'
 if (trim(field%long_name) == 'tslb') io_file = 'surface'
 if (trim(field%long_name) == 'smois') io_file = 'surface'
