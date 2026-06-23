@@ -483,7 +483,7 @@ namespace fv3jedi {
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
 
-    md.longName = "soilt1";
+    md.longName = "soilt";
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";
@@ -491,6 +491,14 @@ namespace fv3jedi {
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
 
+    md.longName = "soilt1";
+    md.units = "none";
+    md.kind = "double";
+    md.tracer = "false";
+    md.levels = "1";
+    md.space = "magnitude";
+    addFieldMetadata(fieldsmetadata, nlev, md);
+    
     md.longName = "soilt2";
     md.units = "none";
     md.kind = "double";
