@@ -4,7 +4,6 @@ wb1_variance_1 ; name = northward_wind ; bin index = 0 ; binned variance = 5.207
 wb1_variance_1 ; name = air_temperature ; bin index = 0 ; binned variance = 6.3115146683234660e-02
 wb1_variance_1 ; name = water_vapor_mixing_ratio_wrt_moist_air ; bin index = 0 ; binned variance = 1.6773286232585046e-08
 Wrote file Data/filtered_pert/wb1_variance_1.nc
-Wrote file Data/filtered_pert/wb1_inc_1.nc
 Fields:
   eastward_wind: 2.9769518104775989e+02
   northward_wind: 2.9238947038538322e+02
@@ -18,7 +17,6 @@ wb1_variance_2 ; name = northward_wind ; bin index = 0 ; binned variance = 4.981
 wb1_variance_2 ; name = air_temperature ; bin index = 0 ; binned variance = 5.9953516663546411e-02
 wb1_variance_2 ; name = water_vapor_mixing_ratio_wrt_moist_air ; bin index = 0 ; binned variance = 1.5201191165734883e-08
 Wrote file Data/filtered_pert/wb1_variance_2.nc
-Wrote file Data/filtered_pert/wb1_inc_2.nc
 Fields:
   eastward_wind: 2.9427551374435672e+02
   northward_wind: 2.8753987940160511e+02
@@ -32,7 +30,6 @@ wb1_variance_3 ; name = northward_wind ; bin index = 0 ; binned variance = 5.347
 wb1_variance_3 ; name = air_temperature ; bin index = 0 ; binned variance = 6.8431994967471585e-02
 wb1_variance_3 ; name = water_vapor_mixing_ratio_wrt_moist_air ; bin index = 0 ; binned variance = 1.6900403131280259e-08
 Wrote file Data/filtered_pert/wb1_variance_3.nc
-Wrote file Data/filtered_pert/wb1_inc_3.nc
 Fields:
   eastward_wind: 2.8867715218945898e+02
   northward_wind: 2.9626146106694415e+02
@@ -46,7 +43,6 @@ wb1_variance_4 ; name = northward_wind ; bin index = 0 ; binned variance = 4.981
 wb1_variance_4 ; name = air_temperature ; bin index = 0 ; binned variance = 6.1832238571087036e-02
 wb1_variance_4 ; name = water_vapor_mixing_ratio_wrt_moist_air ; bin index = 0 ; binned variance = 1.6565692957787639e-08
 Wrote file Data/filtered_pert/wb1_variance_4.nc
-Wrote file Data/filtered_pert/wb1_inc_4.nc
 Fields:
   eastward_wind: 2.9395258790126871e+02
   northward_wind: 2.8776191292231090e+02
@@ -60,7 +56,6 @@ wb1_variance_5 ; name = northward_wind ; bin index = 0 ; binned variance = 5.277
 wb1_variance_5 ; name = air_temperature ; bin index = 0 ; binned variance = 6.7510275209668541e-02
 wb1_variance_5 ; name = water_vapor_mixing_ratio_wrt_moist_air ; bin index = 0 ; binned variance = 1.5588871461455837e-08
 Wrote file Data/filtered_pert/wb1_variance_5.nc
-Wrote file Data/filtered_pert/wb1_inc_5.nc
 Fields:
   eastward_wind: 3.0306872014687997e+02
   northward_wind: 2.9554879824995919e+02
@@ -74,7 +69,6 @@ wb1_variance_6 ; name = northward_wind ; bin index = 0 ; binned variance = 5.786
 wb1_variance_6 ; name = air_temperature ; bin index = 0 ; binned variance = 6.2737273981935099e-02
 wb1_variance_6 ; name = water_vapor_mixing_ratio_wrt_moist_air ; bin index = 0 ; binned variance = 1.5270530320774101e-08
 Wrote file Data/filtered_pert/wb1_variance_6.nc
-Wrote file Data/filtered_pert/wb1_inc_6.nc
 Fields:
   eastward_wind: 2.9381559692527583e+02
   northward_wind: 3.1055583443735691e+02
@@ -88,7 +82,6 @@ wb1_variance_7 ; name = northward_wind ; bin index = 0 ; binned variance = 5.322
 wb1_variance_7 ; name = air_temperature ; bin index = 0 ; binned variance = 6.4147361441535947e-02
 wb1_variance_7 ; name = water_vapor_mixing_ratio_wrt_moist_air ; bin index = 0 ; binned variance = 1.7114228066825503e-08
 Wrote file Data/filtered_pert/wb1_variance_7.nc
-Wrote file Data/filtered_pert/wb1_inc_7.nc
 Fields:
   eastward_wind: 3.0711864707936883e+02
   northward_wind: 2.9840848615514534e+02
@@ -102,7 +95,6 @@ wb1_variance_8 ; name = northward_wind ; bin index = 0 ; binned variance = 5.264
 wb1_variance_8 ; name = air_temperature ; bin index = 0 ; binned variance = 6.3224728309601047e-02
 wb1_variance_8 ; name = water_vapor_mixing_ratio_wrt_moist_air ; bin index = 0 ; binned variance = 1.5963916929782176e-08
 Wrote file Data/filtered_pert/wb1_variance_8.nc
-Wrote file Data/filtered_pert/wb1_inc_8.nc
 Fields:
   eastward_wind: 3.0375022321891055e+02
   northward_wind: 2.9836999396509293e+02
@@ -116,7 +108,6 @@ wb1_variance_9 ; name = northward_wind ; bin index = 0 ; binned variance = 5.165
 wb1_variance_9 ; name = air_temperature ; bin index = 0 ; binned variance = 6.3813398680000369e-02
 wb1_variance_9 ; name = water_vapor_mixing_ratio_wrt_moist_air ; bin index = 0 ; binned variance = 1.4963410419155274e-08
 Wrote file Data/filtered_pert/wb1_variance_9.nc
-Wrote file Data/filtered_pert/wb1_inc_9.nc
 Fields:
   eastward_wind: 2.9670113074089841e+02
   northward_wind: 2.9362381618961831e+02
@@ -130,7 +121,6 @@ wb1_variance_10 ; name = northward_wind ; bin index = 0 ; binned variance = 5.11
 wb1_variance_10 ; name = air_temperature ; bin index = 0 ; binned variance = 6.5918752455188009e-02
 wb1_variance_10 ; name = water_vapor_mixing_ratio_wrt_moist_air ; bin index = 0 ; binned variance = 1.5294751638233796e-08
 Wrote file Data/filtered_pert/wb1_variance_10.nc
-Wrote file Data/filtered_pert/wb1_inc_10.nc
 Fields:
   eastward_wind: 2.9675568769981862e+02
   northward_wind: 2.8829387949380384e+02
