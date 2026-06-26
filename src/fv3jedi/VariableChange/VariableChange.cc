@@ -10,7 +10,10 @@
 #include <string>
 #include <vector>
 
+#include "atlas/field/FieldSet.h"
+
 #include "oops/mpi/mpi.h"
+#include "oops/util/DateTime.h"
 #include "oops/util/Logger.h"
 #include "oops/util/parameters/OptionalParameter.h"
 #include "oops/util/parameters/Parameter.h"
@@ -23,6 +26,17 @@
 #include "fv3jedi/VariableChange/VariableChange.h"
 
 namespace fv3jedi {
+
+namespace {
+// Stamp the state's valid time onto every field's atlas metadata so Vader
+// recipes (e.g. LeafAreaIndex_A) can recover the day-of-year at execute time.
+void stampDatetimeMetadata(atlas::FieldSet & xfs, const util::DateTime & time) {
+  const std::string datetime_str = time.toString();
+  for (auto & field : xfs) {
+    field.metadata().set("datetime", datetime_str);
+  }
+}
+}  // namespace
 
 // -------------------------------------------------------------------------------------------------
 
@@ -82,6 +96,7 @@ void VariableChange::changeVar(State & x, const oops::Variables & vars) const {
   if (run_vader_) {
     atlas::FieldSet xfs;
     x.toFieldSet(xfs);
+    stampDatetimeMetadata(xfs, x.validTime());
     const oops::Variables varsVaderPopulated = vader_->changeVar(xfs, varsVader);
     if (varsVaderPopulated.size() > 0) {
       varsFilled += varsVaderPopulated;
@@ -140,6 +155,7 @@ void VariableChange::changeVarInverse(State & x, const oops::Variables & vars) c
   // allocated and populated and added to the FieldSet (xfs).
   atlas::FieldSet xfs;
   x.toFieldSet(xfs);
+  stampDatetimeMetadata(xfs, x.validTime());
   const oops::Variables varsVaderPopulated = vader_->changeVar(xfs, varsVader);
   if (varsVaderPopulated.size() > 0) {
     varsFilled += varsVaderPopulated;
