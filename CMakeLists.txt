@@ -9,7 +9,7 @@
 
 cmake_minimum_required( VERSION 3.3.2 FATAL_ERROR )
 
-project( fv3jedi VERSION 1.9.0 LANGUAGES C CXX Fortran )
+project( fv3jedi VERSION 1.12.0 LANGUAGES C CXX Fortran )
 
 option(OPENMP "Build fv3-jedi with OpenMP support" ON)
 
@@ -60,10 +60,10 @@ find_package( NetCDF REQUIRED COMPONENTS C Fortran )
 find_package( atlas 0.35.0 REQUIRED )
 
 # oops
-find_package( oops 1.10.0 REQUIRED )
+find_package( oops 1.13.0 REQUIRED )
 
 # saber
-find_package( saber 1.10.0 REQUIRED )
+find_package( saber 1.13.0 REQUIRED )
 
 # crtm (optional)
 find_package( crtm 2.2.3 QUIET )
@@ -87,10 +87,10 @@ endif()
 find_package( ip QUIET )
 
 # ufo
-find_package( ufo 1.10.0 REQUIRED )
+find_package( ufo 1.13.0 REQUIRED )
 
 # vader
-find_package( vader 1.7.0 REQUIRED )
+find_package( vader 1.10.0 REQUIRED )
 
 #OpenMP
 if(OPENMP)
@@ -124,7 +124,7 @@ if (FV3_FORECAST_MODEL MATCHES "GEOS")
 endif()
 
 # Linear model
-find_package( fv3jedilm 1.5.0 REQUIRED )
+find_package( fv3jedilm 1.8.0 REQUIRED )
 
 ################################################################################
 # Export package info
