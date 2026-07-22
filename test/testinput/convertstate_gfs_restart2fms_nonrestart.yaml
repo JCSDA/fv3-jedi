@@ -22,7 +22,7 @@ variable change:
   - cloud_liquid_ice
   - cloud_liquid_water
   - ozone_mass_mixing_ratio
-  - geopotential_height_times_gravity_at_surface
+  - geopotential_at_surface
   - slmsk
   - sheleg
   - skin_temperature_at_surface
@@ -34,7 +34,7 @@ variable change:
   - totalSnowDepth
   - eastward_wind_at_surface
   - northward_wind_at_surface
-  - f10m
+  - ratio_of_wind_at_surface_adjacent_layer_to_wind_at_10m
   output variables: *vars
 states:
 - input:
@@ -56,12 +56,13 @@ states:
       cloud_liquid_ice: ice_wat
       cloud_liquid_water: liq_wat
       ozone_mass_mixing_ratio: o3mr
-      geopotential_height_times_gravity_at_surface: phis
+      geopotential_at_surface: phis
       skin_temperature_at_surface: tsea
       soilMoistureVolumetric: smc
       totalSnowDepth: snwdph
       eastward_wind_at_surface: u_srf
       northward_wind_at_surface: v_srf
+      ratio_of_wind_at_surface_adjacent_layer_to_wind_at_10m: f10m
   output:
     state variables: *vars
     filetype: fms restart

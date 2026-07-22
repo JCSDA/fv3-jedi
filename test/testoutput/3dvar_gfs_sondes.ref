@@ -11,7 +11,7 @@ air_pressure_at_surface                      | Min:+5.3985367887873406e+04 Max:+
 air_pressure_thickness                       | Min:+6.0599994659423817e-01 Max:+1.7927172479208255e+03 RMS:+9.5771383767079669e+02
 air_temperature                              | Min:+1.5865009520755856e+02 Max:+3.0653870833090474e+02 RMS:+2.4962362796940292e+02
 eastward_wind                                | Min:-1.0808002439566755e+02 Max:+1.5254281574925454e+02 RMS:+2.2156286109267096e+01
-geopotential_height_times_gravity_at_surface | Min:-2.6477954101562500e+02 Max:+4.9483356501111783e+04 RMS:+5.9494834270643069e+03
+geopotential_at_surface | Min:-2.6477954101562500e+02 Max:+4.9483356501111783e+04 RMS:+5.9494834270643069e+03
 northward_wind                               | Min:-1.0151446908246145e+02 Max:+1.0656765178741405e+02 RMS:+1.0394012648260652e+01
 ozone_mass_mixing_ratio                      | Min:+2.4812975821526111e-09 Max:+1.7471159067430224e-05 RMS:+4.3564070511852332e-06
 water_vapor_mixing_ratio_wrt_moist_air       | Min:+0.0000000000000000e+00 Max:+1.8723704386097544e-02 RMS:+4.6968294480487461e-03

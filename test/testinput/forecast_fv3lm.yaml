@@ -23,7 +23,7 @@ model:
   - cloud_liquid_ice
   - cloud_liquid_water
   - ozone_mass_mixing_ratio
-  - geopotential_height_times_gravity_at_surface
+  - geopotential_at_surface
   datapath: Data/inputs/gfs_c12/bkg/
   filename_core: 20201214.210000.fv_core.res.nc
   filename_core_out: checkpoint.forecast_fv3lm.fv_core.res.nc
@@ -46,7 +46,7 @@ initial condition:
   - cloud_liquid_ice
   - cloud_liquid_water
   - ozone_mass_mixing_ratio
-  - geopotential_height_times_gravity_at_surface
+  - geopotential_at_surface
   field io names: &field_io_names
     eastward_wind: ua
     northward_wind: va
@@ -56,7 +56,7 @@ initial condition:
     cloud_liquid_ice: ice_wat
     cloud_liquid_water: liq_wat
     ozone_mass_mixing_ratio: o3mr
-    geopotential_height_times_gravity_at_surface: phis
+    geopotential_at_surface: phis
 output:
   filetype: fms restart
   datapath: Data/forecast

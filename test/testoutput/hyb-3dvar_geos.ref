@@ -32,7 +32,7 @@ eastward_wind_at_surface                     | Min:-1.4631289361976737e+01 Max:+
 fraction_of_ice                              | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+00 RMS:+1.4332917188695557e-01
 fraction_of_lake                             | Min:+0.0000000000000000e+00 Max:+8.2433401421318375e-01 RMS:+3.9135745916011447e-02
 fraction_of_ocean                            | Min:+0.0000000000000000e+00 Max:+1.0000000000000002e+00 RMS:+8.3445820459710496e-01
-geopotential_height_times_gravity_at_surface | Min:-2.6583901977539068e+02 Max:+4.9849398987285414e+04 RMS:+5.9622785167944930e+03
+geopotential_at_surface | Min:-2.6583901977539068e+02 Max:+4.9849398987285414e+04 RMS:+5.9622785167944930e+03
 mole_fraction_of_ozone_in_air                | Min:+1.2327861184071373e-02 Max:+3.8071811323462441e+01 RMS:+3.7079707698465763e+00
 northward_wind                               | Min:-1.0635166538114669e+02 Max:+1.0491759880423201e+02 RMS:+1.1297892574457775e+01
 northward_wind_at_surface                    | Min:-1.4834912659890456e+01 Max:+1.8979258912037594e+01 RMS:+4.4479201325957609e+00
@@ -81,7 +81,7 @@ eastward_wind_at_surface                     | Min:-1.4631289361976737e+01 Max:+
 fraction_of_ice                              | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+00 RMS:+1.4332917188695557e-01
 fraction_of_lake                             | Min:+0.0000000000000000e+00 Max:+8.2433401421318375e-01 RMS:+3.9135745916011447e-02
 fraction_of_ocean                            | Min:+0.0000000000000000e+00 Max:+1.0000000000000002e+00 RMS:+8.3445820459710496e-01
-geopotential_height_times_gravity_at_surface | Min:-2.6583901977539068e+02 Max:+4.9849398987285414e+04 RMS:+5.9622785167944930e+03
+geopotential_at_surface | Min:-2.6583901977539068e+02 Max:+4.9849398987285414e+04 RMS:+5.9622785167944930e+03
 mole_fraction_of_ozone_in_air                | Min:+1.2327861170671911e-02 Max:+3.8071811317212926e+01 RMS:+3.7079707701034086e+00
 northward_wind                               | Min:-1.0635166543907752e+02 Max:+1.0491759881405815e+02 RMS:+1.1297892575756636e+01
 northward_wind_at_surface                    | Min:-1.4834912659890456e+01 Max:+1.8979258912037594e+01 RMS:+4.4479201325957609e+00

@@ -57,7 +57,7 @@ background:
   - cloud_liquid_ice
   - cloud_liquid_water
   - mole_fraction_of_ozone_in_air
-  - geopotential_height_times_gravity_at_surface
+  - geopotential_at_surface
   field io names: &field_io_names
     air_horizontal_streamfunction: psi
     air_horizontal_velocity_potential: chi
@@ -72,4 +72,4 @@ background:
     air_pressure_thickness: delp
     virtual_temperature: tv
     mole_fraction_of_ozone_in_air: o3ppmv
-    geopotential_height_times_gravity_at_surface: phis
+    geopotential_at_surface: phis

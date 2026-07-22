@@ -69,7 +69,7 @@ State::State(const Geometry & geom, const eckit::Configuration & config)
       "water_vapor_mixing_ratio_wrt_moist_air",
       "cloud_liquid_ice",
       "cloud_liquid_water",
-      "geopotential_height_times_gravity_at_surface",
+      "geopotential_at_surface",
       "ozone_mass_mixing_ratio",
       "upward_air_velocity"
       });

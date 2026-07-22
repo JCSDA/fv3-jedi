@@ -38,12 +38,15 @@ namespace fv3jedi {
         {"pi", M_PI},
         {"tice", 273.16},
         {"constoz", 603447.6},
+        {"ozone_mixing_ratio_conversion_factor", 603447.6},
         {"ps", 101300.0},
         {"grav", grav},
+        {"standard_gravitational_acceleration", grav},  // vader name
         {"airmw", airmw},
         {"h2omw", h2omw},
         {"runiv", runiv},
         {"rdry", rdry},
+        {"gas_constant_of_dry_air", rdry},  // vader name
         {"cpdry", cpdry},
         {"rvap", rvap},
         {"kappa", kappa},

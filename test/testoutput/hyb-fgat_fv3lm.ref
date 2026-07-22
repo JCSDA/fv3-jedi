@@ -16,7 +16,7 @@ eastward_wind_at_surface                     | Min:-1.8062565674841707e+01 Max:+
 fraction_of_ice                              | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+00 RMS:+1.4336055637502587e-01
 fraction_of_lake                             | Min:+0.0000000000000000e+00 Max:+8.2433401421318375e-01 RMS:+3.9135745916011447e-02
 fraction_of_ocean                            | Min:+0.0000000000000000e+00 Max:+1.0000000000000002e+00 RMS:+8.3445820459710496e-01
-geopotential_height_times_gravity_at_surface | Min:-2.6583901977539068e+02 Max:+4.9849398987285414e+04 RMS:+5.9622785167944930e+03
+geopotential_at_surface | Min:-2.6583901977539068e+02 Max:+4.9849398987285414e+04 RMS:+5.9622785167944930e+03
 mole_fraction_of_ozone_in_air                | Min:+1.3127863904645933e-02 Max:+3.5786660610864082e+01 RMS:+3.7136273004824951e+00
 northward_wind                               | Min:-9.0045436984994083e+01 Max:+1.0109304559255557e+02 RMS:+1.0317017881391704e+01
 northward_wind_at_surface                    | Min:-1.4108648338481105e+01 Max:+1.4886593593473570e+01 RMS:+4.5477360637279221e+00

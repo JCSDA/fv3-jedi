@@ -42,7 +42,7 @@ cost function:
     - cloud_liquid_ice
     - cloud_liquid_water
     - ozone_mass_mixing_ratio
-    - geopotential_height_times_gravity_at_surface
+    - geopotential_at_surface
     - slmsk
     - sheleg
     - skin_temperature_at_surface
@@ -54,7 +54,7 @@ cost function:
     - totalSnowDepth
     - eastward_wind_at_surface
     - northward_wind_at_surface
-    - f10m
+    - ratio_of_wind_at_surface_adjacent_layer_to_wind_at_10m
     field io names: &field_io_names
       eastward_wind: ua
       northward_wind: va
@@ -66,11 +66,12 @@ cost function:
       skin_temperature_at_surface: tsea
       air_pressure_at_surface: ps
       cloud_liquid_ice: ice_wat
-      geopotential_height_times_gravity_at_surface: phis
+      geopotential_at_surface: phis
       soilMoistureVolumetric: smc
       totalSnowDepth: snwdph
       eastward_wind_at_surface: u_srf
       northward_wind_at_surface: v_srf
+      ratio_of_wind_at_surface_adjacent_layer_to_wind_at_10m: f10m
   background error:
     covariance model: SABER
     ensemble:

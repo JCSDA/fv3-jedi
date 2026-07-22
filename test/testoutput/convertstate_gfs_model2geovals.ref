@@ -7,11 +7,11 @@ cloud_liquid_ice                             | Min:-4.2004505407201364e-21 Max:+
 cloud_liquid_water                           | Min:-9.4095662968587237e-21 Max:+1.0694775100156446e-03 RMS:+3.4817857684731345e-05
 eastward_wind                                | Min:-1.0808005226726641e+02 Max:+1.5254285196689409e+02 RMS:+2.2156165197969546e+01
 eastward_wind_at_surface                     | Min:-1.8101275076649053e+01 Max:+2.1220834227111389e+01 RMS:+5.8495982180186621e+00
-f10m                                         | Min:+9.4200706791884525e-01 Max:+1.0783731020020086e+00 RMS:+9.9586000625264048e-01
-geopotential_height_times_gravity_at_surface | Min:-2.6477954101562500e+02 Max:+4.9483356501111783e+04 RMS:+5.9494834270643069e+03
+geopotential_at_surface                      | Min:-2.6477954101562500e+02 Max:+4.9483356501111783e+04 RMS:+5.9494834270643069e+03
 northward_wind                               | Min:-1.0151447572667882e+02 Max:+1.0656765405741353e+02 RMS:+1.0393969791347695e+01
 northward_wind_at_surface                    | Min:-1.4623627030973990e+01 Max:+1.8213843978241414e+01 RMS:+4.8372223427453616e+00
 ozone_mass_mixing_ratio                      | Min:+2.8166011299632619e-09 Max:+1.7470989779275887e-05 RMS:+4.3563484867392158e-06
+ratio_of_wind_at_surface_adjacent_layer_to_w | Min:+9.4200706791884525e-01 Max:+1.0783731020020086e+00 RMS:+9.9586000625264048e-01
 sheleg                                       | Min:+0.0000000000000000e+00 Max:+2.2560732452076238e+02 RMS:+2.2262278348509248e+01
 skin_temperature_at_surface                  | Min:+2.2906805071655253e+02 Max:+3.2545676286191065e+02 RMS:+2.8676581491798419e+02
 slmsk                                        | Min:+0.0000000000000000e+00 Max:+2.0000000000000004e+00 RMS:+6.6320345634919742e-01
@@ -24,7 +24,7 @@ vtype                                        | Min:+0.0000000000000000e+00 Max:+
 water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.2804727152986153e-09 Max:+1.8723704386097544e-02 RMS:+4.6967978850461283e-03
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaModel2GeoVaLs variable change
-Variable change from: 21 variables: air_pressure_thickness, air_temperature, cloud_liquid_ice, cloud_liquid_water, eastward_wind, eastward_wind_at_surface, f10m, geopotential_height_times_gravity_at_surface, northward_wind, northward_wind_at_surface, ozone_mass_mixing_ratio, sheleg, skin_temperature_at_surface, slmsk, soilMoistureVolumetric, stc, stype, totalSnowDepth, vfrac, vtype, water_vapor_mixing_ratio_wrt_moist_air
+Variable change from: 21 variables: air_pressure_thickness, air_temperature, cloud_liquid_ice, cloud_liquid_water, eastward_wind, eastward_wind_at_surface, ratio_of_wind_at_surface_adjacent_layer_to_wind_at_10m, geopotential_at_surface, northward_wind, northward_wind_at_surface, ozone_mass_mixing_ratio, sheleg, skin_temperature_at_surface, slmsk, soilMoistureVolumetric, stc, stype, totalSnowDepth, vfrac, vtype, water_vapor_mixing_ratio_wrt_moist_air
 Variable change to: 32 variables: relative_humidity, air_pressure_at_surface, virtual_temperature, mole_fraction_of_ozone_in_air, geopotential_height, height_above_mean_sea_level_at_surface, mole_fraction_of_carbon_dioxide_in_air, water_vapor_mixing_ratio_wrt_dry_air, mass_content_of_cloud_liquid_water_in_atmosphere_layer, mass_content_of_cloud_ice_in_atmosphere_layer, effective_radius_of_cloud_liquid_water_particle, effective_radius_of_cloud_ice_particle, water_area_fraction, land_area_fraction, ice_area_fraction, surface_snow_area_fraction, skin_temperature_at_surface_where_sea, skin_temperature_at_surface_where_land, skin_temperature_at_surface_where_ice, skin_temperature_at_surface_where_snow, surface_snow_thickness, vegetation_area_fraction, wind_speed_at_surface, wind_from_direction_at_surface, leaf_area_index, volume_fraction_of_condensed_water_in_soil, soil_temperature, land_type_index_NPOESS, vegetation_type_index, soil_type, air_upward_absolute_vorticity, tropopause_pressure
 State after variable transform: 
 ----------------------------------------------------------------------------------------------------

@@ -7,7 +7,7 @@ cost function:
   - air_pressure_at_surface
   - water_vapor_mixing_ratio_wrt_moist_air
   - mole_fraction_of_ozone_in_air
-  - geopotential_height_times_gravity_at_surface
+  - geopotential_at_surface
   - fraction_of_ocean
   - fraction_of_lake
   - fraction_of_ice
@@ -40,7 +40,7 @@ cost function:
       - air_pressure_at_surface
       - water_vapor_mixing_ratio_wrt_moist_air
       - mole_fraction_of_ozone_in_air
-      - geopotential_height_times_gravity_at_surface
+      - geopotential_at_surface
       - sheleg
       - skin_temperature_at_surface
       - fraction_of_ocean
@@ -53,7 +53,7 @@ cost function:
         air_pressure_at_surface: ps
         water_vapor_mixing_ratio_wrt_moist_air: q
         mole_fraction_of_ozone_in_air: o3ppmv
-        geopotential_height_times_gravity_at_surface: phis
+        geopotential_at_surface: phis
         fraction_of_ocean: frocean
         fraction_of_lake: frlake
         fraction_of_ice: frseaice
@@ -105,7 +105,7 @@ cost function:
           - fraction_of_ice
           - mole_fraction_of_ozone_in_air
           - skin_temperature_at_surface
-          - geopotential_height_times_gravity_at_surface
+          - geopotential_at_surface
           - water_vapor_mixing_ratio_wrt_moist_air
         linear variable change:
           linear variable change name: Control2Analysis

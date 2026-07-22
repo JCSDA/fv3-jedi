@@ -362,7 +362,7 @@ do i = 1, num_items
 
     ! AGCM
     case ("PHIS")
-      long_name = 'geopotential_height_times_gravity_at_surface'
+      long_name = 'geopotential_at_surface'
     case ("QITOT")
       long_name = 'cloud_ice_water'
     case ("QLTOT")

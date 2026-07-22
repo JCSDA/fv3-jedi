@@ -17,7 +17,7 @@ fraction_of_ice                              | Min:+0.0000000000000000e+00 Max:+
 fraction_of_lake                             | Min:+0.0000000000000000e+00 Max:+7.3602032252371208e-01 RMS:+3.5925062748368354e-02
 fraction_of_land                             | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+00 RMS:+5.0703342328911372e-01
 fraction_of_ocean                            | Min:+0.0000000000000000e+00 Max:+1.0000000000000002e+00 RMS:+8.3391238208345175e-01
-geopotential_height_times_gravity_at_surface | Min:-2.6607180786132812e+02 Max:+4.9529586238160344e+04 RMS:+5.9521244976503649e+03
+geopotential_at_surface | Min:-2.6607180786132812e+02 Max:+4.9529586238160344e+04 RMS:+5.9521244976503649e+03
 initial_mass_fraction_of_convective_cloud_co | Min:+0.0000000000000000e+00 Max:+2.8126752537350932e-04 RMS:+5.8980371719960696e-06
 initial_mass_fraction_of_large_scale_cloud_c | Min:+0.0000000000000000e+00 Max:+5.0790747135090063e-04 RMS:+1.8264458345279780e-05
 isotropic_variance_of_filtered_topography    | Min:+0.0000000000000000e+00 Max:+6.3880157563505301e+04 RMS:+4.4791336083687229e+03

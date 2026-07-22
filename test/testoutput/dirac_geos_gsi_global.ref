@@ -4,7 +4,7 @@ Increment print | number of fields = 7 | cube sphere face size: C12
 air_pressure_at_surface                      | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 air_temperature                              | Min:+0.0000000000000000e+00 Max:+1.0000000000000000e+00 RMS:+4.0093768693724016e-03
 eastward_wind                                | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
-geopotential_height_times_gravity_at_surface | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
+geopotential_at_surface | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 mole_fraction_of_ozone_in_air                | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 northward_wind                               | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 water_vapor_mixing_ratio_wrt_moist_air       | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
@@ -15,7 +15,7 @@ Increment print | number of fields = 7 | cube sphere face size: C12
 air_pressure_at_surface                      | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 air_temperature                              | Min:-3.6342590393975501e-06 Max:+1.7638106748079427e+00 RMS:+1.0196762056521726e-02
 eastward_wind                                | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
-geopotential_height_times_gravity_at_surface | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
+geopotential_at_surface | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 mole_fraction_of_ozone_in_air                | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 northward_wind                               | Min:+0.0000000000000000e+00 Max:+0.0000000000000000e+00 RMS:+0.0000000000000000e+00
 water_vapor_mixing_ratio_wrt_moist_air       | Min:-5.7388805764191494e-04 Max:+3.0870929497007608e-09 RMS:+3.4295150262720729e-06

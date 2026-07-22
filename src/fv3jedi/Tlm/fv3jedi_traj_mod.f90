@@ -208,8 +208,8 @@ if (state%has_field('convective_cloud_area_fraction')) &
   call state%get_field('convective_cloud_area_fraction', traj%cfcn)
 
 ! Copy optional parts of the trajecotry (Rank 2)
-if (state%has_field('geopotential_height_times_gravity_at_surface')) then
-  call state%get_field('geopotential_height_times_gravity_at_surface', phis)
+if (state%has_field('geopotential_at_surface')) then
+  call state%get_field('geopotential_at_surface', phis)
   traj%phis = phis(:,:,1)
 endif
 if (state%has_field('fraction_of_ocean')) then

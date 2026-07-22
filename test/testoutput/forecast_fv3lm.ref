@@ -6,7 +6,7 @@ air_temperature                              | Min:+1.5727112567986427e+02 Max:+
 cloud_liquid_ice                             | Min:-1.3536651718203996e-21 Max:+5.0754207489580477e-04 RMS:+1.5795718671717992e-05
 cloud_liquid_water                           | Min:-6.4683322812381749e-21 Max:+9.8037403300115758e-04 RMS:+3.3869746788463320e-05
 eastward_wind                                | Min:-9.9870309951732608e+01 Max:+1.6846199862531310e+02 RMS:+2.2146985103933666e+01
-geopotential_height_times_gravity_at_surface | Min:-2.6477954101562500e+02 Max:+4.9483356501111783e+04 RMS:+5.9494834270643069e+03
+geopotential_at_surface | Min:-2.6477954101562500e+02 Max:+4.9483356501111783e+04 RMS:+5.9494834270643069e+03
 northward_wind                               | Min:-9.8786769912619121e+01 Max:+1.1111138963306223e+02 RMS:+1.0634298691496230e+01
 ozone_mass_mixing_ratio                      | Min:-2.6515889976660251e-09 Max:+2.3572761383482399e-05 RMS:+4.3568440033160068e-06
 water_vapor_mixing_ratio_wrt_moist_air       | Min:+0.0000000000000000e+00 Max:+1.8639534078307159e-02 RMS:+4.6949161001360422e-03
@@ -19,7 +19,7 @@ air_temperature                              | Min:+1.5735364445515941e+02 Max:+
 cloud_liquid_ice                             | Min:-4.9625973931216328e-07 Max:+4.7826998393627357e-04 RMS:+1.4789939016265476e-05
 cloud_liquid_water                           | Min:-5.6753054011232102e-07 Max:+9.7823820790343750e-04 RMS:+3.2095891704927667e-05
 eastward_wind                                | Min:-9.6146516514486819e+01 Max:+1.5225774146831458e+02 RMS:+2.0973153955442744e+01
-geopotential_height_times_gravity_at_surface | Min:-2.6477954101562500e+02 Max:+4.9483356501111783e+04 RMS:+5.9494834270643069e+03
+geopotential_at_surface | Min:-2.6477954101562500e+02 Max:+4.9483356501111783e+04 RMS:+5.9494834270643069e+03
 northward_wind                               | Min:-8.4118948122701269e+01 Max:+1.0134032752787677e+02 RMS:+9.2138884827567473e+00
 ozone_mass_mixing_ratio                      | Min:+8.5904143506004389e-09 Max:+2.1846305530698693e-05 RMS:+4.3562362797200872e-06
 water_vapor_mixing_ratio_wrt_moist_air       | Min:+5.9112415679908142e-08 Max:+1.8602209558449191e-02 RMS:+4.6871770388684066e-03

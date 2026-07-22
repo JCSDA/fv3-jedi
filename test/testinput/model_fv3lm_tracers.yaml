@@ -23,7 +23,7 @@ model:
   - cloud_liquid_ice
   - cloud_liquid_water
   - ozone_mass_mixing_ratio
-  - geopotential_height_times_gravity_at_surface
+  - geopotential_at_surface
   - mass_fraction_of_dust001_in_air
   - mass_fraction_of_dust002_in_air
   - mass_fraction_of_dust003_in_air
@@ -51,7 +51,7 @@ initial condition:
   - cloud_liquid_ice
   - cloud_liquid_water
   - ozone_mass_mixing_ratio
-  - geopotential_height_times_gravity_at_surface
+  - geopotential_at_surface
   - mass_fraction_of_dust001_in_air
   - mass_fraction_of_dust002_in_air
   - mass_fraction_of_dust003_in_air
@@ -71,7 +71,7 @@ initial condition:
     cloud_liquid_ice: ice_wat
     cloud_liquid_water: liq_wat
     ozone_mass_mixing_ratio: o3mr
-    geopotential_height_times_gravity_at_surface: phis
+    geopotential_at_surface: phis
     mass_fraction_of_dust001_in_air: dust1
     mass_fraction_of_dust002_in_air: dust2
     mass_fraction_of_dust003_in_air: dust3

@@ -283,7 +283,7 @@ call state%get_field('eastward_wind', ua)
 call state%get_field('northward_wind', va)
 call state%get_field('air_temperature', t)
 call state%get_field('air_pressure_thickness', delp)
-call state%get_field('geopotential_height_times_gravity_at_surface', phis)
+call state%get_field('geopotential_at_surface', phis)
 
 lm%traj%ua   = ua
 lm%traj%va   = va
@@ -349,7 +349,7 @@ call state%get_field('eastward_wind', ua  )
 call state%get_field('northward_wind', va  )
 call state%get_field('air_temperature', t   )
 call state%get_field('air_pressure_thickness', delp)
-call state%get_field('geopotential_height_times_gravity_at_surface', phis)
+call state%get_field('geopotential_at_surface', phis)
 ua          = lm%traj%ua
 va          = lm%traj%va
 t           = lm%traj%t

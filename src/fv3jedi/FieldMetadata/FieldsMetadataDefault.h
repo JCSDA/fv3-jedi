@@ -371,7 +371,7 @@ namespace fv3jedi {
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
 
-    md.longName = "geopotential_height_times_gravity_at_surface";
+    md.longName = "geopotential_at_surface";
     md.units = "m";
     md.kind = "double";
     md.tracer = "false";
@@ -645,14 +645,6 @@ namespace fv3jedi {
 
     md.longName = "northward_wind_at_surface";
     md.units = "ms-1";
-    md.kind = "double";
-    md.tracer = "false";
-    md.levels = "1";
-    md.space = "magnitude";
-    addFieldMetadata(fieldsmetadata, nlev, md);
-
-    md.longName = "f10m";
-    md.units = "none";
     md.kind = "double";
     md.tracer = "false";
     md.levels = "1";
@@ -1219,7 +1211,7 @@ namespace fv3jedi {
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
 
-    md.longName = "wind_reduction_factor_at_10m";
+    md.longName = "ratio_of_wind_at_surface_adjacent_layer_to_wind_at_10m";
     md.units = "none";
     md.kind = "double";
     md.tracer = "false";

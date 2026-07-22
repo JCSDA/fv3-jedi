@@ -26,7 +26,7 @@ variable change:
   - cloud_liquid_water
   - rain_water
   - snow_water
-  - geopotential_height_times_gravity_at_surface
+  - geopotential_at_surface
   - fraction_of_ocean
   - fraction_of_lake
   - fraction_of_ice
@@ -96,7 +96,7 @@ states:
       cloud_liquid_water: ql
       rain_water: qr
       snow_water: qs
-      geopotential_height_times_gravity_at_surface: phis
+      geopotential_at_surface: phis
       fraction_of_ocean: frocean
       fraction_of_lake: frlake
       fraction_of_ice: frseaice

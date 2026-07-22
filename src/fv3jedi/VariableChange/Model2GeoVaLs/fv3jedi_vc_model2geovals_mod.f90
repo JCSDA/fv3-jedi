@@ -408,12 +408,12 @@ endif
 ! -------------------
 have_geoph = .false.
 if (have_t .and. have_pressures .and. have_q .and. &
-    (xm%has_field('geopotential_height_times_gravity_at_surface') .or. &
+    (xm%has_field('geopotential_at_surface') .or. &
     xm%has_field('geopotential_height_at_surface') )) then
   if (.not.allocated(phis)) allocate(phis(self%isc:self%iec,self%jsc:self%jec,1))
   if (.not.allocated(suralt)) allocate(suralt(self%isc:self%iec,self%jsc:self%jec,1))
-  if ( xm%has_field( 'geopotential_height_times_gravity_at_surface') ) then
-     call xm%get_field('geopotential_height_times_gravity_at_surface',  phis)
+  if ( xm%has_field( 'geopotential_at_surface') ) then
+     call xm%get_field('geopotential_at_surface',  phis)
      suralt = phis / constant('grav')
   else
      call xm%get_field('geopotential_height_at_surface', suralt)
@@ -536,8 +536,8 @@ endif
 ! f10m
 ! ----
 have_f10m = .false.
-if (xm%has_field('f10m')) then
-  call xm%get_field('f10m', f10m)
+if (xm%has_field('ratio_of_wind_at_surface_adjacent_layer_to_wind_at_10m')) then
+  call xm%get_field('ratio_of_wind_at_surface_adjacent_layer_to_wind_at_10m', f10m)
   have_f10m = .true.
 elseif ( xm%has_field( 'eastward_wind_at_surface') .and. &
          xm%has_field( 'northward_wind_at_surface') .and. have_winds ) then
@@ -999,7 +999,7 @@ do f = 1, size(fields_to_do)
     if (.not. have_o3) call field_fail(fields_to_do(f))
     field_ptr = o3ppmv
 
-  case ('geopotential_height_times_gravity_at_surface')
+  case ('geopotential_at_surface')
 
     if (.not. have_geoph) call field_fail(fields_to_do(f))
     field_ptr = phis
@@ -1193,7 +1193,7 @@ do f = 1, size(fields_to_do)
     if (.not. have_crtm_surface) call field_fail(fields_to_do(f))
     field_ptr = wind_from_direction_at_surface
 
-  case ('wind_reduction_factor_at_10m')
+  case ('ratio_of_wind_at_surface_adjacent_layer_to_wind_at_10m')
 
     if (.not. have_f10m) call field_fail(fields_to_do(f))
     field_ptr = f10m

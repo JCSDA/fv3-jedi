@@ -10,7 +10,7 @@ air_temperature                              | Min:+1.6275172641460472e+02 Max:+
 cloud_liquid_ice                             | Min:+0.0000000000000000e+00 Max:+4.4620459302115124e-04 RMS:+7.1619518573360124e-06
 cloud_liquid_water                           | Min:+0.0000000000000000e+00 Max:+3.2136828813966636e-04 RMS:+2.2147072320864954e-05
 eastward_wind                                | Min:-7.7024244043562703e+01 Max:+1.0191052220474751e+02 RMS:+2.7560992130690451e+01
-geopotential_height_times_gravity_at_surface | Min:-2.5519543301343103e+02 Max:+1.8914784540005017e+04 RMS:+2.8806718438922003e+03
+geopotential_at_surface | Min:-2.5519543301343103e+02 Max:+1.8914784540005017e+04 RMS:+2.8806718438922003e+03
 mass_fraction_of_dust001_in_air              | Min:+0.0000000000000000e+00 Max:+8.9946492294642358e-09 RMS:+6.2517050920296197e-10
 mass_fraction_of_dust002_in_air              | Min:+0.0000000000000000e+00 Max:+3.0266064693151924e-08 RMS:+2.0873391360477975e-09
 mass_fraction_of_dust003_in_air              | Min:+0.0000000000000000e+00 Max:+3.6462713779856820e-08 RMS:+2.3745671949806221e-09

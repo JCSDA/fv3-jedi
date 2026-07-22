@@ -21,7 +21,7 @@ state test:
     - layer_thickness
     - air_pressure_thickness
     - air_pressure_at_surface
-    - geopotential_height_times_gravity_at_surface
+    - geopotential_at_surface
     - ozone_mass_mixing_ratio
     field io names:
       eastward_wind: ugrd
@@ -31,7 +31,7 @@ state test:
       layer_thickness: delz
       air_pressure_thickness: dpres
       air_pressure_at_surface: pressfc
-      geopotential_height_times_gravity_at_surface: hgtsfc
+      geopotential_at_surface: hgtsfc
       ozone_mass_mixing_ratio: o3mr
   date: 2021-03-22T12:00:00Z
   norm file: 3357.1428615656268

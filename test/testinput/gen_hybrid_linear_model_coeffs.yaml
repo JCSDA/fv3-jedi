@@ -76,7 +76,7 @@ hybrid linear model:
         - cloud_liquid_water
         - cloud_liquid_ice
         - ozone_mass_mixing_ratio
-        - geopotential_height_times_gravity_at_surface
+        - geopotential_at_surface
         field io names: &field_io_names
           eastward_wind: ua
           northward_wind: va
@@ -86,7 +86,7 @@ hybrid linear model:
           cloud_liquid_water: liq_wat
           cloud_liquid_ice: ice_wat
           ozone_mass_mixing_ratio: o3mr
-          geopotential_height_times_gravity_at_surface: phis
+          geopotential_at_surface: phis
       nonlinear ensemble:
         read:
           members from template:

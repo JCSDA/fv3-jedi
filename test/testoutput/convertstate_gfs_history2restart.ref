@@ -7,11 +7,11 @@ cloud_liquid_ice                             | Min:-4.2004506155255507e-21 Max:+
 cloud_liquid_water                           | Min:-9.4095664009092571e-21 Max:+1.0694775264710188e-03 RMS:+3.4817857672474927e-05
 eastward_wind                                | Min:-1.0808005523681641e+02 Max:+1.5254284667968750e+02 RMS:+2.2156165204453025e+01
 eastward_wind_at_surface                     | Min:-1.8101274490356445e+01 Max:+2.1220834732055664e+01 RMS:+5.8495982191630542e+00
-f10m                                         | Min:+9.4200706481933594e-01 Max:+1.0783730745315552e+00 RMS:+9.9586000707692246e-01
 geopotential_height_at_surface               | Min:-2.7000000000000000e+01 Max:+5.0458979492187500e+03 RMS:+6.0667847202228086e+02
 northward_wind                               | Min:-1.0151447296142578e+02 Max:+1.0656765747070312e+02 RMS:+1.0393969788500090e+01
 northward_wind_at_surface                    | Min:-1.4623626708984375e+01 Max:+1.8213844299316406e+01 RMS:+4.8372223436465882e+00
 ozone_mass_mixing_ratio                      | Min:+2.8166011745156538e-09 Max:+1.7470989405410364e-05 RMS:+4.3563484866758959e-06
+ratio_of_wind_at_surface_adjacent_layer_to_w | Min:+9.4200706481933594e-01 Max:+1.0783730745315552e+00 RMS:+9.9586000707692246e-01
 sheleg                                       | Min:+0.0000000000000000e+00 Max:+2.2560733032226562e+02 RMS:+2.2262278420014287e+01
 skin_temperature_at_surface                  | Min:+2.2906805419921875e+02 Max:+3.2545675659179688e+02 RMS:+2.8676581492683624e+02
 slmsk                                        | Min:+0.0000000000000000e+00 Max:+2.0000000000000000e+00 RMS:+6.6320345653218082e-01
@@ -24,8 +24,8 @@ vtype                                        | Min:+0.0000000000000000e+00 Max:+
 water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.2804727278492578e-09 Max:+1.8723703920841217e-02 RMS:+4.6967978846402404e-03
 ----------------------------------------------------------------------------------------------------
 Variable transform: fv3jedi::VarChaModel2GeoVaLs variable change
-Variable change from: 21 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, water_vapor_mixing_ratio_wrt_moist_air, cloud_liquid_ice, cloud_liquid_water, ozone_mass_mixing_ratio, geopotential_height_at_surface, slmsk, sheleg, skin_temperature_at_surface, vtype, stype, vfrac, stc, soilMoistureVolumetric, totalSnowDepthMeters, eastward_wind_at_surface, northward_wind_at_surface, f10m
-Variable change to: 21 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, water_vapor_mixing_ratio_wrt_moist_air, cloud_liquid_ice, cloud_liquid_water, ozone_mass_mixing_ratio, geopotential_height_times_gravity_at_surface, slmsk, sheleg, skin_temperature_at_surface, vtype, stype, vfrac, stc, soilMoistureVolumetric, totalSnowDepth, eastward_wind_at_surface, northward_wind_at_surface, f10m
+Variable change from: 21 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, water_vapor_mixing_ratio_wrt_moist_air, cloud_liquid_ice, cloud_liquid_water, ozone_mass_mixing_ratio, geopotential_height_at_surface, slmsk, sheleg, skin_temperature_at_surface, vtype, stype, vfrac, stc, soilMoistureVolumetric, totalSnowDepthMeters, eastward_wind_at_surface, northward_wind_at_surface, ratio_of_wind_at_surface_adjacent_layer_to_wind_at_10m
+Variable change to: 21 variables: eastward_wind, northward_wind, air_temperature, air_pressure_thickness, water_vapor_mixing_ratio_wrt_moist_air, cloud_liquid_ice, cloud_liquid_water, ozone_mass_mixing_ratio, geopotential_at_surface, slmsk, sheleg, skin_temperature_at_surface, vtype, stype, vfrac, stc, soilMoistureVolumetric, totalSnowDepth, eastward_wind_at_surface, northward_wind_at_surface, ratio_of_wind_at_surface_adjacent_layer_to_wind_at_10m
 State after variable transform: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 21 | cube sphere face size: C12
@@ -35,11 +35,11 @@ cloud_liquid_ice                             | Min:-4.2004506155255507e-21 Max:+
 cloud_liquid_water                           | Min:-9.4095664009092571e-21 Max:+1.0694775264710188e-03 RMS:+3.4817857672474927e-05
 eastward_wind                                | Min:-1.0808005523681641e+02 Max:+1.5254284667968750e+02 RMS:+2.2156165204453025e+01
 eastward_wind_at_surface                     | Min:-1.8101274490356445e+01 Max:+2.1220834732055664e+01 RMS:+5.8495982191630542e+00
-f10m                                         | Min:+9.4200706481933594e-01 Max:+1.0783730745315552e+00 RMS:+9.9586000707692246e-01
-geopotential_height_times_gravity_at_surface | Min:-2.6477954999999997e+02 Max:+4.9483355123706053e+04 RMS:+5.9494834376572999e+03
+geopotential_at_surface                      | Min:-2.6477954999999997e+02 Max:+4.9483355123706053e+04 RMS:+5.9494834376572999e+03
 northward_wind                               | Min:-1.0151447296142578e+02 Max:+1.0656765747070312e+02 RMS:+1.0393969788500090e+01
 northward_wind_at_surface                    | Min:-1.4623626708984375e+01 Max:+1.8213844299316406e+01 RMS:+4.8372223436465882e+00
 ozone_mass_mixing_ratio                      | Min:+2.8166011745156538e-09 Max:+1.7470989405410364e-05 RMS:+4.3563484866758959e-06
+ratio_of_wind_at_surface_adjacent_layer_to_w | Min:+9.4200706481933594e-01 Max:+1.0783730745315552e+00 RMS:+9.9586000707692246e-01
 sheleg                                       | Min:+0.0000000000000000e+00 Max:+2.2560733032226562e+02 RMS:+2.2262278420014287e+01
 skin_temperature_at_surface                  | Min:+2.2906805419921875e+02 Max:+3.2545675659179688e+02 RMS:+2.8676581492683624e+02
 slmsk                                        | Min:+0.0000000000000000e+00 Max:+2.0000000000000000e+00 RMS:+6.6320345653218082e-01
@@ -60,11 +60,11 @@ cloud_liquid_ice                             | Min:-4.2004506155255507e-21 Max:+
 cloud_liquid_water                           | Min:-9.4095664009092571e-21 Max:+1.0694775264710188e-03 RMS:+3.4817857672474927e-05
 eastward_wind                                | Min:-1.0808005523681641e+02 Max:+1.5254284667968750e+02 RMS:+2.2156165204453025e+01
 eastward_wind_at_surface                     | Min:-1.8101274490356445e+01 Max:+2.1220834732055664e+01 RMS:+5.8495982191630542e+00
-f10m                                         | Min:+9.4200706481933594e-01 Max:+1.0783730745315552e+00 RMS:+9.9586000707692246e-01
-geopotential_height_times_gravity_at_surface | Min:-2.6477954999999997e+02 Max:+4.9483355123706053e+04 RMS:+5.9494834376572999e+03
+geopotential_at_surface                      | Min:-2.6477954999999997e+02 Max:+4.9483355123706053e+04 RMS:+5.9494834376572999e+03
 northward_wind                               | Min:-1.0151447296142578e+02 Max:+1.0656765747070312e+02 RMS:+1.0393969788500090e+01
 northward_wind_at_surface                    | Min:-1.4623626708984375e+01 Max:+1.8213844299316406e+01 RMS:+4.8372223436465882e+00
 ozone_mass_mixing_ratio                      | Min:+2.8166011745156538e-09 Max:+1.7470989405410364e-05 RMS:+4.3563484866758959e-06
+ratio_of_wind_at_surface_adjacent_layer_to_w | Min:+9.4200706481933594e-01 Max:+1.0783730745315552e+00 RMS:+9.9586000707692246e-01
 sheleg                                       | Min:+0.0000000000000000e+00 Max:+2.2560733032226562e+02 RMS:+2.2262278420014287e+01
 skin_temperature_at_surface                  | Min:+2.2906805419921875e+02 Max:+3.2545675659179688e+02 RMS:+2.8676581492683624e+02
 slmsk                                        | Min:+0.0000000000000000e+00 Max:+2.0000000000000000e+00 RMS:+6.6320345653218082e-01

@@ -23,13 +23,13 @@ cost function:
     state variables:
     - air_pressure_at_surface
     - air_pressure_thickness
-    - geopotential_height_times_gravity_at_surface
+    - geopotential_at_surface
     - mole_fraction_of_ozone_in_air
     field io names: &field_io_names
       air_pressure_at_surface: ps
       mole_fraction_of_ozone_in_air: o3ppmv
       air_pressure_thickness: delp
-      geopotential_height_times_gravity_at_surface: phis
+      geopotential_at_surface: phis
   background error:
     covariance model: SABER
     saber central block:
@@ -58,7 +58,7 @@ cost function:
         local interpolator type: oops unstructured grid interpolator
       state variables to inverse:
       - air_pressure_at_surface
-      - geopotential_height_times_gravity_at_surface
+      - geopotential_at_surface
       - mole_fraction_of_ozone_in_air
     linear variable change:
       linear variable change name: Control2Analysis

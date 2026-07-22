@@ -27,7 +27,7 @@ cost function:
     state variables:
     - air_pressure_at_surface
     - air_pressure_thickness
-    - geopotential_height_times_gravity_at_surface
+    - geopotential_at_surface
     - sheleg
     - skin_temperature_at_surface
     - fraction_of_ocean
@@ -42,7 +42,7 @@ cost function:
       fraction_of_ice: frseaice
       fraction_of_land: frland
       air_pressure_thickness: delp
-      geopotential_height_times_gravity_at_surface: phis
+      geopotential_at_surface: phis
   background error:
     covariance model: SABER
     saber central block:
@@ -71,7 +71,7 @@ cost function:
         local interpolator type: oops unstructured grid interpolator
       state variables to inverse:
       - air_pressure_at_surface
-      - geopotential_height_times_gravity_at_surface
+      - geopotential_at_surface
       - skin_temperature_at_surface
       - fraction_of_land
       - fraction_of_ocean

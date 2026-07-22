@@ -6,7 +6,7 @@ air_temperature                              | Min:+1.7800988782275749e+02 Max:+
 cloud_liquid_ice                             | Min:-4.4242141364059889e-22 Max:+2.6454116599868656e-04 RMS:+1.1354576745269266e-05
 cloud_liquid_water                           | Min:-5.8757900635236178e-21 Max:+8.6303641155395310e-04 RMS:+3.1541490529734292e-05
 eastward_wind                                | Min:-6.0025312822543114e+01 Max:+1.3816025729872788e+02 RMS:+2.3913479707214197e+01
-geopotential_height_times_gravity_at_surface | Min:-2.6477954101562500e+02 Max:+4.9998945627901179e+04 RMS:+5.9313597792585460e+03
+geopotential_at_surface | Min:-2.6477954101562500e+02 Max:+4.9998945627901179e+04 RMS:+5.9313597792585460e+03
 mass_fraction_of_dust001_in_air              | Min:+0.0000000000000000e+00 Max:+1.5642158025896384e+02 RMS:+3.0958665523793818e+00
 mass_fraction_of_dust002_in_air              | Min:+0.0000000000000000e+00 Max:+1.4432373934781322e+02 RMS:+2.7984884662314666e+00
 mass_fraction_of_dust003_in_air              | Min:+0.0000000000000000e+00 Max:+2.8016421589972856e+02 RMS:+5.1956757904630066e+00
@@ -23,7 +23,7 @@ air_temperature                              | Min:+1.7791520464650088e+02 Max:+
 cloud_liquid_ice                             | Min:-6.1786662047620789e-08 Max:+2.5973552612327665e-04 RMS:+1.0748567529363526e-05
 cloud_liquid_water                           | Min:-2.9333662533166871e-07 Max:+8.3405263575375981e-04 RMS:+3.0191055163248843e-05
 eastward_wind                                | Min:-5.6217581452807408e+01 Max:+1.2897807928473708e+02 RMS:+2.2875907678758747e+01
-geopotential_height_times_gravity_at_surface | Min:-2.6477954101562500e+02 Max:+4.9998945627901179e+04 RMS:+5.9313597792585460e+03
+geopotential_at_surface | Min:-2.6477954101562500e+02 Max:+4.9998945627901179e+04 RMS:+5.9313597792585460e+03
 mass_fraction_of_dust001_in_air              | Min:+9.1232095698320896e-17 Max:+1.5300006003039414e+02 RMS:+3.0392980064300783e+00
 mass_fraction_of_dust002_in_air              | Min:+9.4409656285755752e-17 Max:+1.4116621370868751e+02 RMS:+2.7466977310657481e+00
 mass_fraction_of_dust003_in_air              | Min:+9.4322588437635228e-17 Max:+2.7403312216831682e+02 RMS:+5.0969188759138850e+00

@@ -37,7 +37,7 @@ cost function:
     - air_pressure_thickness
     - air_pressure_at_surface
     - water_vapor_mixing_ratio_wrt_moist_air
-    - geopotential_height_times_gravity_at_surface
+    - geopotential_at_surface
     - ozone_mass_mixing_ratio
     field io names: &field_io_names
       eastward_wind: ua
@@ -47,7 +47,7 @@ cost function:
       water_vapor_mixing_ratio_wrt_moist_air: sphum
       ozone_mass_mixing_ratio: o3mr
       air_pressure_thickness: delp
-      geopotential_height_times_gravity_at_surface: phis
+      geopotential_at_surface: phis
       mole_fraction_of_ozone_in_air: o3ppmv
   background error:
     covariance model: SABER

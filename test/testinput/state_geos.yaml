@@ -31,7 +31,7 @@ state test:
     - cloud_liquid_ice
     - cloud_liquid_water
     - mole_fraction_of_ozone_in_air
-    - geopotential_height_times_gravity_at_surface
+    - geopotential_at_surface
     field io names:
       eastward_wind: ua
       northward_wind: va
@@ -41,7 +41,7 @@ state test:
       cloud_liquid_ice: qi
       cloud_liquid_water: ql
       mole_fraction_of_ozone_in_air: o3ppmv
-      geopotential_height_times_gravity_at_surface: phis
+      geopotential_at_surface: phis
   state generate:
     analytic init:
       method: dcmip-test-4-0
