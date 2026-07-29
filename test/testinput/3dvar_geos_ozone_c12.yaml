@@ -32,6 +32,7 @@ cost function:
       geopotential_at_surface: phis
   background error:
     covariance model: SABER
+    adjoint test: true
     saber central block:
       saber block name: gsi static covariance
       read:
@@ -186,6 +187,13 @@ variational:
     algorithm: DRPCG
   iterations:
   - ninner: 5
+    gradient norm reduction: 1e-10
+    geometry:
+      akbk: Data/inputs/fv3files/akbk72.nc4
+      npx: 13
+      npy: 13
+      npz: 72
+  - ninner: 2
     gradient norm reduction: 1e-10
     geometry:
       akbk: Data/inputs/fv3files/akbk72.nc4

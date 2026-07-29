@@ -7,6 +7,7 @@ cost function:
   - air_pressure_at_surface
   - water_vapor_mixing_ratio_wrt_moist_air
   - ozone_mass_mixing_ratio
+  - geopotential_at_surface
   time window:
     begin: 2020-12-14T21:00:00Z
     length: PT6H
@@ -51,6 +52,8 @@ cost function:
       mole_fraction_of_ozone_in_air: o3ppmv
   background error:
     covariance model: SABER
+    adjoint test: true
+    adjoint tolerance: 1e-9
     saber central block:
       saber block name: gsi static covariance
       read:
@@ -82,6 +85,7 @@ cost function:
       - air_pressure_at_surface
       - water_vapor_mixing_ratio_wrt_moist_air
       - ozone_mass_mixing_ratio
+      - geopotential_at_surface
     linear variable change:
       linear variable change name: Control2Analysis
       input variables:
@@ -91,6 +95,7 @@ cost function:
       - air_pressure_at_surface
       - water_vapor_mixing_ratio_wrt_moist_air
       - mole_fraction_of_ozone_in_air
+      - geopotential_at_surface
       output variables: *3dvars
   observations:
     observers:

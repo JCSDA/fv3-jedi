@@ -498,7 +498,7 @@ namespace fv3jedi {
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
-    
+
     md.longName = "soilt2";
     md.units = "none";
     md.kind = "double";
@@ -586,7 +586,7 @@ namespace fv3jedi {
     md.levels = "1";
     md.space = "magnitude";
     addFieldMetadata(fieldsmetadata, nlev, md);
-    
+
     md.longName = "soilMoistureVolumetric";
     md.units = "none";
     md.kind = "double";

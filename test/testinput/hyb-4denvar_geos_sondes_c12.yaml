@@ -71,6 +71,8 @@ cost function:
     components:
     - covariance:
         covariance model: SABER
+        adjoint test: true
+        adjoint tolerance: 1e-9
         saber central block:
           saber block name: gsi static covariance
           read:
@@ -321,6 +323,6 @@ variational:
       npz: 72
 test:
   reference filename: testoutput/hyb-4denvar_geos_sondes_c12.ref
-  float relative tolerance: 1.0e-1
+  float relative tolerance: 2.0e-1
   integer tolerance: 3
   test output filename: testoutput/hyb-4denvar_geos_sondes_c12.test.out

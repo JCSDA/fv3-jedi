@@ -31,8 +31,9 @@ met_guess::
   div      72      -1         zonal_wind           div
   vor      72      -1         meridional_wind      vor
   tv       72       2         virtual_temperature  tv
-  q        72       2         specific_humidity    sphu
-  oz       72       2         ozone                ozone
+  tsen     72       2         sensible_temperature tsen
+  q        72       2         specific_humidity    q
+  oz       72       2         ozone                o3ppmv
 # cw       72      -1         cloud_condensate     qctot
 # ql       72      12         Water                qltot
 # qi       72      12         Ice                  qitot
@@ -93,7 +94,7 @@ state_vector::
  u        72      0     met_guess    u
  v        72      0     met_guess    v
  tv       72      0     met_guess    tv
-#tsen     72      0     met_guess    tv,q
+ tsen     72      0     met_guess    tv,q
  q        72      1     met_guess    q
  oz       72      1     met_guess    oz
 #cw       72      1     met_guess    cw
@@ -113,8 +114,8 @@ control_vector::
  sf       72      0       0.45        -1.0     state    u:v     -1.00   
  vp       72      0       0.55        -1.0     state    u:v     -1.00
  t        72      0       0.90        -1.0     state    tv      -1.00
- q        72      1       0.60        -1.0     state    q       -1.00
- oz       72      1       0.20        -1.0     state    oz      -1.00
+ q        72      1       0.60        -1.0     state    sphu    -1.00
+ oz       72      1       0.20        -1.0     state    ozone   -1.00
 #co       72      1       0.20        -1.0     state    co      -1.00
 #cw       72      1       1.00        -1.0     state    cw      -1.00
 #ql       72      1       0.00        -1.0     state    ql      -1.00
