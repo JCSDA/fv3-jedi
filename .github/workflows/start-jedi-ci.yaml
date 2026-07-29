@@ -41,7 +41,7 @@ jobs:
         uses: JCSDA-internal/jedi-ci@develop
         with:
           container_version: 'latest'
-          unittest_tag: 'fv3-jedi'
+          unittest_tag: fv3jedi
           test_script: run_tests.sh
           bundle_branch: develop
           jedi_ci_token: ${{ steps.generate-token.outputs.token }}
