@@ -219,11 +219,6 @@ do jj = geom%jsc, geom%jec
         ! (basically, set all these fields as if slmsk==2 from the beginning)
         ice_coverage(ji,jj,1) = 1.0_kind_real
         land_coverage(ji,jj,1) = 0.0_kind_real
-        soil_temperature = 0.0_kind_real
-        soil_moisture_content = 1.0_kind_real
-        vegetation_fraction = 0.0_kind_real
-        lai = 0.0_kind_real
-        continue  ! work below assumes slmsk==1, so skip to next i,j
       end if
 
       ! This silently fixes out-of-range vtype/stype that would lead to indexing problems below.
