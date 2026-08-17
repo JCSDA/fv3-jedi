@@ -8,10 +8,9 @@
 # Macro to link list of files from source to destination
 macro( LINK_FILES filelist src_dir dst_dir )
   foreach(FILENAME ${filelist})
-    execute_process( COMMAND ${CMAKE_COMMAND} -E create_symlink
-      ${src_dir}/${FILENAME}
-      ${dst_dir}/${FILENAME}
-    )
+    file( CREATE_LINK
+          ${src_dir}/${FILENAME}
+          ${dst_dir}/${FILENAME} SYMBOLIC )
   endforeach(FILENAME)
 endmacro()
 
@@ -24,9 +23,9 @@ endmacro()
 # macro to create a symlink from src to dst
 function(CREATE_SYMLINK src dst)
     foreach (FILENAME ${ARGN})
-        execute_process( COMMAND ${CMAKE_COMMAND} -E create_symlink
-            ${src}/${FILENAME}
-            ${dst}/${FILENAME} )
+        file( CREATE_LINK
+              ${src}/${FILENAME}
+              ${dst}/${FILENAME} SYMBOLIC )
         endforeach(FILENAME)
 endfunction(CREATE_SYMLINK)
 
@@ -34,9 +33,9 @@ endfunction(CREATE_SYMLINK)
 function(CREATE_SYMLINK_FILENAME src dst)
     foreach (FILENAME ${ARGN})
         get_filename_component(filename ${FILENAME} NAME )
-        execute_process( COMMAND ${CMAKE_COMMAND} -E create_symlink
-            ${src}/${FILENAME}
-            ${dst}/${filename} )
+        file( CREATE_LINK
+              ${src}/${FILENAME}
+              ${dst}/${filename} SYMBOLIC )
         endforeach(FILENAME)
 endfunction(CREATE_SYMLINK_FILENAME)
 
