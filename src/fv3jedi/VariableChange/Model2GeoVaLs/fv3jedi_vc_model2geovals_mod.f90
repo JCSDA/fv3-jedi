@@ -171,11 +171,12 @@ real(kind=kind_real), pointer     :: frlake  (:,:,:)       !Fraction lake
 real(kind=kind_real), pointer     :: frseaice(:,:,:)       !Fraction seaice
 
 !f10m
-logical :: have_f10m
-real(kind=kind_real), allocatable :: f10m    (:,:,:)       !Surface wind reduction factor
-real(kind=kind_real), pointer     :: u_srf   (:,:,:)
-real(kind=kind_real), pointer     :: v_srf   (:,:,:)
-real(kind=kind_real) :: wspd
+logical :: have_f10m, have_10m_wind_velocities, have_10m_winds
+real(kind=kind_real), allocatable :: f10m     (:,:,:)       !Surface wind reduction factor
+real(kind=kind_real), allocatable :: u_lowest (:,:,:)
+real(kind=kind_real), allocatable :: v_lowest (:,:,:)
+real(kind=kind_real), allocatable :: u_10m    (:,:,:)
+real(kind=kind_real), allocatable :: v_10m    (:,:,:)
 
 !observable_domain_mask
 logical :: have_domain_mask
@@ -273,8 +274,8 @@ real(kind=kind_real), allocatable :: volume_fraction_of_condensed_water_in_soil(
 real(kind=kind_real), allocatable :: vegetation_area_fraction                  (:,:,:)
 real(kind=kind_real), allocatable :: soil_temperature                          (:,:,:)
 real(kind=kind_real), allocatable :: surface_snow_thickness                    (:,:,:)
-real(kind=kind_real), allocatable :: wind_speed_at_surface                     (:,:,:)
-real(kind=kind_real), allocatable :: wind_from_direction_at_surface            (:,:,:)
+real(kind=kind_real), allocatable :: wind_speed_at_10m                         (:,:,:)
+real(kind=kind_real), allocatable :: wind_from_direction_at_10m                (:,:,:)
 real(kind=kind_real), allocatable :: sea_surface_salinity                      (:,:,:)
 real(kind=kind_real), allocatable :: skin_temperature_at_surface               (:,:,:)
 
@@ -532,32 +533,64 @@ else
   sfc_rough = 0.01_kind_real
 endif
 
-
 ! f10m
 ! ----
 have_f10m = .false.
 if (xm%has_field('ratio_of_wind_at_surface_adjacent_layer_to_wind_at_10m')) then
   call xm%get_field('ratio_of_wind_at_surface_adjacent_layer_to_wind_at_10m', f10m)
   have_f10m = .true.
-elseif ( xm%has_field( 'eastward_wind_at_surface') .and. &
-         xm%has_field( 'northward_wind_at_surface') .and. have_winds ) then
-  call xm%get_field('eastward_wind_at_surface' , u_srf)
-  call xm%get_field('northward_wind_at_surface' , v_srf)
+endif
 
-  allocate(f10m(self%isc:self%iec,self%jsc:self%jec,1))
-  f10m = sqrt(u_srf**2 + v_srf**2)
+! 10m winds
+! ---------
+have_10m_wind_velocities = .false.
+if ( have_f10m ) then
+   if ( xm%has_field('eastward_wind_at_surface') .and. &
+        xm%has_field('northward_wind_at_surface') ) then
+      call xm%get_field('eastward_wind_at_surface', u_lowest)
+      call xm%get_field('northward_wind_at_surface', v_lowest)
 
-  do j = self%jsc,self%jec
-    do i = self%isc,self%iec
-      wspd = sqrt(ua(i,j,self%npz)**2 +  va(i,j,self%npz)**2)
-      if (f10m(i,j,1) > 0.0_kind_real) then
-        f10m(i,j,1) = f10m(i,j,1)/wspd
-      else
-        f10m(i,j,1) = 1.0_kind_real
-      endif
-    enddo
-  enddo
-  have_f10m = .true.
+      allocate(u_10m(self%isc:self%iec,self%jsc:self%jec,1))
+      allocate(v_10m(self%isc:self%iec,self%jsc:self%jec,1))
+      u_10m = f10m*u_lowest
+      v_10m = f10m*v_lowest
+
+      have_10m_wind_velocities = .true.
+   elseif ( have_winds ) then
+      allocate(u_10m(self%isc:self%iec,self%jsc:self%jec,1))
+      allocate(v_10m(self%isc:self%iec,self%jsc:self%jec,1))
+      u_10m(:,:,1) = f10m(:,:,1)*ua(:,:,self%npz)
+      v_10m(:,:,1) = f10m(:,:,1)*va(:,:,self%npz)
+
+      have_10m_wind_velocities = .true.
+   endif
+elseif ( xm%has_field('eastward_wind_at_surface') .and. &
+         xm%has_field('northward_wind_at_surface') ) then
+   ! WARNING! These names are incorrect, based on the ESM naming standard that JEDI
+   !          has adopted. They are also inconsistent with other correct uses of
+   !          *_at_surface in this file. However, they are the names that GEOS uses,
+   !          and renaming them will be messy. They should be changed to *_at_10m at
+   !          a later time as part of a broader renaming effort.
+   call xm%get_field('eastward_wind_at_surface', u_10m)
+   call xm%get_field('northward_wind_at_surface', v_10m)
+
+   have_10m_wind_velocities = .true.
+endif
+
+have_10m_winds = .false.
+if ( have_10m_wind_velocities ) then
+   allocate(wind_speed_at_10m(self%isc:self%iec,self%jsc:self%jec,1))
+   wind_speed_at_10m = sqrt(u_10m**2 + v_10m**2)
+   ! atan2(y,x) gives rads north from east
+   ! atan2(x,y) gives rads east from north, per CRTM definition
+   ! convert to degrees and fix phasing to lie in [0,360]
+   allocate(wind_from_direction_at_10m(self%isc:self%iec,self%jsc:self%jec,self%npz))
+   wind_from_direction_at_10m = constant('rad2deg') * atan2(u_10m, v_10m)
+   where (u_10m < 0.0_kind_real)
+      wind_from_direction_at_10m = wind_from_direction_at_10m + 360.0_kind_real
+   end where
+
+   have_10m_winds = .true.
 endif
 
 ! observable_domain_mask
@@ -835,7 +868,7 @@ endif
 
 have_crtm_surface = .false.
 have_sss = .false.
-if ( have_slmsk .and. have_f10m .and. xm%has_field( 'sheleg') .and. &
+if ( have_slmsk .and. have_10m_winds .and. xm%has_field( 'sheleg') .and. &
      xm%has_field( 'skin_temperature_at_surface')     .and. xm%has_field( 'vtype' ) .and. &
      xm%has_field( 'stype' ) .and. xm%has_field( 'vfrac' ) .and. &
      have_soilt .and. have_soilm .and. &
@@ -846,8 +879,6 @@ if ( have_slmsk .and. have_f10m .and. xm%has_field( 'sheleg') .and. &
   call xm%get_field('vtype' , vtype )
   call xm%get_field('stype' , stype )
   call xm%get_field('vfrac' , vfrac )
-  call xm%get_field('eastward_wind_at_surface' , u_srf )
-  call xm%get_field('northward_wind_at_surface' , v_srf )
 
   allocate(land_type_index_npoess                    (self%isc:self%iec,self%jsc:self%jec,1))
   allocate(land_type_index_igbp                      (self%isc:self%iec,self%jsc:self%jec,1))
@@ -866,8 +897,6 @@ if ( have_slmsk .and. have_f10m .and. xm%has_field( 'sheleg') .and. &
   allocate(vegetation_area_fraction                  (self%isc:self%iec,self%jsc:self%jec,1))
   allocate(soil_temperature                          (self%isc:self%iec,self%jsc:self%jec,1))
   allocate(surface_snow_thickness                    (self%isc:self%iec,self%jsc:self%jec,1))
-  allocate(wind_speed_at_surface                     (self%isc:self%iec,self%jsc:self%jec,1))
-  allocate(wind_from_direction_at_surface            (self%isc:self%iec,self%jsc:self%jec,1))
   allocate(sea_surface_salinity                      (self%isc:self%iec,self%jsc:self%jec,1))
 
   allocate(sss(self%isc:self%iec,self%jsc:self%jec,1))
@@ -896,7 +925,7 @@ if ( have_slmsk .and. have_f10m .and. xm%has_field( 'sheleg') .and. &
   ! would exactly follow the code currently in place for the NPOESS and IGBP classifications.
   call crtm_surface( geom, fractional_day_of_year, &
                      slmsk, sheleg, skin_temperature_at_surface, vtype, stype, vfrac, soilt, &
-                     soilm, u_srf, v_srf, f10m, sss, land_type_index_npoess, land_type_index_igbp, &
+                     soilm, sss, land_type_index_npoess, land_type_index_igbp, &
                      vegetation_type_index, soil_type, water_area_fraction, land_area_fraction, &
                      ice_area_fraction, surface_snow_area_fraction, leaf_area_index, &
                      skin_temperature_at_surface_where_sea, &
@@ -904,8 +933,7 @@ if ( have_slmsk .and. have_f10m .and. xm%has_field( 'sheleg') .and. &
                      skin_temperature_at_surface_where_ice, &
                      skin_temperature_at_surface_where_snow, &
                      volume_fraction_of_condensed_water_in_soil, vegetation_area_fraction, &
-                     soil_temperature, surface_snow_thickness, &
-                     wind_speed_at_surface, wind_from_direction_at_surface, sea_surface_salinity)
+                     soil_temperature, surface_snow_thickness, sea_surface_salinity)
 
   have_crtm_surface = .true.
 
@@ -1185,13 +1213,13 @@ do f = 1, size(fields_to_do)
 
   case ('wind_speed_at_surface')
 
-    if (.not. have_crtm_surface) call field_fail(fields_to_do(f))
-    field_ptr = wind_speed_at_surface
+    if (.not. have_10m_winds) call field_fail(fields_to_do(f))
+    field_ptr = wind_speed_at_10m
 
   case ('wind_from_direction_at_surface')
 
-    if (.not. have_crtm_surface) call field_fail(fields_to_do(f))
-    field_ptr = wind_from_direction_at_surface
+    if (.not. have_10m_winds) call field_fail(fields_to_do(f))
+    field_ptr = wind_from_direction_at_10m
 
   case ('ratio_of_wind_at_surface_adjacent_layer_to_wind_at_10m')
 
@@ -1295,8 +1323,6 @@ if (associated(frocean)) nullify(frocean)
 if (associated(frlake)) nullify(frlake)
 if (associated(frseaice)) nullify(frseaice)
 if (associated(tskin)) nullify(tskin)
-if (associated(u_srf)) nullify(u_srf)
-if (associated(v_srf)) nullify(v_srf)
 if (associated(qils)) nullify(qils)
 if (associated(qlls)) nullify(qlls)
 if (associated(qrls)) nullify(qrls)
@@ -1306,6 +1332,10 @@ if (associated(qlcn)) nullify(qlcn)
 if (associated(qrcn)) nullify(qrcn)
 if (associated(qscn)) nullify(qscn)
 
+if (allocated(u_lowest)) deallocate(u_lowest)
+if (allocated(v_lowest)) deallocate(v_lowest)
+if (allocated(u_10m)) deallocate(u_10m)
+if (allocated(v_10m)) deallocate(v_10m)
 if (allocated(ud)) deallocate(ud)
 if (allocated(vd)) deallocate(vd)
 if (allocated(fields_to_do)) deallocate(fields_to_do)
@@ -1377,8 +1407,8 @@ if (allocated(volume_fraction_of_condensed_water_in_soil)) &
 if (allocated(vegetation_area_fraction)) deallocate(vegetation_area_fraction)
 if (allocated(soil_temperature)) deallocate(soil_temperature)
 if (allocated(surface_snow_thickness)) deallocate(surface_snow_thickness)
-if (allocated(wind_speed_at_surface)) deallocate(wind_speed_at_surface)
-if (allocated(wind_from_direction_at_surface)) deallocate(wind_from_direction_at_surface)
+if (allocated(wind_speed_at_10m)) deallocate(wind_speed_at_10m)
+if (allocated(wind_from_direction_at_10m)) deallocate(wind_from_direction_at_10m)
 if (allocated(sea_surface_salinity)) deallocate(sea_surface_salinity)
 if (allocated(skin_temperature_at_surface)) deallocate(skin_temperature_at_surface)
 if (allocated(snwdph)) deallocate(snwdph)

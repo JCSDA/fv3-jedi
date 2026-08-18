@@ -7,7 +7,6 @@ module surface_vt_mod
 
 use fv3jedi_geom_mod, only: fv3jedi_geom
 use fv3jedi_kinds_mod, only: kind_real
-use fv3jedi_constants_mod, only: constant
 
 implicit none
 private
@@ -22,13 +21,12 @@ contains
 
 subroutine crtm_surface( geom, day_of_year, &
                          field_slmsk, field_sheleg, field_tsea, field_vtype, field_stype, &
-                         field_vfrac, field_stc, field_smc, field_u_srf, field_v_srf, field_f10m, &
+                         field_vfrac, field_stc, field_smc, &
                          field_sss, land_type_npoess, land_type_igbp, &
                          vegetation_type, soil_type, water_coverage, land_coverage, &
                          ice_coverage, snow_coverage, lai, water_temperature, land_temperature, &
                          ice_temperature, snow_temperature, soil_moisture_content, &
-                         vegetation_fraction, soil_temperature, snow_depth, wind_speed, &
-                         wind_direction, sea_surface_salinity)
+                         vegetation_fraction, soil_temperature, snow_depth, sea_surface_salinity)
 
 implicit none
 
@@ -43,9 +41,6 @@ real(kind=kind_real), intent(in)  :: field_stype          (geom%isc:geom%iec,geo
 real(kind=kind_real), intent(in)  :: field_vfrac          (geom%isc:geom%iec,geom%jsc:geom%jec,1)
 real(kind=kind_real), intent(in)  :: field_stc            (geom%isc:geom%iec,geom%jsc:geom%jec,1)
 real(kind=kind_real), intent(in)  :: field_smc            (geom%isc:geom%iec,geom%jsc:geom%jec,1)
-real(kind=kind_real), intent(in)  :: field_u_srf          (geom%isc:geom%iec,geom%jsc:geom%jec,1)
-real(kind=kind_real), intent(in)  :: field_v_srf          (geom%isc:geom%iec,geom%jsc:geom%jec,1)
-real(kind=kind_real), intent(in)  :: field_f10m           (geom%isc:geom%iec,geom%jsc:geom%jec,1)
 real(kind=kind_real), intent(in)  :: field_sss            (geom%isc:geom%iec,geom%jsc:geom%jec,1)
 real(kind=kind_real), intent(inout) :: vegetation_type      (geom%isc:geom%iec,geom%jsc:geom%jec,1)
 real(kind=kind_real), intent(inout) :: land_type_npoess     (geom%isc:geom%iec,geom%jsc:geom%jec,1)
@@ -64,8 +59,6 @@ real(kind=kind_real), intent(inout) :: soil_moisture_content(geom%isc:geom%iec,g
 real(kind=kind_real), intent(inout) :: vegetation_fraction  (geom%isc:geom%iec,geom%jsc:geom%jec,1)
 real(kind=kind_real), intent(inout) :: soil_temperature     (geom%isc:geom%iec,geom%jsc:geom%jec,1)
 real(kind=kind_real), intent(inout) :: snow_depth           (geom%isc:geom%iec,geom%jsc:geom%jec,1)
-real(kind=kind_real), intent(inout) :: wind_speed           (geom%isc:geom%iec,geom%jsc:geom%jec,1)
-real(kind=kind_real), intent(inout) :: wind_direction       (geom%isc:geom%iec,geom%jsc:geom%jec,1)
 real(kind=kind_real), intent(inout) :: sea_surface_salinity (geom%isc:geom%iec,geom%jsc:geom%jec,1)
 
 !Locals
@@ -122,10 +115,6 @@ real(kind=kind_real) :: local_swe(geom%isc:geom%iec,geom%jsc:geom%jec,1)
 integer :: local_slmsk(geom%isc:geom%iec,geom%jsc:geom%jec,1)
 integer :: ji, jj
 integer :: vtype, stype, lai_veg_type
-real(kind=kind_real) :: rad2deg
-
-! Constants
-rad2deg = constant('rad2deg')
 
 ! Potential for missing values in snow water equivalent (if missing set to 0.0)
 local_swe = field_sheleg  ! SWE is named "sheleg" in backgrounds
@@ -193,15 +182,6 @@ water_temperature = max(field_tsea, 270.0_kind_real)
 land_temperature = field_tsea
 ice_temperature = min(field_tsea, 280.0_kind_real)
 snow_temperature = min(field_tsea, 280.0_kind_real)
-
-wind_speed = field_f10m * sqrt(field_u_srf**2 + field_v_srf**2)
-! atan2(y,x) gives rads north from east
-! atan2(x,y) gives rads east from north, per CRTM definition
-! convert to degrees and fix phasing to lie in [0,360]
-wind_direction = rad2deg * atan2(field_u_srf, field_v_srf)
-where (field_u_srf < 0.0_kind_real)
-  wind_direction = wind_direction + 360.0_kind_real
-end where
 
 sea_surface_salinity = field_sss
 
