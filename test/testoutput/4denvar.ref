@@ -1,8 +1,8 @@
 CostJo   : Nonlinear Jo(Aircraft) = 5.0508964449671830e+03, nobs = 2814, Jo/n = 1.7949170024759002e+00, err = 2.2009035741733514e+00
-CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 2.2015471147328403e+03, nobs = 1124, Jo/n = 1.9586718102605341e+00, err = 8.4267816534091757e+00
+CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 2.2011687365719272e+03, nobs = 1124, Jo/n = 1.9583351748860562e+00, err = 8.4267816534091757e+00
 CostJb   : Nonlinear Jb = 0.0000000000000000e+00
-CostFunction: Nonlinear J = 7.2524435597000229e+03
-DRPCGMinimizer: reduction in residual norm = 2.2683062327889908e-01
+CostFunction: Nonlinear J = 7.2520651815390456e+03
+DRPCGMinimizer: reduction in residual norm = 2.2682452798871602e-01
 CostFunction::addIncrement: Analysis: 
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 21 | cube sphere face size: C12
@@ -54,16 +54,16 @@ water_vapor_mixing_ratio_wrt_moist_air       | Min:+1.9976904892789862e-09 Max:+
 ----------------------------------------------------------------------------------------------------
 Obs bias coefficients: 
 ---------------------------------------------------------------
-            constant:  Min= -1.1268265395542367,  Max= 1.1468649466537391,  Norm= 2.5241287821301994
-   lapseRate_order_2:  Min= -0.2113550866858122,  Max= 28.9377661390511065,  Norm= 29.0192359147459094
-           lapseRate:  Min= -5.8342185422406878,  Max= 0.4602338097720489,  Norm= 5.9220176409093064
-  emissivityJacobian:  Min= -1.5623042197886978,  Max= 9.0627101421498466,  Norm= 9.4571232591520396
-sensorScanAngle_order_4:  Min= -9.1061124358686776,  Max= 1.2541841453940770,  Norm= 14.3123338700404901
-sensorScanAngle_order_3:  Min= -1.2721361814984404,  Max= 2.2773783173219604,  Norm= 3.2545144348296393
-sensorScanAngle_order_2:  Min= -4.9095541880600262,  Max= 3.5083279663189955,  Norm= 7.4899382648762565
-     sensorScanAngle:  Min= -0.7566172337021716,  Max= 0.0667285427593316,  Norm= 1.2946583145822312
+            constant:  Min= -1.1268265398535664e+00,  Max= 1.1468752853696884e+00,  Norm= 2.5241383289082546e+00
+   lapseRate_order_2:  Min= -2.1133371810460475e-01,  Max= 2.8938272884002821e+01,  Norm= 2.9019751620334024e+01
+           lapseRate:  Min= -5.8343490989136297e+00,  Max= 4.6023384304369780e-01,  Norm= 5.9221561520845558e+00
+  emissivityJacobian:  Min= -1.5623071357275298e+00,  Max= 9.0627143926151135e+00,  Norm= 9.4571249622616040e+00
+sensorScanAngle_order_4:  Min= -9.1060680585348397e+00,  Max= 1.2542416785979644e+00,  Norm= 1.4312291022295225e+01
+sensorScanAngle_order_3:  Min= -1.2721277279889818e+00,  Max= 2.2773846692688315e+00,  Norm= 3.2545140133676207e+00
+sensorScanAngle_order_2:  Min= -4.9095253970114534e+00,  Max= 3.5083500656594384e+00,  Norm= 7.4899207402589729e+00
+     sensorScanAngle:  Min= -7.5661541972855184e-01,  Max= 6.6728459598127510e-02,  Norm= 1.2946552549536945e+00
 ---------------------------------------------------------------
-CostJo   : Nonlinear Jo(Aircraft) = 3864.8739913325280213, nobs = 2814, Jo/n = 1.3734449151856887, err = 2.2009035741733514
-CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 1943.0343949753460038, nobs = 1124, Jo/n = 1.7286782873446138, err = 8.4267816534091757
-CostJb   : Nonlinear Jb = 425.3465967520391473
-CostFunction: Nonlinear J = 6233.2549830599127745
+CostJo   : Nonlinear Jo(Aircraft) = 3.8648812998318444e+03, nobs = 2814, Jo/n = 1.3734475123780541e+00, err = 2.2009035741733514e+00
+CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 1.9426936321708290e+03, nobs = 1124, Jo/n = 1.7283751175897055e+00, err = 8.4267816534091757e+00
+CostJb   : Nonlinear Jb = 4.2532756119464796e+02
+CostFunction: Nonlinear J = 6.2329024931973217e+03

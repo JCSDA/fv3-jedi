@@ -172,6 +172,7 @@ real(kind=kind_real), pointer     :: frseaice(:,:,:)       !Fraction seaice
 
 !f10m
 logical :: have_f10m, have_10m_wind_velocities, have_10m_winds
+real(kind=kind_real) :: wspd
 real(kind=kind_real), allocatable :: f10m     (:,:,:)       !Surface wind reduction factor
 real(kind=kind_real), allocatable :: u_lowest (:,:,:)
 real(kind=kind_real), allocatable :: v_lowest (:,:,:)
@@ -533,8 +534,8 @@ else
   sfc_rough = 0.01_kind_real
 endif
 
-! f10m
-! ----
+! f10m (from state)
+! ----------------
 have_f10m = .false.
 if (xm%has_field('ratio_of_wind_at_surface_adjacent_layer_to_wind_at_10m')) then
   call xm%get_field('ratio_of_wind_at_surface_adjacent_layer_to_wind_at_10m', f10m)
@@ -544,26 +545,13 @@ endif
 ! 10m winds
 ! ---------
 have_10m_wind_velocities = .false.
-if ( have_f10m ) then
-   if ( xm%has_field('eastward_wind_at_surface') .and. &
-        xm%has_field('northward_wind_at_surface') ) then
-      call xm%get_field('eastward_wind_at_surface', u_lowest)
-      call xm%get_field('northward_wind_at_surface', v_lowest)
+if ( have_f10m .and. have_winds ) then
+   allocate(u_10m(self%isc:self%iec,self%jsc:self%jec,1))
+   allocate(v_10m(self%isc:self%iec,self%jsc:self%jec,1))
+   u_10m(:,:,1) = f10m(:,:,1)*ua(:,:,self%npz)
+   v_10m(:,:,1) = f10m(:,:,1)*va(:,:,self%npz)
 
-      allocate(u_10m(self%isc:self%iec,self%jsc:self%jec,1))
-      allocate(v_10m(self%isc:self%iec,self%jsc:self%jec,1))
-      u_10m = f10m*u_lowest
-      v_10m = f10m*v_lowest
-
-      have_10m_wind_velocities = .true.
-   elseif ( have_winds ) then
-      allocate(u_10m(self%isc:self%iec,self%jsc:self%jec,1))
-      allocate(v_10m(self%isc:self%iec,self%jsc:self%jec,1))
-      u_10m(:,:,1) = f10m(:,:,1)*ua(:,:,self%npz)
-      v_10m(:,:,1) = f10m(:,:,1)*va(:,:,self%npz)
-
-      have_10m_wind_velocities = .true.
-   endif
+   have_10m_wind_velocities = .true.
 elseif ( xm%has_field('eastward_wind_at_surface') .and. &
          xm%has_field('northward_wind_at_surface') ) then
    ! WARNING! These names are incorrect, based on the ESM naming standard that JEDI
@@ -577,6 +565,8 @@ elseif ( xm%has_field('eastward_wind_at_surface') .and. &
    have_10m_wind_velocities = .true.
 endif
 
+! 10m wind speeds
+! ---------------
 have_10m_winds = .false.
 if ( have_10m_wind_velocities ) then
    allocate(wind_speed_at_10m(self%isc:self%iec,self%jsc:self%jec,1))
@@ -584,13 +574,30 @@ if ( have_10m_wind_velocities ) then
    ! atan2(y,x) gives rads north from east
    ! atan2(x,y) gives rads east from north, per CRTM definition
    ! convert to degrees and fix phasing to lie in [0,360]
-   allocate(wind_from_direction_at_10m(self%isc:self%iec,self%jsc:self%jec,self%npz))
+    allocate(wind_from_direction_at_10m(self%isc:self%iec,self%jsc:self%jec,1))
    wind_from_direction_at_10m = constant('rad2deg') * atan2(u_10m, v_10m)
    where (u_10m < 0.0_kind_real)
       wind_from_direction_at_10m = wind_from_direction_at_10m + 360.0_kind_real
    end where
 
    have_10m_winds = .true.
+endif
+
+! Compute f10m in case it was not in state originally
+if ( .not. have_f10m .and. have_winds .and. have_10m_winds ) then
+    allocate(f10m(self%isc:self%iec,self%jsc:self%jec,1))
+   do j = self%jsc,self%jec
+      do i = self%isc,self%iec
+         wspd = sqrt(ua(i,j,self%npz)**2 +  va(i,j,self%npz)**2)
+         if ( wspd > 0.0_kind_real ) then
+            f10m(i,j,1) = wind_speed_at_10m(i,j,1)/wspd
+         else
+            f10m(i,j,1) = 1.0_kind_real
+         endif
+      enddo
+   enddo
+
+   have_f10m = .true.
 endif
 
 ! observable_domain_mask
@@ -871,8 +878,7 @@ have_sss = .false.
 if ( have_slmsk .and. have_10m_winds .and. xm%has_field( 'sheleg') .and. &
      xm%has_field( 'skin_temperature_at_surface')     .and. xm%has_field( 'vtype' ) .and. &
      xm%has_field( 'stype' ) .and. xm%has_field( 'vfrac' ) .and. &
-     have_soilt .and. have_soilm .and. &
-     xm%has_field( 'eastward_wind_at_surface' ) .and. xm%has_field( 'northward_wind_at_surface' ) ) then
+     have_soilt .and. have_soilm .and. have_10m_winds )  then
 
   call xm%get_field('sheleg', sheleg)
   call xm%get_field('skin_temperature_at_surface'    , tskin )

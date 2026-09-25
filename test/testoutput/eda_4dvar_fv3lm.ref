@@ -1,10 +1,10 @@
 CostJo   : Nonlinear Jo(Aircraft) = 5.8750459791614294e+03, nobs = 2764, Jo/n = 2.1255593267588386e+00, err = 2.1981853448203252e+00
 CostJo   : Nonlinear Jo(Radiosonde) = 3.1675706030002566e+03, nobs = 1328, Jo/n = 2.3852188275604340e+00, err = 2.0638380700609944e+00
 CostJo   : Nonlinear Jo(GnssroBndNBAM) = 4.6715923055229200e+02, nobs = 122, Jo/n = 3.8291740209204264e+00, err = 2.9390144955067967e-04
-CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 6.6523955775461707e+02, nobs = 813, Jo/n = 8.1825283856656461e-01, err = 9.8885478716078943e+00
+CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 6.6358262249690733e+02, nobs = 808, Jo/n = 8.2126562190211305e-01, err = 9.9166531845104675e+00
 CostJb   : Nonlinear Jb = 0.0000000000000000e+00
-CostFunction: Nonlinear J = 1.0175015370467865e+04
-DRPCGMinimizer: reduction in residual norm = 4.9072046709462980e-01
+CostFunction: Nonlinear J = 1.0173358435211398e+04
+DRPCGMinimizer: reduction in residual norm = 4.9088317482670402e-01
 CostFunction::addIncrement: Analysis:
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 21 | cube sphere face size: C12
@@ -28,15 +28,15 @@ stype                                        | Min:+0.0000000000000000e+00 Max:+
 totalSnowDepth                               | Min:+0.0000000000000000e+00 Max:+1.3341658273772905e+03 RMS:+1.7946530243648584e+02
 vfrac                                        | Min:+0.0000000000000000e+00 Max:+9.3219258634721558e-01 RMS:+1.9053595264038967e-01
 vtype                                        | Min:+0.0000000000000000e+00 Max:+1.9000000000000000e+01 RMS:+5.8103714740683028e+00
-water_vapor_mixing_ratio_wrt_moist_air       | Min:+0.0000000000000000e+00 Max:+1.8640643781055264e-02 RMS:+4.6971264515473024e-03
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+0.0000000000000000e+00 Max:+1.8640493583813807e-02 RMS:+4.6960196137993864e-03
 ----------------------------------------------------------------------------------------------------
-CostJo   : Nonlinear Jo(Aircraft) = 5867.880317204811, nobs = 2764, Jo/n = 2.122966829668889, err = 2.198185344820325
-CostJo   : Nonlinear Jo(Radiosonde) = 3165.211849242788, nobs = 1328, Jo/n = 2.38344265756234, err = 2.063838070060994
-CostJo   : Nonlinear Jo(GnssroBndNBAM) = 293.9082796625042, nobs = 122, Jo/n = 2.409084259528723, err = 0.0002939014495506797
-CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 651.022068468699, nobs = 813, Jo/n = 0.8007651518680184, err = 9.888547871607894
-CostJb   : Nonlinear Jb = 4.972738226814642e-05
-CostFunction: Nonlinear J = 9978.022564306186
-DRPCGMinimizer: reduction in residual norm = 0.6144718978110851
+CostJo   : Nonlinear Jo(Aircraft) = 5867.74243286793, nobs = 2764, Jo/n = 2.12291694387407, err = 2.198185344820325
+CostJo   : Nonlinear Jo(Radiosonde) = 3165.377358910589, nobs = 1328, Jo/n = 2.383567288336287, err = 2.063838070060994
+CostJo   : Nonlinear Jo(GnssroBndNBAM) = 293.7900943384739, nobs = 122, Jo/n = 2.40811552736454, err = 0.0002939014495506797
+CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 649.242413698807, nobs = 808, Jo/n = 0.8035178387361472, err = 9.916653184510468
+CostJb   : Nonlinear Jb = 4.98502701190608e-05
+CostFunction: Nonlinear J = 9976.152349666068
+DRPCGMinimizer: reduction in residual norm = 0.6145650047594221
 CostFunction::addIncrement: Analysis:
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 21 | cube sphere face size: C12
@@ -60,11 +60,11 @@ stype                                        | Min:+0.0000000000000000e+00 Max:+
 totalSnowDepth                               | Min:+0.0000000000000000e+00 Max:+1.3341658273772905e+03 RMS:+1.7946530243648584e+02
 vfrac                                        | Min:+0.0000000000000000e+00 Max:+9.3219258634721558e-01 RMS:+1.9053595264038967e-01
 vtype                                        | Min:+0.0000000000000000e+00 Max:+1.9000000000000000e+01 RMS:+5.8103714740683028e+00
-water_vapor_mixing_ratio_wrt_moist_air       | Min:+0.0000000000000000e+00 Max:+1.8640881595898169e-02 RMS:+4.6973510171146524e-03
+water_vapor_mixing_ratio_wrt_moist_air       | Min:+0.0000000000000000e+00 Max:+1.8640693115724194e-02 RMS:+4.6960095647941387e-03
 ----------------------------------------------------------------------------------------------------
-CostJo   : Nonlinear Jo(Aircraft) = 5865.842829854679, nobs = 2764, Jo/n = 2.122229677950318, err = 2.198185344820325
-CostJo   : Nonlinear Jo(Radiosonde) = 3164.694616484984, nobs = 1328, Jo/n = 2.383053175063994, err = 2.063838070060994
-CostJo   : Nonlinear Jo(GnssroBndNBAM) = 275.8335025118535, nobs = 122, Jo/n = 2.260930348457815, err = 0.0002939014495506797
-CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 648.1740121853761, nobs = 813, Jo/n = 0.7972620076080887, err = 9.888547871607894
-CostJb   : Nonlinear Jb = 5.996989257780116e-05
-CostFunction: Nonlinear J = 9954.545021006785
+CostJo   : Nonlinear Jo(Aircraft) = 5865.822781197563, nobs = 2764, Jo/n = 2.122222424456427, err = 2.198185344820325
+CostJo   : Nonlinear Jo(Radiosonde) = 3164.815439733591, nobs = 1328, Jo/n = 2.383144156425896, err = 2.063838070060994
+CostJo   : Nonlinear Jo(GnssroBndNBAM) = 275.7111526573068, nobs = 122, Jo/n = 2.259927480797597, err = 0.0002939014495506797
+CostJo   : Nonlinear Jo(AMSUA-NOAA19) = 646.3631930293715, nobs = 808, Jo/n = 0.799954446818529, err = 9.916653184510468
+CostJb   : Nonlinear Jb = 6.014798770791403e-05
+CostFunction: Nonlinear J = 9952.71262676582
