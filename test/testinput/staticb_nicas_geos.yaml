@@ -19,7 +19,7 @@ background:
   - air_temperature
   - air_pressure_at_surface
   - water_vapor_mixing_ratio_wrt_moist_air
-  datapath: Data/staticb/unbalanced/mem001
+  datapath: Data/staticb/balanced/mem001
   filename: geos.20201215.000000z.nc4
   field io names: &field_io_names
     air_horizontal_streamfunction: psi
@@ -137,6 +137,34 @@ background error:
           datapath: Data/staticb/
           filename: geos.nicas_norm_2.nc4
           field io names: *field_io_names
+  saber outer blocks:
+  - saber block name: BUMP_VerticalBalance
+    active variables:
+    - air_horizontal_streamfunction
+    - air_horizontal_velocity_potential
+    - air_temperature
+    - air_pressure_at_surface
+    read:
+      general:
+        universe length-scale: 2000.0e3
+      io:
+        data directory: Data/staticb
+        files prefix: vbal_geos
+        overriding sampling file: vbal_2020121421_geos_sampling
+      drivers:
+        read global sampling: true
+        read vertical balance: true
+      vertical balance:
+        vbal:
+        - balanced variable: air_horizontal_velocity_potential
+          unbalanced variable: air_horizontal_streamfunction
+        - balanced variable: air_temperature
+          unbalanced variable: air_horizontal_streamfunction
+        - balanced variable: air_pressure_at_surface
+          unbalanced variable: air_horizontal_streamfunction
+        pseudo inverse: true
+        variance threshold: 0.1
 test:
   reference filename: testoutput/staticb_nicas_geos.ref
   test output filename: testoutput/staticb_nicas_geos.test.out
+

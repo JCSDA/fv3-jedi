@@ -43,13 +43,6 @@ background error:
       pattern: '%mem%'
       nmembers: 10
       zero padding: 3
-  output ensemble:
-    first member only: true
-    filetype: cube sphere history
-    provider: geos
-    datapath: Data/staticb/unbalanced/mem%{member}%/
-    filename: geos._YYYY__MM__DD_._HH_0000z.nc4
-    field io names: *field_io_names
   saber central block:
     saber block name: BUMP_NICAS
     calibration:
