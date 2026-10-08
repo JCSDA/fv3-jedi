@@ -16,6 +16,19 @@ Scatwind nobs= 2 Min=-2.3719218772073987e+00, Max=9.0550380195645221e+00, RMS=6.
 
 SfcObs nobs= 18 Min=8.1113921875000000e+04, Max=1.0240063281250000e+05, RMS=9.6771539103936011e+04
 
+H(x) ensemble background mean:
+
+Scatwind nobs= 2 Min=-1.4905267769278376e+00, Max=1.0178479782811806e+01, RMS=7.2740332952856201e+00
+
+SfcObs: No observations.
+
+background y - H(x):
+
+Scatwind nobs= 2 Min=-8.7847959207694259e-01, Max=-6.0947312770473072e-01, RMS=7.5603699879366304e-01
+
+SfcObs: No observations.
+
+ombg RMS: 7.5603699879366304e-01
 H(x) for member 1:
 
 Scatwind nobs= 2 Min=-1.2383469481794531e+00, Max=1.0194447162350848e+01, RMS=7.2615513531899163e+00
@@ -34,17 +47,16 @@ Scatwind nobs= 2 Min=-2.4488957294896210e+00, Max=8.9512549091406992e+00, RMS=6.
 
 SfcObs nobs= 18 Min=8.1113921875000000e+04, Max=1.0240063281250000e+05, RMS=9.6771539103936011e+04
 
-H(x) ensemble analysis mean: 
+H(x) ensemble analysis mean:
 
 Scatwind nobs= 2 Min=-1.5702670228897477e+00, Max=1.0069155299856014e+01, RMS=7.2060261925624962e+00
 
 SfcObs: No observations.
 
-analysis y - H(x): 
+analysis y - H(x):
 
 Scatwind nobs= 2 Min=-7.6915510912115082e-01, Max=-5.2973288174282063e-01, RMS=6.6038492861615283e-01
 
 SfcObs: No observations.
 
-ombg RMS: 7.5603699879366304e-01
 oman RMS: 6.6038492861615283e-01

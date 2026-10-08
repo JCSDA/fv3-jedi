@@ -236,6 +236,7 @@ list( APPEND fv3jedi_testinput
   testinput/letkf_observer_soil_moisture.yaml
   testinput/letkf_snow.yaml
   testinput/letkf.yaml
+  testinput/letkf_onestep_redist.yaml
   testinput/letkf_perturbed.yaml
   testinput/lgetkf_linearobserver.yaml
   testinput/lgetkf_linearobserver_hofx_reduceobs.yaml
@@ -386,6 +387,7 @@ list( APPEND fv3jedi_testoutput
   testoutput/hyb-4denvar_llens_geos.ref
   testoutput/hyb-fgat_fv3lm.ref
   testoutput/letkf.ref
+  testoutput/letkf_onestep_redist.ref
   testoutput/letkf_perturbed.ref
   testoutput/letkf3d.ref
   testoutput/3dvar_snow.ref
@@ -1468,6 +1470,12 @@ ecbuild_add_test( TARGET   fv3jedi_addincrement_geos
 ecbuild_add_test( TARGET   fv3jedi_letkf
                   MPI      6
                   ARGS     testinput/letkf.yaml
+                  CONDITION crtm_FOUND
+                  COMMAND  fv3jedi_letkf.x )
+
+ecbuild_add_test( TARGET   fv3jedi_letkf_onestep_redist
+                  MPI      6
+                  ARGS     testinput/letkf_onestep_redist.yaml
                   CONDITION crtm_FOUND
                   COMMAND  fv3jedi_letkf.x )
 

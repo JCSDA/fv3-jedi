@@ -11,11 +11,13 @@ H(x) for member 1:
 
 SoilMoistureSMAP nobs= 2671 Min=0.0481620104171261, Max=1, RMS=0.2131257901150869
 
-H(x) ensemble background mean: 
+H(x) ensemble background mean:
 
 SoilMoistureSMAP nobs= 425 Min=0.0481620104171261, Max=0.519293047534091, RMS=0.120970814751164
 
 background y - H(x): 
 
 SoilMoistureSMAP nobs= 425 Min=-0.2767489208392988, Max=0.4199429897864667, RMS=0.09847914187994741
+
+ombg RMS: 0.09847914187994741
 

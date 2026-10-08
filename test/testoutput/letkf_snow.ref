@@ -20,7 +20,7 @@ H(x) for member 2:
 
 Simulate nobs= 8258 Min=-21.21320343559642, Max=1016.840447768686, RMS=59.20087176470695
 
-H(x) ensemble background mean: 
+H(x) ensemble background mean:
 
 Simulate nobs= 6709 Min=0, Max=637.5557668988698, RMS=48.03531999236949
 
@@ -28,6 +28,7 @@ background y - H(x):
 
 Simulate nobs= 6709 Min=-241.8137667558418, Max=249.389689000246, RMS=31.79145986931889
 
+ombg RMS: 31.79145986931889
 Background mean :
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 3 | cube sphere face size: C48
@@ -65,5 +66,4 @@ analysis y - H(x):
 
 Simulate nobs= 6704 Min=-249.8868089104901, Max=243.9987623374915, RMS=26.66316338948009
 
-ombg RMS: 31.79145986931889
 oman RMS: 26.66316338948009

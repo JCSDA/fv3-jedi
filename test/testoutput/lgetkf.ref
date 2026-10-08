@@ -123,6 +123,7 @@ SfcObs: No observations.
 
 Aircraft nobs= 2813 Min=-16.63126084981133, Max=15.9821621749843, RMS=3.908698274514693
 
+ombg RMS: 3.550877225834419
 Background mean :
 ----------------------------------------------------------------------------------------------------
 State print | number of fields = 21 | cube sphere face size: C12
@@ -235,5 +236,4 @@ SfcObs: No observations.
 
 Aircraft nobs= 2810 Min=-17.83238836892809, Max=14.70396931249837, RMS=3.695444033092019
 
-ombg RMS: 3.550877225834419
 oman RMS: 3.361249992533117
