@@ -1,0 +1,73 @@
+# Dual-resolution test of the non-FMS (use_fms_lib: false) regional restart I/O.
+#
+# Reads and writes alternate between two DIFFERENT regional grids in ONE MPI execution:
+#   state 1: read on the RRFS grid (201 x 105) -> write on the CMAQ grid (45 x 24)
+#   state 2: read on the RRFS grid again        -> write on the CMAQ grid again
+# The write after a read on another grid is the pattern of the production failure (buffers
+# sized for the grid of the previous read).  Each call must size everything from its own grid.
+#
+# The CMAQ horizontal grid is used with the RRFS vertical coordinate (65 levels) and a 6x2
+# layout (input_lam_cmaq_p12_z65.nml), so both geometries run on the same 12 ranks and the
+# state can be moved between them horizontally.
+#
+# Trusted reference: the same YAML with use_fms_lib: true in every input and output section.
+input geometry:
+  fms initialization:
+    namelist filename: Data/fv3files/fmsmpp.nml
+    field table filename: Data/fv3files/field_table_lam_rrfs
+  namelist filename: Data/fv3files/input_lam_rrfs.nml
+  akbk: Data/inputs/lam_rrfs/INPUT/akbk65.nc
+output geometry:
+  namelist filename: Data/fv3files/input_lam_cmaq_p12_z65.nml
+  akbk: Data/inputs/lam_rrfs/INPUT/akbk65.nc
+states:
+- input:
+    datetime: 2020-12-15T00:00:00Z
+    filetype: fms restart
+    use_fms_lib: false
+    datapath: Data/inputs/lam_rrfs/bkg
+    filename_core: 20201215.000000.rrfs_C403.fv_core.res.tile1.nc
+    filename_trcr: 20201215.000000.rrfs_C403.fv_tracer.res.tile1.nc
+    filename_sfcw: 20201215.000000.rrfs_C403.fv_srf_wnd.res.tile1.nc
+    filename_sfcd: 20201215.000000.rrfs_C403.sfc_data.nc
+    filename_cplr: 20201215.000000.rrfs_C403.coupler.res
+    state variables: &state_vars
+    - eastward_wind
+    - northward_wind
+    - air_temperature
+    - air_pressure_thickness
+    - water_vapor_mixing_ratio_wrt_moist_air
+    field io names: &field_io_names
+      eastward_wind: ua
+      northward_wind: va
+      air_temperature: T
+      air_pressure_thickness: DELP
+      water_vapor_mixing_ratio_wrt_moist_air: sphum
+  output:
+    filetype: fms restart
+    use_fms_lib: false
+    datapath: Data/analysis/
+    prefix: 20201215.000000.cmaqgrid_dualres1
+    field io names: *field_io_names
+- input:
+    datetime: 2020-12-15T00:00:00Z
+    filetype: fms restart
+    use_fms_lib: false
+    datapath: Data/inputs/lam_rrfs/bkg
+    filename_core: 20201215.000000.rrfs_C403.fv_core.res.tile1.nc
+    filename_trcr: 20201215.000000.rrfs_C403.fv_tracer.res.tile1.nc
+    filename_sfcw: 20201215.000000.rrfs_C403.fv_srf_wnd.res.tile1.nc
+    filename_sfcd: 20201215.000000.rrfs_C403.sfc_data.nc
+    filename_cplr: 20201215.000000.rrfs_C403.coupler.res
+    state variables: *state_vars
+    field io names: *field_io_names
+  output:
+    filetype: fms restart
+    use_fms_lib: false
+    datapath: Data/analysis/
+    prefix: 20201215.000000.cmaqgrid_dualres2
+    field io names: *field_io_names
+test:
+  reference filename: testoutput/convertstate_rrfs_nofms_dualres.ref
+  test output filename: testoutput/convertstate_rrfs_nofms_dualres.test.out
+  float relative tolerance: 1.0e-6

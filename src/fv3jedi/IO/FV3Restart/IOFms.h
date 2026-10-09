@@ -32,6 +32,11 @@ class IOFmsParameters : public IOParametersBase {
                                    "is restart",
                                    true, this};
 
+  // Are these regional restart files (single tile)
+  oops::Parameter<bool> use_fms_lib{"use_fms_lib",
+                                    "use_fms_lib",
+                                    true, this};
+
   // Data path for files being read
   oops::Parameter<std::string> datapath{"datapath", "path to location of files to be read", "./",
                                         this};
@@ -95,6 +100,30 @@ class IOFmsParameters : public IOParametersBase {
   oops::OptionalParameter<std::vector<std::string>> fields_to_write{"fields to write",
                                                                     "names of fields to write",
                                                                     this};
+  // Write values into pre-existing restart files instead of recreating metadata
+  // (currently used only in the regional restart write path)
+  oops::Parameter<bool> write_into_existing_files{"write into existing files",
+                                                  "true or false",
+                                                  false, this};
+
+  // Write analysis variables in specified bit depth
+  // (currently used only in the regional restart write path)
+  // "native, 32bit or 64bit"
+  oops::Parameter<std::string> default_output_resolution{"default output resolution",
+                                                         "native, 32bit or 64bit",
+                                                         "native", this};
+
+  // Tunable for Lustre file systems
+  oops::Parameter<int> lustre_stripe_size{"lustre stripe size",
+                                          "lustre stripe size in bytes",
+                                          1048576, this};
+
+  // Upper limit on the number of slabs scattered or gathered at once by the regional
+  // restart path (use_fms_lib: false).  Each slab in flight needs a staging slot on every
+  // rank.  0 = no limit (one slab per node).
+  oops::Parameter<int> max_io_batch_size{"max io batch size",
+                                         "maximum number of slabs in flight; 0 = one per node",
+                                         0, this};
 };
 
 // -------------------------------------------------------------------------------------------------

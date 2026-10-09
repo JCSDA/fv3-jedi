@@ -57,7 +57,8 @@ void IOFms::write(const State & x, const eckit::LocalConfiguration & fileionames
                   const eckit::LocalConfiguration & fileioscaling) const {
   util::Timer timer(classname(), "write state");
   oops::Log::trace() << classname() << " write state starting" << std::endl;
-  fv3jedi_io_fms_write_state_f90(objectKeyForFortran_, x.toFortran(), fileionames, fileioscaling);
+  fv3jedi_io_fms_write_state_f90(objectKeyForFortran_, geom_.toFortran(), x.toFortran(),
+                                 fileionames, fileioscaling);
   oops::Log::trace() << classname() << " write state done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
@@ -65,8 +66,8 @@ void IOFms::write(const Increment & dx, const eckit::LocalConfiguration & fileio
                   const eckit::LocalConfiguration & fileioscaling) const {
   util::Timer timer(classname(), "write increment");
   oops::Log::trace() << classname() << " write increment starting" << std::endl;
-  fv3jedi_io_fms_write_increment_f90(objectKeyForFortran_, dx.toFortran(), fileionames,
-                                     fileioscaling);
+  fv3jedi_io_fms_write_increment_f90(objectKeyForFortran_, geom_.toFortran(), dx.toFortran(),
+                                     fileionames, fileioscaling);
   oops::Log::trace() << classname() << " write increment done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------

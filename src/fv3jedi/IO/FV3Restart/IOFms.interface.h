@@ -18,10 +18,10 @@ namespace fv3jedi {
   void fv3jedi_io_fms_read_increment_f90(const F90iofms &, const F90geom &, F90inc &,
                                          const eckit::Configuration &,
                                          const eckit::Configuration &);
-  void fv3jedi_io_fms_write_state_f90(const F90iofms &, const F90state &,
+  void fv3jedi_io_fms_write_state_f90(const F90iofms &, const F90geom &, const F90state &,
                                       const eckit::Configuration &,
                                       const eckit::Configuration &);
-  void fv3jedi_io_fms_write_increment_f90(const F90iofms &, const F90inc &,
+  void fv3jedi_io_fms_write_increment_f90(const F90iofms &, const F90geom &, const F90inc &,
                                           const eckit::Configuration &,
                                           const eckit::Configuration &);
   }  // extern "C"

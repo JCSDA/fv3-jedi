@@ -34,6 +34,8 @@ list( APPEND fv3jedi_src_files
   Increment/Increment.interface.h
   Increment/fv3jedi_increment_interface_mod.F90
   Increment/fv3jedi_increment_mod.F90
+  IO/FV3Restart/module_fv3lam_stats.f90
+  IO/FV3Restart/m_TwoPhaseScatterGather.f90
   IO/FV3Restart/fv3jedi_io_fms2_mod.f90
   IO/FV3Restart/IOFms.cc
   IO/FV3Restart/IOFms.h

@@ -71,6 +71,7 @@ Data/fv3files/input_geos_c12_p12.nml
 Data/fv3files/input_geos_c12_z186.nml
 Data/fv3files/input_geos_c24.nml
 Data/fv3files/input_lam_cmaq.nml
+Data/fv3files/input_lam_cmaq_p12_z65.nml
 Data/fv3files/input_lam_rrfs.nml
 Data/fv3files/inputpert_4dvar.nml
 Data/fv3files/inputpert_fsoi.nml
@@ -112,6 +113,9 @@ list( APPEND fv3jedi_testinput
   testinput/3dvar_gfs_0obs.yaml
   testinput/3dvar_gfs_aero.yaml
   testinput/3dvar_lam_cmaq.yaml
+  testinput/3dvar_rrfs_nofms.yaml
+  testinput/convertstate_rrfs_nofms_lifecycle.yaml
+  testinput/convertstate_rrfs_nofms_dualres.yaml
   testinput/3dvar_snow.yaml
   testinput/4denvar_seq.yaml
   testinput/4denvar.yaml
@@ -306,6 +310,9 @@ list( APPEND fv3jedi_testoutput
   testoutput/3dvar_geos_tskin.ref
   testoutput/3dvar_gfs_sondes.ref
   testoutput/3dvar_lam_cmaq.ref
+  testoutput/3dvar_rrfs_nofms.ref
+  testoutput/convertstate_rrfs_nofms_lifecycle.ref
+  testoutput/convertstate_rrfs_nofms_dualres.ref
   testoutput/3dvar_gfs_0obs.ref
   testoutput/3dvar_gfs_aero.ref
   testoutput/4denvar.ref
@@ -1348,6 +1355,26 @@ ecbuild_add_test( TARGET   fv3jedi_hyb-fgat_gfs_aero
                   CONDITION crtm_FOUND
                   COMMAND  fv3jedi_var.x
                   TEST_DEPENDS fv3jedi_bumpparameters_nicas_gfs_aero )
+
+# Non-FMS I/O path
+# -----------
+# Read and write in turn within one execution (read after write, repeated reads and writes,
+# re-reading a file written by the non-FMS path in another precision).
+ecbuild_add_test( TARGET   fv3jedi_convertstate_rrfs_nofms_lifecycle
+                  MPI      12
+                  ARGS     testinput/convertstate_rrfs_nofms_lifecycle.yaml
+                  COMMAND  fv3jedi_convertstate.x )
+
+# Read on one regional grid and write on another, twice, within one execution
+ecbuild_add_test( TARGET   fv3jedi_convertstate_rrfs_nofms_dualres
+                  MPI      12
+                  ARGS     testinput/convertstate_rrfs_nofms_dualres.yaml
+                  COMMAND  fv3jedi_convertstate.x )
+
+ecbuild_add_test( TARGET   fv3jedi_3dvar_rrfs_nofms
+                  MPI      12
+                  ARGS     testinput/3dvar_rrfs_nofms.yaml
+                  COMMAND  fv3jedi_var.x )
 
 # Hybrid FGAT
 # -----------
