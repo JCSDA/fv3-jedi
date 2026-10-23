@@ -113,61 +113,6 @@ void VariableChange::changeVar(State & x, const oops::Variables & vars) const {
 
 // -------------------------------------------------------------------------------------------------
 
-void VariableChange::changeVarInverse(State & x, const oops::Variables & vars) const {
-  // Trace
-  oops::Log::trace() << "VariableChange::changeVarInverse starting" << std::endl;
-
-  // Return if output vars already in input
-  // --------------------------------------
-  if ((vars <= x.variables())) {
-    x.updateFields(vars);
-    oops::Log::info() << "VariableChange::changeVarInverse done (identity)" << std::endl;
-    return;
-  }
-
-  // Call Vader to perform first set of variable transforms
-  // ------------------------------------------------------
-
-  // Record start variables
-  oops::Variables varsFilled = x.variables();
-
-  oops::Variables varsVader = vars;
-  varsVader -= varsFilled;  // Pass only the needed variables
-
-  // Call Vader. On entry, varsVader holds the vars requested from Vader; on exit,
-  // it holds the vars NOT fulfilled by Vader, i.e., the vars still to be requested elsewhere.
-  // vader_->changeVar also returns the variables fulfilled by Vader. These variables are
-  // allocated and populated and added to the FieldSet (xfs).
-  atlas::FieldSet xfs;
-  x.toFieldSet(xfs);
-  const oops::Variables varsVaderPopulated = vader_->changeVar(xfs, varsVader);
-  if (varsVaderPopulated.size() > 0) {
-    varsFilled += varsVaderPopulated;
-    x.updateFields(varsFilled);
-    x.fromFieldSet(xfs);
-  }
-
-  // Perform fv3jedi factory variable change
-  // ---------------------------------------
-
-  // Create output state
-  State xout(x.geometry(), vars, x.time());
-
-  // Call variable change
-  variableChange_->changeVarInverse(x, xout);
-
-  // Remove fields not in output
-  x.updateFields(vars);
-
-  // Copy data from temporary state
-  x = xout;
-
-  // Trace
-  oops::Log::trace() << "VariableChange::changeVarInverse done" << std::endl;
-}
-
-// -------------------------------------------------------------------------------------------------
-
 void VariableChange::print(std::ostream & os) const {
   os << *variableChange_;
 }

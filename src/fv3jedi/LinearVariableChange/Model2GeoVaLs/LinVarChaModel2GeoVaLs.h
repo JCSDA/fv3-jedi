@@ -30,9 +30,7 @@ class LinVarChaModel2GeoVaLs : public LinearVariableChangeBase {
                                   const eckit::LocalConfiguration &);
   ~LinVarChaModel2GeoVaLs();
   void multiply(const Increment &, Increment &) const override;
-  void multiplyInverse(const Increment &, Increment &) const override;
   void multiplyAD(const Increment &, Increment &) const override;
-  void multiplyInverseAD(const Increment &, Increment &) const override;
 
  private:
   const Geometry & geom_;

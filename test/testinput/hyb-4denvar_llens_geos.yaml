@@ -143,6 +143,10 @@ cost function:
       linear variable change name: Control2Analysis
       input variables: *bvars
       output variables: *avars
+    inverse linear variable change:
+      linear variable change name: Analysis2Control
+      input variables: *avars
+      output variables: *bvars
 
 #---------------------------------
   observations:

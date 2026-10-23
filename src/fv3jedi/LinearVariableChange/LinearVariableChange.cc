@@ -137,34 +137,6 @@ void LinearVariableChange::changeVarTL(Increment & dx, const oops::Variables & v
 
 // -------------------------------------------------------------------------------------------------
 
-void LinearVariableChange::changeVarInverseTL(Increment & dx,
-                                              const oops::Variables & vars) const {
-  oops::Log::trace() << "LinearVariableChange::changeVarInverseTL starting" << std::endl;
-
-  // If all variables already in incoming state just remove the no longer needed fields
-  if ((vars <= dx.variables())) {
-    dx.updateFields(vars);
-    oops::Log::trace() << "LinearVariableChange::changeVarInverseTL done (identity)" << std::endl;
-    return;
-  }
-
-  // Create output state
-  Increment dxout(dx.geometry(), vars, dx.time());
-
-  // Call variable change
-  linearVariableChange_->multiplyInverse(dx, dxout);
-
-  // Allocate any extra fields and remove fields no longer needed
-  dx.updateFields(vars);
-
-  // Copy data from temporary state
-  dx = dxout;
-
-  oops::Log::trace() << "LinearVariableChange::changeVarInverseTL done" << std::endl;
-}
-
-// -------------------------------------------------------------------------------------------------
-
 void LinearVariableChange::changeVarAD(Increment & dx, const oops::Variables & vars) const {
   oops::Log::trace() << "LinearVariableChange::changeVarAD starting" << std::endl;
 
@@ -218,33 +190,6 @@ void LinearVariableChange::changeVarAD(Increment & dx, const oops::Variables & v
   dx.fromFieldSet(dxout_fs);
 
   oops::Log::trace() << "LinearVariableChange::changeVarAD done" << std::endl;
-}
-
-// -------------------------------------------------------------------------------------------------
-
-void LinearVariableChange::changeVarInverseAD(Increment & dx, const oops::Variables & vars) const {
-  oops::Log::trace() << "LinearVariableChange::changeVarInverseAD starting" << std::endl;
-
-  // If all variables already in incoming state just remove the no longer needed fields
-  if (vars <= dx.variables()) {
-    dx.updateFields(vars);
-    oops::Log::trace() << "LinearVariableChange::changeVarInverseAD done (identity)" << std::endl;
-    return;
-  }
-
-  // Create output state
-  Increment dxout(dx.geometry(), vars, dx.time());
-
-  // Call variable change
-  linearVariableChange_->multiplyInverseAD(dx, dxout);
-
-  // Allocate any extra fields and remove fields no longer needed
-  dx.updateFields(vars);
-
-  // Copy data from temporary state
-  dx = dxout;
-
-  oops::Log::trace() << "LinearVariableChange::changeVarInverseAD done" << std::endl;
 }
 
 // -------------------------------------------------------------------------------------------------

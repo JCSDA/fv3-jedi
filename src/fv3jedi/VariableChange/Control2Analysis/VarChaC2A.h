@@ -26,7 +26,6 @@ class VarChaC2A: public VariableChangeBase {
   VarChaC2A(const Geometry &, const eckit::LocalConfiguration &);
   ~VarChaC2A();
   void changeVar(const State &, State &) const override;
-  void changeVarInverse(const State &, State &) const override;
 
  private:
   const Geometry & geom_;

@@ -88,6 +88,16 @@ cost function:
       - fraction_of_lake
       - fraction_of_ice
       output variables: *avars
+    inverse linear variable change:
+      linear variable change name: Analysis2Control
+      input variables: *avars
+      output variables:
+      - air_pressure_at_surface
+      - skin_temperature_at_surface
+      - fraction_of_land
+      - fraction_of_ocean
+      - fraction_of_lake
+      - fraction_of_ice
   observations:
     observers:
     - obs space:

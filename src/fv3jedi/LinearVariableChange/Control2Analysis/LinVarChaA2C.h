@@ -1,0 +1,43 @@
+/*
+ * (C) Copyright 2017-2026 UCAR.
+ *
+ * This software is licensed under the terms of the Apache Licence Version 2.0
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ */
+
+#pragma once
+
+#include <memory>
+#include <ostream>
+#include <string>
+
+#include "eckit/config/Configuration.h"
+
+#include "fv3jedi/LinearVariableChange/Base/LinearVariableChangeBase.h"
+#include "fv3jedi/LinearVariableChange/Control2Analysis/LinVarChaC2A.interface.h"
+
+namespace fv3jedi {
+  class Geometry;
+  class Increment;
+  class State;
+
+// -------------------------------------------------------------------------------------------------
+
+class LinVarChaA2C : public LinearVariableChangeBase {
+ public:
+  static const std::string classname() {return "fv3jedi::LinVarChaC2A";}
+  explicit LinVarChaA2C(const State &, const State &,
+                        const Geometry &, const eckit::LocalConfiguration &);
+  ~LinVarChaA2C();
+  void multiply(const Increment &, Increment &) const override;
+  void multiplyAD(const Increment &, Increment &) const override;
+
+ private:
+  const Geometry &geom_;
+  F90lvc_C2A keyFtnConfig_;
+  void print(std::ostream &) const override;
+};
+
+// -------------------------------------------------------------------------------------------------
+
+}  // namespace fv3jedi

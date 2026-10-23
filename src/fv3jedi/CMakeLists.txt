@@ -57,6 +57,8 @@ list( APPEND fv3jedi_src_files
   LinearVariableChange/Base/LinearVariableChangeBase.h
   LinearVariableChange/Control2Analysis/fv3jedi_linvarcha_c2a.interface.F90
   LinearVariableChange/Control2Analysis/fv3jedi_linvarcha_c2a_mod.f90
+  LinearVariableChange/Control2Analysis/LinVarChaA2C.cc
+  LinearVariableChange/Control2Analysis/LinVarChaA2C.h
   LinearVariableChange/Control2Analysis/LinVarChaC2A.cc
   LinearVariableChange/Control2Analysis/LinVarChaC2A.h
   LinearVariableChange/Control2Analysis/LinVarChaC2A.interface.h
@@ -106,6 +108,8 @@ list( APPEND fv3jedi_src_files
   VariableChange/VariableChange.h
   VariableChange/Base/VariableChangeBase.cc
   VariableChange/Base/VariableChangeBase.h
+  VariableChange/Analysis2Control/VarChaA2C.cc
+  VariableChange/Analysis2Control/VarChaA2C.h
   VariableChange/Control2Analysis/fv3jedi_varcha_c2a.interface.F90
   VariableChange/Control2Analysis/fv3jedi_varcha_c2a_mod.f90
   VariableChange/Control2Analysis/VarChaC2A.cc

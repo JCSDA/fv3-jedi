@@ -45,15 +45,6 @@ void VarChaC2A::changeVar(const State & xin, State & xout) const {
   oops::Log::trace() << classname() << " changeVar done" << std::endl;
 }
 // -------------------------------------------------------------------------------------------------
-void VarChaC2A::changeVarInverse(const State & xin, State & xout) const {
-  util::Timer timer(classname(), "changeVarInverse");
-  oops::Log::trace() << classname() << " changeVarInverse starting" << std::endl;
-  fv3jedi_varcha_c2a_changevarinverse_f90(keyFtnConfig_, geom_.toFortran(), xin.toFortran(),
-                                          xout.toFortran());
-  xout.validTime() = xin.validTime();
-  oops::Log::trace() << classname() << " changeVarInverse done" << std::endl;
-}
-// -------------------------------------------------------------------------------------------------
 void VarChaC2A::print(std::ostream & os) const {
   os << classname() << " variable change";
 }

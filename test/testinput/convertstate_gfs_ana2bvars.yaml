@@ -12,8 +12,7 @@ output geometry:
   npy: 13
   npz: 127
 variable change:
-  variable change name: Control2Analysis
-  do inverse: true
+  variable change name: Analysis2Control
   femps_iterations: 50
   femps_ngrids: 2
   femps_levelprocs: -1

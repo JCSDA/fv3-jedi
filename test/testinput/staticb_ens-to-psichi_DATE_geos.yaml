@@ -18,14 +18,13 @@ output geometry:
   npy: 13
   npz: 72
 variable change:
-  variable change name: Control2Analysis
+  variable change name: Analysis2Control
   output variables:
   - air_horizontal_streamfunction
   - air_horizontal_velocity_potential
   - air_temperature
   - air_pressure_at_surface
   - water_vapor_mixing_ratio_wrt_moist_air
-  do inverse: true
   femps_iterations: 60
   femps_ngrids: 2
   femps_path2fv3gridfiles: Data/inputs/femps/

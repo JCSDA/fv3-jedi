@@ -30,9 +30,9 @@ class LinVarChaC2A : public LinearVariableChangeBase {
                         const Geometry &, const eckit::LocalConfiguration &);
   ~LinVarChaC2A();
   void multiply(const Increment &, Increment &) const override;
-  void multiplyInverse(const Increment &, Increment &) const override;
+  void multiplyInverse(const Increment &, Increment &) const;
   void multiplyAD(const Increment &, Increment &) const override;
-  void multiplyInverseAD(const Increment &, Increment &) const override;
+  void multiplyInverseAD(const Increment &, Increment &) const;
 
  private:
   const Geometry &geom_;
