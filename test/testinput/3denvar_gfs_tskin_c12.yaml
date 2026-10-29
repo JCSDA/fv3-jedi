@@ -398,16 +398,6 @@ cost function:
       obs filters:
       - filter: Background Check
         threshold: 1000
-final:
-  diagnostics:
-    departures: oman
-output:
-  filetype: fms restart
-  datapath: Data/analysis
-  prefix: 3denvar-gfs-tskin-c12
-  first: PT0H
-  frequency: PT1H
-  field io names: *field_io_names
 variational:
   minimizer:
     algorithm: DRPCG
@@ -425,6 +415,7 @@ variational:
       npz: 127
     diagnostics:
       departures: ombg
+output: {}
 test:
   reference filename: testoutput/3denvar_gfs_tskin.ref
   float relative tolerance: 1.0e-1

@@ -110,11 +110,12 @@ variational:
       namelist filename: Data/fv3files/input_lam_cmaq.nml
       akbk: Data/inputs/fv3files/akbk64.nc4
 output:
-  filetype: fms restart
-  datapath: Data/analysis/
-  prefix: 20200903.180000.3dvar_lam_cmaq_no2
-  frequency: PT1H
-  field io names: *field_io_names
+  analysis:
+    filetype: fms restart
+    datapath: Data/analysis/
+    prefix: 20200903.180000.3dvar_lam_cmaq_no2
+    frequency: PT1H
+    field io names: *field_io_names
 test:
   reference filename: testoutput/3dvar_lam_cmaq.ref
   test output filename: testoutput/3dvar_lam_cmaq.test.out

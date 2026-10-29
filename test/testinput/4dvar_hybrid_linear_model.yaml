@@ -122,12 +122,6 @@ cost function:
     npx: 13
     npy: 13
     npz: 127
-output:
-  filetype: fms restart
-  datapath: Data/analysis/eda/gfs/mem001
-  prefix: eda-4dvar-gfs
-  frequency: PT3H
-  field io names: *field_io_names
 variational:
   minimizer:
     algorithm: DRPCG
@@ -164,6 +158,7 @@ variational:
           begin: 2020-12-14T21:00:00Z
           length: PT6H
       name: HTLM
+output: {}
 test:
   reference filename: testoutput/4dvar_hybrid_linear_model.ref
   test output filename: testoutput/4dvar_hybrid_linear_model.test.out

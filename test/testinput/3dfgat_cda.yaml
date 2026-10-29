@@ -228,12 +228,6 @@ cost function:
     npx: 13
     npy: 13
     npz: 127
-output:
-  filetype: fms restart
-  datapath: Data/analysis/eda/gfs/mem001
-  prefix: CDA-3dfgat-gfs
-  frequency: PT3H
-  field io names: *field_io_names
 variational:
   minimizer:
     algorithm: DRPCG
@@ -263,6 +257,7 @@ variational:
       npx: 13
       npy: 13
       npz: 127
+output: {}
 test:
   reference filename: testoutput/3dfgat_cda.ref
   test output filename: testoutput/3dfgat_cda.test.out

@@ -146,12 +146,6 @@ cost function:
     npx: 13
     npy: 13
     npz: 127
-output:
-  filetype: fms restart
-  datapath: Data/analysis/
-  prefix: hyb-fgat-gfs_aero
-  frequency: PT3H
-  field io names: *field_io_names
 variational:
   minimizer:
     algorithm: DRPCG
@@ -169,6 +163,7 @@ variational:
       increment variables: *aerovars
       variable change: Identity
       tstep: PT3H
+output: {}
 test:
   reference filename: testoutput/hyb-fgat_gfs_aero.ref
   test output filename: testoutput/hyb-fgat_gfs_aero.test.out

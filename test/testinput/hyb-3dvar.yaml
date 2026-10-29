@@ -377,12 +377,12 @@ variational:
           datapath: Data/analysis
           prefix: 20201215.000000.iter2.hyb-3dvar.c24
           field io names: *field_io_names
-final:
-  increment to structured grid:
+output:
+  increment:
     grid type: latlon
     local interpolator type: oops unstructured grid interpolator
     resolution in degrees: 15.0
-    variables to output:
+    variables:
     - air_temperature
     - eastward_wind
     - northward_wind
@@ -393,11 +393,11 @@ final:
     datapath: Data/analysis
     exp: hyb-3dvar
     type: inc
-  analysis to structured grid:
-    grid type: latlon
+  analysis:
+  - grid type: latlon
     local interpolator type: oops unstructured grid interpolator
     resolution in degrees: 15.0
-    variables to output:
+    variables:
     - air_temperature
     - eastward_wind
     - northward_wind
@@ -405,16 +405,13 @@ final:
     - 850
     - 500
     - 250
-    frequency: PT3H
     datapath: Data/analysis
     exp: hyb-3dvar
     type: an
-output:
-  filetype: fms restart
-  datapath: Data/analysis/
-  prefix: 20201215.000000.hyb-3dvar.c24
-  frequency: PT1H
-  field io names: *field_io_names
+  - filetype: fms restart
+    datapath: Data/analysis/
+    prefix: 20201215.000000.hyb-3dvar.c24
+    field io names: *field_io_names
 test:
   reference filename: testoutput/hyb-3dvar.ref
   test output filename: testoutput/hyb-3dvar.test.out

@@ -149,23 +149,23 @@ assimilation:
         npx: 13
         npy: 13
         npz: 127
-  final:
-    increment to structured grid:
+  output:
+    increment:
       grid type: latlon
       local interpolator type: oops unstructured grid interpolator
       resolution in degrees: 15.0
-      variables to output:
+      variables:
       - air_temperature
       pressure levels in hPa:
       - 250
       datapath: Data/analysis/eda/gfs/controlpert/mem%mem_pad%
       type: inc
       exp: eda-3dvar-control-pert
-    analysis to structured grid:
-      grid type: latlon
+    analysis:
+    - grid type: latlon
       local interpolator type: oops unstructured grid interpolator
       resolution in degrees: 15.0
-      variables to output:
+      variables:
       - air_temperature
       - eastward_wind
       - northward_wind
@@ -176,12 +176,10 @@ assimilation:
       datapath: Data/analysis/eda/gfs/controlpert/mem%mem_pad%
       type: an
       exp: eda-3dvar-control-pert
-  output:
-    filetype: fms restart
-    datapath: Data/analysis/eda/gfs/controlpert/mem%mem_pad%
-    prefix: eda-3dvar-gfs
-    frequency: PT1H
-    field io names: *field_io_names
+    - filetype: fms restart
+      datapath: Data/analysis/eda/gfs/controlpert/mem%mem_pad%
+      prefix: eda-3dvar-gfs
+      field io names: *field_io_names
 template:
   pattern with zero padding: "%mem_pad%"
   pattern without zero padding: "%mem%"

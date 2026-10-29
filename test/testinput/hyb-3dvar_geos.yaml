@@ -1441,14 +1441,6 @@ cost function:
       obs filters:
       - filter: Background Check
         threshold: 1000
-output:
-  filetype: cube sphere history
-  provider: geos
-  datapath: Data/analysis
-  filename: hyb-3dvar-geos.ana.%yyyy%mm%dd_%hh%MM%ssz.nc4
-  first: PT0H
-  frequency: PT1H
-  field io names: *field_io_names
 variational:
   minimizer:
     algorithm: DRPCG
@@ -1469,6 +1461,7 @@ variational:
       npx: 13
       npy: 13
       npz: 72
+output: {}
 test:
   reference filename: testoutput/hyb-3dvar_geos.ref
   integer tolerance: 3

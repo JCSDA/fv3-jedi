@@ -245,6 +245,7 @@ void State::read(const eckit::Configuration & config) {
 // -------------------------------------------------------------------------------------------------
 
 void State::write(const eckit::Configuration & config) const {
+  oops::Log::trace() << "State::write starting" << config << std::endl;
   StateWriteParameters params;
   params.deserialize(config);
   IOBase_ io(IOFactory::create(geom_, *params.ioParametersWrapper.ioParameters.value()));
@@ -261,6 +262,7 @@ void State::write(const eckit::Configuration & config) const {
       io->writeBase(*this);
     }
   }
+  oops::Log::trace() << "State::write done" << std::endl;
 }
 
 // -------------------------------------------------------------------------------------------------

@@ -62,7 +62,7 @@ states to structured grid:
     interpolation method:
       type: finite-element
     number of latitude gridpoints: 12
-    variables to output:
+    variables:
     - air_temperature
     - eastward_wind
     - northward_wind

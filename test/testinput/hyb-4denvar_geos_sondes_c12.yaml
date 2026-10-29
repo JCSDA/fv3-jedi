@@ -303,13 +303,6 @@ cost function:
           name: assign error
           error function:
             name: GsiFinalObsError/stationPressure
-output:
-  filetype: cube sphere history
-  provider: geos
-  datapath: Data/analysis
-  filename: hyb-4denvar-sondes-geos.ana.%yyyy%mm%dd_%hh%MM%ssz.nc4
-  frequency: PT3H
-  field io names: *field_io_names
 variational:
   minimizer:
     algorithm: DRPCG
@@ -321,6 +314,7 @@ variational:
       npx: 13
       npy: 13
       npz: 72
+output: {}
 test:
   reference filename: testoutput/hyb-4denvar_geos_sondes_c12.ref
   float relative tolerance: 2.0e-1

@@ -381,13 +381,13 @@ variational:
           prefix: 20201215.000000.iter2.hyb-3dvar-p12.c24
           field io names: *field_io_names
 output:
-  filetype: fms restart
-  datapath: Data/analysis/
-  prefix: 20201215.000000.hyb-3dvar.c24_p12
-  frequency: PT1H
-  field io names: *field_io_names
+  analysis:
+    filetype: fms restart
+    datapath: Data/analysis/
+    prefix: 20201215.000000.hyb-3dvar.c24_p12
+    field io names: *field_io_names
 test:
-  reference filename: testoutput/hyb-3dvar.ref
+  reference filename: testoutput/hyb-3dvar_p12.ref
   test output filename: testoutput/hyb-3dvar_p12.test.out
   float relative tolerance: 1.0e-3
   float absolute tolerance: 1.0e-6

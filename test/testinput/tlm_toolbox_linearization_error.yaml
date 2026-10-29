@@ -151,7 +151,7 @@ output:
       resolution in degrees: 6.0
       all model levels: true
       bottom model level: false
-      variables to output:
+      variables:
       - eastward_wind
       - northward_wind
       - air_temperature
@@ -167,7 +167,7 @@ output:
       resolution in degrees: 6.0
       all model levels: true
       bottom model level: false
-      variables to output:
+      variables:
       - eastward_wind
       - northward_wind
       - air_temperature

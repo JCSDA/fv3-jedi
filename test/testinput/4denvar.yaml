@@ -223,44 +223,19 @@ variational:
       npy: 13
       npz: 127
 output:
-  filetype: fms restart
-  datapath: Data/analysis/
-  type: an
-  exp: 4denvar-gfs
-  date: 2020-12-14T21:00:00Z
-  first: PT0S
-  frequency: PT6H
-  field io names: *field_io_names
-final:
-  increment:
-    geometry: *geom
-    output:
-      state component:
-        states:
-        - filetype: fms restart
-          datapath: Data/analysis
-          prefix: 20201214.210000.4denvar-gfs.inc'
-          field io names: *field_io_names
-        - filetype: fms restart
-          datapath: Data/analysis
-          prefix: 20201215.030000.4denvar-gfs.inc
-          field io names: *field_io_names
-  increment to structured grid:
-    grid type: latlon
-    local interpolator type: oops unstructured grid interpolator
-    resolution in degrees: 15.0
-    variables to output:
-    - air_temperature
-    pressure levels in hPa:
-    - 250
-    datapath: Data/analysis
-    type: inc
+  analysis:
+  - filetype: fms restart
+    datapath: Data/analysis/
+    type: an
     exp: 4denvar-gfs
-  analysis to structured grid:
-    grid type: latlon
+    date: 2020-12-14T21:00:00Z
+    first: PT0S
+    frequency: PT6H
+    field io names: *field_io_names
+  - grid type: latlon
     local interpolator type: oops unstructured grid interpolator
     resolution in degrees: 15.0
-    variables to output:
+    variables:
     - air_temperature
     - eastward_wind
     - northward_wind
@@ -270,6 +245,25 @@ final:
     - 250
     datapath: Data/analysis
     type: an
+    exp: 4denvar-gfs
+  increment:
+  - geometry: *geom
+    filetype: fms restart
+    datapath: Data/analysis
+    type: in
+    exp: 4denvar-gfs
+    first: PT0S
+    frequency: PT3H
+    field io names: *field_io_names
+  - grid type: latlon
+    local interpolator type: oops unstructured grid interpolator
+    resolution in degrees: 15.0
+    variables:
+    - air_temperature
+    pressure levels in hPa:
+    - 250
+    datapath: Data/analysis
+    type: inc
     exp: 4denvar-gfs
 test:
   reference filename: testoutput/4denvar.ref

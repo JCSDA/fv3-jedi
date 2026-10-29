@@ -180,14 +180,6 @@ cost function:
         threshold: 5.0
         action:
           name: reject
-output:
-  filetype: cube sphere history
-  provider: geos
-  datapath: Data/analysis
-  filename: 3dvar-sondes-geos.ana.%yyyy%mm%dd_%hh%MM%ssz.nc4
-  first: PT0H
-  frequency: PT1H
-  field io names: *field_io_names
 variational:
   minimizer:
     algorithm: DRPCG
@@ -206,6 +198,7 @@ variational:
       npx: 13
       npy: 13
       npz: 72
+output: {}
 test:
   reference filename: testoutput/3dvar_geos_ozone.ref
   float relative tolerance: 1.0e-2

@@ -316,6 +316,7 @@ list( APPEND fv3jedi_testoutput
   testoutput/3dvar_gfs_0obs.ref
   testoutput/3dvar_gfs_aero.ref
   testoutput/4denvar.ref
+  testoutput/4denvar_seq.ref
   testoutput/4dvar_cda.ref
   testoutput/4dvar_hybrid_linear_model.ref
   testoutput/4dvar_geos_aero.ref
@@ -358,6 +359,7 @@ list( APPEND fv3jedi_testoutput
   testoutput/eda_3dvar_control_pert.ref
   testoutput/eda_4dvar_fv3lm.ref
   testoutput/eda_block_3dvar.ref
+  testoutput/enshofx_fv3lm.ref
   testoutput/ensmeanvariance_geos.ref
   testoutput/ensmeanvariance_gfs.ref
   testoutput/enspert_geos_cf.ref

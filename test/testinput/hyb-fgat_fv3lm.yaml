@@ -373,20 +373,18 @@ variational:
           datapath: Data/analysis
           prefix: 20201215.000000.iter1.hyb-fgat.c12
           field io names: *field_io_names
-final:
+output:
   increment:
-    geometry: *geom
-    output:
-      state component:
-        filetype: fms restart
-        datapath: Data/analysis
-        prefix: 20201215.000000.inc.hyb-fgat.c12
-        field io names: *field_io_names
-  increment to structured grid:
-    grid type: latlon
+  - geometry: *geom
+    filetype: fms restart
+    datapath: Data/analysis
+    prefix: 20201215.000000.inc.hyb-fgat.c12
+    field io names: *field_io_names
+    times: ['2020-12-15T00:00:00Z']
+  - grid type: latlon
     local interpolator type: oops unstructured grid interpolator
     resolution in degrees: 15.0
-    variables to output:
+    variables:
     - air_temperature
     - eastward_wind
     - northward_wind
@@ -395,11 +393,12 @@ final:
     datapath: Data/analysis
     exp: hyb-fgat
     type: inc
-  analysis to structured grid:
-    grid type: latlon
+    times: ['2020-12-15T00:00:00Z']
+  analysis:
+  - grid type: latlon
     local interpolator type: oops unstructured grid interpolator
     resolution in degrees: 15.0
-    variables to output:
+    variables:
     - air_temperature
     - eastward_wind
     - northward_wind
@@ -409,14 +408,13 @@ final:
     datapath: Data/analysis
     exp: hyb-fgat
     type: an
-output:
-  filetype: cube sphere history
-  provider: geos
-  datapath: Data/analysis
-  filename: hyb-fgat-geos.ana.%yyyy%mm%dd_%hh%MM%ssz.nc4
-  first: PT0H
-  frequency: PT1H
-  field io names: *field_io_names
+  - filetype: cube sphere history
+    provider: geos
+    datapath: Data/analysis
+    filename: hyb-fgat-geos.ana.%yyyy%mm%dd_%hh%MM%ssz.nc4
+    first: PT0H
+    frequency: PT1H
+    field io names: *field_io_names
 test:
   reference filename: testoutput/hyb-fgat_fv3lm.ref
   test output filename: testoutput/hyb-fgat_fv3lm.test.out

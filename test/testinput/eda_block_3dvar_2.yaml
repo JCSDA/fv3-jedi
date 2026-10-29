@@ -154,12 +154,6 @@ cost function:
     npx: 13
     npy: 13
     npz: 127
-output:
-  filetype: fms restart
-  datapath: Data/analysis/eda/gfs/mem002
-  prefix: eda-3dvar-block-gfs
-  frequency: PT1H
-  field io names: *field_io_names
 variational:
   minimizer:
     algorithm: DRPBlockLanczos
@@ -185,3 +179,4 @@ variational:
       npx: 13
       npy: 13
       npz: 127
+output: {}

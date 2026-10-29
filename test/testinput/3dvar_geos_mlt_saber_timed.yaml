@@ -229,11 +229,9 @@ variational:
             skin_temperature_at_surface: ts
             air_pressure_at_surface: ps
             air_pressure_levels: pe
-final:
-  diagnostics:
-    departures: oman
   prints:
     frequency: PT3H
+output: {}
 test:
   reference filename: testoutput/3dvar_geos_mlt_saber_timed.ref
   float relative tolerance: 1.0e-2

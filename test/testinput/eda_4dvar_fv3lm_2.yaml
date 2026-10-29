@@ -351,12 +351,6 @@ cost function:
     npx: 13
     npy: 13
     npz: 127
-output:
-  filetype: fms restart
-  datapath: Data/analysis/eda/gfs/mem002
-  prefix: eda-4dvar-gfs
-  frequency: PT3H
-  field io names: *field_io_names
 variational:
   minimizer:
     algorithm: DRPCG
@@ -393,3 +387,4 @@ variational:
       lm_do_dyn: 1
       lm_do_trb: 0
       lm_do_mst: 0
+output: {}

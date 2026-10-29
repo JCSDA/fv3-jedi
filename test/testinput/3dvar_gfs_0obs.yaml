@@ -100,12 +100,6 @@ cost function:
             name: ObsType/airTemperature
           is_in: 130
         minvalue: 250.0
-output:
-  filetype: fms restart
-  datapath: Data/analysis/
-  prefix: 3dvar-gfs_0obs
-  frequency: PT1H
-  field io names: *field_io_names
 variational:
   minimizer:
     algorithm: DRPCG
@@ -126,6 +120,7 @@ variational:
       npx: 13
       npy: 13
       npz: 127
+output: {}
 test:
   reference filename: testoutput/3dvar_gfs_0obs.ref
   test output filename: testoutput/3dvar_gfs_0obs.test.out

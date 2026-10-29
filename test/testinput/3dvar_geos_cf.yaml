@@ -78,14 +78,6 @@ cost function:
         stretchVertices: topbottom
       obs error:
         covariance model: diagonal
-output:
-  filetype: cube sphere history
-  provider: geos
-  datapath: Data/analysis
-  filename: geos_cf.3dvar_ana.%yyyy%mm%dd_%hh%MM%ssz.nc4
-  first: PT0H
-  frequency: PT6H
-  field io names: *field_io_names
 variational:
   minimizer:
     algorithm: DRPCG
@@ -98,6 +90,7 @@ variational:
       npx: 13
       npy: 13
       npz: 72
+output: {}
 test:
   reference filename: testoutput/3dvar_geos_cf.ref
   test output filename: testoutput/3dvar_geos_cf.test.out

@@ -246,13 +246,6 @@ cost function:
         maxvalue: 84.
         action:
           name: reject
-output:
-  filetype: fms restart
-  datapath: Data/analysis
-  prefix: 3dvar-gfs.ana.c12
-  first: PT0H
-  frequency: PT1H
-  field io names: *field_io_names
 variational:
   minimizer:
     algorithm: DRPCG
@@ -267,6 +260,7 @@ variational:
       npx: 13
       npy: 13
       npz: 127
+output: {}
 test:
   reference filename: testoutput/3dvar_gfs_sondes.ref
   float relative tolerance: 1.0e-1

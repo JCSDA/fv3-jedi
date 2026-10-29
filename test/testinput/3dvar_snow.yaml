@@ -91,22 +91,6 @@ cost function:
         threshold: 6.25
         action:
           name: reject
-output:
-  filetype: auxgrid
-  gridtype: latlon
-  filename: Data/analysis/gfs_land/3dvar.snow
-  field io names:
-    totalSnowDepth: snwdph
-final:
-  increment:
-    geometry: *geom
-    output:
-      state component:
-        filetype: fms restart
-        datapath: Data/analysis/gfs_land
-        prefix: 3dvar.snow.inc
-        field io names:
-          totalSnowDepth: snwdph
 variational:
   minimizer:
     algorithm: DRPCG
@@ -133,6 +117,20 @@ variational:
       vert coordinate: orography
       field interpolation methods:
         totalSnowDepth: 'nearest'
+output:
+  analysis:
+    filetype: auxgrid
+    gridtype: latlon
+    filename: Data/analysis/gfs_land/3dvar.snow
+    field io names:
+      totalSnowDepth: snwdph
+  increment:
+    geometry: *geom
+    filetype: fms restart
+    datapath: Data/analysis/gfs_land
+    prefix: 3dvar.snow.inc
+    field io names:
+      totalSnowDepth: snwdph
 test:
   reference filename: testoutput/3dvar_snow.ref
   test output filename: testoutput/3dvar_snow.test.out

@@ -200,12 +200,7 @@ variational:
       npx: 13
       npy: 13
       npz: 64
-output:
-  filetype: fms restart
-  datapath: Data/analysis/
-  prefix: 3dvar-1-gfs
-  frequency: PT1H
-  field io names: *field_io_names
+output: {}
 test:
   reference filename: testoutput/3dvar_gfs_aero.ref
   float absolute tolerance: 1.0e-8

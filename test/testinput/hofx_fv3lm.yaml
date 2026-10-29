@@ -180,7 +180,7 @@ forecast to structured grid:
   grid type: latlon
   local interpolator type: oops unstructured grid interpolator
   resolution in degrees: 10.0
-  variables to output:
+  variables:
   - air_temperature
   - eastward_wind
   - northward_wind

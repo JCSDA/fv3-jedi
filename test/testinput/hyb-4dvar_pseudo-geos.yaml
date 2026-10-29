@@ -355,14 +355,6 @@ cost function:
     npx: 13
     npy: 13
     npz: 72
-output:
-  filetype: cube sphere history
-  provider: geos
-  datapath: Data/analysis
-  filename: hyb-4dvar-geos.ana.%yyyy%mm%dd_%hh%MM%ssz.nc4
-  first: PT0H
-  frequency: PT1H
-  field io names: *field_io_names
 variational:
   minimizer:
     algorithm: DRPCG
@@ -383,6 +375,15 @@ variational:
       lm_do_dyn: 1
       lm_do_trb: 1
       lm_do_mst: 1
+output:
+  analysis:
+    filetype: cube sphere history
+    provider: geos
+    datapath: Data/analysis
+    filename: hyb-4dvar-geos.ana.%yyyy%mm%dd_%hh%MM%ssz.nc4
+    first: PT0H
+    frequency: PT1H
+    field io names: *field_io_names
 test:
   reference filename: testoutput/hyb-4dvar_pseudo-geos.ref
   test output filename: testoutput/hyb-4dvar_pseudo-geos.test.out

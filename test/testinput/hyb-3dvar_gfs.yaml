@@ -414,12 +414,7 @@ variational:
       npx: 13
       npy: 13
       npz: 127
-output:
-  filetype: fms restart
-  datapath: Data/analysis/
-  prefix: hyb-3dvar-1-gfs.c24
-  frequency: PT1H
-  field io names: *field_io_names
+output: {}
 test:
   reference filename: testoutput/hyb-3dvar_gfs.ref
   test output filename: testoutput/hyb-3dvar_gfs.test.out
