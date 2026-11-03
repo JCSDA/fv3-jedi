@@ -150,7 +150,9 @@ cost function:
           name: inflate error
           inflation factor: 2.0
       - filter: Background Check
-        channels: 4
+        filter variables:
+        - name: aerosolOpticalDepth
+          channels: 4
         threshold: 3.0
         action:
           name: inflate error
