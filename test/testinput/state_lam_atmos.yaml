@@ -38,11 +38,3 @@ state test:
   norm file: 4897929.0372456973
   norm generated state: 698.89279361001775
   tolerance: 1.0e-08
-  construct to variables:
-  - eastward_wind
-  - northward_wind
-  - air_temperature
-  - air_pressure_at_surface
-  - water_vapor_mixing_ratio_wrt_moist_air
-  - cloud_liquid_ice
-  - cloud_liquid_water

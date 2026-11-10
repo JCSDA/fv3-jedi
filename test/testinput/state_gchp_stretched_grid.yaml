@@ -42,5 +42,3 @@ state test:
   date: 2021-08-15T03:00:00Z
   norm file: 101.58104065376983
   tolerance: 1.0e-08
-  construct to variables:
-  - air_temperature

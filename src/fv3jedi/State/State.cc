@@ -32,7 +32,6 @@
 #include "fv3jedi/IO/Utils/IOBase.h"
 #include "fv3jedi/State/State.h"
 #include "fv3jedi/Utilities/fv3jedi_vertical_remap.h"
-#include "fv3jedi/VariableChange/VariableChange.h"
 
 namespace fv3jedi {
 
@@ -114,17 +113,6 @@ State::State(const Geometry & resol, const State & other)
   fv3jedi_state_create_f90(keyState_, geom_.toFortran(), vars_, time_);
   this->changeResolution(other);
   oops::Log::trace() << "State::State (from geom and other) done" << std::endl;
-}
-
-// -------------------------------------------------------------------------------------------------
-
-State::State(const oops::Variables & vars, const State & other) : State(other)
-{
-  oops::Log::trace() << "State::State (from vars and other) starting" << std::endl;
-  eckit::LocalConfiguration varChangeConfig;
-  VariableChange varChange(varChangeConfig, geom_);
-  varChange.changeVar(*this, vars);
-  oops::Log::trace() << "State::State (from vars and other) done" << std::endl;
 }
 
 // -------------------------------------------------------------------------------------------------
