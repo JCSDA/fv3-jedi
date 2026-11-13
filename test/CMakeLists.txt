@@ -1365,18 +1365,21 @@ ecbuild_add_test( TARGET   fv3jedi_hyb-fgat_gfs_aero
 ecbuild_add_test( TARGET   fv3jedi_convertstate_rrfs_nofms_lifecycle
                   MPI      12
                   ARGS     testinput/convertstate_rrfs_nofms_lifecycle.yaml
-                  COMMAND  fv3jedi_convertstate.x )
+                  COMMAND  fv3jedi_convertstate.x 
+                  LABELS   tier2 )
 
 # Read on one regional grid and write on another, twice, within one execution
 ecbuild_add_test( TARGET   fv3jedi_convertstate_rrfs_nofms_dualres
                   MPI      12
                   ARGS     testinput/convertstate_rrfs_nofms_dualres.yaml
-                  COMMAND  fv3jedi_convertstate.x )
+                  COMMAND  fv3jedi_convertstate.x 
+                  LABELS   tier2 )
 
 ecbuild_add_test( TARGET   fv3jedi_3dvar_rrfs_nofms
                   MPI      12
                   ARGS     testinput/3dvar_rrfs_nofms.yaml
-                  COMMAND  fv3jedi_var.x )
+                  COMMAND  fv3jedi_var.x 
+                  LABELS   tier2 )
 
 # Hybrid FGAT
 # -----------
@@ -1650,7 +1653,7 @@ foreach(DATE ${staticb_dates})
                     MPI          12
                     ARGS         testinput/staticb_ens-to-psichi_${DATE}_gfs.yaml
                     COMMAND      fv3jedi_convertstate.x
-                    LABELS       ci_flake_disable )
+                    LABELS       ci_flake_disable tier2 )
 
   # Prepare vertical balance, variance and moments
   ecbuild_add_test( TARGET       fv3jedi_staticb_prep_${DATE}_gfs
@@ -1658,7 +1661,7 @@ foreach(DATE ${staticb_dates})
                     ARGS         testinput/staticb_prep_${DATE}_gfs.yaml
                     COMMAND      fv3jedi_error_covariance_toolbox.x
                     TEST_DEPENDS fv3jedi_staticb_ens-to-psichi_${DATE}_gfs
-                    LABELS       ci_flake_disable )
+                    LABELS       ci_flake_disable tier2 )
 endforeach()
 
 # Compute vertical balance using previously pre-computed vertical covariances, and unbalance ensemble members,
@@ -1670,7 +1673,7 @@ ecbuild_add_test( TARGET       fv3jedi_staticb_estimate_gfs
                   TEST_DEPENDS fv3jedi_staticb_prep_2020121421_gfs
                                fv3jedi_staticb_prep_2020121500_gfs
                                fv3jedi_staticb_prep_2020121503_gfs
-                  LABELS       ci_flake_disable )
+                  LABELS       ci_flake_disable tier2 )
 
 # Compute NICAS operator using the length-scales
 ecbuild_add_test( TARGET       fv3jedi_staticb_nicas_gfs
@@ -1678,7 +1681,7 @@ ecbuild_add_test( TARGET       fv3jedi_staticb_nicas_gfs
                   ARGS         testinput/staticb_nicas_gfs.yaml
                   COMMAND      fv3jedi_error_covariance_toolbox.x
                   TEST_DEPENDS fv3jedi_staticb_estimate_gfs
-                  LABELS       ci_flake_disable )
+                  LABELS       ci_flake_disable tier2 )
 
 # Split VBAL operator to get local files on 6 PEs
 ecbuild_add_test( TARGET       fv3jedi_staticb_split_vbal_gfs
@@ -1686,7 +1689,7 @@ ecbuild_add_test( TARGET       fv3jedi_staticb_split_vbal_gfs
                   ARGS         testinput/staticb_split_vbal_gfs.yaml
                   COMMAND      fv3jedi_error_covariance_toolbox.x
                   TEST_DEPENDS fv3jedi_staticb_estimate_gfs
-                  LABELS       ci_flake_disable )
+                  LABELS       ci_flake_disable tier2 )
 
 # Split NICAS operator to get local files on 6 PEs
 ecbuild_add_test( TARGET       fv3jedi_staticb_split_nicas_gfs
@@ -1694,7 +1697,7 @@ ecbuild_add_test( TARGET       fv3jedi_staticb_split_nicas_gfs
                   ARGS         testinput/staticb_split_nicas_gfs.yaml
                   COMMAND      fv3jedi_error_covariance_toolbox.x
                   TEST_DEPENDS fv3jedi_staticb_nicas_gfs
-                  LABELS       ci_flake_disable )
+                  LABELS       ci_flake_disable tier2 )
 
 # Dirac test using the full BUMP static covariance, local files, 6 PEs
 ecbuild_add_test( TARGET       fv3jedi_staticb_dirac_local_gfs_6pe
@@ -1704,7 +1707,7 @@ ecbuild_add_test( TARGET       fv3jedi_staticb_dirac_local_gfs_6pe
                   TEST_DEPENDS fv3jedi_staticb_split_vbal_gfs
                                fv3jedi_staticb_estimate_gfs
                                fv3jedi_staticb_split_nicas_gfs
-                  LABELS       ci_flake_disable )
+                  LABELS       ci_flake_disable tier2 )
 
 # Dirac test using the full BUMP static covariance, local files 12 PEs
 ecbuild_add_test( TARGET       fv3jedi_staticb_dirac_local_gfs_12pe
@@ -1713,7 +1716,7 @@ ecbuild_add_test( TARGET       fv3jedi_staticb_dirac_local_gfs_12pe
                   COMMAND      fv3jedi_error_covariance_toolbox.x
                   TEST_DEPENDS fv3jedi_staticb_estimate_gfs
                                fv3jedi_staticb_nicas_gfs
-                  LABELS       ci_flake_disable )
+                  LABELS       ci_flake_disable tier2 )
 
 # Dirac test using the full BUMP static covariance, global files, 6 PEs
 ecbuild_add_test( TARGET       fv3jedi_staticb_dirac_global_gfs_6pe
@@ -1722,7 +1725,7 @@ ecbuild_add_test( TARGET       fv3jedi_staticb_dirac_global_gfs_6pe
                   COMMAND      fv3jedi_error_covariance_toolbox.x
                   TEST_DEPENDS fv3jedi_staticb_estimate_gfs
                                fv3jedi_staticb_nicas_gfs
-                  LABELS       ci_flake_disable )
+                  LABELS       ci_flake_disable tier2 )
 
 # Dirac test using the full BUMP static covariance, global files 12 PEs
 ecbuild_add_test( TARGET       fv3jedi_staticb_dirac_global_gfs_12pe
@@ -1731,7 +1734,7 @@ ecbuild_add_test( TARGET       fv3jedi_staticb_dirac_global_gfs_12pe
                   COMMAND      fv3jedi_error_covariance_toolbox.x
                   TEST_DEPENDS fv3jedi_staticb_estimate_gfs
                                fv3jedi_staticb_nicas_gfs
-                  LABELS       ci_flake_disable )
+                  LABELS       ci_flake_disable tier2 )
 
 # Full BUMP static covariance setup, GEOS case
 # --------------------------------------------
@@ -1969,7 +1972,7 @@ ecbuild_add_test( TARGET   fv3jedi_hyb-3dvar_gfs
                                fv3jedi_staticb_var_gfs
                                fv3jedi_staticb_nicas_gfs
                                fv3jedi_ensembleb_nicas_gfs
-                  LABELS   ci_flake_disable )
+                  LABELS   ci_flake_disable tier2 )
 
 ecbuild_add_test( TARGET   fv3jedi_hyb-3dvar_geos
                   MPI      6
