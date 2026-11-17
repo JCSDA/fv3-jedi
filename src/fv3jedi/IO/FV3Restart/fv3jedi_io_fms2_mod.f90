@@ -967,6 +967,17 @@ nullify(d2r4ptr, d2r8ptr)
       call MPI_Abort(geom%f_comm%communicator(), 333, ierr)
     endif
 
+    ! Call nf90_var_par_access before anything other file inquiry to avoid runtime failures when reading
+    ! variables that hve filters applied (shuffle deflate etc.)
+    call check( nf90_inq_varid(ncioid, trim(adjustl(mype_varname)), var_id) )
+    iret = nf90_var_par_access(ncioid, var_id, nf90_independent)
+    if (iret /= nf90_noerr) then
+      write(6,'("read_restart_fields_reg: variable ",a," in file ",a," cannot be read independently: ",a)') &
+            trim(adjustl(mype_varname)), trim(FileNamesToProcess(mype_fileid)), trim(nf90_strerror(iret))
+      call flush(6)
+      call MPI_Abort(geom%f_comm%communicator(), 51, ierr)
+    endif
+
     ! Check this rank's variable before any data is read: it must exist, be at least the
     ! geometry's horizontal size, have the field's full number of levels (not just the
     ! levels this rank reads), and be stored as float or double.  Any mismatch aborts
@@ -996,15 +1007,6 @@ nullify(d2r4ptr, d2r8ptr)
       write(6,'("read_restart_fields_reg: ",a," in file ",a)') trim(errmsg), trim(FileNamesToProcess(mype_fileid))
       call flush(6)
       call MPI_Abort(geom%f_comm%communicator(), 48, ierr)
-    endif
-
-    call check( nf90_inq_varid(ncioid, trim(adjustl(mype_varname)), var_id) )
-    iret = nf90_var_par_access(ncioid, var_id, nf90_independent)
-    if (iret /= nf90_noerr) then
-      write(6,'("read_restart_fields_reg: variable ",a," in file ",a," cannot be read independently: ",a)') &
-            trim(adjustl(mype_varname)), trim(FileNamesToProcess(mype_fileid)), trim(nf90_strerror(iret))
-      call flush(6)
-      call MPI_Abort(geom%f_comm%communicator(), 51, ierr)
     endif
   endif ! read_comm
 
