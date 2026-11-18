@@ -37,6 +37,7 @@ namespace oops {
 
 namespace fv3jedi {
   class Geometry;
+  class GeometryIterator;
   class ModelBiasIncrement;
   class State;
 

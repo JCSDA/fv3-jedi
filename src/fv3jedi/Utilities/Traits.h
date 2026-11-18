@@ -56,6 +56,8 @@ struct Traits {
   typedef oops::UnstructuredInterpolator  LocalInterpolator;
 
   typedef ufo::ObsLocalization<GeometryIterator>   ObsLocalization;
+
+  static void registerNorms() {}
 };
 
 }  // namespace fv3jedi
